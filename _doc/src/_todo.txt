@@ -1,0 +1,80 @@
+﻿List<bool>
+之 linux stl 版实现分析
+它的 it 是一个 size_t* + offset 结构，也就是说它只关注当前存储节点，
+并且内存清 0 的时机可以是 add 进入一个新节点时，这样子只需要清当前正用到的区块
+同时，使用它的 it 来遍历它，也可以享受到当前区块定位cache
+如此可避免重复运算
+故可以先实现该对象的 it ，以供遍历。另外该对象也可以不去继承 ListBase，直接用适合的数据结构来搞定需求。
+
+
+
+要提供 清0内存 以及 清尾字节未用到bit为0 的功能。 或者至少在序列化的时候 需要清一下尾字节
+(这个需求如果是当前算法按上面的方式整改 则已然实现。当然，提供 clearTail 函数也是有必要的，改写 _len 之后会需要。
+
+
+
+
+
+
+整理一下 epoll 的开发要素：
+
+1. 创建一个监听用的 socket, bind 到本地某 ip 某端口
+2. 设置该 socket 的各种参数( 要设地址复用，及非阻塞）
+3. 使用 listen 开始监听该 socket
+4. 使用 epoll_create 创建一个 epoll fd
+5. 循环使用 epoll_wait 来处理网络事件. 事件分四种：1. incoming( accept ), 2. readable( read ), 3. writable( write ), 4. error( close )
+5.1 incoming: 接受连接，并建立该 fd 与 token 的关联
+5.2 readable: 将数据读光（写到 token 中的容器). 如果读的过程中发生错误，视情况关闭 fd, 并清理与相关 token 的联系
+5.3 writable: 当 fd 处于 可写 态时
+
+部分文章会在读数据后使用 epoll_ctl 将 fd 监听内容改为 write, 以便触发 writable 事件
+也就是说，理论上讲，要发送数据，并非直接调用 send 函数，而是先将要发送的数据放到 token, 再用 epoll_ctrl 改 fd 监听事件, 这样子下个 epoll_wait 循环就会进入专门的发送代码区域
+一种说法是这样子做属于官方示例 
+
+按某些文章的说法，有可能存在“丢失的fd”，即相当长一段时间都不出现在 epoll_wait 的结果中
+意即需要自己来管理 fd 的超时情况。
+
+  
+
+
+
+
+
+重要：所有试图直接调用 析构函数来清除一些东西还要继续用的函数，都要改掉。析构函数执行后会产生内存回收操作（这个是看不到的）
+重要：for if 什么的 最好都加大扩号。因为如果短路的话，下下行将被视作下一行来 run ?!
+
+
+
+String 以及各种容器 尝试将 _bufSize 设置为 0 以作为初始态，理论上讲同时应修改 realloc 之类的执行点 加 _buf 空指针判断
+
+
+
+示例：（关于 is_enum）
+template <typename T>
+typename boost::disable_if< boost::is_enum<T>, bool>::type 
+ConvertString(const std::string& theString, T& theResult)
+{
+    std::istringstream iss(theString);
+    return !(iss >> theResult).fail();
+}
+
+template <typename T>
+typename boost::enable_if< boost::is_enum<T>, bool>::type 
+ConvertString(const std::string& theString, T& theResult)
+{
+    typedef typename get_etype<sizeof find_etype(theResult)>::type 
+      safe_type;
+
+    std::istringstream iss(theString);
+    safe_type temp;
+    const bool isValid = !(iss >> temp).fail();
+    theResult = static_cast<T>(temp);
+    return isValid;
+}
+
+Bytes, Binary 的 read/write T*, len 版本缺。这种版本不写长度。之前的 char*, len 重载，其他函数有依赖须去掉
+等这个出来，再把一些序列化操作中冗余写入的长度去掉
+
+从 lib 提取
+environment 的取 tickCount 代码, 以及 Random
+共享内存中可以使用的系列容器得做（不能用指针）

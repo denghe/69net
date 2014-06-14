@@ -1,0 +1,261 @@
+﻿一些相关 url
+
+http://solarsail.i.sohu.com/blog/view/148700860.htm
+
+
+
+
+
+
+
+
+
+
+
+以下文档从 my sql 5.6 reference manual 采集翻译
+大概只包含当前必须要用到的基本的函数
+
+
+mysql c api 函数集：
+
+
+MYSQL *mysql_real_connect(
+    MYSQL *mysql
+    , const char *host
+    , const char *user
+    , const char *passwd
+    , const char *db
+    , unsigned int port
+    , const char *unix_socket
+    , unsigned long client_flag
+)
+
+该函数试图建立到 host 所在 mysql 数据库的连接。
+成立建立连接后，得到一个合法的 mysql 结构体，才能调用其他 API 函数。
+
+第一个参数是通过调用 mysql_init() 初始化一个 MYSQL 结构体而得来的。
+并且你还可以通过调用 mysql_options() 来设置一些连接选项。
+
+host 参数: 须传入主机名或 ip 地址。
+如果传入空值或 "localhost" 字串，将连接本机
+windows 下如果服务器开启了共享内存访问，则连创建将以此作为通信方式。否则将使用 tcp/ip
+unix 下将使用 unix socket file. 
+windows 下如果传入 "." 表示使用命名管道（如果此连接方式未开启，将报错）
+
+user 参数：包含用户登录 id. 如果传 null 或 "", 将使用当前用户.
+unix 下，这意味着使用当前的登录名。
+windows ODBC 模式，当前用户名必须显式指定。
+
+password 参数：包含用户登录密码。
+如果传入 空值，除非用户表中用户也具备一个空值密码才能匹配。
+如此一来，系统管理员可以根据 是否设置了密码 来设置不同的权限。
+注意：调用该函数前，密码不要加密（该过程经由 client API 自动进行）
+
+user & password 可使用任何为 mysql 配置的字符集。默认为 latin1。
+但是在连接前，可以用 mysql_options( mysql, MYSQL_SET_CHARSET_NAME, "charset_name" ) 来改。
+
+db 参数：库名。如果不为 空，连接将以此作为默认库。
+
+port 参数：如果用的 tcp/ip 连接，传入 非 0 值，将指定所连接的端口号。
+
+unix_socket 参数：如果不为空，该字串用于指定使用 socket 或命名管道。注意, host 参数决定连接类型。
+
+client_flag 参数：通常为 0, 但是可以设置组合标记位来启用某些特性/功能。
+    CAN_HANDLE_EXPIRED_PASSWORDS    客户端可以处理过期密码
+    CLIENT_COMPRESS                 使用压缩协议
+    CLIENT_FOUND_ROWS               返回 “匹配行数” 而非 “受影响行数”
+    CLIENT_IGNORE_SIGPIPE           阻止客户端库安装 SIGPIPE 处理器，以避免和已安装的发生冲突。
+    CLIENT_IGNORE_SPACE             允许函数名后面加空格。所有函数名可以预留字。
+    CLIENT_INTERACTIVE              允许关闭连接前使用 不活动超时秒数 (代替等待超时秒数)。客户端会话的 等待超时秒数 值设置为 不活动超时秒数。
+    CLIENT_LOCAL_FILES              启用 载入本地文件数据 处理（高速批量导入数据用）。
+    CLIENT_MULTI_RESULTS            告诉服务器 客户端可以处理 多语句 或 存储过程 返回的 多数据集结果。如果 CLIENT_MULTI_STATEMENTS 标志位启用，这个标志位也自动启用。
+    CLIENT_MULTI_STATEMENTS         告诉服务器 客户端 可能会 一次性发送 由 ";" 分号分割开的 多条语句。如果不设置该标志位，一次执行多条语句功能 将被禁用。
+    CLIENT_NO_SCHEMA                不允许使用 数据库名.表名.列名 语法。这是关于 ODBC 的设置。如果这样用，会报错，这样有助于某些 odbc 程序找 bug。
+    CLIENT_SSL                      使用 SSL 加密协议。此设置不应该在程序里设置。它应该在客户端库内设置。可以在调用 mysql_real_connect 前调用 mysql_ssl_set 来代替。
+    CLIENT_REMEMBER_OPTIONS         记住通过调用 mysql_options 设置的选项。如果不设置这个标志位, mysql_real_connect 创建连接失败的话，就得重新调用 mysql_options 来重新设置那些选项。如果设置了这个标志位，那就不必再调用 mysql_options 了。
+
+如果程序中会使用 CALL 来调用存储过程，则 CLIENT_MULTI_RESULTS  必须设置。因为 存储过程 中往往会返回多个数据集。处理时需要用 mysql_next_result() 来探测后面还有没有数据。
+在 MySQL 5.6 之后，CLIENT_MULTI_RESULTS 默认是启用的。
+
+返回值：
+    如果返回 空，则连接失败。成功连接 的返回值 应该是等于 首个参数的。
+    函数 mysql_errno() 可获取错误码；mysql_error() 可获取错误提示。
+        CR_CONN_HOST_ERROR 
+            Failed to connect to the MySQL server. 
+        CR_CONNECTION_ERROR 
+            Failed to connect to the local MySQL server. 
+        CR_IPSOCK_ERROR 
+            Failed to create an IP socket. 
+        CR_OUT_OF_MEMORY 
+            Out of memory. 
+        CR_SOCKET_CREATE_ERROR 
+            Failed to create a Unix socket. 
+        CR_UNKNOWN_HOST 
+            Failed to find the IP address for the host name. 
+        CR_VERSION_ERROR 
+            A protocol mismatch resulted from attempting to connect to a server with a client library that uses a different protocol version. 
+        CR_NAMEDPIPEOPEN_ERROR 
+            Failed to create a named pipe on Windows. 
+        CR_NAMEDPIPEWAIT_ERROR 
+            Failed to wait for a named pipe on Windows. 
+        CR_NAMEDPIPESETSTATE_ERROR 
+            Failed to get a pipe handler on Windows. 
+        CR_SERVER_LOST 
+            If connect_timeout > 0 and it took longer than connect_timeout seconds to connect to the server or if the server died while executing the init-command. 
+        CR_ALREADY_CONNECTED 
+            The MYSQL connection handle is already connected. 
+
+示例：
+
+MYSQL mysql;
+mysql_init( &mysql );
+mysql_options( &mysql, MYSQL_READ_DEFAULT_GROUP, "your_prog_name" );
+if( !mysql_real_connect( &mysql, "host", "user", "passwd", "database", 0, NULL, 0 ) )
+{
+    fprintf( stderr, "Failed to connect to database: Error: %s\n", mysql_error( &mysql ) );
+}
+
+
+
+
+
+MYSQL *mysql_init( MYSQL *mysql )
+
+为创建连接而 分配, 初始化 一个 mysql 结构体。
+如果参数 "mysql" 为 空值，将返回一个新对象；
+否则初始化 mysql 指向的对象并返回。
+
+注意：当返回一个新对象时，调用 mysql_close() 函数关闭连接时将导致该对象释放。
+
+
+
+
+
+void mysql_close( MYSQL *mysql )
+
+关闭一个已打开的连接。如果 mysql 结构体经由 mysql_init() 创建（返回新对象），
+该对象将被释放。
+
+
+
+
+
+int mysql_options( MYSQL *mysql, enum mysql_option option, const void *arg )
+
+用来设置额外的连接选项和影响行为。可以多次调用以实现多项设置。
+调用时机：mysql_init 之后，mysql_real_connect 之前。
+返回 0 表示操作成功，非 0 表示未知选项。
+
+常见参数列表：
+    MYSQL_INIT_COMMAND (argument type: char *) 
+        SQL 指令段落会于连接创建成功后自动执行（当重新连接事件发生时也会自动执行）
+        可指定使用哪一张网卡来连接服务器（多网卡环境）。
+        参数为 主机名 或 IP 地址 字串（mysql 5.6.1. 起开始支持）
+
+    MYSQL_OPT_COMPRESS (argument: not used) 
+        使用压缩的客户端/服务器协议。
+
+    MYSQL_OPT_CONNECT_TIMEOUT (argument type: unsigned int *) 
+        设置连接超时秒数
+
+    MYSQL_OPT_NAMED_PIPE (argument: not used) 
+        使用 命名管道 来连服务器（Windows），如果服务器允许的话。
+
+    MYSQL_OPT_PROTOCOL (argument type: unsigned int *) 
+        指定使用的协议（枚举：位于 mysql.h 中的 mysql_protocol_type）
+        当前有下列几个：
+        MYSQL_PROTOCOL_DEFAULT, 
+        MYSQL_PROTOCOL_TCP, 
+        MYSQL_PROTOCOL_SOCKET,
+        MYSQL_PROTOCOL_PIPE, 
+        MYSQL_PROTOCOL_MEMORY
+
+    MYSQL_OPT_READ_TIMEOUT (argument type: unsigned int *) 
+        设置从服务器读等待超时时间。每次尝试使用这个超时值，如果有必要的话，可能会重试 net_retry_count 次。故总等待时间会 net_retry_count 倍于设置值。
+        你可以设置这个值，以便得到一个比 TCP/IP Close_Wait_Timeout 的 10 分钟更提前的超时检测。
+
+        这个超时机制可能并不能在所有平台上实施。有些读取操作不会导致客户端读取超时。例如，服务器一直在等待 “磁盘满” 状态消失。
+
+    MYSQL_OPT_RECONNECT (argument type: my_bool *) 
+        设置启用或禁用自动重连（如果发现连接断开）。默认禁用。该选项提供一个明确设置该行为的渠道。
+
+    MYSQL_OPT_WRITE_TIMEOUT (argument type: unsigned int *) 
+        大体同 MYSQL_OPT_READ_TIMEOUT，读变写
+    
+    MYSQL_SET_CHARSET_NAME (argument type: char *) 
+        设置默认字符集. 参数可以是 MYSQL_AUTODETECT_CHARSET_NAME 从而使用与当前操作系统相同的设定.
+
+    MYSQL_SHARED_MEMORY_BASE_NAME (argument type: char *) 
+        windows 下, 设置 用于连接到 服务器的 共享内存的 “名字”（如果服务器支持共享内存方式连接的话）
+        服务器端使用 --shared-memory-base-name 选项来指定。默认值为 MYSQL. 大小写敏感。
+
+    // 有个 keep alive 可能需要关注
+
+
+
+
+
+
+
+数据数据介绍：
+
+http://dev.mysql.com/doc/refman/5.6/en/c-api-data-structures.html
+
+
+多结果集处理事例：
+
+http://dev.mysql.com/doc/refman/5.6/en/c-api-multiple-queries.html
+
+
+
+
+
+
+
+
+
+
+
+    void GetTables(DbSet &ds) {
+        assert ( _DefaultConnectInfo._schema[0] );
+        char buff[1024];
+        var len = Escape(buff, "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = '%S'", _DefaultConnectInfo._schema);
+        ExecuteDbSet(buff, len, ds);
+    }
+
+    void GetViews(DbSet &ds) {
+        assert ( _DefaultConnectInfo._schema[0] );
+        char buff[1024];
+        var len = Escape(buff, "SELECT * FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = '%S'", _DefaultConnectInfo._schema);
+        ExecuteDbSet(buff, len, ds);
+    }
+
+    void GetColumns(DbSet &ds, const WCHAR *tn) {
+        assert ( _DefaultConnectInfo._schema[0] );
+        assert ( tn );
+        char buff[1024];
+        var len = Escape(buff, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%S' AND TABLE_NAME = '%W'", _DefaultConnectInfo._schema, tn);
+        ExecuteDbSet(buff, len, ds);
+    }
+
+    void GetProcedures(DbSet &ds) {
+        assert ( _DefaultConnectInfo._schema[0] );
+        char buff[1024];
+        var len = Escape(buff, "SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_SCHEMA = '%S'", _DefaultConnectInfo._schema);
+        ExecuteDbSet(buff, len, ds);
+    }
+
+    void GetFunctions(DbSet &ds) {
+        assert ( _DefaultConnectInfo._schema[0] );
+        char buff[1024];
+        var len = Escape(buff, "SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'FUNCTION' AND ROUTINE_SCHEMA = '%S'", _DefaultConnectInfo._schema);
+        ExecuteDbSet(buff, len, ds);
+    }
+
+    void GetParameters(DbSet &ds, const WCHAR *rn) {
+        assert ( _DefaultConnectInfo._schema[0] );
+        assert ( rn );
+        char buff[1024];
+        var len = Escape(buff, "SELECT * FROM INFORMATION_SCHEMA.PARAMETERS WHERE SPECIFIC_SCHEMA = '%S' AND SPECIFIC_NAME = '%W'", _DefaultConnectInfo._schema, rn);
+        ExecuteDbSet(buff, len, ds);
+    }

@@ -1,0 +1,1086 @@
+﻿#include "Precompile.h"
+
+//struct Foo
+//{
+//    Foo( uint val ) : _val( val ) {}
+//
+//    void binaryW( Binary & buf ) const
+//    {
+//        buf.w( _val );
+//    }
+//    ReadStatus binaryR( Binary & buf )
+//    {
+//        return buf.r( _val );
+//    }
+//    uint _val;
+//};
+
+
+
+//
+//INLINE ConvertStates BinaryFormatter_Normal::Read7Bit(Binary &bin, UInt64 &out) {
+//    if (bin.Offset() >= bin.Length())
+//        return ConvertState_NotEnoughData;
+//    var p = bin.Binary() + bin.Offset();
+//    UInt64 i = 0, b7;
+//    UInt32 lshift = 0, idx = 0, len = bin.Length() - bin.Offset();
+//Lab1:
+//    b7 = p[idx++];
+//    if (b7 > 0x7F) {
+//        if (idx >= len)
+//            return ConvertState_NotEnoughData;
+//        if (idx < 8) {
+//            i |= (b7 & 0x7F) << lshift;
+//            lshift += 7;
+//            goto Lab1;
+//        }
+//        else
+//            i |= (b7 << lshift) | ((UInt64)p[idx++] << 28 << 28);
+//    } else
+//        i |= b7 << lshift;
+//    out = i;
+//    bin.Offset() += idx;
+//    return ConvertState_Success;
+//}
+//INLINE ConvertStates BinaryFormatter_Normal::Read7Bit(Binary &bin, UInt32 &out) {
+//    if (bin.Offset() >= bin.Length())
+//        return ConvertState_NotEnoughData;
+//    var p = bin.Binary() + bin.Offset();
+//    UInt32 i = 0, b7, lshift = 0, idx = 0, len = bin.Length() - bin.Offset();
+//Lab1:
+//    b7 = p[idx++];
+//    if (b7 > 0x7F) {
+//        if (idx == 5)
+//            return ConvertState_Overflow;
+//        if (idx >= len)
+//            return ConvertState_NotEnoughData;
+//        i |= (b7 & 0x7F) << lshift;
+//        lshift += 7;
+//        goto Lab1;
+//    } else {
+//        if (idx == 5 && b7 > 15)
+//            return ConvertState_Overflow;
+//        else
+//            i |= b7 << lshift;
+//    }
+//    out = i;
+//    bin.Offset() += idx;
+//    return ConvertState_Success;
+//}
+
+
+
+
+void main()
+{
+
+
+
+
+
+    //Binary bin;
+    //DateTime dt;
+    //vector<DateTime> dts;
+    //for( int i = 0; i < 20; ++i )
+    //{
+    //    dt.update();
+    //    dts.push_back( dt );
+    //    this_thread::sleep_for( chrono::milliseconds( 100 ) );
+    //}
+    //bin << dts;
+    //dts.clear();
+    //bin >> dts;
+    //cout << bin.dump() << endl;
+    //for( auto o : dts ) cout << toString( o ) << endl;
+
+    //cout << toString( dt ) << endl;
+
+    //bin << dt;
+    //cout << toString( bin ) << endl;
+    //bin >> dt;
+    //cout << toString( dt ) << endl;
+
+    //cout << sizeof( bitset<256> ) << endl;
+    //cout << bitset<128>( 1LL ) << endl;
+
+    //Binary buf1, buf2;
+
+    //BinaryHelper::set732( buf1._buf, buf1._len, 0xff );
+    //BinaryHelper::set764( buf2._buf, buf2._len, 0xff );
+    //BinaryHelper::set732( buf1._buf, buf1._len, 0xffff );
+    //BinaryHelper::set764( buf2._buf, buf2._len, 0xffff );
+    //BinaryHelper::set732( buf1._buf, buf1._len, 0xffffff );
+    //BinaryHelper::set764( buf2._buf, buf2._len, 0xffffff );
+    //BinaryHelper::set732( buf1._buf, buf1._len, 0xffffffff );
+    //BinaryHelper::set764( buf2._buf, buf2._len, 0xffffffff );
+    //BinaryHelper::set764( buf2._buf, buf2._len, 0xffffffffffffffff );
+    //BinaryHelper::set764( buf2._buf, buf2._len, 72624976668147841LL ); 
+    //BinaryHelper::set764( buf2._buf, buf2._len, (1LL<<0) | (1LL<<7) | (1LL<<14) | (1LL<<21) | (1LL<<28) | (1LL<<35) | (1LL<<42) | (1LL<<49) | (1LL<<56) ); 
+    //cout << buf1.dump() << endl;
+    //cout << buf2.dump() << endl;
+
+
+ /*   Binary buf;
+    for( int i = 0; i < 10000000; ++i ) { buf.e( 9 ); BinaryHelper::set764( buf._buf, buf._len, i ); };
+    Stopwatch sw;
+
+    for( int j = 0; j < 10; ++j )
+    {
+
+        buf.c();
+        sw.Start();
+
+        for( int i = 0; i < 90000000; ++i ) { buf.e( 5 ); BinaryHelper::set732( buf._buf, buf._len, i ); };
+
+        sw.StopAndShow();
+        buf.c();
+        sw.Start();
+
+        for( int i = 0; i < 90000000; ++i ) { buf.e( 9 ); BinaryHelper::set764( buf._buf, buf._len, i ); };
+
+        sw.StopAndShow();
+
+    }*/
+
+
+    //cout << 32 - clz( 0x7 ) << endl;
+
+    //Binary buf( 1 );
+    //vector<vector<string>> ves;
+    //vector<string> ve;
+    //ve.push_back( "asdf" );
+    //ve.push_back( "qwer" );
+    //ve.push_back( "zxcv" );
+    //ves.push_back( ve );
+    //ves.push_back( ve );
+    //ves.push_back( ve );
+    //buf << ves;
+    //cout << buf.dump() << endl;
+
+    //ves.clear();
+    //buf >> ves;
+    //for( auto ss : ves )
+    //{
+    //    for( auto s : ss )
+    //    {
+    //        cout << s << " ";
+    //    }
+    //    cout << endl;
+    //}
+
+    //Binary buf( 1 );
+    //cout << buf.dump() << endl;
+    //cout << "_buf = " << (int64)buf._buf << endl;
+
+    //vector<byte> ve;
+    //ve.push_back( 255 );
+    //ve.push_back( 255 );
+    //ve.push_back( 255 );
+
+    //buf << ve;
+    //ve.clear();
+    //buf >> ve;
+
+    //for( auto i : ve ) cout << toString( i ) << " ";
+    //cout << endl;
+
+    //cout << buf.dump() << endl;
+    //cout << "_buf = " << (int64)buf._buf << endl;
+
+
+
+    //buf << (uint8)0x11 << Foo( 123456 );
+    //cout << buf.dump() << endl;
+
+    //byte b;
+    //Foo f( 0 );
+    //buf >> b;
+    //buf >> f;
+    //cout << toString( "%0, %1", b, f._val ) << endl;
+
+    //buf.c();
+
+
+
+    //auto m = MyHelper::connect( "dh-win2012vm", 3306, "test", "sa", "11111" );
+    //string s = "insert into ats values (); insert into ats values (); insert into ats values ()";
+    //auto r = MyHelper::execute( m, s.c_str(), (int)s.size() );
+    //cout << r->dump() << endl;
+    //MyHelper::close( m );
+
+    //string s = "select * from ats";
+    //Stopwatch sw;
+    //sw.Start();
+    //auto res = MyHelper::execute( s );
+    //sw.StopAndShow();
+    //cout << res->at( 0 )->_rowCount << endl;
+    //system( "pause" );
+    //MyHelper::freeExecuteResult( res );
+
+    //#define SELECT  " select "
+    //#define FROM    " from "  
+    //#define WHERE   " where " 
+    //#define AND     " and "   
+
+    //DB::Query q;
+
+    //q =   SELECT, T1::C1, T2::C1
+    //    , FROM  , Ts::T1, Ts::T2
+    //    , WHERE , T1::C3, " = ", Pt::Numeric
+    //    , AND   , T2::C3, " = ", Pt::QuoteString;
+
+    //q[ 0 ] = 123;
+    //q[ 1 ] = "asdf";
+
+    //cout << q.toString() << endl;
+
+
+    //DbTable dt;
+    //dt.addColumn( "c1", DbTypes::Int32 );
+    //dt.addColumn( "c2", DbTypes::String, true );    // 可空
+    //dt.addColumn( "c3", DbTypes::Double );
+
+    //auto row = dt.newRow();
+    //row[ 0 ] = 123;
+    //row[ 1 ].setNull();
+    //row[ 2 ] = 1.234;
+
+    //cout << toString( "id = %0, name = %1, asdf = %2", row[ 0 ], row[ 1 ], row[ 2 ] ) << endl;
+
+    //string null = "[null]";
+    //int id = row[ 0 ];
+    //string name = row[ 1 ].isNull() ? null : row[ 1 ];
+    //double asdf = row[ 2 ];
+
+    system( "pause" );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Precompile.h"
+
+//string f1( char const * s )
+//{
+//    string rtv;
+//    rtv.assign( s );
+//    for( int i = 0; i < 99; ++i ) rtv.append( "erer" );
+//    return rtv;
+//}
+//
+//StringBuilder f2( char const * s )
+//{
+//    StringBuilder rtv( (int)strlen(s) );
+//    rtv.w( s );
+//    for( int i = 0; i < 99; ++i ) rtv.w( "erer" );
+//    return rtv;
+//}
+//
+//stringstream f3( char const * s )
+//{
+//    stringstream rtv;
+//    rtv << s;
+//    for( int i = 0; i < 99; ++i ) rtv << "erer";
+//    return rtv;
+//}
+
+void main()
+{
+    //Stopwatch sw;
+    //string s;
+    //for( int i = 0; i < 999999; ++i ) s = f1( "asdf" ); // 预热
+
+    //sw.Start();
+    //for( int i = 0; i < 999999; ++i ) s = f1( "asdf" );
+    //sw.StopAndShow();
+    //cout << s << endl;
+
+    //StringBuilder sb;
+    //sw.Start();
+    //for( int i = 0; i < 999999; ++i ) sb = f2( "asdf" );
+    //sw.StopAndShow();
+    //cout << sb.toString() << endl;
+
+    //stringstream ss;
+    //sw.Start();
+    //for( int i = 0; i < 999999; ++i ) ss = f3( "asdf" );
+    //sw.StopAndShow();
+    //ss >> s;
+    //cout << s << endl;
+
+
+    //auto m = MyHelper::connect( "dh-nb", 3306, "test", "sa", "11111" );
+    //string s = "insert into ats values (); insert into ats values (); insert into ats values ()";
+    //auto r = MyHelper::execute( m, s.c_str(), (int)s.size() );
+    //cout << r->dump() << endl;
+    //MyHelper::close( m );
+
+    //StringBuilder sb;
+    //sb << 'a' << (int8)'a';
+
+    //cout << sb.toString() << endl;
+
+    // todo: StringBuilder 增加 wsp, wse 函数， ( write sql parameter: 单引号 + 转义, write sql escape: 转义 )
+    // 主要针对 string, binary 类型
+
+
+    system( "pause" );
+}
+
+
+    String s = "asdf";
+    s << '-' << (int8)123 << (uint8)234 << ' ';
+    s.wh( uint16(65535) );
+    cout << s.c_str() << endl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #include "Precompile.h"
+
+string f1a( char const * s )
+{
+    string rtv;
+    rtv.assign( s );
+    for( int i = 0; i < 99; ++i ) rtv.append( "erer" );
+    return rtv;
+}
+
+string f1b( char const * s )
+{
+    string rtv;
+    rtv.assign( s );
+    char buf[ 32 ];
+    for( int i = 0; i < 99; ++i )
+    {
+        itoa( i, buf, 10 );
+        rtv.append( buf );
+    }
+    return rtv;
+}
+
+string f1c( char const * s )
+{
+    string rtv;
+    rtv.assign( s );
+    char buf[ 32 ];
+    for( int i = 0; i < 99; ++i )
+    {
+        sprintf( buf, "%g", float(i) + 0.5f );
+        rtv.append( buf );
+    }
+    return rtv;
+}
+
+//
+//stringstream f2a( char const * s )
+//{
+//    stringstream rtv;
+//    rtv << s;
+//    for( int i = 0; i < 99; ++i ) rtv << "erer";
+//    return rtv;
+//}
+//
+//stringstream f2b( char const * s )
+//{
+//    stringstream rtv;
+//    rtv << s;
+//    for( int i = 0; i < 99; ++i ) rtv << i;
+//    return rtv;
+//}
+
+String f3a( char const * s )
+{
+    String rtv;
+    rtv.w( s );
+    for( int i = 0; i < 99; ++i ) rtv.w( "erer" );
+    return rtv;
+}
+
+String f3b( char const * s )
+{
+    String rtv;
+    rtv.w( s );
+    for( int i = 0; i < 99; ++i ) rtv << i;
+    return rtv;
+}
+
+String f3c( char const * s )
+{
+    String rtv;
+    rtv.w( s );
+    for( int i = 0; i < 99; ++i ) rtv << ( float(i) + 0.5f );
+    return rtv;
+}
+
+
+
+void main()
+{
+    Stopwatch sw;
+
+    cout << sizeof(string) << " " << sizeof(String) << endl;
+
+    //string ss;
+    //char buf[32];
+    //sw.Start();
+    //for( int i = 0; i < 9999999; ++i )
+    //{
+    //    ss.append( itoa( i, buf, 10 ) );
+    //}
+    //sw.StopAndShow();
+    //cout << ss.size() << endl;
+
+    //String s;
+    //sw.Start();
+    //for( int i = 0; i < 9999999; ++i )
+    //{
+    //    s << i;
+    //}
+    //sw.StopAndShow();
+    //cout << s._len << endl;
+
+
+    //char buf[ 32 ];
+    //sw.Start();
+    //for( int i = 0; i < 999999; ++i )
+    //    sprintf( buf, "%.17g", float(i) + 0.5f );
+    //sw.StopAndShow();
+    //cout << buf << endl;
+    //sw.Start();
+    //for( int i = 0; i < 999999; ++i )
+    //    buf[ Converts::toString( buf, float(i) + 0.5f, 17, 10 ) ] = 0;
+    //sw.StopAndShow();
+    //cout << buf << endl;
+
+
+
+
+
+
+
+    string s;
+    for( int i = 0; i < 999; ++i ) s = f1c( "asdf" ); // 预热
+
+    sw.Start();
+    for( int i = 0; i < 999999; ++i ) s = f1a( "asdf" );
+    sw.StopAndShow();
+    cout << s << endl;
+
+    sw.Start();
+    for( int i = 0; i < 999999; ++i ) s = f1b( "asdf" );
+    sw.StopAndShow();
+    cout << s << endl;
+
+    sw.Start();
+    for( int i = 0; i < 9999; ++i ) s = f1c( "asdf" );
+    sw.StopAndShow();
+    cout << s << endl;
+
+    //stringstream ss;
+    //sw.Start();
+    //for( int i = 0; i < 999999; ++i ) ss = f2a( "asdf" );
+    //sw.StopAndShow();
+    //ss >> s;
+    //cout << s << endl;
+
+    //sw.Start();
+    //for( int i = 0; i < 999999; ++i ) ss = f2b( "asdf" );
+    //sw.StopAndShow();
+    //ss >> s;
+    //cout << s << endl;
+
+    String S;
+    sw.Start();
+    for( int i = 0; i < 999999; ++i ) S = f3a( "asdf" );
+    sw.StopAndShow();
+    cout << S.c_str() << endl;
+
+    sw.Start();
+    for( int i = 0; i < 999999; ++i ) S = f3b( "asdf" );
+    sw.StopAndShow();
+    cout << S.c_str() << endl;
+
+    sw.Start();
+    for( int i = 0; i < 9999; ++i ) S = f3c( "asdf" );
+    sw.StopAndShow();
+    cout << S.c_str() << endl;
+
+
+    system( "pause" );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Precompile.h"
+#pragma region w, wl
+template<typename T>
+void w( T const & v )
+{
+    static String s;
+    s.clear();
+    s << v;
+    cout << s.c_str();
+}
+void w( string const & s )
+{
+    cout << s;
+}
+void wl()
+{
+    cout << endl;
+}
+template<typename T>
+void wl( T const & v )
+{
+    w( v );
+    wl();
+}
+#pragma endregion
+void main()
+{
+    Stopwatch sw;
+
+    List<bool> list1;
+    sw.Start();
+    for( int i = 0; i < 99; ++i )
+    {
+        list1.clear();
+        for( int j = 0; j < 999999; ++j )
+        {
+            list1.add( j % 2 > 0 );
+        }
+    }
+    sw.StopAndShow();
+    wl( list1._len );
+    wl( list1[ 0 ] );
+
+    vector<bool> list2;
+    sw.Start();
+    for( int i = 0; i < 99; ++i )
+    {
+        list2.clear();
+        for( int j = 0; j < 999999; ++j )
+        {
+            list2.push_back( j % 2 > 0 );
+        }
+    }
+    sw.StopAndShow();
+    wl( list2.size() );
+    wl( (bool)list2[ 0 ] );
+
+    List<String> ss1;
+    sw.Start();
+    for( int i = 0; i < list1._len; ++i )
+    {
+        ss1.add( list1[ i ] ? "true" : "false" );
+    }
+    sw.StopAndShow();
+    wl( ss1[ 0 ] );
+
+    vector<string> ss2;
+    sw.Start();
+    for( auto n : list2 )
+    {
+        ss2.push_back( n ? "true" : "false" );
+    }
+    sw.StopAndShow();
+    wl( ss2[ 0 ] );
+
+    String s1;
+    s1.ensure( ss1._len * 5 );
+    sw.Start();
+    for( int i = 0; i < ss1._len; ++i )
+    {
+        s1 += ss1[ i ];
+    }
+    sw.StopAndShow();
+    wl( s1._len );
+
+    string s2;
+    s2.reserve( ss2.size() * 5);
+    sw.Start();
+    for( auto n : ss2 )
+    {
+        s2 += n;
+    }
+    sw.StopAndShow();
+    wl( s2.size() );
+
+
+    //List<bool> a( 8 );
+    //a << true << false << true << false << true << false << true << false;
+    //a << true;          // 将导致 a 扩容
+    //wl( a._bufSize );    // 应输出 2
+    //for( auto b : a )
+    //{
+    //    w( b );
+    //    w( ", " );
+    //}
+    //wl();
+
+    system( "pause" );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Precompile.h"
+#pragma region w, wl
+template<typename T>
+void w( T const & v )
+{
+    static String s;
+    s.clear();
+    s << v;
+    cout << s.c_str();
+}
+void w( string const & s )
+{
+    cout << s;
+}
+void wl()
+{
+    cout << endl;
+}
+template<typename T>
+void wl( T const & v )
+{
+    w( v );
+    wl();
+}
+#pragma endregion
+void main()
+{
+    Stopwatch sw;
+
+    List<bool> list1;
+    sw.Start();
+    for( int i = 0; i < 99; ++i )
+    {
+        //list1.clear();
+        for( int j = 0; j < 999999; ++j )
+        {
+            list1.add( j % 2 > 0 );
+        }
+    }
+    sw.StopAndShow();
+    wl( list1._len );
+    wl( list1[ 0 ] );
+
+    vector<bool> list2;
+    sw.Start();
+    for( int i = 0; i < 99; ++i )
+    {
+        //list2.clear();
+        for( int j = 0; j < 999999; ++j )
+        {
+            list2.push_back( j % 2 > 0 );
+        }
+    }
+    sw.StopAndShow();
+    wl( list2.size() );
+    wl( (bool)list2[ 0 ] );
+
+    //List<bool> a( 8 );
+    //a << true << false << true << false;
+    //wl( a );
+
+    //List<String> ss;
+    //ss << "asdf" << "qwer" << "123";
+    //wl( ss );
+
+    //system( "pause" );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    List<int> list;
+    list.ensure( 10000000 );
+    sw.start();
+    for( int i = 0; i < 10000000; ++i ) list.add( i );
+    sw.stopAndShow();
+    int count = 0;
+    sw.start();
+    for( int j = 0; j < 100; ++j )
+        for( int i = 0; i < 10000000; ++i )
+            if( list[ i ] == i ) ++count;
+    sw.stopAndShow();
+    wl( count );
+
+
+
+
+
+
+
+
+
+
+
+
+    Stopwatch sw;
+    Bytes b1( 40000000 );
+    Binary b2( 40000000 );
+    sw.start();
+    for( int i = 0; i < 10000000; ++i ) b1 << i;
+    sw.stopAndShow();
+    wl( b1._len );
+    sw.start();
+    for( int i = 0; i < 10000000; ++i ) b2 << i;
+    sw.stopAndShow();
+    wl( b2._len );
+    int n1, n2;
+    for( int i = 0; i < 10000000; ++i )
+    {
+        b1 >> n1;
+        b2 >> n2;
+        if( n1 != n2 ) wl( "error" );
+    }
+    wl( b1._readIdx );
+    wl( b2._readIdx );
+    b1._readIdx = 0;
+    b2._readIdx = 0;
+    sw.start();
+    for( int i = 0; i < 10000000; ++i ) b2 << i;
+    sw.stopAndShow();
+    system( "pause" );
+    return 0;
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+    DbTable dt;
+    dt.addColumn( "c1", DbTypes::Int32 );
+    dt.addColumn( "c2", DbTypes::String, true );    // 可空
+    dt.addColumn( "c3", DbTypes::Double );
+    dt.addColumn( "c4", DbTypes::Boolean, true );
+
+    auto row = dt.newRow();
+    row[ 0 ] = 123;
+    row[ 1 ].setNull();
+    row[ 2 ] = 1.234;
+    row[ 3 ] = true;
+
+    row = dt.newRow();
+    row[ "c1" ] = 234;
+    row[ "c2" ] = "qwerzxcv";
+    row[ "c3" ] = 2.3456;
+    row[ "c4" ].setNull();// = false;
+
+    row = dt.newRow();
+    row[ "c1" ] = -43;
+    row[ "c2" ] = "!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+    row[ "c3" ] = (double)4321;
+    row[ "c4" ] = false;
+
+    Bytes b;
+    b << dt;
+
+    wl( b );
+
+    DbTable dt2;
+    auto rtv = b >> dt2;
+    if( rtv == ReadStatus::Success ) wl( "ok" );
+
+    wl( dt );
+    wl( dt2 );
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Precompile.h"
+
+template <typename T >
+void Foo( T v )
+{
+    if( std::is_enum<T>::value )
+    {
+        wl( "enum" );
+    }
+    else if( std::is_integral<T>::value )
+    {
+        wl( "c++ inline type" );
+    }
+    else if( std::is_pointer<T>::value )
+    {
+        wl( "pointer" );
+    }
+    else
+    {
+        wl( "T" );
+    }
+}
+
+enum class Eee { A,B,C };
+
+class Bar{};
+
+int main()
+{
+    Eee e = Eee::B;
+    int i = 123;
+    auto s = "asdf";
+    Bar b;
+
+    Foo( e );
+    Foo( i );
+    Foo( s );
+    Foo( b );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Precompile.h"
+
+using namespace std;
+typedef unique_ptr<string> RefString;
+inline RefString func() { return RefString(new string("asdf")); }
+
+int main()
+{
+    auto s = func();
+    cout << s->c_str() << endl;
+    cout << sizeof(s) << endl;
+    cout << *(string**)&s << endl;
+    cout << s.get() << endl;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Precompile.h"
+struct Query
+{
+    String _sql;
+    Query operator&&( Query & exp ) const;
+};
+Query Query::operator&&( Query & exp ) const
+{
+    Query e;
+    e._sql << "( " << _sql << " ) and ( " << exp._sql << " )";
+    return e;
+}
+namespace DI
+{
+    struct T;
+    struct C
+    {
+        String const _cn;
+        T const & _t;
+        C( T const & t, String const & name );
+        template<typename T>
+        Query operator<( T const & v ) const;
+    };
+    struct T
+    {
+        String const _tn;
+        T();
+        C const c1;
+        C const c2;
+    };
+    T::T()
+        : _tn( "t1" )
+        , c1( *this, "c1" )
+        , c2( *this, "c2" )
+    {
+    }
+    C::C( T const & t, String const & name )
+        : _cn( name )
+        , _t( t )
+    {
+    }
+    template<typename T>
+    Query C::operator<( T const & v ) const
+    {
+        Query exp;
+        exp._sql << "`" << _t._tn << "`.`" << _cn << "` < " << v;
+        return exp;
+    }
+    T t;
+}
+namespace OO
+{
+    struct T
+    {
+        int c1;
+        int c2;
+
+        // 根据主键查询并填充指定字段
+        int select( DI::C const & ... )
+        {
+            return 0;
+        }
+        // 根据主键查询并填充指定字段
+        static int select( List<T> & rows, Query const & q, DI::C const & ... )
+        {
+            return 0;
+        }
+    };
+}
+using namespace DI;
+
+template<typename T>
+void func( T && ... )
+{
+
+}
+int main()
+{
+    int n = 123;
+    func( 123, "asdf", n );
+
+    OO::T o;
+    o.c1 = 123;
+    o.select( t.c2 );
+
+    List<OO::T> rows;
+    OO::T::select( rows, t.c2 < 123, t.c1, t.c2 );
+
+    //auto s = ( t.c1 < 123 ) && ( t.c2 < 123 );
+    //std::cout << s._sql.c_str() << std::endl;
+}
