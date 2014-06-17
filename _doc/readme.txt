@@ -11,5 +11,8 @@ https://github.com/zsummer/zsummerX
 lua集成选用的组件
 http://luajit.org/
 
+群友贴的听说是一个讲 IOCP 不错的文
+http://blog.csdn.net/piggyxp/article/details/6922277
 
-
+RakNet 手册( 源代码 eval 邮件下载 )
+http://www.jenkinssoftware.com/raknet/manual/Doxygen/
