@@ -1,4 +1,4 @@
-各种文档, 代码 "素材"
+﻿各种文档, 代码 "素材"
 
 一些关键字:
 
@@ -32,3 +32,12 @@ enet.bespin.org/
 
 UDT
 http://udt.sourceforge.net/
+
+// 一些鬼佬的 net 选择探讨
+http://www.reddit.com/r/gamedev/comments/1al3w0/poco_vs_raknet_vs_ice_choosing_a_network_library/
+
+
+google FlatBuffers 相关：看上去配合共享内存，对本机进程间通信极有帮助
+http://google.github.io/flatbuffers/index.html
+
+
