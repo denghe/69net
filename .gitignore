@@ -2,3 +2,5 @@
 *.suo
 *.user
 Debug
+Release
+ipch
