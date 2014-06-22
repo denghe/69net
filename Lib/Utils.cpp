@@ -3,6 +3,31 @@
 
 namespace Utils
 {
+    int getToStringMaxLength( uint8   v ) { return 3; }
+    int getToStringMaxLength( uint16  v ) { return 5; }
+    int getToStringMaxLength( uint    v ) { return 10; }
+    int getToStringMaxLength( uint64  v ) { return 19; }
+    int getToStringMaxLength( int8    v ) { return 4; }
+    int getToStringMaxLength( int16   v ) { return 6; }
+    int getToStringMaxLength( int     v ) { return 11; }
+    int getToStringMaxLength( int64   v ) { return 20; }
+    int getToStringMaxLength( double  v ) { return 20; }
+    int getToStringMaxLength( float   v ) { return 20; }
+    int getToStringMaxLength( bool    v ) { return 5; }
+    int getToStringMaxLength( std::string const & v ) { return v.size(); }
+    int getToStringMaxLength( char const* v ) { return strlen( v ); }
+
+
+
+
+
+
+
+
+
+
+
+
 
     // 取 整数 转换后的 string 长度系列
     // todo: if ( n < ...... ) 这种代码理论上讲可以优化成树形, 类似折半查找从而减少 if 次数
@@ -236,6 +261,13 @@ namespace Utils
         return (int)v.size();
     }
 
+    int toString( char * dstBuf, char const* v )
+    {
+        auto len = strlen( v );
+        memcpy( dstBuf, v, len );
+        return len;
+    }
+
 
 
 
@@ -435,8 +467,6 @@ namespace Utils
     void fromString( double  & dstVar, char const * s ) { return fromStringCore( s, dstVar ); }
     void fromString( float   & dstVar, char const * s ) { return fromStringCore( s, dstVar ); }
     void fromString( bool    & dstVar, char const * s ) { return fromStringCore( s, dstVar ); }
-
-
 
 
 }
