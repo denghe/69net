@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lib", "Lib\Lib.vcxproj", "{DE461C3C-C0F6-418C-B16A-DA6F31D97CCF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_Lib", "Test_Lib\Test_Lib.vcxproj", "{DE461C3C-C0F6-418C-B16A-DA6F31D97CCF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Agent", "Agent\Agent.vcxproj", "{E0901B24-6303-4F39-B0D1-14A98343C6A2}"
 EndProject
