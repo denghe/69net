@@ -10,6 +10,8 @@ namespace Test_CSharpConsole
     {
         static void Main( string[] args )
         {
+            var s = "asdf";
+            //s[0] = '1';
         }
     }
 }
