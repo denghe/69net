@@ -4,14 +4,33 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_Lib", "Test_Lib\Test_Lib.vcxproj", "{DE461C3C-C0F6-418C-B16A-DA6F31D97CCF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B} = {1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Agent", "Agent\Agent.vcxproj", "{E0901B24-6303-4F39-B0D1-14A98343C6A2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B} = {1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lobby", "Lobby\Lobby.vcxproj", "{492448C7-BF5C-433B-B0C5-7C3987BEEB87}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B} = {1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Proxy", "Proxy\Proxy.vcxproj", "{2318132A-A968-4E48-84F1-6BE5CEE9A16F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B} = {1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Switch", "Switch\Switch.vcxproj", "{6940B40F-5217-4464-8A88-31D0A6423518}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B} = {1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lib", "Lib\Lib.vcxproj", "{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_CSharpConsole", "Test_CSharpConsole\Test_CSharpConsole.csproj", "{DC4A3BBC-4861-4831-BE7F-48A6B7263E34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +80,22 @@ Global
 		{6940B40F-5217-4464-8A88-31D0A6423518}.Release|Win32.Build.0 = Release|Win32
 		{6940B40F-5217-4464-8A88-31D0A6423518}.Release|x64.ActiveCfg = Release|x64
 		{6940B40F-5217-4464-8A88-31D0A6423518}.Release|x64.Build.0 = Release|x64
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}.Debug|Win32.Build.0 = Debug|Win32
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}.Debug|x64.ActiveCfg = Debug|x64
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}.Debug|x64.Build.0 = Debug|x64
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}.Release|Win32.ActiveCfg = Release|Win32
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}.Release|Win32.Build.0 = Release|Win32
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}.Release|x64.ActiveCfg = Release|x64
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}.Release|x64.Build.0 = Release|x64
+		{DC4A3BBC-4861-4831-BE7F-48A6B7263E34}.Debug|Win32.ActiveCfg = Debug|x86
+		{DC4A3BBC-4861-4831-BE7F-48A6B7263E34}.Debug|Win32.Build.0 = Debug|x86
+		{DC4A3BBC-4861-4831-BE7F-48A6B7263E34}.Debug|x64.ActiveCfg = Debug|x64
+		{DC4A3BBC-4861-4831-BE7F-48A6B7263E34}.Debug|x64.Build.0 = Debug|x64
+		{DC4A3BBC-4861-4831-BE7F-48A6B7263E34}.Release|Win32.ActiveCfg = Release|x86
+		{DC4A3BBC-4861-4831-BE7F-48A6B7263E34}.Release|Win32.Build.0 = Release|x86
+		{DC4A3BBC-4861-4831-BE7F-48A6B7263E34}.Release|x64.ActiveCfg = Release|x64
+		{DC4A3BBC-4861-4831-BE7F-48A6B7263E34}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

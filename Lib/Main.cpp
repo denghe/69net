@@ -1,4 +1,4 @@
-#include "../Lib/All.h"
+#include "All.h"
 using namespace std;
 using Utils::fill;
 using Utils::fillHex;
