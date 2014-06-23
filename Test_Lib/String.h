@@ -12,14 +12,26 @@ class String
 {
 public:
     explicit String( int capacity = 64 );
+
     template<size_t len>
     String( char( &buffer )[ len ] );
+    template<size_t len>
+    String( char const( &buffer )[ len ] );
     String( char* buffer, int len );
-    // todo: more copy constructor
-    // todo: more operator
+
+    //String( char const * s ); // 如果启用这句，将无法识别 栈数组
+
+    String( String const & other );
+    String( String && other );
+
+    String& operator=( String const & other );
+    String& operator=( String && other );
+
     ~String();
     void reserve( int len );
     char* c_str();
+
+    // todo: more operator like ==, > < ...
 
     template<typename ...TS>
     void append( TS const & ...vs );

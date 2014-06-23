@@ -11,10 +11,16 @@ int main()
     s.append( " sizeof(String) = ", sizeof( String ), ", lalalalala", 123.456, " ", 6666 );
     check();
     std::cout << s.c_str() << "\n";
+
+    String ss = "asdf";
+    ss.append( "**********************************************************************************************" );
+    ss.append( "**********************************************************************************************" );
+    String s2 = std::move(ss);
+    std::cout << s2.c_str() << "\n";
     return 0;
 }
 
-// todo: 实现个类似 map 的东西，当 key 传 String 时，转为 HashString 对象
+// todo: 实现个类似 map 的东西，当 key 传 String 时，存 Hash
 
 /*
 
