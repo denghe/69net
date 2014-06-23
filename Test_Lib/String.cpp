@@ -30,10 +30,8 @@ void String::reserve( int len )
     if( len <= _bufferLength ) return;
     auto newBuffer = new char[ len ];
     memcpy( newBuffer, _buffer, _dataLength );
-    if( _disposer )
-        ( this->*_disposer )( );
-    else
-        _disposer = &String::disposeNewBuffer;
+    if( _disposer ) ( this->*_disposer )( );
+    _disposer = &String::disposeNewBuffer;
     _buffer = newBuffer;
     _bufferLength = len;
 }
