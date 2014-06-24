@@ -37,6 +37,10 @@ public:
     void append( TS const & ...vs );
 
     // todo: more util funcs
+    void toLower();
+    void toUpper();
+    void toLowerUnsafe();
+    void toUpperUnsafe();
 
 private:
     typedef void ( String::*Disposer )( );
