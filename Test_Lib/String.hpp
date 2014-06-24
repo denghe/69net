@@ -1,8 +1,8 @@
-template<size_t len>
-String::String( char( &buffer )[ len ] )
+template<size_t bufLen>
+String::String( char( &buffer )[ bufLen ], int dataLen )
     : _buffer( buffer )
-    , _bufferLength( len )
-    , _dataLength( 0 )
+    , _bufferLength( bufLen )
+    , _dataLength( dataLen )
     , _disposer( nullptr )
 {
 }
@@ -11,7 +11,7 @@ template<size_t len>
 String::String( char const( &s )[ len ] )
     : String( len )
 {
-    memcpy( _buffer, s, len );
+    memcpy( _buffer, s, len );  // len ÖµÒÑº¬ \0
     _dataLength = len - 1;
 }
 

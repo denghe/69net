@@ -11,15 +11,14 @@
 class String
 {
 public:
+    String( char* buffer, int bufLen, int dataLen = 0 );
     explicit String( int capacity = 64 );
 
-    template<size_t len>
-    String( char( &buffer )[ len ] );
+    template<size_t bufLen>
+    String( char( &buffer )[ bufLen ], int dataLen = 0 );
+
     template<size_t len>
     String( char const( &buffer )[ len ] );
-    String( char* buffer, int len );
-
-    //String( char const * s ); // 如果启用这句，将无法识别 栈数组
 
     String( String const & other );
     String( String && other );
