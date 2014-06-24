@@ -14,8 +14,8 @@ namespace Utils
     int getToStringMaxLength( double  v ) { return 20; }
     int getToStringMaxLength( float   v ) { return 20; }
     int getToStringMaxLength( bool    v ) { return 5; }
-    int getToStringMaxLength( std::string const & v ) { return v.size(); }
-    int getToStringMaxLength( char const* v ) { return strlen( v ); }
+    int getToStringMaxLength( std::string const & v ) { return (int)v.size(); }
+    int getToStringMaxLength( char const* v ) { return (int)strlen( v ); }
 
 
 
@@ -265,7 +265,7 @@ namespace Utils
     {
         auto len = strlen( v );
         memcpy( dstBuf, v, len );
-        return len;
+        return (int)len;
     }
 
 
