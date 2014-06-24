@@ -18,7 +18,7 @@ String::String( int capacity /*= 64 */ )
     else _bufferLength = (int)Utils::round2n( capacity );
     _disposer = &String::disposeNewBuffer;
     _dataLength = 0;
-    std::cout << "String::String( int capacity ) new char[ " << _bufferLength << " ]\n";
+    //std::cout << "String::String( int capacity ) new char[ " << _bufferLength << " ]\n";
     _buffer = new char[ _bufferLength ];
 }
 
@@ -49,12 +49,18 @@ void String::reserve( int len )
     if( len < _bufferLength ) return;
     len = (int)Utils::round2n( len + 1 );
     _bufferLength = len;
-    std::cout << "void String::reserve( int len ) new char[ " << len << " ]\n";
+    //std::cout << "void String::reserve( int len ) new char[ " << len << " ]\n";
     auto newBuffer = new char[ len ];
     memcpy( newBuffer, _buffer, _dataLength + 1 );
     if( _disposer ) ( this->*_disposer )( );
     _disposer = &String::disposeNewBuffer;
     _buffer = newBuffer;
+}
+
+void String::clear()
+{
+    _dataLength = 0;
+    _buffer[ 0 ] = '\0';
 }
 
 char* String::c_str()
@@ -71,7 +77,7 @@ void String::disposePoolBuffer()
 
 void String::disposeNewBuffer()
 {
-    std::cout << "delete[] _buffer\n";
+    //std::cout << "delete[] _buffer\n";
     delete[] _buffer;
 }
 
@@ -87,7 +93,7 @@ String& String::operator=( String const & other )
         if( _disposer ) ( this->*_disposer )( );
         _bufferLength = (int)Utils::round2n( other._dataLength + 1 );
         _disposer = &String::disposeNewBuffer;
-        std::cout << "String& String::operator=( String const & other ) new char[ " << _bufferLength << " ]\n";
+        //std::cout << "String& String::operator=( String const & other ) new char[ " << _bufferLength << " ]\n";
         _buffer = new char[ _bufferLength ];
         _dataLength = other._dataLength;
         memcpy( _buffer, other._buffer, other._dataLength + 1 );

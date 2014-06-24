@@ -167,9 +167,9 @@ namespace Utils
     INLINE int clz( size_t x )
     {
 #ifdef __X64
-        return 63 - (int)__lzcnt64( x );
+        return (int)__lzcnt64( x );
 #else
-        return 31 - __lzcnt( x );
+        return __lzcnt( x );
 #endif
     }
 #else

@@ -28,6 +28,7 @@ public:
 
     ~String();
     void reserve( int len );
+    void clear();
     char* c_str();
 
     // todo: more operator like ==, > < ...
