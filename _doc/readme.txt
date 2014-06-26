@@ -43,3 +43,8 @@ http://google.github.io/flatbuffers/index.html
 
 可以在线编译运行 c++ 代码的网页！！
 http://coliru.stacked-crooked.com/
+
+
+一篇讲 2d 物理 engine 的好文，有助于 server 端集成
+http://blog.csdn.net/tspangle/article/details/23735369
+
