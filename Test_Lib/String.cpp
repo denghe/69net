@@ -21,17 +21,28 @@ String::String( char* buf, int bufLen, int dataLen )
 {
 }
 
-String::String( char const* s )
+String::String( char const* s, bool isRef )
 {
-    _buf = (char*)s;
     _dataLen = (int)strlen( s );
-    _bufLen = _dataLen + 1;
-    _disposer = nullptr;
+    if( isRef )
+    {
+        _buf = (char*)s;
+        _bufLen = _dataLen + 1;
+        _disposer = nullptr;
+    }
+    else
+    {
+        _bufLen = (int)Utils::round2n( _dataLen + 1 );
+        _buf = new char[ _bufLen ];
+        memcpy( _buf, s, _dataLen );
+        _disposer = &String::disposeNewBuffer;
+    }
 }
 
 String::String( String const & other )
-    : String( other._buf, (int)Utils::round2n( other._dataLen ), other._dataLen )
+    : String( other._dataLen + 1 )
 {
+    memcpy( _buf, other._buf, other._dataLen + 1 );
 }
 
 String::String( String && other )

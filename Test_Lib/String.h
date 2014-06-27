@@ -2,8 +2,9 @@
 #define _STRING_H__
 
 // 支持传入定长 buffer 作为容器
+// 支持引用 char const * const 字串
 // todo:
-// 各种复制构造啥的
+// 各种运算符重载
 // 支持各种常用 字串 处理
 // 支持 2进制 拼接 行为
 // Utils 要补 2进制 拼接相关函数
@@ -17,10 +18,10 @@ public:
     // ref
     String( char* buf, int bufLen, int dataLen = 0 );
 
-    // copy  // todo
-    String( char const* s );
+    // copy / ref
+    String( char const* s, bool isRef = false );
 
-    // copy  // todo
+    // copy
     String( String const & other );
 
     // move
@@ -32,7 +33,7 @@ public:
     // move
     String& operator=( String && other );
 
-    // del buf
+    // dispose buf
     ~String();
 
     // prepare memory
@@ -48,8 +49,7 @@ public:
     void toLower();
     void toUpper();
 
-    // faster than toLower() 4x speed
-    // careful these chars：   @[\]^_` 
+    // 4x faster than toLower(). will be damage these chars：   @[\]^_` 
     void toLowerUnsafe();
 
     template<typename ...TS>
