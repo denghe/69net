@@ -11,36 +11,52 @@
 class String
 {
 public:
-    String( char* buffer, int bufLen, int dataLen = 0 );
+    // prepare
     explicit String( int capacity = 64 );
 
-    template<size_t bufLen>
-    String( char( &buffer )[ bufLen ], int dataLen = 0 );
+    // ref
+    String( char* buf, int bufLen, int dataLen = 0 );
 
-    template<size_t len>
-    String( char const( &buffer )[ len ] );
+    // copy  // todo
+    String( char const* s );
 
+    // copy  // todo
     String( String const & other );
+
+    // move
     String( String && other );
 
+    // copy
     String& operator=( String const & other );
+
+    // move
     String& operator=( String && other );
 
+    // del buf
     ~String();
+
+    // prepare memory
     void reserve( int len );
+
+    // set _dataLen to 0
     void clear();
+
+    // return _buf
     char* c_str();
 
-    // todo: more operator like ==, > < ...
+
+    void toLower();
+    void toUpper();
+
+    // faster than toLower() 4x speed
+    // careful these chars£º   @[\]^_` 
+    void toLowerUnsafe();
 
     template<typename ...TS>
     void append( TS const & ...vs );
 
     // todo: more util funcs
-    void toLower();
-    void toUpper();
-    void toLowerUnsafe();
-    void toUpperUnsafe();
+    // todo: more operator like ==, > < ...
 
 private:
     typedef void ( String::*Disposer )( );
@@ -48,9 +64,9 @@ private:
     void disposePoolBuffer();
     void disposeNewBuffer();
 
-    char*       _buffer;
-    int         _bufferLength;
-    int         _dataLength;
+    char*       _buf;
+    int         _bufLen;
+    int         _dataLen;
     Disposer    _disposer;
 };
 

@@ -1,41 +1,48 @@
 #include "../Lib/All.h"
 #include "String.h"
 
+// todo: 做个池？ 注意替换每个第 1 次 new 的位置
+// todo: if capacity <= pool.item.buf.size 则从 pool 分配, _disposer 指向 disposePoolBuffer
+String::String( int capacity /*= 64 */ )
+{
+    if( capacity <= 64 ) _bufLen = 64;
+    else _bufLen = (int)Utils::round2n( capacity );
+    _disposer = &String::disposeNewBuffer;
+    _dataLen = 0;
+    //std::cout << "String::String( int capacity ) new char[ " << _bufLen << " ]\n";
+    _buf = new char[ _bufLen ];
+}
 
-String::String( char* buffer, int bufLen, int dataLen )
-    : _buffer( buffer )
-    , _bufferLength( bufLen )
-    , _dataLength( dataLen )
+String::String( char* buf, int bufLen, int dataLen )
+    : _buf( buf )
+    , _bufLen( bufLen )
+    , _dataLen( dataLen )
     , _disposer( nullptr )
 {
 }
 
-// todo: 做个池？ 注意替换每个第 1 次 new 的位置
-// todo: if capacity <= pool.item.buffer.size 则从 pool 分配, _disposer 指向 disposePoolBuffer
-String::String( int capacity /*= 64 */ )
+String::String( char const* s )
 {
-    if( capacity <= 64 ) _bufferLength = 64;
-    else _bufferLength = (int)Utils::round2n( capacity );
-    _disposer = &String::disposeNewBuffer;
-    _dataLength = 0;
-    //std::cout << "String::String( int capacity ) new char[ " << _bufferLength << " ]\n";
-    _buffer = new char[ _bufferLength ];
+    _buf = (char*)s;
+    _dataLen = (int)strlen( s );
+    _bufLen = _dataLen + 1;
+    _disposer = nullptr;
 }
 
 String::String( String const & other )
-    : String( other._buffer, (int)Utils::round2n( other._dataLength ), other._dataLength )
+    : String( other._buf, (int)Utils::round2n( other._dataLen ), other._dataLen )
 {
 }
 
 String::String( String && other )
-    : _buffer( other._buffer )
-    , _bufferLength( other._bufferLength )
-    , _dataLength( other._dataLength )
+    : _buf( other._buf )
+    , _bufLen( other._bufLen )
+    , _dataLen( other._dataLen )
     , _disposer( other._disposer )
 {
-    //other._buffer = nullptr;  // 这三行不必要
-    //other._bufferLength = 0;
-    //other._dataLength = 0;
+    //other._buf = nullptr;  // 这三行不必要
+    //other._bufLen = 0;
+    //other._dataLen = 0;
     other._disposer = nullptr;
 }
 
@@ -46,27 +53,28 @@ String::~String()
 
 void String::reserve( int len )
 {
-    if( len < _bufferLength ) return;
+    if( len < _bufLen ) return;
     len = (int)Utils::round2n( len + 1 );
-    _bufferLength = len;
+    _bufLen = len;
     //std::cout << "void String::reserve( int len ) new char[ " << len << " ]\n";
     auto newBuffer = new char[ len ];
-    memcpy( newBuffer, _buffer, _dataLength + 1 );
+    memcpy( newBuffer, _buf, _dataLen + 1 );
     if( _disposer ) ( this->*_disposer )( );
     _disposer = &String::disposeNewBuffer;
-    _buffer = newBuffer;
+    _buf = newBuffer;
 }
 
 void String::clear()
 {
-    _dataLength = 0;
-    _buffer[ 0 ] = '\0';
+    _dataLen = 0;
+    _buf[ 0 ] = '\0';
 }
 
 char* String::c_str()
 {
-    return _buffer;
+    return _buf;
 }
+
 
 void String::disposeIncommingBuffer() {}
 
@@ -77,26 +85,28 @@ void String::disposePoolBuffer()
 
 void String::disposeNewBuffer()
 {
-    //std::cout << "delete[] _buffer\n";
-    delete[] _buffer;
+    //std::cout << "delete[] _buf\n";
+    delete[] _buf;
 }
+
+
 
 String& String::operator=( String const & other )
 {
-    if( _bufferLength > other._dataLength )
+    if( _bufLen > other._dataLen )
     {
-        _dataLength = other._dataLength;
-        memcpy( _buffer, other._buffer, other._dataLength + 1 );
+        _dataLen = other._dataLen;
+        memcpy( _buf, other._buf, other._dataLen + 1 );
     }
     else
     {
         if( _disposer ) ( this->*_disposer )( );
-        _bufferLength = (int)Utils::round2n( other._dataLength + 1 );
+        _bufLen = (int)Utils::round2n( other._dataLen + 1 );
         _disposer = &String::disposeNewBuffer;
-        //std::cout << "String& String::operator=( String const & other ) new char[ " << _bufferLength << " ]\n";
-        _buffer = new char[ _bufferLength ];
-        _dataLength = other._dataLength;
-        memcpy( _buffer, other._buffer, other._dataLength + 1 );
+        //std::cout << "String& String::operator=( String const & other ) new char[ " << _bufLen << " ]\n";
+        _buf = new char[ _bufLen ];
+        _dataLen = other._dataLen;
+        memcpy( _buf, other._buf, other._dataLen + 1 );
     }
     return *this;
 }
@@ -104,13 +114,13 @@ String& String::operator=( String const & other )
 String& String::operator=( String && other )
 {
     if( _disposer ) ( this->*_disposer )( );
-    _buffer = other._buffer;
-    _bufferLength = other._bufferLength;
-    _dataLength = other._dataLength;
+    _buf = other._buf;
+    _bufLen = other._bufLen;
+    _dataLen = other._dataLen;
     _disposer = other._disposer;
-    //other._buffer = nullptr;  // 这三行不必要
-    //other._bufferLength = 0;
-    //other._dataLength = 0;
+    //other._buf = nullptr;  // 这三行不必要
+    //other._bufLen = 0;
+    //other._dataLen = 0;
     other._disposer = nullptr;
     return *this;
 }
@@ -127,20 +137,27 @@ static byte const upperchars[] =
 
 void String::toLower()
 {
-    for( size_t i = 0; i < _dataLength; ++i ) _buffer[ i ] = lowerchars[ _buffer[ i ] ];
+    for( size_t i = 0; i < _dataLen; ++i ) _buf[ i ] = lowerchars[ _buf[ i ] ];
 }
 
 void String::toUpper()
 {
-    for( size_t i = 0; i < _dataLength; ++i ) _buffer[ i ] = upperchars[ _buffer[ i ] ];
+    for( size_t i = 0; i < _dataLen; ++i ) _buf[ i ] = upperchars[ _buf[ i ] ];
 }
 
 void String::toLowerUnsafe()
 {
-    // todo
-}
-
-void String::toUpperUnsafe()
-{
-    // todo
+    auto i = 0;
+    auto mod = (size_t)_buf & ( sizeof( size_t ) - 1 );
+    if( mod )
+    {
+        if( mod > _dataLen ) mod = _dataLen;
+        for( ; i < mod; ++i ) _buf[ i ] |= 0x20;
+    }
+    mod = ( _dataLen - mod ) % sizeof( size_t );
+    for( ; i < _dataLen - mod; i += sizeof( size_t ) )
+    {
+        *(size_t*)( _buf + i ) |= size_t( 0x2020202020202020 );
+    }
+    for( ; i < _dataLen; ++i ) _buf[ i ] |= 0x20;
 }
