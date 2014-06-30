@@ -3,20 +3,25 @@
 
 #include "Stack.h"
 
+template<int itemSize, int pageSize>
 class Pool
 {
 public:
-    Pool( int pageSize, int capacity );
+    Pool( int capacity = 1 );
     ~Pool();
     Pool( Pool const& other ) = delete;
     Pool& operator=( Pool const& other ) = delete;
     void* alloc();
     void free( void* p );
     void clear();
-    void collect();
-    void reserve();
+    void reserve();     // new 1 page
+    int pageCount();
+    int itemCount();
 private:
-    Stack<void*> _pointers;
-}
+    Stack<void*> _items;
+    Stack<void*> _pages;
+};
+
+#include "Pool.hpp"
 
 #endif

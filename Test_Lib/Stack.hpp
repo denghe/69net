@@ -58,7 +58,8 @@ void Stack<T>::clear()
 template<typename T>
 T& Stack<T>::top()
 {
-    return ( (T*)_buf )[ _dataCount ];
+    assert( _dataCount > 0 );
+    return ( (T*)_buf )[ _dataCount - 1 ];
 }
 
 template<typename T>
@@ -75,4 +76,10 @@ void Stack<T>::pop()
 {
     assert( _dataCount > 0 );
     ( (T*)_buf )[ --_dataCount ].~T();
+}
+
+template<typename T>
+T& Stack<T>::operator[]( int idx ) const
+{
+    return ( (T*)_buf )[ idx ];
 }

@@ -17,10 +17,12 @@ public:
     void reserve( int capacity );
     T* items() const;
     int count() const;
+    T& operator[]( int idx ) const;
 private:
     char*       _buf;
     int         _bufLen;
     int         _dataCount;
+    // todo: disposer, incoming buffer
 };
 
 #include "Stack.hpp"

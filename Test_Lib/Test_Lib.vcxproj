@@ -20,10 +20,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Pool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pool.h" />
+    <ClInclude Include="Pool.hpp" />
     <ClInclude Include="Stack.h" />
     <ClInclude Include="Stack.hpp" />
   </ItemGroup>
