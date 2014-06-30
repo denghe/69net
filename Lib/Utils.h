@@ -1,6 +1,7 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
+class String;
 
 namespace Utils
 {
@@ -16,8 +17,9 @@ namespace Utils
     int getToStringMaxLength( double  v );
     int getToStringMaxLength( float   v );
     int getToStringMaxLength( bool    v );
-    int getToStringMaxLength( std::string const & v );
     int getToStringMaxLength( char const* v );
+    int getToStringMaxLength( String const & v );
+    int getToStringMaxLength( std::string const & v );
 
     template<typename T>
     void getFillMaxLengthCore( int & len, T const & v )
@@ -59,8 +61,9 @@ namespace Utils
     int toString( char * dstBuf, bool    v );
 
     // 一些便于写模板的补充
-    int toString( char * dstBuf, std::string const & v );
     int toString( char * dstBuf, char const* v );
+    int toString( char * dstBuf, std::string const & v );
+    int toString( char * dstBuf, String const & v );
     //template<int len>
     //int toString( char * dstBuf, char const ( &v )[ len ] )
     //{
@@ -161,15 +164,21 @@ namespace Utils
 
     // calc lead zero （数 2 进制数高位头上的 0 的个数
 #ifdef __GNUC__
-#define clz(x) __builtin_clz(x)
+    INLINE int clz( size_t x )
+    {
+        return __builtin_clz( x );
+    }
 #elif defined(__IA) && defined(_MSC_VER)
 #include <intrin.h>
     INLINE int clz( size_t x )
     {
+        unsigned long r = 0;
 #ifdef __X64
-        return (int)__lzcnt64( x );
+        _BitScanReverse64( &r, x );
+        return 63 - r;
 #else
-        return __lzcnt( x );
+        _BitScanReverse( &r, x );
+        return 31 - r;
 #endif
     }
 #else
@@ -201,6 +210,7 @@ namespace Utils
 
 
     // 返回刚好大于 x 的 2^n 的值用于内存分配
+    // 如果 x 本身 2^n 系 则返回原值
     INLINE size_t round2n( size_t len )
     {
 #ifdef __X64

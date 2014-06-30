@@ -1,43 +1,114 @@
-#include "../Lib/All.h"
-#include "String.h"
-
+#include "Lib/All.h"
 int main()
 {
-    //{
-    //    char buf[ 16 ];
-    //    String s( buf );
-    //    auto check = [ &] { std::cout << ( s.c_str() == buf ? "true" : "false" ) << "\n"; };
-    //    s.append( "asdf!" );
-    //    check();
-    //    s.append( " sizeof(String) = ", sizeof( String ), ", lalalalala", 123.456, " ", 6666 );
-    //    check();
-    //    std::cout << s.c_str() << "\n";
-
-    //    String ss = "asdf";
-    //    ss.append( "**********************************************************************************************" );
-    //    ss.append( "**********************************************************************************************" );
-    //    String s2 = std::move( ss );
-    //    std::cout << s2.c_str() << "\n";
-    //}
-
-    //char buf1[ 3 ];
-    //char buf[] = "ADSGGGEFEFEFEFEFEEEEE";
-    //String s( buf );
-    //s.toLowerUnsafe();
-
-
-    String s1( "asdfqwer" );        // ref
-    char buf[ 16 ];
-    String s2( buf );               // ref
-    s2 = s1;
-    String s3 = buf;                // copy
-
+    //String s = "a";
+    //std::cout << s.getHash() << std::endl;
+    //s = "as";
+    //std::cout << s.getHash() << std::endl;
+    //s = "asd";
+    //std::cout << s.getHash() << std::endl;
+    //s = "asdf";
+    //std::cout << s.getHash() << std::endl;
+    //s = "asdfq";
+    //std::cout << s.getHash() << std::endl;
+    //s = "asdfqw";
+    //std::cout << s.getHash() << std::endl;
+    //s = "asdfqwe";
+    //std::cout << s.getHash() << std::endl;
+    //s = "asdfqwer";
+    //std::cout << s.getHash() << std::endl;
+    String s = "asdfqwerasdfqwerasdfqwerasdfqwer";
+    int hash = 0;
+    Stopwatch sw;
+    for( int i = 0; i < 99999999; ++i )
+    {
+        hash = s.getHash_CS();
+    }
+    std::cout << hash << ", " << sw.elapsed() << std::endl;
+    sw.reset();
+    for( int i = 0; i < 99999999; ++i )
+    {
+        hash = s.getHash_Java();
+    }
+    std::cout << hash << ", " << sw.elapsed() << std::endl;
+    sw.reset();
+    for( int i = 0; i < 99999999; ++i )
+    {
+        hash = s.getHash_Lua();
+    }
+    std::cout << hash << ", " << sw.elapsed() << std::endl;
     return 0;
 }
 
 
 
 
+//#include "Lib/All.h"
+//
+//int main()
+//{
+//String s1( "ASDFQWERASDFQWERASDFQWER", true );          // ref str
+//char buf[ 16 ];
+//String s2( buf, _countof( buf ), 0 );   // ref buf
+//s2 = s1;                                // copy str to buf
+//String s3 = buf;                        // copy from buf
+
+
+//Stopwatch sw;
+//{
+//    std::string s;
+//    for( int i = 0; i < 99999999; ++i )
+//    {
+//        s = s1;
+//        for( int i = 0; i < s.size(); i++ )
+//            s[ i ] = tolower( s[ i ] );
+//    }
+//    std::cout << s << std::endl;
+//}
+//std::cout << sw.elapsed() << std::endl;
+
+//sw.reset();
+//{
+//    String s;
+//    for( int i = 0; i < 99999999; ++i )
+//    {
+//        s = s1;
+//        //s.toLower();
+//        s.toLowerUnsafe();
+//    }
+//    std::cout << s << std::endl;
+//}
+//std::cout << sw.elapsed() << std::endl;
+
+////int equal = 0, less = 0, larger = 0;
+////Stopwatch sw;
+////{
+////    std::string s1 = "aaaasdfasdf", s2 = s1, s3 = "aaaasdfasda";
+////    for( int i = 0; i < 99999999; ++i )
+////    {
+////        if( s1 == s2 ) ++equal;
+////        if( s3 < s1 ) ++less;
+////        if( s1 > s3 ) ++larger;
+////    }
+////}
+////std::cout << equal << " " << less << " " << larger << " " << sw.elapsed() << std::endl;
+
+////equal = 0, less = 0, larger = 0;
+////sw.reset();
+////{
+////    String s1 = "aaaasdfasdf", s2 = s1, s3 = "aaaasdfasda";
+////    for( int i = 0; i < 99999999; ++i )
+////    {
+////        if( s1 == s2 ) ++equal;
+////        if( s3 < s1 ) ++less;
+////        if( s1 > s3 ) ++larger;
+////    }
+////}
+////std::cout << equal << " " << less << " " << larger << " " << sw.elapsed() << std::endl;
+
+//    return 0;
+//}
+//
 
 
 
@@ -45,54 +116,50 @@ int main()
 
 
 
+
+
+//
 //#include "Lib/All.h"
 //#include "String.h"
 //using namespace std;
 //int main()
 //{
-//    char s[] = "ASsdERdsdfs";
-//    _strlwr_s( s );
-//    cout << s << endl;
-//
-//    //auto 定长串 = "asdfqer";
-//    ////auto 宽定长串 = L"啊喔额啊喔额";
-//    //Stopwatch sw;
-//    //sw.reset();
-//    //{
-//    //    String s;
-//    //    s.reserve( 128 );
-//    //    for( int i = 0; i < 9999999; ++i )
-//    //    {
-//    //        s.clear();  // 手手清，不测内存分配
-//    //        s.append( 定长串, i, 定长串, i, 定长串, i, 定长串, i ); //, 宽定长串
-//    //    }
-//    //    std::cout << s.c_str()[ 0 ] << std::endl;
-//    //}
-//    //std::cout << sw.elapsed() << std::endl;
-//    //sw.reset();
-//    //{
-//    //    std::string s;
-//    //    //std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-//    //    s.reserve( 128 );
-//    //    for( int i = 0; i < 9999999; ++i )
-//    //    {
-//    //        s.clear();  // 手手清，不测内存分配
-//    //        s.append( 定长串 );
-//    //        s.append( std::to_string( i ) );
-//    //        s.append( 定长串 );
-//    //        s.append( std::to_string( i ) );
-//    //        s.append( 定长串 );
-//    //        s.append( std::to_string( i ) );
-//    //        s.append( 定长串 );
-//    //        s.append( std::to_string( i ) );
-//    //        //s.append( conv.to_bytes( 宽定长串 ) );
-//    //    }
-//    //    std::cout << s.c_str()[ 0 ] << std::endl;
-//    //}
-//    //std::cout << sw.elapsed() << std::endl;
+//    auto 定长串 = "asdfqer";
+//    Stopwatch sw;
+//    sw.reset();
+//    {
+//        String s;
+//        //s.reserve( 128 );
+//        for( int i = 0; i < 9999999; ++i )
+//        {
+//            //s.clear();  // 手手清，不测内存分配
+//            s.append( 定长串, i, 定长串, i, 定长串, i, 定长串, i );
+//        }
+//        std::cout << s.c_str()[ 0 ] << s.size() << std::endl;
+//    }
+//    std::cout << sw.elapsed() << std::endl;
+//    sw.reset();
+//    {
+//        std::string s;
+//        //s.reserve( 128 );
+//        for( int i = 0; i < 9999999; ++i )
+//        {
+//            //s.clear();  // 手手清，不测内存分配
+//            s.append( 定长串 );
+//            s.append( std::to_string( i ) );
+//            s.append( 定长串 );
+//            s.append( std::to_string( i ) );
+//            s.append( 定长串 );
+//            s.append( std::to_string( i ) );
+//            s.append( 定长串 );
+//            s.append( std::to_string( i ) );
+//        }
+//        std::cout << s.c_str()[ 0 ] << s.size() << std::endl;
+//    }
+//    std::cout << sw.elapsed() << std::endl;
 //    return 0;
 //}
-//
+
 
 
 

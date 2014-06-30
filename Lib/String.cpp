@@ -1,16 +1,18 @@
-#include "../Lib/All.h"
-#include "String.h"
+#include "All.h"
 
 // todo: 做个池？ 注意替换每个第 1 次 new 的位置
 // todo: if capacity <= pool.item.buf.size 则从 pool 分配, _disposer 指向 disposePoolBuffer
 String::String( int capacity /*= 64 */ )
 {
-    if( capacity <= 64 ) _bufLen = 64;
+    if( capacity < 64 ) _bufLen = 64;
     else _bufLen = (int)Utils::round2n( capacity );
     _disposer = &String::disposeNewBuffer;
     _dataLen = 0;
-    //std::cout << "String::String( int capacity ) new char[ " << _bufLen << " ]\n";
+#if __DEBUG_STRING
+    std::cout << "String::String( int capacity ) new char[ " << _bufLen << " ]\n";
+#endif
     _buf = new char[ _bufLen ];
+    _buf[ 0 ] = '\0';
 }
 
 String::String( char* buf, int bufLen, int dataLen )
@@ -34,7 +36,7 @@ String::String( char const* s, bool isRef )
     {
         _bufLen = (int)Utils::round2n( _dataLen + 1 );
         _buf = new char[ _bufLen ];
-        memcpy( _buf, s, _dataLen );
+        memcpy( _buf, s, _dataLen + 1 );
         _disposer = &String::disposeNewBuffer;
     }
 }
@@ -43,6 +45,7 @@ String::String( String const & other )
     : String( other._dataLen + 1 )
 {
     memcpy( _buf, other._buf, other._dataLen + 1 );
+    _dataLen = other._dataLen;
 }
 
 String::String( String && other )
@@ -64,15 +67,34 @@ String::~String()
 
 void String::reserve( int len )
 {
-    if( len < _bufLen ) return;
+    if( len + 1 <= _bufLen ) return;
     len = (int)Utils::round2n( len + 1 );
     _bufLen = len;
-    //std::cout << "void String::reserve( int len ) new char[ " << len << " ]\n";
+#if __DEBUG_STRING
+    std::cout << "void String::reserve( int len ) new char[ " << len << " ]\n";
+#endif
     auto newBuffer = new char[ len ];
     memcpy( newBuffer, _buf, _dataLen + 1 );
     if( _disposer ) ( this->*_disposer )( );
     _disposer = &String::disposeNewBuffer;
     _buf = newBuffer;
+}
+
+void String::resize( int len, bool fillZero /*= true */ )
+{
+    if( len == _dataLen ) return;
+    else if( len < _dataLen )
+    {
+        _dataLen = len;
+        _buf[ len ] = '\0';
+    }
+    else
+    {
+        reserve( len );
+        if( fillZero )
+            memset( _buf + _dataLen, 0, len - _dataLen + 1 );
+        _dataLen = len;
+    }
 }
 
 void String::clear()
@@ -81,11 +103,39 @@ void String::clear()
     _buf[ 0 ] = '\0';
 }
 
+char* String::c_str() const
+{
+    return _buf;
+}
 char* String::c_str()
 {
     return _buf;
 }
 
+String::operator char*( ) const
+{
+    return _buf;
+}
+String::operator char*( )
+{
+    return _buf;
+}
+
+char& String::operator[]( int idx ) const
+{
+    assert( idx >= 0 && idx < _dataLen );
+    return _buf[ idx ];
+}
+char& String::operator[]( int idx )
+{
+    assert( idx >= 0 && idx < _dataLen );
+    return _buf[ idx ];
+}
+
+int String::size() const
+{
+    return _dataLen;
+}
 
 void String::disposeIncommingBuffer() {}
 
@@ -96,7 +146,9 @@ void String::disposePoolBuffer()
 
 void String::disposeNewBuffer()
 {
-    //std::cout << "delete[] _buf\n";
+#if __DEBUG_STRING
+    std::cout << "delete[] _buf\n";
+#endif
     delete[] _buf;
 }
 
@@ -104,6 +156,7 @@ void String::disposeNewBuffer()
 
 String& String::operator=( String const & other )
 {
+    if( this == &other ) return *this;
     if( _bufLen > other._dataLen )
     {
         _dataLen = other._dataLen;
@@ -114,7 +167,9 @@ String& String::operator=( String const & other )
         if( _disposer ) ( this->*_disposer )( );
         _bufLen = (int)Utils::round2n( other._dataLen + 1 );
         _disposer = &String::disposeNewBuffer;
-        //std::cout << "String& String::operator=( String const & other ) new char[ " << _bufLen << " ]\n";
+#if __DEBUG_STRING
+        std::cout << "String& String::operator=( String const & other ) new char[ " << _bufLen << " ]\n";
+#endif
         _buf = new char[ _bufLen ];
         _dataLen = other._dataLen;
         memcpy( _buf, other._buf, other._dataLen + 1 );
@@ -148,18 +203,18 @@ static byte const upperchars[] =
 
 void String::toLower()
 {
-    for( size_t i = 0; i < _dataLen; ++i ) _buf[ i ] = lowerchars[ _buf[ i ] ];
+    for( int i = 0; i < _dataLen; ++i ) _buf[ i ] = lowerchars[ _buf[ i ] ];
 }
 
 void String::toUpper()
 {
-    for( size_t i = 0; i < _dataLen; ++i ) _buf[ i ] = upperchars[ _buf[ i ] ];
+    for( int i = 0; i < _dataLen; ++i ) _buf[ i ] = upperchars[ _buf[ i ] ];
 }
 
 void String::toLowerUnsafe()
 {
-    auto i = 0;
-    auto mod = (size_t)_buf & ( sizeof( size_t ) - 1 );
+    int i = 0;
+    int mod = (size_t)_buf & ( sizeof( size_t ) - 1 );
     if( mod )
     {
         if( mod > _dataLen ) mod = _dataLen;
@@ -171,4 +226,84 @@ void String::toLowerUnsafe()
         *(size_t*)( _buf + i ) |= size_t( 0x2020202020202020 );
     }
     for( ; i < _dataLen; ++i ) _buf[ i ] |= 0x20;
+}
+
+bool String::operator==( String const& other )
+{
+    if( this == &other ) return true;
+    if( _dataLen != other._dataLen ) return false;
+    return memcmp( _buf, other._buf, _dataLen ) == 0;
+}
+
+bool String::operator!=( String const& other )
+{
+    return !operator==( other );
+}
+
+bool String::operator<( String const& other )
+{
+    if( this == &other ) return false;
+    auto r = memcmp( _buf, other._buf, std::min( _dataLen, other._dataLen ) );
+    if( r == 0 ) return _dataLen < other._dataLen;
+    return r < 0;
+}
+
+bool String::operator>( String const& other )
+{
+    if( this == &other ) return false;
+    auto r = memcmp( _buf, other._buf, std::min( _dataLen, other._dataLen ) );
+    if( r == 0 ) return _dataLen > other._dataLen;
+    return r > 0;
+}
+
+bool String::operator<=( String const& other )
+{
+    return !operator>( other );
+}
+
+bool String::operator>=( String const& other )
+{
+    return !operator<( other );
+}
+
+
+int String::getHash_CS()
+{
+    assert( (size_t)_buf % 4 == 0 );
+    if( !_dataLen ) return 0;
+    int n1 = 0x15051505, n2 = n1, mod = _dataLen % 8, i = 0;
+    int64 n = 0;
+    auto np = (int*)&n;
+    for( ; i < _dataLen - mod; i += 8 )
+    {
+        n = *(uint64*)( _buf + i );
+        n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ np[ 1 ];
+        n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ np[ 0 ];
+    }
+    if( mod )
+    {
+        n = *(uint64*)( _buf + i );
+        n &= size_t( 0xFFFFFFFFFFFFFFFF ) >> ( ( 8 - mod ) * 8 );
+        n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ np[ 1 ];
+        if( np[ 0 ] ) n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ np[ 0 ];
+    }
+    return n1 + n2 * 0x5d588b65;
+}
+
+int String::getHash_Java()
+{
+    if( !_dataLen ) return 0;
+    int hash = 0;
+    for( int i = 0; i < _dataLen; i++ )
+        hash = ( 31 * hash ) + _buf[ i ];
+    return hash;
+}
+
+int String::getHash_Lua()
+{
+    if( !_dataLen ) return 0;
+    uint seed = 131, hash = 0;
+    for( int i = 0; i < _dataLen; ++i )
+        hash = hash * seed + (uint8)_buf[ i ];
+    return (int)hash;
 }

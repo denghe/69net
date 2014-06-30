@@ -210,7 +210,7 @@ typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
 
 #include "Stopwatch.h"
 #include "Utils.h"
-
+#include "String.h"
 
 
 

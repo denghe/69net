@@ -4,11 +4,14 @@
     <ClInclude Include="All.h" />
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="String.h" />
+    <ClInclude Include="String.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
     <ClCompile Include="ftoa.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="String.cpp" />
   </ItemGroup>
 </Project>

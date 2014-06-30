@@ -16,6 +16,7 @@ namespace Utils
     int getToStringMaxLength( bool    v ) { return 5; }
     int getToStringMaxLength( std::string const & v ) { return (int)v.size(); }
     int getToStringMaxLength( char const* v ) { return (int)strlen( v ); }
+    int getToStringMaxLength( String const & v ) { return v.size(); }
 
 
 
@@ -254,6 +255,12 @@ namespace Utils
     int toString( char * dstBuf, float   v, int maxlen, int precision, bool delEndZeros ) { return toStringCore( v, dstBuf, maxlen, precision, delEndZeros ); }
     int toString( char * dstBuf, bool    v ) { return toStringCore( v, dstBuf ); }
 
+    int toString( char * dstBuf, char const* v )
+    {
+        auto len = strlen( v );
+        memcpy( dstBuf, v, len );
+        return (int)len;
+    }
 
     int toString( char * dstBuf, std::string const & v )
     {
@@ -261,11 +268,10 @@ namespace Utils
         return (int)v.size();
     }
 
-    int toString( char * dstBuf, char const* v )
+    int toString( char * dstBuf, String const & v )
     {
-        auto len = strlen( v );
-        memcpy( dstBuf, v, len );
-        return (int)len;
+        memcpy( dstBuf, v.c_str(), v.size() );
+        return v.size();
     }
 
 
