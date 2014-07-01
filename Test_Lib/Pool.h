@@ -1,7 +1,7 @@
 #ifndef _POOL_H__
 #define _POOL_H__
 
-#include "Stack.h"
+#include "List.h"
 
 template<int itemSize, int pageSize>
 class Pool
@@ -14,12 +14,13 @@ public:
     void* alloc();
     void free( void* p );
     void clear();
+    void collect();
     void reserve();     // new 1 page
     int pageCount();
     int itemCount();
 private:
-    Stack<void*> _items;
-    Stack<void*> _pages;
+    List<void*> _items;
+    List<void*> _pages;
 };
 
 #include "Pool.hpp"

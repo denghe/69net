@@ -20,12 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="List.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pool.h" />
     <ClInclude Include="Pool.hpp" />
-    <ClInclude Include="Stack.h" />
-    <ClInclude Include="Stack.hpp" />
+    <ClInclude Include="List.h" />
+    <ClInclude Include="List.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />

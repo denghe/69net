@@ -132,6 +132,18 @@ char& String::operator[]( int idx )
     return _buf[ idx ];
 }
 
+char String::at( int idx ) const
+{
+    assert( idx >= 0 && idx < _dataLen );
+    return _buf[ idx ];
+}
+
+void String::set( int idx, char v )
+{
+    assert( idx >= 0 && idx < _dataLen );
+    _buf[ idx ] = v;
+}
+
 int String::size() const
 {
     return _dataLen;

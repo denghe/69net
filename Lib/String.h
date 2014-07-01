@@ -28,6 +28,9 @@ public:
     operator char*( );                                          // return _buf
     char& operator[] ( int idx ) const;                         // return _buf[ idx ]
     char& operator[] ( int idx );                               // return _buf[ idx ]
+    char at( int idx ) const;
+    void set( int idx, char v );
+
 
     bool operator==( String const& other );
     bool operator!=( String const& other );

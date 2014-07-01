@@ -223,6 +223,15 @@ namespace Utils
         return rtv << 1;
     }
 
+    // 算一个数是 2 的几次方
+    INLINE size_t calc2n( size_t len )
+    {
+#ifdef __X64
+        return 63 - clz( len );
+#else
+        return 31 - clz( len );
+#endif
+    }
 
 
 

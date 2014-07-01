@@ -163,6 +163,7 @@ ALIGN2/4/8/16/32
 #include <queue>
 #include <map>
 #include <set>
+#include <stack>
 #include <unordered_set>
 #include <unordered_map>
 #include <bitset>
