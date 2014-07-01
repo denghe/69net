@@ -21,7 +21,8 @@ public:
 private:
     char*       _buf;
     int         _bufLen;
-    int         _dataCount;
+    int         _itemCount;
+    int         _maxItemCount;  // reserve refresh
     // todo: disposer, incoming buffer
 };
 

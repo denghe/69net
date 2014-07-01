@@ -1,11 +1,12 @@
 template<typename T>
-Stack<T>::Stack( int capacity /*= 32 */ )
+Stack<T>::Stack( int capacity )
 {
     auto size = capacity * sizeof( T );
     if( size < 64 ) _bufLen = 64;
     else _bufLen = (int)Utils::round2n( size );
-    _dataCount = 0;
+    _itemCount = 0;
     _buf = new char[ _bufLen ];
+    _maxItemCount = _bufLen / sizeof( T );
 }
 
 
@@ -19,7 +20,7 @@ Stack<T>::~Stack()
 template<typename T>
 int Stack<T>::count() const
 {
-    return _dataCount;
+    return _itemCount;
 }
 
 template<typename T>
@@ -35,14 +36,16 @@ void Stack<T>::reserve( int capacity )
     if( size <= _bufLen ) return;
     size = Utils::round2n( size );
     _bufLen = (int)size;
+    _maxItemCount = _bufLen / sizeof( T );
     auto newBuffer = new char[ size ];
     if( Utils::isValueType<T>() )
     {
-        memcpy( newBuffer, _buf, _dataCount * sizeof( T ) );
+        memcpy( newBuffer, _buf, _itemCount * sizeof( T ) );
     }
     else
     {
-        for( int i = 0; i < _dataCount; ++i ) new ( (T*)newBuffer + i ) T( std::move( ( (T*)_buf )[ i ] ) );
+        for( int i = 0; i < _itemCount; ++i )
+            new ( (T*)newBuffer + i ) T( std::move( ( (T*)_buf )[ i ] ) );
     }
     delete[] _buf;
     _buf = newBuffer;
@@ -51,31 +54,34 @@ void Stack<T>::reserve( int capacity )
 template<typename T>
 void Stack<T>::clear()
 {
-    for( int i = 0; i < _dataCount; ++i ) ( (T*)_buf )[ i ].~T();
-    _dataCount = 0;
+    for( int i = 0; i < _itemCount; ++i )
+        ( (T*)_buf )[ i ].~T();
+    _itemCount = 0;
 }
 
 template<typename T>
 T& Stack<T>::top()
 {
-    assert( _dataCount > 0 );
-    return ( (T*)_buf )[ _dataCount - 1 ];
+    assert( _itemCount > 0 );
+    return ( (T*)_buf )[ _itemCount - 1 ];
 }
 
 template<typename T>
 template<typename VT>
 void Stack<T>::push( VT&& v )
 {
-    int size = ( _dataCount + 1 ) * sizeof( T );
-    if( size > _bufLen ) reserve( size );
-    new ( (T*)_buf + _dataCount++ ) T( std::forward<VT>( v ) );
+    if( _itemCount == _maxItemCount ) reserve( _itemCount + 1 );
+    if( Utils::isValueType<T>() )
+        ( (T*)_buf )[ _itemCount++ ] = v;
+    else
+        new ( (T*)_buf + _itemCount++ ) T( std::forward<VT>( v ) );
 }
 
 template<typename T>
 void Stack<T>::pop()
 {
-    assert( _dataCount > 0 );
-    ( (T*)_buf )[ --_dataCount ].~T();
+    assert( _itemCount > 0 );
+    ( (T*)_buf )[ --_itemCount ].~T();
 }
 
 template<typename T>
