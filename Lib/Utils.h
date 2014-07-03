@@ -244,6 +244,16 @@ namespace Utils
         return std::is_enum<T>::value || std::is_integral<T>::value || std::is_pointer<T>::value || std::is_floating_point<T>::value;
     }
 
+
+
+
+
+
+
+    int getHash_CS( byte const* buf, int len );         // only support align of 4 _buf on some ARM cpu and unaligned buffer
+    int getHash_Lua( byte const* buf, int len );
+    int getHash_Java( byte const* buf, int len );
+
 }
 
 

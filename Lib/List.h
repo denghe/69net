@@ -17,9 +17,11 @@ public:
     T& top();
     void clear();
     void reserve( int capacity );
+    void resize( int capacity, bool init = true );
     T* data() const;
     int size() const;
     int byteSize() const;
+    int byteMaxSize() const;
     T const & operator[]( int idx ) const;
     T& operator[]( int idx );
     T const & at( int idx ) const;
@@ -49,9 +51,11 @@ public:
     bool top() const;
     void clear();
     void reserve( int capacity );
+    // todo void resize( int capacity, bool init = true );
     char* data() const;
     int size() const;
     int byteSize() const;
+    // todo int byteMaxSize() const;
     bool operator[]( int idx ) const;
     bool at( int idx ) const;
     void set( int idx, bool v );

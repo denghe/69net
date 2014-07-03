@@ -475,4 +475,54 @@ namespace Utils
     void fromString( bool    & dstVar, char const * s ) { return fromStringCore( s, dstVar ); }
 
 
+
+
+
+
+
+
+
+
+
+
+    int getHash_CS( byte const* buf, int len )
+    {
+        assert( (size_t)buf % 4 == 0 );
+        if( !len ) return 0;
+        int n1 = 0x15051505, n2 = n1, mod = len % 8, i = 0;
+        int64 n = 0;
+        auto np = (int*)&n;
+        for( ; i < len - mod; i += 8 )
+        {
+            n = *(uint64*)( buf + i );
+            n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ np[ 1 ];
+            n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ np[ 0 ];
+        }
+        if( mod )
+        {
+            n = *(uint64*)( buf + i );
+            n &= size_t( 0xFFFFFFFFFFFFFFFF ) >> ( ( 8 - mod ) * 8 );
+            n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ np[ 1 ];
+            if( np[ 0 ] ) n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ np[ 0 ];
+        }
+        return n1 + n2 * 0x5d588b65;
+    }
+
+    int getHash_Java( byte const* buf, int len )
+    {
+        if( !len ) return 0;
+        int hash = 0;
+        for( int i = 0; i < len; i++ )
+            hash = ( 31 * hash ) + buf[ i ];
+        return hash;
+    }
+
+    int getHash_Lua( byte const* buf, int len )
+    {
+        if( !len ) return 0;
+        uint seed = 131, hash = 0;
+        for( int i = 0; i < len; ++i )
+            hash = hash * seed + (uint8)buf[ i ];
+        return (int)hash;
+    }
 }

@@ -123,6 +123,33 @@ void List<T>::reserve( int capacity )
 }
 
 template<typename T>
+void List<T>::resize( int capacity, bool init /*= true */ )
+{
+    if( capacity == _size ) return;
+    else if( capacity < _size )
+    {
+        if( !Utils::isValueType<T>() )
+            for( int i = capacity; i < _size; ++i )
+                ( (T*)_buf )[ i ].~T();
+        _size = capacity;
+    }
+    else
+    {
+        reserve( capacity );
+        if( init )
+        {
+
+            if( Utils::isValueType<T>() )
+                memset( _buf + _size * sizeof( T ), 0, ( capacity - _size ) * sizeof( T ) );
+            else
+                for( int i = _size; i < capacity; ++i )
+                    new ( (T*)newBuffer + i ) T( std::move( ( (T*)_buf )[ i ] ) );
+            _size = capacity;
+        }
+    }
+}
+
+template<typename T>
 T* List<T>::data() const
 {
     return (T*)_buf;
@@ -137,7 +164,13 @@ int List<T>::size() const
 template<typename T>
 int List<T>::byteSize() const
 {
-    return _size * sizeof(T);
+    return _size * sizeof( T );
+}
+
+template<typename T>
+int List<T>::byteMaxSize() const
+{
+    return _maxSize * size( T );
 }
 
 template<typename T>

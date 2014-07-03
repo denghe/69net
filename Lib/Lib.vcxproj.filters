@@ -6,6 +6,9 @@
     <ClInclude Include="Utils.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="String.hpp" />
+    <ClInclude Include="List.h" />
+    <ClInclude Include="List.hpp" />
+    <ClInclude Include="Pool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
@@ -13,5 +16,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="String.cpp" />
+    <ClCompile Include="List.cpp" />
+    <ClCompile Include="Pool.cpp" />
   </ItemGroup>
 </Project>

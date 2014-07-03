@@ -47,9 +47,7 @@ public:
     template<typename ...TS>
     void append( TS const & ...vs );
 
-    int getHash_CS();                                           // only support align of 4 _buf
-    int getHash_Java();
-    int getHash_Lua();
+    int getHashCode();                                          // only support align of 4 _buf on some ARM cpu and unaligned buffer
 
     // todo: more util funcs
 

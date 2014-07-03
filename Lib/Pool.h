@@ -1,13 +1,10 @@
 #ifndef _POOL_H__
 #define _POOL_H__
 
-#include "List.h"
-
-template<int itemSize, int pageSize>
 class Pool
 {
 public:
-    Pool( int capacity = 1 );
+    Pool( int itemBufLen, int pageBufLen = 4096, int capacity = 128 );
     ~Pool();
     Pool( Pool const& other ) = delete;
     Pool& operator=( Pool const& other ) = delete;
@@ -16,13 +13,16 @@ public:
     void clear();
     void collect();
     void reserve();     // new 1 page
-    int pageCount();
-    int itemCount();
+    void reserve( int capacity );
+    int size() const;
+    int pageCount() const;
+    int pageBufLen() const;
+    int itemBufLen() const;
 private:
     List<void*> _items;
     List<void*> _pages;
+    int _itemSize;
+    int _pageSize;
 };
-
-#include "Pool.hpp"
 
 #endif

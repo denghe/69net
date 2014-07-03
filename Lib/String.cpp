@@ -278,44 +278,7 @@ bool String::operator>=( String const& other )
     return !operator<( other );
 }
 
-
-int String::getHash_CS()
+int String::getHashCode()
 {
-    assert( (size_t)_buf % 4 == 0 );
-    if( !_dataLen ) return 0;
-    int n1 = 0x15051505, n2 = n1, mod = _dataLen % 8, i = 0;
-    int64 n = 0;
-    auto np = (int*)&n;
-    for( ; i < _dataLen - mod; i += 8 )
-    {
-        n = *(uint64*)( _buf + i );
-        n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ np[ 1 ];
-        n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ np[ 0 ];
-    }
-    if( mod )
-    {
-        n = *(uint64*)( _buf + i );
-        n &= size_t( 0xFFFFFFFFFFFFFFFF ) >> ( ( 8 - mod ) * 8 );
-        n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ np[ 1 ];
-        if( np[ 0 ] ) n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ np[ 0 ];
-    }
-    return n1 + n2 * 0x5d588b65;
-}
-
-int String::getHash_Java()
-{
-    if( !_dataLen ) return 0;
-    int hash = 0;
-    for( int i = 0; i < _dataLen; i++ )
-        hash = ( 31 * hash ) + _buf[ i ];
-    return hash;
-}
-
-int String::getHash_Lua()
-{
-    if( !_dataLen ) return 0;
-    uint seed = 131, hash = 0;
-    for( int i = 0; i < _dataLen; ++i )
-        hash = hash * seed + (uint8)_buf[ i ];
-    return (int)hash;
+    return Utils::getHash_CS( (byte*)_buf, _dataLen );
 }

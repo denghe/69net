@@ -2,15 +2,12 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="List.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Pool.h" />
-    <ClInclude Include="Pool.hpp" />
-    <ClInclude Include="List.h" />
-    <ClInclude Include="List.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dict.hpp" />
+    <ClInclude Include="Dict.h" />
   </ItemGroup>
 </Project>

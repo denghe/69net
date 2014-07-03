@@ -1,5 +1,4 @@
-#include "Lib/All.h"
-#include "List.h"
+#include "All.h"
 
 List<bool>::List( int capacity )
 {

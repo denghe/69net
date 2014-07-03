@@ -1,17 +1,22 @@
-template<int itemSize, int pageSize>
-Pool<itemSize, pageSize>::Pool( int capacity )
+#include "All.h"
+
+
+Pool::Pool( int itemSize, int pageSize, int capacity )
 {
-    for( int i = 0; i < capacity; ++i ) reserve();
+    assert( itemSize <= pageSize && itemSize > 0 && capacity >= 0 );
+    _itemSize = (int)Utils::round2n( itemSize );
+    _pageSize = (int)Utils::round2n( pageSize );
+    reserve( capacity );
 }
 
-template<int itemSize, int pageSize>
-Pool<itemSize, pageSize>::~Pool()
+
+Pool::~Pool()
 {
     for( int i = 0; i < _pages.size(); ++i ) delete[] _pages[ i ];
 }
 
-template<int itemSize, int pageSize>
-void* Pool<itemSize, pageSize>::alloc()
+
+void* Pool::alloc()
 {
     if( _items.size() == 0 ) reserve();
     auto rtv = _items.top();
@@ -19,31 +24,31 @@ void* Pool<itemSize, pageSize>::alloc()
     return rtv;
 }
 
-template<int itemSize, int pageSize>
-void Pool<itemSize, pageSize>::free( void* p )
+
+void Pool::free( void* p )
 {
     _items.push( p );
 }
 
-template<int itemSize, int pageSize>
-void Pool<itemSize, pageSize>::clear()
+
+void Pool::clear()
 {
     for( int j = 0; j < _pages.size(); ++j )
     {
         auto p = (char*)_pages[ j ];
-        for( int i = 0; i < pageSize; i += itemSize ) _items.push( p + i );
+        for( int i = 0; i < _pageSize; i += _itemSize ) _items.push( p + i );
     }
 }
 
-template<int itemSize, int pageSize>
-void Pool<itemSize, pageSize>::collect()
+
+void Pool::collect()
 {
     auto getPage = [ &]( void* item ) ->void*
     {
         for( int i = 0; i < _pages.size(); ++i )
         {
             auto ps = (size_t)_pages[ i ];
-            auto pe = (size_t)_pages[ i ] + pageSize;
+            auto pe = (size_t)_pages[ i ] + _pageSize;
             auto v = (size_t)item;
             if( ps <= v && v < pe ) return _pages[ i ];
         }
@@ -64,10 +69,10 @@ void Pool<itemSize, pageSize>::collect()
     }
     for( int i = 0; i < _pages.size(); ++i )
     {
-        if( dict[ _pages[ i ] ] == pageSize / itemSize )
+        if( dict[ _pages[ i ] ] == _pageSize / _itemSize )
         {
             auto ps = (size_t)_pages[ i ];
-            auto pe = (size_t)_pages[ i ] + pageSize;
+            auto pe = (size_t)_pages[ i ] + _pageSize;
             for( int j = 0; j < _items.size(); ++j )
             {
                 auto v = (size_t)_items[ j ];
@@ -84,22 +89,35 @@ void Pool<itemSize, pageSize>::collect()
     }
 }
 
-template<int itemSize, int pageSize>
-void Pool<itemSize, pageSize>::reserve()
+
+void Pool::reserve()
 {
-    auto p = new char[ pageSize ];        // maybe need align 8/16
+    auto p = new char[ _pageSize ];        // maybe need align 8/16
     _pages.push( p );
-    for( int i = 0; i < pageSize / itemSize; ++i ) _items.push( p + i * itemSize );
+    for( int i = 0; i < _pageSize / _itemSize; ++i ) _items.push( p + i * _itemSize );
 }
 
-template<int itemSize, int pageSize>
-int Pool<itemSize, pageSize>::pageCount()
+void Pool::reserve( int capacity )
+{
+    while( _items.size() < capacity ) reserve();
+}
+
+int Pool::pageCount() const
 {
     return _pages.size();
 }
 
-template<int itemSize, int pageSize>
-int Pool<itemSize, pageSize>::itemCount()
+int Pool::size() const
 {
     return _items.size();
+}
+
+int Pool::pageBufLen() const
+{
+    return _pageSize;
+}
+
+int Pool::itemBufLen() const
+{
+    return _itemSize;
 }
