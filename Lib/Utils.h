@@ -254,6 +254,11 @@ namespace Utils
     int getHash_Lua( byte const* buf, int len );
     int getHash_Java( byte const* buf, int len );
 
+
+
+    // 得到刚好小于 n 的质数
+    int getPrime( int n );
+
 }
 
 
