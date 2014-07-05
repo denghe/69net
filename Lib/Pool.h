@@ -4,7 +4,9 @@
 class Pool
 {
 public:
-    Pool( int itemBufLen, int pageBufLen = 4096, int capacity = 128 );
+    Pool();     // need init
+    void init( int itemSize, int pageSize = 4096, int capacity = 128 );
+    Pool( int itemSize, int pageSize = 4096, int capacity = 128 );
     ~Pool();
     Pool( Pool const& other ) = delete;
     Pool& operator=( Pool const& other ) = delete;

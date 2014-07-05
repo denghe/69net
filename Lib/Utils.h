@@ -1,7 +1,7 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
-class String;
+#include "String.h"
 
 namespace Utils
 {
@@ -71,7 +71,7 @@ namespace Utils
     //    return len - 1;
     //}
 
-    
+
 
     template<typename T>
     void fillCore( char * & buf, int & offset, T const & v )
@@ -250,13 +250,42 @@ namespace Utils
 
 
 
-    int getHash_CS( byte const* buf, int len );         // only support align of 4 _buf on some ARM cpu and unaligned buffer
-    int getHash_Lua( byte const* buf, int len );
-    int getHash_Java( byte const* buf, int len );
+    int getHash_CS( byte const* buf, int len );             // 须 x64 下 8 字节 对齐内存 较长串( 估计就是 8+ ) 才能高速
+    int getHash_Lua( byte const* buf, int len );            // 32 位 或 短小字串时高速
+
+    template<typename T>
+    INLINE int getHashCode( T const &in )
+    {
+        if( sizeof( T ) == 1 )
+            return ( (byte*)&in )[ 0 ];
+        if( sizeof( T ) == 2 )
+            return ( (byte*)&in )[ 0 ] || ( ( (byte*)&in )[ 1 ] << 8 );
+        if( sizeof( T ) == 3 )
+            return ( (byte*)&in )[ 0 ] || ( ( (byte*)&in )[ 1 ] << 8 ) || ( ( (byte*)&in )[ 2 ] << 16 );
+        if( sizeof( T ) == 4 )
+            return *(int*)&in;
+        return getHash_Lua( (byte const*)&in, sizeof( T ) );
+    }
+    INLINE int getHashCode( String const & in )
+    {
+        if( sizeof( size_t ) == 8 && in.size() >= 8 && ( (size_t)in.c_str() % 8 == 0 ) )
+            return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
+        else
+            return getHash_Lua( (byte const*)in.c_str(), (int)in.size() );
+    }
+    INLINE int getHashCode( std::string const & in )
+    {
+        if( sizeof( size_t ) == 8 && in.size() >= 8 && ( (size_t)in.c_str() % 8 == 0 ) )
+            return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
+        else
+            return getHash_Lua( (byte const*)in.c_str(), (int)in.size() );
+    }
+    // todo: more type here
 
 
 
-    // 得到刚好小于 n 的质数
+
+    // 得到刚好小于 n 的质数 主用于内存分配
     int getPrime( int n );
 
 }

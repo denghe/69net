@@ -112,14 +112,14 @@ char* String::c_str()
     return _buf;
 }
 
-String::operator char*( ) const
-{
-    return _buf;
-}
-String::operator char*( )
-{
-    return _buf;
-}
+//String::operator char*( ) const
+//{
+//    return _buf;
+//}
+//String::operator char*( )
+//{
+//    return _buf;
+//}
 
 char& String::operator[]( int idx ) const
 {
@@ -278,7 +278,7 @@ bool String::operator>=( String const& other )
     return !operator<( other );
 }
 
-int String::getHashCode()
+int String::getHashCode() const
 {
     return Utils::getHash_CS( (byte*)_buf, _dataLen );
 }

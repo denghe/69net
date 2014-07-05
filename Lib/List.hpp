@@ -131,7 +131,6 @@ void List<T>::resize( int capacity, bool init /*= true */ )
         if( !Utils::isValueType<T>() )
             for( int i = capacity; i < _size; ++i )
                 ( (T*)_buf )[ i ].~T();
-        _size = capacity;
     }
     else
     {
@@ -143,10 +142,10 @@ void List<T>::resize( int capacity, bool init /*= true */ )
                 memset( _buf + _size * sizeof( T ), 0, ( capacity - _size ) * sizeof( T ) );
             else
                 for( int i = _size; i < capacity; ++i )
-                    new ( (T*)newBuffer + i ) T( std::move( ( (T*)_buf )[ i ] ) );
-            _size = capacity;
+                    new ( (T*)_buf + i ) T();
         }
     }
+    _size = capacity;
 }
 
 template<typename T>

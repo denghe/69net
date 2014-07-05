@@ -500,21 +500,13 @@ namespace Utils
         }
         if( mod )
         {
-            n = *(uint64*)( buf + i );
+            auto n = *(uint64*)( buf + i );
+            auto np = (int*)&n;
             n &= size_t( 0xFFFFFFFFFFFFFFFF ) >> ( ( 8 - mod ) * 8 );
             n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ np[ 1 ];
             if( np[ 0 ] ) n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ np[ 0 ];
         }
         return n1 + n2 * 0x5d588b65;
-    }
-
-    int getHash_Java( byte const* buf, int len )
-    {
-        if( !len ) return 0;
-        int hash = 0;
-        for( int i = 0; i < len; i++ )
-            hash = ( 31 * hash ) + buf[ i ];
-        return hash;
     }
 
     int getHash_Lua( byte const* buf, int len )
@@ -530,7 +522,7 @@ namespace Utils
 
     static const int _primes[] =
     {
-        1, 2, 3, 7, 13, 31, 61, 127, 251, 509, 1021, 2039, 4093, 8191, 16381, 32749, 65521, 131071, 262139, 524287, 
+        1, 2, 3, 7, 13, 31, 61, 127, 251, 509, 1021, 2039, 4093, 8191, 16381, 32749, 65521, 131071, 262139, 524287,
         1048573, 2097143, 4194301, 8388593, 16777213, 33554393, 67108859, 134217689, 268435399, 536870909, 1073741789
     };
     int getPrime( int n )

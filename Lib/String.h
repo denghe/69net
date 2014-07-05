@@ -24,13 +24,20 @@ public:
     int size() const;                                           // return _dataLen;
     char* c_str() const;                                        // return _buf
     char* c_str();                                              // return _buf
-    operator char*( ) const;                                    // return _buf
-    operator char*( );                                          // return _buf
+    //operator char*( ) const;                                    // return _buf
+    //operator char*( );                                          // return _buf
     char& operator[] ( int idx ) const;                         // return _buf[ idx ]
     char& operator[] ( int idx );                               // return _buf[ idx ]
     char at( int idx ) const;
     void set( int idx, char v );
 
+    template<typename T>
+    static String toString( T const& v )
+    {
+        String s;
+        s.append( v );
+        return s;
+    }
 
     bool operator==( String const& other );
     bool operator!=( String const& other );
@@ -47,7 +54,7 @@ public:
     template<typename ...TS>
     void append( TS const & ...vs );
 
-    int getHashCode();                                          // only support align of 4 _buf on some ARM cpu and unaligned buffer
+    int getHashCode() const;                                    // only support align of 4 _buf on some ARM cpu and unaligned buffer
 
     // todo: more util funcs
 

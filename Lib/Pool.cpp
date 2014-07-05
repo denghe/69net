@@ -3,12 +3,25 @@
 
 Pool::Pool( int itemSize, int pageSize, int capacity )
 {
-    assert( itemSize <= pageSize && itemSize > 0 && capacity >= 0 );
-    _itemSize = (int)Utils::round2n( itemSize );
-    _pageSize = (int)Utils::round2n( pageSize );
-    reserve( capacity );
+    init( itemSize, pageSize, capacity );
 }
 
+Pool::Pool()
+    :_itemSize( 0 )
+    , _pageSize( 0 )
+{
+}
+
+void Pool::init( int itemSize, int pageSize /*= 4096*/, int capacity /*= 128 */ )
+{
+    assert( itemSize <= pageSize && itemSize > 0 && capacity >= 0 );
+    _itemSize = itemSize; //(int)Utils::round2n( itemSize );
+    if( pageSize < 4096 )
+        _pageSize = 4096;
+    else
+        _pageSize = (int)Utils::round2n( pageSize );
+    reserve( capacity );
+}
 
 Pool::~Pool()
 {
@@ -121,3 +134,4 @@ int Pool::itemBufLen() const
 {
     return _itemSize;
 }
+
