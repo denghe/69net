@@ -128,7 +128,7 @@ ALIGN2/4/8/16/32
 #endif
 #endif
 
-/* Memory address align */
+/* Memory address align */  // todo: delete or change to c11 alignof
 #if __MSVC
 #define ALIGN2( x )		        __declspec(align(2)) x
 #define ALIGN4( x )		        __declspec(align(4)) x
@@ -214,7 +214,7 @@ typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
 #include "List.h"
 #include "Pool.h"
 #include "String.h"
-
+#include "Dict.h"
 
 
 

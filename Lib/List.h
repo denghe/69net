@@ -1,5 +1,5 @@
-#ifndef _STACK_H__
-#define _STACK_H__
+#ifndef _LIST_H__
+#define _LIST_H__
 
 template<typename T>
 class List

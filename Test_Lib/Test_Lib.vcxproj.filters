@@ -6,8 +6,4 @@
   <ItemGroup>
     <Text Include="bak.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Dict.hpp" />
-    <ClInclude Include="Dict.h" />
-  </ItemGroup>
 </Project>

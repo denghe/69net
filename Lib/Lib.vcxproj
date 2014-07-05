@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="All.h" />
+    <ClInclude Include="Dict.h" />
+    <ClInclude Include="Dict.hpp" />
     <ClInclude Include="List.h" />
     <ClInclude Include="List.hpp" />
     <ClInclude Include="Pool.h" />

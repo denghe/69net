@@ -24,10 +24,6 @@
   <ItemGroup>
     <Text Include="bak.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Dict.h" />
-    <ClInclude Include="Dict.hpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DE461C3C-C0F6-418C-B16A-DA6F31D97CCF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
