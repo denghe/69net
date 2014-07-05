@@ -107,7 +107,7 @@ char* String::c_str() const
 {
     return _buf;
 }
-char* String::c_str()
+char* String::data()
 {
     return _buf;
 }
@@ -142,6 +142,14 @@ void String::set( int idx, char v )
 {
     assert( idx >= 0 && idx < _dataLen );
     _buf[ idx ] = v;
+}
+
+void String::push( char c )
+{
+    if( _dataLen == _bufLen ) reserve( _dataLen + 1 );
+    _buf[ _dataLen ] = c;
+    _buf[ _dataLen + 1 ] = '\0';
+    ++_dataLen;
 }
 
 int String::size() const
@@ -240,19 +248,19 @@ void String::toLowerUnsafe()
     for( ; i < _dataLen; ++i ) _buf[ i ] |= 0x20;
 }
 
-bool String::operator==( String const& other )
+bool String::operator==( String const& other ) const
 {
     if( this == &other ) return true;
     if( _dataLen != other._dataLen ) return false;
     return memcmp( _buf, other._buf, _dataLen ) == 0;
 }
 
-bool String::operator!=( String const& other )
+bool String::operator!=( String const& other ) const
 {
     return !operator==( other );
 }
 
-bool String::operator<( String const& other )
+bool String::operator<( String const& other ) const
 {
     if( this == &other ) return false;
     auto r = memcmp( _buf, other._buf, std::min( _dataLen, other._dataLen ) );
@@ -260,7 +268,7 @@ bool String::operator<( String const& other )
     return r < 0;
 }
 
-bool String::operator>( String const& other )
+bool String::operator>( String const& other ) const
 {
     if( this == &other ) return false;
     auto r = memcmp( _buf, other._buf, std::min( _dataLen, other._dataLen ) );
@@ -268,12 +276,12 @@ bool String::operator>( String const& other )
     return r > 0;
 }
 
-bool String::operator<=( String const& other )
+bool String::operator<=( String const& other ) const
 {
     return !operator>( other );
 }
 
-bool String::operator>=( String const& other )
+bool String::operator>=( String const& other ) const
 {
     return !operator<( other );
 }

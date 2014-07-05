@@ -80,7 +80,11 @@ template<typename VT>
 void List<T>::push( VT&& v )
 {
     if( _size == _maxSize ) reserve( _size + 1 );
-    set( _size++, std::forward<VT>( v ) );
+    if( Utils::isValueType<T>() )
+        ( (T*)_buf )[ _size ] = v;
+    else
+        new ( (T*)_buf + _size ) T( std::forward<VT>( v ) );
+    ++_size;
 }
 
 template<typename T>

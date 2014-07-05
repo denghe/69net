@@ -1,8 +1,6 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
-#include "String.h"
-
 namespace Utils
 {
     // 取长度系列，值为 toString 后的最大长. 10 进制。
@@ -59,6 +57,7 @@ namespace Utils
     int toString( char * dstBuf, double  v, int maxlen = 20, int precision = 10, bool delEndZeros = true );
     int toString( char * dstBuf, float   v, int maxlen = 20, int precision = 10, bool delEndZeros = true );
     int toString( char * dstBuf, bool    v );
+    int toString( char * dstBuf, char    v );
 
     // 一些便于写模板的补充
     int toString( char * dstBuf, char const* v );

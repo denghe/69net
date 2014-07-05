@@ -23,28 +23,20 @@ public:
     void clear();                                               // set _dataLen to 0
     int size() const;                                           // return _dataLen;
     char* c_str() const;                                        // return _buf
-    char* c_str();                                              // return _buf
-    //operator char*( ) const;                                    // return _buf
-    //operator char*( );                                          // return _buf
+    char* data();                                               // return _buf
     char& operator[] ( int idx ) const;                         // return _buf[ idx ]
     char& operator[] ( int idx );                               // return _buf[ idx ]
     char at( int idx ) const;
     void set( int idx, char v );
+    void push( char c );
+    // todo: top, pop
 
-    template<typename T>
-    static String toString( T const& v )
-    {
-        String s;
-        s.append( v );
-        return s;
-    }
-
-    bool operator==( String const& other );
-    bool operator!=( String const& other );
-    bool operator<( String const& other );
-    bool operator>( String const& other );
-    bool operator<=( String const& other );
-    bool operator>=( String const& other );
+    bool operator==( String const& other ) const;
+    bool operator!=( String const& other ) const;
+    bool operator<( String const& other ) const;
+    bool operator>( String const& other ) const;
+    bool operator<=( String const& other ) const;
+    bool operator>=( String const& other ) const;
 
 
     void toLower();
@@ -54,7 +46,91 @@ public:
     template<typename ...TS>
     void append( TS const & ...vs );
 
+    //template<typename ...TS>
+    //void appendFormat( char const* format, TS const & ... vs ); // {0}  {1}  {2} .....
+
+
+
+
+    template<typename T>
+    void appendFormatCore( List<String>& ss, int& i, T const & v )
+    {
+        ss[ i ].append( v );
+    }
+
+    template<typename T, typename ...TS>
+    void appendFormatCore( List<String>& ss, int& i, T const & v, TS const & ...vs )
+    {
+        ss[ i++ ].append( v );
+        appendFormatCore( ss, i, vs... );
+    }
+
+    template<typename ...TS>
+    void appendFormat( char* format, TS const & ...vs )
+    {
+        char buf[ sizeof...( vs ) ][ 128 ];
+        List<String> ss( sizeof...( vs ) );
+        for( int i = 0; i < sizeof...( vs ); ++i )
+            ss.push( String( buf[ i ], 128 ) );
+        int num = 0;
+        appendFormatCore( ss, num, vs... );
+
+        char numBuf[ 32 ];
+        String numStr( numBuf, 32 );
+        int offset = 0;
+        while( auto c = format[ offset ] )
+        {
+            if( c == '{' )
+            {
+                c = format[ ++offset ];
+                if( c == '{' )
+                {
+                    push( '{' );
+                }
+                else
+                {
+                    while( c = format[ offset ] )
+                    {
+                        if( c == '}' )
+                        {
+                            Utils::fromString( num, numBuf );
+                            numStr.clear();
+                            if( num < 0 || num >= sizeof...( vs ) )
+                            {
+                                throw std::invalid_argument( "argument out of range." );
+                            }
+                            append( ss[ num ] );
+                            break;
+                        }
+                        else
+                        {
+                            numStr.push( c );
+                        }
+                        ++offset;
+                    }
+                }
+            }
+            else
+            {
+                push( c );
+            }
+            ++offset;
+        }
+    }
+
+
+
+
+
+    template<typename ...TS>
+    static String make( TS const & ...vs );
+
+
+
+
     int getHashCode() const;                                    // only support align of 4 _buf on some ARM cpu and unaligned buffer
+
+
 
     // todo: more util funcs
 
