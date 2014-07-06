@@ -25,6 +25,7 @@ public:
     T const & operator[]( int idx ) const;
     T& operator[]( int idx );
     T const & at( int idx ) const;
+    T& at( int idx );
     template<typename VT>
     void set( int idx, VT&& v );
 private:

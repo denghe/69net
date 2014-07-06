@@ -27,6 +27,7 @@ public:
     char& operator[] ( int idx ) const;                         // return _buf[ idx ]
     char& operator[] ( int idx );                               // return _buf[ idx ]
     char at( int idx ) const;
+    //char at( int idx );
     void set( int idx, char v );
     void push( char c );
     // todo: top, pop
@@ -43,98 +44,34 @@ public:
     void toUpper();
     void toLowerUnsafe();                                       // 2x faster than toLower(). bad chars£º   @[\]^_` 
 
+    int getHashCode() const;
+
     template<typename ...TS>
     void append( TS const & ...vs );
 
-    //template<typename ...TS>
-    //void appendFormat( char const* format, TS const & ... vs ); // {0}  {1}  {2} .....
-
-
-
-
-    template<typename T>
-    void appendFormatCore( List<String>& ss, int& i, T const & v )
-    {
-        ss[ i ].append( v );
-    }
-
-    template<typename T, typename ...TS>
-    void appendFormatCore( List<String>& ss, int& i, T const & v, TS const & ...vs )
-    {
-        ss[ i++ ].append( v );
-        appendFormatCore( ss, i, vs... );
-    }
-
+    
     template<typename ...TS>
-    void appendFormat( char* format, TS const & ...vs )
-    {
-        char buf[ sizeof...( vs ) ][ 128 ];
-        List<String> ss( sizeof...( vs ) );
-        for( int i = 0; i < sizeof...( vs ); ++i )
-            ss.push( String( buf[ i ], 128 ) );
-        int num = 0;
-        appendFormatCore( ss, num, vs... );
-
-        char numBuf[ 32 ];
-        String numStr( numBuf, 32 );
-        int offset = 0;
-        while( auto c = format[ offset ] )
-        {
-            if( c == '{' )
-            {
-                c = format[ ++offset ];
-                if( c == '{' )
-                {
-                    push( '{' );
-                }
-                else
-                {
-                    while( c = format[ offset ] )
-                    {
-                        if( c == '}' )
-                        {
-                            Utils::fromString( num, numBuf );
-                            numStr.clear();
-                            if( num < 0 || num >= sizeof...( vs ) )
-                            {
-                                throw std::invalid_argument( "argument out of range." );
-                            }
-                            append( ss[ num ] );
-                            break;
-                        }
-                        else
-                        {
-                            numStr.push( c );
-                        }
-                        ++offset;
-                    }
-                }
-            }
-            else
-            {
-                push( c );
-            }
-            ++offset;
-        }
-    }
-
-
-
+    void appendFormat( char const* format, TS const & ...vs );
 
 
     template<typename ...TS>
     static String make( TS const & ...vs );
 
+    template<typename ...TS>
+    static String makeFormat( char const* format, TS const & ...vs );
 
-
-
-    int getHashCode() const;                                    // only support align of 4 _buf on some ARM cpu and unaligned buffer
-
+    std::string std_str();
 
 
     // todo: more util funcs
 
 private:
+    template<typename T>
+    void appendFormatCore( List<String>& ss, int& i, T const & v );
+
+    template<typename T, typename ...TS>
+    void appendFormatCore( List<String>& ss, int& i, T const & v, TS const & ...vs );
+
     typedef void ( String::*Disposer )( );
     void disposeIncommingBuffer();
     void disposePoolBuffer();
@@ -147,6 +84,71 @@ private:
 };
 
 #include "String.hpp"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class HashString
+{
+public:
+
+    template<typename T>
+    HashString( T&& s )
+    {
+        _s = std::forward<T>( s );
+        _h = _s.getHashCode();
+    }
+    HashString( HashString const& other )
+        : _s( other._s )
+        , _h( other._h )
+    {
+    }
+    HashString( HashString && other )
+        : _s( std::move( other._s ) )
+        , _h( other._h )
+    {
+    }
+    inline HashString & operator=( HashString && other )
+    {
+        _s = std::move( other._s );
+        _h = other._h;
+    }
+    inline HashString & operator=( HashString const & other )
+    {
+        _s = other._s;
+        _h = other._h;
+    }
+    inline bool operator==( HashString const& other ) const
+    {
+        return _h == other._h && _s == other._s;
+    }
+    //inline operator String const&( )
+    //{
+    //    return _s;
+    //}
+//private:
+    String _s;
+    int _h;
+};
+
+
+
+
+
 
 
 #endif

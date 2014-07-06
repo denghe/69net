@@ -290,3 +290,9 @@ int String::getHashCode() const
 {
     return Utils::getHash_CS( (byte*)_buf, _dataLen );
 }
+
+std::string String::std_str()
+{
+    return std::string( _buf, _dataLen );
+}
+

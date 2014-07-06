@@ -1,3 +1,131 @@
+
+
+这段实现比先生成char数组再拼的方式慢 20% 
+
+    typedef std::function<void( String&s )> AppendFunc;
+    template<typename T> static AppendFunc getAppendFunc( T const& v )
+    {
+        auto n = typeid( v ).name();
+        return nullptr;
+    };
+    template<> static AppendFunc getAppendFunc( uint8   const& v ) { return [ &](String&s) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( uint16  const& v ) { return [ &](String&s) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( uint    const& v ) { return [ &](String&s) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( uint64  const& v ) { return [ &](String&s) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( int8    const& v ) { return [ &](String&s) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( int16   const& v ) { return [ &](String&s) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( int     const& v ) { return [ &](String&s) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( int64   const& v ) { return [ &](String&s) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( double  const& v ) { return [ &](String&s) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( float   const& v ) { return [ &](String&s) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( bool    const& v ) { return [ &](String&s) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( char    const& v ) { return [ &](String&s) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( char const* const& v ) { return [ &]( String&s ) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( std::string const& v ) { return [ &]( String&s ) { s.append( v ); }; }
+    template<> static AppendFunc getAppendFunc( String  const& v ) { return [ &]( String&s ) { s.append( v ); }; }
+    template<size_t len>
+    static AppendFunc getAppendFunc( char const( &v )[ len ] ) { return [ &]( String&s ) { s.append( v ); }; }
+
+
+    template<typename T>
+    void appendFormatCore( AppendFunc* fs, int& i, T const & v )
+    {
+        fs[ i ] = getAppendFunc( v );
+    }
+
+    template<typename T, typename ...TS>
+    void appendFormatCore( AppendFunc* fs, int& i, T const & v, TS const & ...vs )
+    {
+        fs[ i++ ] = getAppendFunc( v );
+        appendFormatCore( fs, i, vs... );
+    }
+
+    template<typename ...TS>
+    void appendFormat( char const* format, TS const & ...vs )
+    {
+        AppendFunc fs[ sizeof...( vs ) ];
+        std::pair<int, int> flags[ sizeof...( vs ) ];
+        //memset( flags, 0, sizeof( flags ) );
+        int i = 0;
+        appendFormatCore( fs, i, vs... );
+
+        char numBuf[ 32 ];
+        String numStr( numBuf, 32 );
+        int offset = 0;
+        while( auto c = format[ offset ] )
+        {
+            if( c == '{' )
+            {
+                c = format[ ++offset ];
+                if( c == '{' )
+                {
+                    push( '{' );
+                }
+                else
+                {
+                    while( c = format[ offset ] )
+                    {
+                        if( c == '}' )
+                        {
+                            Utils::fromString( i, numBuf );
+                            numStr.clear();
+                            if( i < 0 || i >= sizeof...( vs ) )
+                            {
+                                throw std::invalid_argument( "argument out of range." );
+                            }
+                            //append( ss[ i ] );
+                            if( flags[ i ].second )
+                            {
+                                reserve( _dataLen + flags[ i ].second );
+                                memcpy( _buf + _dataLen, _buf + flags[ i ].first, flags[ i ].second );
+                                _dataLen += flags[ i ].second;
+                                _buf[ _dataLen ] = '\0';
+                            }
+                            else
+                            {
+                                flags[ i ].first = _dataLen;
+                                fs[ i ](*this);
+                                flags[ i ].second = _dataLen - flags[ i ].first;
+                            }
+
+                            break;
+                        }
+                        else
+                        {
+                            numStr.push( c );
+                        }
+                        ++offset;
+                    }
+                }
+            }
+            else
+            {
+                push( c );
+            }
+            ++offset;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #include "Lib/All.h"
 int main()
 {

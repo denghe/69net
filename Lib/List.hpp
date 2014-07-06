@@ -195,6 +195,12 @@ T const & List<T>::at( int idx ) const
 }
 
 template<typename T>
+T& List<T>::at( int idx )
+{
+    return ( (T*)_buf )[ idx ];
+}
+
+template<typename T>
 template<typename VT>
 void List<T>::set( int idx, VT&& v )
 {
