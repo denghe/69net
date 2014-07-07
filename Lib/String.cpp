@@ -288,7 +288,7 @@ bool String::operator>=( String const& other ) const
 
 int String::getHashCode() const
 {
-    return Utils::getHash_CS( (byte*)_buf, _dataLen );
+    return Utils::getHashCode( *this );
 }
 
 std::string String::std_str()

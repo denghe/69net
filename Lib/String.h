@@ -49,7 +49,7 @@ public:
     template<typename ...TS>
     void append( TS const & ...vs );
 
-    
+
     template<typename ...TS>
     void appendFormat( char const* format, TS const & ...vs );
 
@@ -101,15 +101,19 @@ private:
 
 
 
+// todo
 
 class HashString
 {
 public:
-
-    template<typename T>
-    HashString( T&& s )
+    HashString( String const& s )
     {
-        _s = std::forward<T>( s );
+        _s = s;
+        _h = _s.getHashCode();
+    }
+    HashString( String && s )
+    {
+        _s = std::move( s );
         _h = _s.getHashCode();
     }
     HashString( HashString const& other )
@@ -126,11 +130,13 @@ public:
     {
         _s = std::move( other._s );
         _h = other._h;
+        return *this;
     }
     inline HashString & operator=( HashString const & other )
     {
         _s = other._s;
         _h = other._h;
+        return *this;
     }
     inline bool operator==( HashString const& other ) const
     {

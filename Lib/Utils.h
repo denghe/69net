@@ -279,7 +279,11 @@ namespace Utils
         else
             return getHash_Lua( (byte const*)in.c_str(), (int)in.size() );
     }
-    // todo: more type here
+    INLINE int getHashCode( HashString const & in )
+    {
+        return in._h;
+    }
+        // todo: more type here
 
 
 
