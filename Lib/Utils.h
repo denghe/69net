@@ -283,8 +283,30 @@ namespace Utils
     {
         return in._h;
     }
-        // todo: more type here
+    INLINE int getHashCode( HashString* const & in )
+    {
+        return in->_h;
+    }
+    // todo: more type here
 
+
+
+    // 转指针比较为指针指向的内容比较
+    template<typename T>
+    INLINE bool equalsTo( T const& a, T const& b )
+    {
+        return a == b;
+    }
+    template<>
+    INLINE bool equalsTo( HashString* const& a, HashString* const& b )
+    {
+        return *a == *b;
+    }
+    template<>
+    INLINE bool equalsTo( String* const& a, String* const& b )
+    {
+        return *a == *b;
+    }
 
 
 

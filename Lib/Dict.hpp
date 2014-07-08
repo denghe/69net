@@ -23,7 +23,7 @@ typename Dict<TK, TV>::Node* Dict<TK, TV>::insert( KT && k, VT && v, bool replac
     auto node = _buckets[ mod ];                            // get chain header
     while( node )
     {
-        if( node->hash == hashCode && node->key == k )      // scan chain
+        if( node->hash == hashCode && Utils::equalsTo( node->key, k ) )      // scan chain
         {
             if( replace ) node->value = std::forward<VT>( v );
             return node;
@@ -50,7 +50,7 @@ typename Dict<TK, TV>::Node* Dict<TK, TV>::find( TK const& k )
     auto node = _buckets[ mod ];
     while( node )
     {
-        if( node->hash == hashCode && node->key == k ) return node;
+        if( node->hash == hashCode && Utils::equalsTo( node->key, k ) ) return node;
         node = node->next;
     }
     return nullptr;

@@ -39,9 +39,4 @@ private:
 //Dict & operator=( Dict const & o ) = delete;    // todo
 
 
-
-
-
-
-
 #endif
