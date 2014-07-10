@@ -3,227 +3,96 @@ using namespace std;
 
 
 
-
-class CirclePool
+// 块式扩容的先进先出流( 主用于发数据啥的 )
+class LinkedBuffer
 {
 public:
-    explicit CirclePool( int pageSize = 4096, int capacity = 2 );
-    ~CirclePool();
-    void insert( char const* buf, int len );
-    void pop( int len );
-    void copyTo( char* buf, int len );
+    explicit LinkedBuffer( Pool& p );
+    ~LinkedBuffer();
+    void write( char const* buf, int len );
+    int read( char* buf, int bufLen );         // 试复制指定长度到 buf 并移动读指针. 返回实际复制的长度
+    void copy( char* buf, int len );            // 复制指定长度到 buf, 如果 size 不足会出错
     void clear();
-    int size();
     bool empty();
+    int size();                 // 未读之数据长
 private:
     struct Page
     {
         Page*   next;
-        int     len;
+        char    data[ 1 ];
     };
-    Page *      _header;
-    Page *      _tail;
-    int         _headerLen;
-    int         _tailLen;
-    int         _len;
-    Pool        _pool;
+    Page*       _wp;            // 正用于写的页
+    Page*       _rp;            // 正用于读的页
+    int         _wpLen;         // 正用于写的页的已写长度
+    int         _rpLen;         // 正用于读的页的已读长度
+    int         _size;          // 正读页剩余长度 + 正写页已写长度 + 中间跨过的页数 * 页size
+    Pool&       _pool;
 };
 
-CirclePool::CirclePool( int blockSize /* = 4096 */, int capacity /* = 2 */ )
+LinkedBuffer::LinkedBuffer( Pool& p )
+    : _wp( nullptr )
+    , _rp( nullptr )
+    , _wpLen( 0 )
+    , _rpLen( 0 )
+    , _size( 0 )
+    , _pool( p )
 {
-    _pool.init( sizeof( Page ), sizeof( Page ) * capacity, 2 );
 }
 
-
-
-
-
-/*
-
-#include "Precompile.h"
-
-ListBuffer::ListBuffer( int block_min_size )
-: _header( 0 )
-, _tail( 0 )
-, _header_ptr( 0 )
-, _tail_ptr( 0 )
-, _size( 0 )
+LinkedBuffer::~LinkedBuffer()
 {
-    if( block_min_size < (int)NetConfigs::ListBufferMinBlockSize )
-    {
-        _block_min_size = round2n( (int)NetConfigs::ListBufferMinBlockSize );
-    }
-    else
-    {
-        _block_min_size = round2n( block_min_size );
-    }
+    clear();
 }
 
-ListBuffer::~ListBuffer()
+void LinkedBuffer::clear()
 {
-    Block *b_to_free;
-    while( _header )
+    Page* p = _wp;
+    while( p )
     {
-        b_to_free = _header;
-        _header = _header->next;
-        free_block( b_to_free );
+        _pool.free( p );
+        p = p->next;
     }
+    _wp = _rp = nullptr;
+    _wpLen = _rpLen = _size = 0;
 }
 
-void ListBuffer::push( const char *buf, int len )
+void LinkedBuffer::write( char const* buf, int len )
 {
-    if( len == 0 ) return;
-
-    // allocate first block if the list is empty
-    if( !_tail )
-    {
-        append_block( len );
-        _header = _tail;
-        _header_ptr = 0;
-    }
-
-    // copy data to blocks
-    int avail = _tail->size - _tail_ptr;
-    int left = len;
-    if( avail == 0 )
-    {
-        append_block( len );
-        avail = _tail->size;
-    }
-
-    if( left >= avail )
-    {
-        memcpy( _tail->data() + _tail_ptr, buf, avail );
-
-        buf += avail;
-        left -= avail;
-        _tail_ptr += avail;
-
-        if( left > 0 ) append_block( left );
-    }
-
-    if( left > 0 )
-    {
-        memcpy( _tail->data() + _tail_ptr, buf, left );
-        _tail_ptr += left;
-    }
-
+    assert( buf );
+    if( !len ) return;
     _size += len;
-}
 
-int ListBuffer::copy( char *buf, int len )
-{
-    if( len > _size ) len = _size;
-    if( len == 0 ) return 0;
+    int ps = _pool.pageBufLen() - sizeof( Page* );
+    if( !_wp ) _wp = (Page*)_pool.alloc();
+    if( len <= ps ) goto CopyLast;
 
-    Block *b = _header;
-    int avail = b->size - _header_ptr;
-    char *p = b->data() + _header_ptr;
-    int left = len;
-    while( left > avail )
+CopyPage:
+    memcpy( _wp->data, buf, ps );
+    len -= ps;
+    buf += ps;
+    if( len >= ps )
     {
-        memcpy( buf, p, avail );
-
-        buf += avail;
-        left -= avail;
-
-        b = b->next;
-        avail = b->size;
-        p = b->data();
+        _wp->next = (Page*)_pool.alloc();
+        _wp = _wp->next;
+        goto CopyPage;
     }
-
-    if( left > 0 )
-    {
-        memcpy( buf, p, left );
-    }
-
-    return len;
+CopyLast:
+    _wpLen = len;
+    _wp->next = nullptr;
+    if( len ) memcpy( _wp->data, buf, len );
 }
 
-int ListBuffer::pop( int len )
+void LinkedBuffer::copy( char* buf, int len )
 {
-    if( len > _size ) len = _size;
-    if( len == 0 ) return 0;
+    assert( len <= _size );
 
-    int avail = _header->size - _header_ptr;
-    int left = len;
-    Block *b_to_free;
-    while( left >= avail )
-    {
-        b_to_free = _header;
-        _header = _header->next;
-        free_block( b_to_free );
-
-        left -= avail;
-
-        if( !_header ) break;
-        avail = _header->size;
-    }
-
-    if( left > 0 ) _header_ptr += left;
-
-    if( !_header )
-    {
-        _tail = 0;
-        _tail_ptr = 0;
-    }
-
-    _size -= len;
-
-    return len;
 }
 
-void ListBuffer::append_block( int len )
+int LinkedBuffer::read( char* buf, int bufLen )
 {
-    // adjust length for allocating
-    int to_alloc = len + sizeof(int)+sizeof( Block * );
-
-    // alloc block
-    to_alloc = round2n( to_alloc );
-    if( to_alloc < _block_min_size ) to_alloc = _block_min_size;
-
-    Block *block = (Block *)malloc( to_alloc );
-
-    block->size = len;
-    block->next = 0;
-
-    // append
-    if( _tail ) _tail->next = block;
-
-    _tail = block;
-    _tail_ptr = 0;
+    // ...
+    return 0;
 }
-
-void ListBuffer::free_block( Block *block )
-{
-    free( block );
-    _header_ptr = 0;
-}
-
-int ListBuffer::size() const
-{
-    return _size;
-}
-
-void ListBuffer::clear()
-{
-    pop( _size );
-}
-
-int ListBuffer::empty() const
-{
-    return _size == 0;
-}
-
-char * ListBuffer::Block::data() const
-{
-    return (char *)&next + sizeof( Block * );
-}
-
-*/
-
-
-
 
 
 
@@ -280,7 +149,7 @@ public:
         _value = move( other._value );
     }
 
-    friend LRUCache<KT, VT>;
+    friend LRUCache < KT, VT > ;
 private:
     LRUCacheItem( LRUCacheItem * next, LRUCacheItem * prev )
         : _next( next )
