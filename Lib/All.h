@@ -215,8 +215,8 @@ typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
 #include "String.h"
 #include "Dict.h"
 #include "Utils.h"
-
-
+#include "CircleBuffer.h"
+#include "LRUCache.h"
 
 
 

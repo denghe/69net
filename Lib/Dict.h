@@ -6,7 +6,7 @@ struct Dict
 {
     struct Node
     {
-        Node *          next;
+        Node*           next;
         uint            hash;                               // key's hashCode
         int             index;                              // _nodes[ index ]
         TK const        key;
@@ -16,10 +16,12 @@ struct Dict
     explicit Dict( int capacity = 64 );
     ~Dict();
     template <typename KT, typename VT>
-    Node* insert( KT && k, VT && v, bool replace = false ); // if exists, return Node*. else add and return nullptr
-    Node* find( TK const& k );                              // if exists, return Node*. else return nullptr
+    std::pair<Node*, bool> insert( KT && k, VT && v, bool replace = false );    // if exists, return Node* + false. else add and return Node* + true
+    Node* find( TK const& k );                                                  // if exists, return Node*. else return nullptr
+    void erase( TK const& k );
     void erase( Node* n );
     void clear();
+    void reserve( int capacity );
     List<Node*> const & data() const;
     int size() const;
 private:

@@ -11,6 +11,9 @@
     <ClInclude Include="Pool.h" />
     <ClInclude Include="Dict.hpp" />
     <ClInclude Include="Dict.h" />
+    <ClInclude Include="CircleBuffer.h" />
+    <ClInclude Include="LRUCache.h" />
+    <ClInclude Include="LRUCache.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
@@ -20,5 +23,6 @@
     <ClCompile Include="String.cpp" />
     <ClCompile Include="List.cpp" />
     <ClCompile Include="Pool.cpp" />
+    <ClCompile Include="CircleBuffer.cpp" />
   </ItemGroup>
 </Project>
