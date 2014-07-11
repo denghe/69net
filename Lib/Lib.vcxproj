@@ -23,6 +23,8 @@
     <ClInclude Include="CircleBuffer.h" />
     <ClInclude Include="Dict.h" />
     <ClInclude Include="Dict.hpp" />
+    <ClInclude Include="FlatBuffer.h" />
+    <ClInclude Include="FlatBuffer.hpp" />
     <ClInclude Include="List.h" />
     <ClInclude Include="List.hpp" />
     <ClInclude Include="LRUCache.h" />
@@ -41,6 +43,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="CircleBuffer.cpp" />
+    <ClCompile Include="FlatBuffer.cpp" />
     <ClCompile Include="ftoa.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>

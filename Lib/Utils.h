@@ -4,20 +4,21 @@
 namespace Utils
 {
     // 取长度系列，值为 toString 后的最大长. 10 进制。
-    int getToStringMaxLength( uint8   v );
-    int getToStringMaxLength( uint16  v );
-    int getToStringMaxLength( uint    v );
-    int getToStringMaxLength( uint64  v );
-    int getToStringMaxLength( int8    v );
-    int getToStringMaxLength( int16   v );
-    int getToStringMaxLength( int     v );
-    int getToStringMaxLength( int64   v );
-    int getToStringMaxLength( double  v );
-    int getToStringMaxLength( float   v );
-    int getToStringMaxLength( bool    v );
-    int getToStringMaxLength( char const* v );
-    int getToStringMaxLength( String const & v );
-    int getToStringMaxLength( std::string const & v );
+    inline int getToStringMaxLength( uint8   v ) { return 3; }
+    inline int getToStringMaxLength( uint16  v ) { return 5; }
+    inline int getToStringMaxLength( uint    v ) { return 10; }
+    inline int getToStringMaxLength( uint64  v ) { return 19; }
+    inline int getToStringMaxLength( int8    v ) { return 4; }
+    inline int getToStringMaxLength( int16   v ) { return 6; }
+    inline int getToStringMaxLength( int     v ) { return 11; }
+    inline int getToStringMaxLength( int64   v ) { return 20; }
+    inline int getToStringMaxLength( double  v ) { return 20; }
+    inline int getToStringMaxLength( float   v ) { return 20; }
+    inline int getToStringMaxLength( bool    v ) { return 5; }
+    inline int getToStringMaxLength( char    v ) { return 1; }
+    inline int getToStringMaxLength( std::string const & v ) { return (int)v.size(); }
+    inline int getToStringMaxLength( char const* v ) { return (int)strlen( v ); }
+    inline int getToStringMaxLength( String const & v ) { return v.size(); }
 
     template<typename T>
     void getFillMaxLengthCore( int & len, T const & v )
@@ -312,6 +313,119 @@ namespace Utils
 
     // 得到刚好小于 n 的质数 主用于内存分配
     int getPrime( int n );
+
+
+
+
+
+
+
+
+
+
+
+
+
+    void binaryDumpCore( String & s, char const * buf, int len );
+    void binaryDump( String & s, char const * buf, int len );
+
+    template<typename T>
+    INLINE void binaryWrite( char* dest, T const& src )
+    {
+#ifdef __IA
+        *(T*)dest = src;
+#else
+        auto p = (char*)&src;
+        if( sizeof( T ) == 1 )
+        {
+            dest[ 0 ] = p[ 0 ];
+        }
+        if( sizeof( T ) == 2 )
+        {
+            dest[ 1 ] = p[ 1 ];
+        }
+        if( sizeof( T ) == 4 )
+        {
+            dest[ 2 ] = p[ 2 ];
+            dest[ 3 ] = p[ 3 ];
+        }
+        if( sizeof( T ) == 8 )
+        {
+            dest[ 4 ] = p[ 4 ];
+            dest[ 5 ] = p[ 5 ];
+            dest[ 6 ] = p[ 6 ];
+            dest[ 7 ] = p[ 7 ];
+        }
+#endif
+    }
+    void binaryWrite( char* dest, String const & src );
+    void binaryWrite( char* dest, FlatBuffer const & src );
+
+
+
+    template<typename T>
+    INLINE int binaryRead( T& dest, char const* src, int len )
+    {
+        if( len < sizeof( T ) ) return 1;
+#ifdef __IA
+        dest = *(T*)src;
+#else
+        auto p = (char*)&dest;
+        if( sizeof( T ) == 1 )
+        {
+            p[ 0 ] = src[ 0 ];
+        }
+        if( sizeof( T ) == 2 )
+        {
+            p[ 1 ] = src[ 1 ];
+        }
+        if( sizeof( T ) == 4 )
+        {
+            p[ 2 ] = src[ 2 ];
+            p[ 3 ] = src[ 3 ];
+        }
+        if( sizeof( T ) == 8 )
+        {
+            p[ 4 ] = src[ 4 ];
+            p[ 5 ] = src[ 5 ];
+            p[ 6 ] = src[ 6 ];
+            p[ 7 ] = src[ 7 ];
+        }
+#endif
+        return 0;
+    }
+    int binaryRead( String& dest, char const* src, int len );
+    int binaryRead( FlatBuffer& dest, char const* src, int len );
+
+
+
+
+
+    template<typename T>
+    int getSizeCore( T const& v ) { return sizeof( T ); }
+    inline int getSizeCore( String const& v ) { return v.size() + sizeof( int ); };
+    inline int getSizeCore( FlatBuffer const& v ) { return v.size() + sizeof( int ); };
+
+    template<typename T>
+    void getSizeCore( int& len, T const& v )
+    {
+        len += getSizeCore( v );
+    }
+
+    template<typename T, typename ...TS>
+    void getSizeCore( int& len, T const & v, TS const & ...vs )
+    {
+        getSizeCore( len, v );
+        getSizeCore( len, vs... );
+    }
+
+    template<typename ...TS>
+    int getSize( TS const & ...vs )         // 批量统计 binary 长度
+    {
+        int len = 0;
+        getSize( len, vs... );
+        return len;
+    }
 
 }
 

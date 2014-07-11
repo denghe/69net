@@ -103,16 +103,16 @@ void String::clear()
     _buf[ 0 ] = '\0';
 }
 
-char* String::c_str() const
+char const* String::c_str() const
 {
     return _buf;
 }
-char* String::data()
+char* String::data() const
 {
     return _buf;
 }
 
-//String::operator char*( ) const
+//String::operator char const*( ) const
 //{
 //    return _buf;
 //}
@@ -138,6 +138,12 @@ char String::at( int idx ) const
     return _buf[ idx ];
 }
 
+char& String::at( int idx )
+{
+    assert( idx >= 0 && idx < _dataLen );
+    return _buf[ idx ];
+}
+
 void String::set( int idx, char v )
 {
     assert( idx >= 0 && idx < _dataLen );
@@ -156,8 +162,6 @@ int String::size() const
 {
     return _dataLen;
 }
-
-void String::disposeIncommingBuffer() {}
 
 void String::disposePoolBuffer()
 {

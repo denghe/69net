@@ -214,10 +214,10 @@ typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
 #include "Pool.h"
 #include "String.h"
 #include "Dict.h"
-#include "Utils.h"
 #include "CircleBuffer.h"
 #include "LRUCache.h"
-
+#include "FlatBuffer.h"
+#include "Utils.h"
 
 
 

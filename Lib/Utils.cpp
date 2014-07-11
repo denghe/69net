@@ -3,33 +3,6 @@
 
 namespace Utils
 {
-    int getToStringMaxLength( uint8   v ) { return 3; }
-    int getToStringMaxLength( uint16  v ) { return 5; }
-    int getToStringMaxLength( uint    v ) { return 10; }
-    int getToStringMaxLength( uint64  v ) { return 19; }
-    int getToStringMaxLength( int8    v ) { return 4; }
-    int getToStringMaxLength( int16   v ) { return 6; }
-    int getToStringMaxLength( int     v ) { return 11; }
-    int getToStringMaxLength( int64   v ) { return 20; }
-    int getToStringMaxLength( double  v ) { return 20; }
-    int getToStringMaxLength( float   v ) { return 20; }
-    int getToStringMaxLength( bool    v ) { return 5; }
-    int getToStringMaxLength( char    v ) { return 1; }
-    int getToStringMaxLength( std::string const & v ) { return (int)v.size(); }
-    int getToStringMaxLength( char const* v ) { return (int)strlen( v ); }
-    int getToStringMaxLength( String const & v ) { return v.size(); }
-
-
-
-
-
-
-
-
-
-
-
-
 
     // 取 整数 转换后的 string 长度系列
     // todo: if ( n < ...... ) 这种代码理论上讲可以优化成树形, 类似折半查找从而减少 if 次数
@@ -535,6 +508,101 @@ namespace Utils
     int getPrime( int n )
     {
         return _primes[ calc2n( n ) ];
+    }
+
+
+
+
+
+
+
+
+
+
+    void binaryDumpCore( String & s, char const * buf, int len )
+    {
+        for( int i = 0; i < len; ++i )
+        {
+            uint8 c = buf[ i ];
+            if( c < 32 || c > 126 ) s.append( '.' );
+            else s.append( (char)c );
+        }
+    }
+
+    void binaryDump( String & s, char const * buf, int len )
+    {
+        if( len == 0 ) return;
+        s.append( "\n--------  0  1  2  3 | 4  5  6  7 | 8  9  A  B | C  D  E  F" );
+        int i = 0;
+        for( ; i < len; ++i )
+        {
+            if( ( i % 16 ) == 0 )
+            {
+                if( i )
+                {           // output ascii to the end of the line
+                    s.append( "  " );
+                    binaryDumpCore( s, buf + i - 16, 16 );
+                }
+                s.append( '\n' );
+                s.appendHex( i );
+                s.append( "  " );
+            }
+            else if( i && ( i % 4 == 0 ) )
+            {
+                s.append( "  " );
+            }
+            else s.append( ' ' );
+            s.appendHex( (uint8)buf[ i ] );
+        }
+        int left = i % 16;
+        if( left )
+        {
+            len = len + 16 - left;
+            for( ; i < len; ++i )
+            {
+                if( i && ( i % 4 == 0 ) )
+                    s.append( "  " );
+                else s.append( ' ' );
+                s.append( "  " );
+            }
+            s.append( "  " );
+            binaryDumpCore( s, buf + i - 16, left );
+        }
+    }
+
+
+
+    void binaryWrite( char* dest, String const& src )
+    {
+        binaryWrite( dest, src.size() );
+        memcpy( dest + sizeof( int ), src.data(), src.size() );
+    }
+
+    void binaryWrite( char* dest, FlatBuffer const& src )
+    {
+        binaryWrite( dest, src.size() );
+        memcpy( dest + sizeof( int ), src.data(), src.size() );
+    }
+
+
+
+    int binaryRead( String& dest, char const* src, int len )
+    {
+        int destLen;
+        if( auto rtv = binaryRead( destLen, src, len ) ) return rtv;
+        dest.resize( destLen, false );
+        memcpy( dest.data(), src + sizeof( int ), destLen );
+        return 0;
+    }
+
+    int binaryRead( FlatBuffer& dest, char const* src, int len )
+    {
+        int destLen;
+        if( auto rtv = binaryRead( destLen, src, len ) ) return rtv;
+        dest.reserve( destLen );
+        memcpy( dest.data(), src + sizeof( int ), destLen );
+        dest.widx() = destLen;
+        dest.ridx() = 0;
     }
 
 }

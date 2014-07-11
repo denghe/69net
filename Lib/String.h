@@ -22,12 +22,12 @@ public:
     void resize( int len, bool fillZero = true );               // cut( maybe damage utf8 ) or grow up
     void clear();                                               // set _dataLen to 0
     int size() const;                                           // return _dataLen;
-    char* c_str() const;                                        // return _buf
-    char* data();                                               // return _buf
+    char const* c_str() const;                                  // return _buf
+    char* data() const;                                         // return _buf
     char& operator[] ( int idx ) const;                         // return _buf[ idx ]
     char& operator[] ( int idx );                               // return _buf[ idx ]
     char at( int idx ) const;
-    //char at( int idx );
+    char& at( int idx );
     void set( int idx, char v );
     void push( char c );
     // todo: top, pop
@@ -63,6 +63,9 @@ public:
     std::string std_str();
 
 
+    template<typename T>
+    void appendHex( T const& v );
+
     // todo: more util funcs
 
 private:
@@ -73,7 +76,6 @@ private:
     void appendFormatCore( List<String>& ss, int& i, T const & v, TS const & ...vs );
 
     typedef void ( String::*Disposer )( );
-    void disposeIncommingBuffer();
     void disposePoolBuffer();
     void disposeNewBuffer();
 

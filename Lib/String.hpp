@@ -88,3 +88,12 @@ void String::appendFormat( char const* format, TS const & ...vs )
         ++offset;
     }
 }
+
+
+
+template<typename T>
+void String::appendHex( T const& v )
+{
+    reserve( _dataLen + 16 );
+    _dataLen += Utils::toHexString( _buf + _dataLen, v );
+}
