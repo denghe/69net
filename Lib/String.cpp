@@ -69,12 +69,15 @@ String::String( String const & other )
     _dataLen = other._dataLen;
 }
 
-String::String( String && other )
+String::String( String&& other )
     : _buf( other._buf )
     , _bufLen( other._bufLen )
     , _dataLen( other._dataLen )
     , _disposer( other._disposer )
 {
+    other._buf = nullptr;
+    other._bufLen = 0;
+    other._dataLen = 0;
     other._disposer = nullptr;
 }
 
@@ -251,6 +254,9 @@ String& String::operator=( String && other )
     _bufLen = other._bufLen;
     _dataLen = other._dataLen;
     _disposer = other._disposer;
+    other._buf = nullptr;
+    other._bufLen = 0;
+    other._dataLen = 0;
     other._disposer = nullptr;
     return *this;
 }

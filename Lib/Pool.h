@@ -9,6 +9,8 @@ public:
     void init( int itemBufLen, int pageBufLen = 4096, int capacity = 128, bool attackPointer = false );
     Pool( int itemBufLen, int pageBufLen = 4096, int capacity = 128, bool attackPointer = false );
     ~Pool();
+    Pool( Pool&& other );
+    Pool& operator=( Pool&& other );
     Pool( Pool const& other ) = delete;
     Pool& operator=( Pool const& other ) = delete;
     void* alloc();

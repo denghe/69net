@@ -23,6 +23,25 @@ String String::makeFormat( char const* format, TS const & ...vs )
     return rtv;
 }
 
+template<typename ...TS>
+String String::make( Pool& p, TS const & ...vs )
+{
+    String rtv( p );
+    rtv.append( vs... );
+    return rtv;
+}
+
+template<typename ...TS>
+String String::makeFormat( Pool& p, char const* format, TS const & ...vs )
+{
+    String rtv( p );
+    rtv.appendFormat( format, vs... );
+    return rtv;
+}
+
+
+
+
 template<typename T>
 void String::appendFormatCore( List<String>& ss, int& i, T const & v )
 {

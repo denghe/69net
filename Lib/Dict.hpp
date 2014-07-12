@@ -1,10 +1,56 @@
 ﻿template <typename TK, typename TV>
 Dict<TK, TV>::Dict( int capacity /*= 64 */ )
 {
-    _pool.init( sizeof( Node ), sizeof( Node ) * capacity, 2 );
+    _pool.init( sizeof( Node ), (int)Utils::round2n( sizeof( Node ) * capacity ), 2 );
     int prime = Utils::getPrime( _pool.size() );
     _nodes.reserve( prime );
     _buckets.resize( prime );
+}
+
+template <typename TK, typename TV>
+Dict<TK, TV>::Dict( Dict const& o )
+    : Dict( o.size() )
+{
+    operator=( o );
+}
+
+template <typename TK, typename TV>
+Dict<TK, TV>::Dict( Dict&& o )
+{
+    _buckets = std::move( o._buckets );
+    _nodes = std::move( o._nodes );
+    _pool = std::move( o._pool );
+}
+
+template <typename TK, typename TV>
+Dict<TK, TV>& Dict<TK, TV>::operator=( Dict const& o )
+{
+    if( this == &o ) return *this;
+    clear();
+    reserve( o.size() );
+    for( int i = 0; i < o.size(); ++i )
+    {
+        auto on = o.data()[ i ];
+        uint mod = on->hash % (uint)_buckets.size();
+        auto n = (Node*)_pool.alloc();
+        n->next = _buckets[ mod ];
+        n->hash = on->hash;
+        n->index = _nodes.size();
+        new ( (TK*)&n->key ) TK( on->key );
+        new ( &n->value ) TV( on->value );
+        _buckets[ mod ] = n;
+        _nodes.push( n );
+    }
+    return *this;
+}
+
+template <typename TK, typename TV>
+Dict<TK, TV>& Dict<TK, TV>::operator=( Dict&& o )
+{
+    _buckets = std::move( o._buckets );
+    _nodes = std::move( o._nodes );
+    _pool = std::move( o._pool );
+    return *this;
 }
 
 template <typename TK, typename TV>
@@ -102,11 +148,12 @@ void Dict<TK, TV>::erase( Node* n )
 template <typename TK, typename TV>
 void Dict<TK, TV>::clear()
 {
-    for( int i = 0; i < _nodes; ++i )
+    for( int i = 0; i < _nodes.size(); ++i )
     {
         dispose( _nodes[ i ] );
         _pool.free( _nodes[ i ] );
     }
+    _nodes.clear();
     memset( _buckets.data(), 0, _buckets.byteSize() );
 }
 

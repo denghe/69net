@@ -7,10 +7,35 @@ Pool::Pool( int itemBufLen, int pageBufLen /*= 4096*/, int capacity /*= 128 */, 
 }
 
 Pool::Pool()
-    :_itemBufLen( 0 )
+    : _itemBufLen( 0 )
     , _pageBufLen( 0 )
     , _attackPointer( false )
 {
+}
+
+Pool::Pool( Pool&& other )
+    : _itemBufLen( other._itemBufLen )
+    , _pageBufLen( other._pageBufLen )
+    , _attackPointer( other._attackPointer )
+{
+    _items = std::move( other._items );
+    _pages = std::move( other._pages );
+    other._itemBufLen = 0;
+    other._pageBufLen = 0;
+    other._attackPointer = false;
+}
+
+Pool& Pool::operator=( Pool&& other )
+{
+    _items = std::move( other._items );
+    _pages = std::move( other._pages );
+    _itemBufLen = other._itemBufLen;
+    _pageBufLen = other._pageBufLen;
+    _attackPointer = other._attackPointer;
+    other._itemBufLen = 0;
+    other._pageBufLen = 0;
+    other._attackPointer = false;
+    return *this;
 }
 
 void Pool::init( int itemBufLen, int pageBufLen /*= 4096*/, int capacity /*= 128 */, bool attackPointer /*= false*/ )

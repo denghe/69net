@@ -293,8 +293,8 @@ namespace Utils
 
 
     // 转指针比较为指针指向的内容比较
-    template<typename T>
-    INLINE bool equalsTo( T const& a, T const& b )
+    template<typename T1, typename T2>
+    INLINE bool equalsTo( T1 const& a, T2 const& b )
     {
         return a == b;
     }
@@ -327,6 +327,8 @@ namespace Utils
 
     template<typename T>
     int getSizeCore( T const& v ) { return sizeof( T ); }
+    template<int len>
+    int getSizeCore( char const( &v )[ len ] ) { return len - 1 + 4; }
     inline int getSizeCore( String const& v ) { return v.size() + sizeof( int ); };
     inline int getSizeCore( FlatBuffer const& v ) { return v.size() + sizeof( int ); };
 
@@ -347,7 +349,7 @@ namespace Utils
     int getSize( TS const & ...vs )         // 批量统计 binary 长度
     {
         int len = 0;
-        getSize( len, vs... );
+        getSizeCore( len, vs... );
         return len;
     }
 
@@ -385,6 +387,13 @@ namespace Utils
             dest[ 7 ] = p[ 7 ];
         }
 #endif
+    }
+
+    template<int len>
+    void binaryWrite( char* dest, char const( &src )[ len ] )
+    {
+        binaryWrite( dest, len );
+        memcpy( dest + sizeof( int ), src, len - 1 );
     }
     void binaryWrite( char* dest, String const & src );
     void binaryWrite( char* dest, FlatBuffer const & src );

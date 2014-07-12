@@ -21,12 +21,14 @@ List<T>::~List()
 }
 
 template<typename T>
-List<T>::List( List && other )
+List<T>::List( List&& other )
     : _buf( other._buf )
     , _size( other._size )
     , _maxSize( other._maxSize )
 {
     other._buf = nullptr;
+    other._size = 0;
+    other._maxSize = 0;
 }
 
 template<typename T>
@@ -41,7 +43,7 @@ List<T>::List( List const& other )
 }
 
 template<typename T>
-List<T>& List<T>::operator=( List && other )
+List<T>& List<T>::operator=( List&& other )
 {
     clear();
     delete[] (char*)_buf;
@@ -49,6 +51,8 @@ List<T>& List<T>::operator=( List && other )
     _size = other._size;
     _maxSize = other._maxSize;
     other._buf = nullptr;
+    other._size = 0;
+    other._maxSize = 0;
     return *this;
 }
 

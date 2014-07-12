@@ -43,6 +43,10 @@ FlatBuffer::FlatBuffer( FlatBuffer && other )
     , _offset( other._offset )
     , _disposer( other._disposer )
 {
+    other._buf = nullptr;
+    other._bufLen = 0;
+    other._dataLen = 0;
+    other._offset = 0;
     other._disposer = nullptr;
 }
 
@@ -133,7 +137,7 @@ void FlatBuffer::resize( int widx )
     }
 }
 
-FlatBuffer& FlatBuffer::operator=( FlatBuffer const & other )
+FlatBuffer& FlatBuffer::operator=( FlatBuffer const& other )
 {
     if( this == &other ) return *this;
     if( _bufLen >= other._dataLen )
@@ -155,7 +159,7 @@ FlatBuffer& FlatBuffer::operator=( FlatBuffer const & other )
     return *this;
 }
 
-FlatBuffer& FlatBuffer::operator=( FlatBuffer && other )
+FlatBuffer& FlatBuffer::operator=( FlatBuffer&& other )
 {
     if( _disposer ) ( this->*_disposer )( );
     _buf = other._buf;
@@ -163,6 +167,10 @@ FlatBuffer& FlatBuffer::operator=( FlatBuffer && other )
     _dataLen = other._dataLen;
     _offset = 0;
     _disposer = other._disposer;
+    other._buf = nullptr;
+    other._bufLen = 0;
+    other._dataLen = 0;
+    other._offset = 0;
     other._disposer = nullptr;
     return *this;
 }
@@ -216,12 +224,14 @@ void FlatBuffer::write( char const* buf, int dataLen )
     _dataLen += dataLen;
 }
 
-void FlatBuffer::disposePoolBuffer()
-{
-    // todo
-}
-
 void FlatBuffer::disposeNewBuffer()
 {
     delete[] _buf;
+}
+
+String FlatBuffer::dump()
+{
+    String rtv;
+    Utils::binaryDump( rtv, _buf, _dataLen );
+    return rtv;
 }

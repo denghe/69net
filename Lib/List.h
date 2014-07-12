@@ -8,9 +8,9 @@ class List
 public:
     List( int capacity = 8 );
     ~List();
-    List( List && other );
+    List( List&& other );
     List( List const& other );
-    List& operator=( List && other );
+    List& operator=( List&& other );
     List& operator=( List const& other );
     template<typename VT>
     void push( VT&& v );
@@ -44,9 +44,9 @@ class List<bool>
 public:
     List( int capacity = 512 );
     ~List();
-    List( List<bool> && other );
+    List( List<bool>&& other );
     List( List<bool> const& other );
-    List& operator=( List<bool> && other );
+    List& operator=( List<bool>&& other );
     List& operator=( List<bool> const& other );
     void push( bool v );
     void pop();

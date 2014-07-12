@@ -7,10 +7,10 @@ class FlatBuffer
 public:
     explicit FlatBuffer( int capacity = 1024 );                                 // prepare
     FlatBuffer( char* buf, int bufLen, int dataLen = 0, bool isRef = false );   // copy or ref
-    FlatBuffer( FlatBuffer const & other );                                     // copy
-    FlatBuffer( FlatBuffer && other );                                          // move
-    FlatBuffer& operator=( FlatBuffer const & other );                          // copy
-    FlatBuffer& operator=( FlatBuffer && other );                               // move
+    FlatBuffer( FlatBuffer const& other );                                      // copy
+    FlatBuffer( FlatBuffer&& other );                                           // move
+    FlatBuffer& operator=( FlatBuffer const& other );                           // copy
+    FlatBuffer& operator=( FlatBuffer&& other );                                // move
     ~FlatBuffer();
     void assign( char const* buf, int bufLen, int dataLen = 0, bool isRef = false );  // copy or ref
     void reserve( int capacity );
@@ -32,11 +32,17 @@ public:
     void write( T const& v );
     void write( char const* buf, int dataLen );
     template<typename ...TS>
-    void writes( TS const & ...vs );
+    void writes( TS const& ...vs );
 
     template<typename T>
     bool read( T& v );
     bool read( char* buf, int dataLen );
+
+    // todo: List Dict support
+
+    // todo: writeVar  readVar support
+
+    String dump();
 
 private:
     typedef void ( FlatBuffer::*Disposer )( );

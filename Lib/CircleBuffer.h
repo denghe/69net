@@ -6,6 +6,8 @@ class CircleBuffer
 {
 public:
     explicit CircleBuffer( Pool& p );
+    CircleBuffer( CircleBuffer const& other ) = delete;
+    CircleBuffer& operator=( CircleBuffer const& other ) = delete;
     ~CircleBuffer();
     void write( char const* buf, int len );
     int read( char* buf, int bufLen );          // 试复制指定长度到 buf 并移动读指针. 返回实际复制的长度
@@ -24,7 +26,7 @@ private:
     int         _wpLen;                         // 正用于写的页的已写长度
     int         _rpLen;                         // 正用于读的页的已读长度
     int         _size;                          // 正读页剩余长度 + 正写页已写长度 + 中间跨过的页数 * 页size
-    Pool&       _pool;
+    Pool*       _pool;
 };
 
 

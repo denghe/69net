@@ -6,7 +6,7 @@ CircleBuffer::CircleBuffer( Pool& p )
     , _wpLen( 0 )
     , _rpLen( 0 )
     , _size( 0 )
-    , _pool( p )
+    , _pool( &p )
 {
     assert( p.itemBufLen() - sizeof( Page* ) > 0 );
 }
@@ -22,7 +22,7 @@ void CircleBuffer::clear()
     _wp->next = nullptr;
     while( p )
     {
-        _pool.free( p );
+        _pool->free( p );
         p = p->next;
     }
     _wp = _rp = nullptr;
@@ -45,8 +45,8 @@ void CircleBuffer::write( char const* buf, int len )
     if( !len ) return;
     auto bak = len;
 
-    int ps = _pool.itemBufLen() - sizeof( Page* );
-    if( !_wp ) _rp = _wp = (Page*)_pool.alloc();
+    int ps = _pool->itemBufLen() - sizeof( Page* );
+    if( !_wp ) _rp = _wp = (Page*)_pool->alloc();
 Begin:
     auto space = ps - _wpLen;
     if( len <= space )
@@ -59,7 +59,7 @@ Begin:
     memcpy( _wp->data + _wpLen, buf, space );
     buf += space;
     len -= space;
-    _wp->next = (Page*)_pool.alloc();
+    _wp->next = (Page*)_pool->alloc();
     _wp = _wp->next;
     _wpLen = 0;
     goto Begin;
@@ -68,7 +68,7 @@ Begin:
 void CircleBuffer::copy( char* buf, int len )
 {
     assert( len <= _size );
-    int ps = _pool.itemBufLen() - sizeof( Page* );
+    int ps = _pool->itemBufLen() - sizeof( Page* );
     auto rp = _rp;
     int rpLen = _rpLen;
 Begin:
@@ -89,7 +89,7 @@ Begin:
 int CircleBuffer::read( char* buf, int bufLen )
 {
     if( !_size ) return 0;
-    int ps = _pool.itemBufLen() - sizeof( Page* );
+    int ps = _pool->itemBufLen() - sizeof( Page* );
     int len = bufLen;
     if( bufLen > _size ) len = _size;
     _size -= len;
@@ -106,8 +106,9 @@ Begin:
     buf += space;
     len -= space;
     auto next = _rp->next;
-    _pool.free( _rp );
+    _pool->free( _rp );
     _rp = next;
     _rpLen = 0;
     goto Begin;
 }
+

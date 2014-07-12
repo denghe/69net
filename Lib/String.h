@@ -9,10 +9,10 @@ public:
     String( Pool& p );                                          // prepare with pool buffer
     String( char const* buf, int bufLen, int dataLen, bool isRef = true );    // ref or copy
     String( char const* s, bool isRef = false );                // copy or ref
-    String( String const & other );                             // copy
-    String( String && other );                                  // move
-    String& operator=( String const & other );                  // copy
-    String& operator=( String && other );                       // move
+    String( String const& other );                              // copy
+    String( String&& other );                                   // move
+    String& operator=( String const& other );                   // copy
+    String& operator=( String&& other );                        // move
     ~String();                                                  // dispose buf
     void assign( char const* buf, int bufLen, int dataLen, bool isRef = true );     // ref or copy
     void assign( char const* s, bool isRef = false );           // copy or ref
@@ -46,7 +46,6 @@ public:
     template<typename ...TS>
     void append( TS const & ...vs );
 
-
     template<typename ...TS>
     void appendFormat( char const* format, TS const & ...vs );
 
@@ -57,8 +56,14 @@ public:
     template<typename ...TS>
     static String makeFormat( char const* format, TS const & ...vs );
 
-    std::string std_str();
+    template<typename ...TS>
+    static String make( Pool& p, TS const & ...vs );
 
+    template<typename ...TS>
+    static String makeFormat( Pool& p, char const* format, TS const & ...vs );
+
+
+    std::string std_str();
 
     template<typename T>
     void appendHex( T const& v );

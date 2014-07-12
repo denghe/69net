@@ -2,6 +2,136 @@
 using namespace std;
 int main()
 {
+    {
+        Dict<String, String> d;
+        Stopwatch sw;
+        for( int i = 0; i < 99999; ++i )
+        {
+            d.insert( String::make( "asdfqwerasdfqwerasdfqwer", i ), String::make( "asdfqwerasdfqwerasdfqwer", i ) );
+        }
+        cout << sw.elapsed() << endl;
+        sw.reset();
+        auto d2 = move( d );
+        //for( int i = 0; i < 99; ++i )
+        //{
+        //    d2 = move( d );
+        //}
+        cout << sw.elapsed() << endl;
+        cout << d2.find( "asdfqwerasdfqwerasdfqwer99998" )->value.c_str() << endl;
+    }
+
+    {
+        unordered_map<string, string> d;
+        Stopwatch sw;
+        for( int i = 0; i < 99999; ++i )
+        {
+            d.insert( make_pair( "asdfqwerasdfqwerasdfqwer" + to_string( i ), "asdfqwerasdfqwerasdfqwer" + to_string( i ) ) );
+        }
+        cout << sw.elapsed() << endl;
+        sw.reset();
+        auto d2 = move(d);
+        //for( int i = 0; i < 99; ++i )
+        //{
+        //    d2 = d;
+        //}
+        cout << sw.elapsed() << endl;
+        cout << d2[ "asdfqwerasdfqwerasdfqwer99998" ] << endl;
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Lib/All.h"
+using namespace std;
+int main()
+{
+    List<String> ls;
+    ls.reserve( 9999999 );
+    Pool p( 128, 4096, 9999999, true );
+    cout << "pool size = " << p.size() << endl;
+
+    Stopwatch sw;
+    for( int i = 0; i < 9999999; ++i )
+    {
+        ls.push( String( p ) );
+    }
+    cout << "ls.push( String( p ) );  time = " << sw.elapsed() << endl;
+    cout << "pool size = " << p.size() << endl;
+
+    sw.reset();
+    ls.clear();
+    cout << "ls.clear();  time = " << sw.elapsed() << endl;
+    cout << "pool size = " << p.size() << endl;
+
+    vector<string> vs;
+    vs.reserve( 9999999 );
+    sw.reset();
+    for( int i = 0; i < 9999999; ++i )
+    {
+        string s;
+        s.reserve( 128 );
+        vs.push_back( move( s ) );
+    }
+    cout << "vs.push_back( move( s ) );  time = " << sw.elapsed() << endl;
+
+    sw.reset();
+    vs.clear();
+    cout << "vs.clear();  time = " << sw.elapsed() << endl;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Lib/All.h"
+using namespace std;
+int main()
+{
     Pool p( 128, 4096, 9999999 );
     cout << "pool size " << p.size() << endl;
     {
@@ -1095,4 +1225,3 @@ int main()
 
 
 
-// todo: 实现个类似 map 的东西，当 key 传 String 时，存 Hash
