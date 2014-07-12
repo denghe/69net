@@ -42,12 +42,12 @@ void String::appendFormat( char const* format, TS const & ...vs )
     ALIGN8( char buf[ sizeof...( vs ) ][ 64 ] );
     List<String> ss( sizeof...( vs ) );
     for( int i = 0; i < sizeof...( vs ); ++i )
-        ss.push( String( buf[ i ], _countof( buf[ i ] ) ) );
+        ss.push( String( buf[ i ], _countof( buf[ i ] ), 0 ) );
     int num = 0;
     appendFormatCore( ss, num, vs... );
 
     char numBuf[ 32 ];
-    String numStr( numBuf, 32 );
+    String numStr( numBuf, 32, 0 );
     int offset = 0;
     while( auto c = format[ offset ] )
     {

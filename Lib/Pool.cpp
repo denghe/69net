@@ -1,25 +1,27 @@
 #include "All.h"
 
 
-Pool::Pool( int itemSize, int pageSize, int capacity )
+Pool::Pool( int itemBufLen, int pageBufLen /*= 4096*/, int capacity /*= 128 */, bool attackPointer /*= false*/ )
 {
-    init( itemSize, pageSize, capacity );
+    init( itemBufLen, pageBufLen, capacity, attackPointer );
 }
 
 Pool::Pool()
-    :_itemSize( 0 )
-    , _pageSize( 0 )
+    :_itemBufLen( 0 )
+    , _pageBufLen( 0 )
+    , _attackPointer( false )
 {
 }
 
-void Pool::init( int itemSize, int pageSize /*= 4096*/, int capacity /*= 128 */ )
+void Pool::init( int itemBufLen, int pageBufLen /*= 4096*/, int capacity /*= 128 */, bool attackPointer /*= false*/ )
 {
-    assert( itemSize <= pageSize && itemSize > 0 && capacity >= 0 );
-    _itemSize = itemSize; //(int)Utils::round2n( itemSize );
-    if( pageSize < 4096 )
-        _pageSize = 4096;
+    assert( itemBufLen <= pageBufLen && itemBufLen > 0 && capacity >= 0 );
+    _attackPointer = attackPointer;
+    _itemBufLen = itemBufLen; //(int)Utils::round2n( itemSize );
+    if( pageBufLen < 4096 )
+        _pageBufLen = 4096;
     else
-        _pageSize = (int)Utils::round2n( pageSize );
+        _pageBufLen = (int)Utils::round2n( pageBufLen );
     reserve( capacity );
 }
 
@@ -49,7 +51,7 @@ void Pool::clear()
     for( int j = 0; j < _pages.size(); ++j )
     {
         auto p = (char*)_pages[ j ];
-        for( int i = 0; i < _pageSize; i += _itemSize ) _items.push( p + i );
+        for( int i = 0; i < _pageBufLen; i += _itemBufLen ) _items.push( p + i );
     }
 }
 
@@ -61,7 +63,7 @@ void Pool::collect()
         for( int i = 0; i < _pages.size(); ++i )
         {
             auto ps = (size_t)_pages[ i ];
-            auto pe = (size_t)_pages[ i ] + _pageSize;
+            auto pe = (size_t)_pages[ i ] + _pageBufLen;
             auto v = (size_t)item;
             if( ps <= v && v < pe ) return _pages[ i ];
         }
@@ -73,19 +75,13 @@ void Pool::collect()
     {
         auto page = getPage( _items[ i ] );
         dict[ page ] += 1;
-        //auto it = dict.find( page );
-        //if( it != dict.end() )
-        //{
-        //    ++it->second;
-        //}
-        //else dict[ page ] = 1;
     }
     for( int i = 0; i < _pages.size(); ++i )
     {
-        if( dict[ _pages[ i ] ] == _pageSize / _itemSize )
+        if( dict[ _pages[ i ] ] == _pageBufLen / _itemBufLen )
         {
             auto ps = (size_t)_pages[ i ];
-            auto pe = (size_t)_pages[ i ] + _pageSize;
+            auto pe = (size_t)_pages[ i ] + _pageBufLen;
             for( int j = 0; j < _items.size(); ++j )
             {
                 auto v = (size_t)_items[ j ];
@@ -105,9 +101,24 @@ void Pool::collect()
 
 void Pool::reserve()
 {
-    auto p = new char[ _pageSize ];        // maybe need align 8/16
+    auto p = new char[ _pageBufLen ];        // maybe need align 8/16
     _pages.push( p );
-    for( int i = 0; i < _pageSize / _itemSize; ++i ) _items.push( p + i * _itemSize );
+    if( !_attackPointer )
+    {
+        for( int i = 0; i < _pageBufLen / _itemBufLen; ++i )
+        {
+            _items.push( p + i * _itemBufLen );
+        }
+    }
+    else
+    {
+        for( int i = 0; i < _pageBufLen / _itemBufLen; ++i )
+        {
+            auto a = p + i * _itemBufLen;
+            _items.push( a );
+            *(Pool**)( a + _itemBufLen - sizeof( Pool* ) ) = this;
+        }
+    }
 }
 
 void Pool::reserve( int capacity )
@@ -127,11 +138,16 @@ int Pool::size() const
 
 int Pool::pageBufLen() const
 {
-    return _pageSize;
+    return _pageBufLen;
 }
 
 int Pool::itemBufLen() const
 {
-    return _itemSize;
+    return _itemBufLen;
+}
+
+bool Pool::attackPointer() const
+{
+    return _attackPointer;
 }
 

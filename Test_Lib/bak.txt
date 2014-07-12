@@ -1,3 +1,90 @@
+#include "Lib/All.h"
+using namespace std;
+int main()
+{
+    Pool p( 128, 4096, 9999999 );
+    cout << "pool size " << p.size() << endl;
+    {
+        vector<String> ss;
+        ss.reserve( 9999999 );
+        Stopwatch sw;
+        for( int i = 0; i < 9999999; ++i )
+        {
+            ss.push_back( String( p ) );// (char*)p.alloc(), 128, 0 ) );
+        }
+        cout << sw.elapsed() << endl;
+        cout << "pool size " << p.size() << endl;
+        sw.reset();
+        for( int i = 0; i < 9999999; ++i )
+        {
+            ss[ i ].appendFormat( "hi, {0}! {1} hi, {0}! {1} hi, {0}! {1} hi, {0}! {1}", "asdf", i );
+        }
+        cout << sw.elapsed() << endl;
+        cout << ss[ ss.size() - 1 ].c_str() << endl;
+    }
+    cout << "pool size " << p.size() << endl;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Lib/All.h"
+using namespace std;
+
+int main()
+{
+    //LRUCache<int, int> c( 5 );
+    //c.insert( 1, 1 );
+    //c.insert( 2, 2 );
+    //c.insert( 3, 3 );
+    //c.insert( 4, 4 );
+    //c.insert( 5, 5 );
+    //c.dump();
+    //c.insert( 6, 6 );   // 1 will be lost
+    //c.dump();
+    //if( c.find( 1 ) ) cout << "found 1" << endl;
+    //if( c.find( 2 ) ) cout << "found 2" << endl;
+    //c.insert( 7, 7 );   // 3 will be lost
+    //c.dump();
+
+    //char buf[] = "asdfasdfhasdfklsdjf12312k3jh1l2k3j";
+    //String s;
+    //Utils::dumpBinary( s, buf, _countof( buf ) );
+    //cout << s.c_str() << endl;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int main()
 {
     Pool p( 16, 4096, 1 );

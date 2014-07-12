@@ -592,7 +592,7 @@ namespace Utils
         if( !binaryRead( destLen, src, len ) ) return false;
         dest.resize( destLen, false );
         memcpy( dest.data(), src + sizeof( int ), destLen );
-        return 0;
+        return true;
     }
 
     bool binaryRead( FlatBuffer& dest, char const* src, int len )
@@ -600,5 +600,6 @@ namespace Utils
         int destLen;
         if( !binaryRead( destLen, src, len ) ) return false;
         dest.assign( src + sizeof( int ), 0, destLen );
+        return true;
     }
 }

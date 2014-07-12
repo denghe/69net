@@ -6,14 +6,15 @@ class String
 {
 public:
     explicit String( int capacity = 64 );                       // prepare
-    String( char const* buf, int bufLen, int dataLen = 0, bool isRef = true );          // ref or copy
+    String( Pool& p );                                          // prepare with pool buffer
+    String( char const* buf, int bufLen, int dataLen, bool isRef = true );    // ref or copy
     String( char const* s, bool isRef = false );                // copy or ref
     String( String const & other );                             // copy
     String( String && other );                                  // move
     String& operator=( String const & other );                  // copy
     String& operator=( String && other );                       // move
     ~String();                                                  // dispose buf
-    void assign( char const* buf, int bufLen, int dataLen = 0, bool isRef = true );     // ref or copy
+    void assign( char const* buf, int bufLen, int dataLen, bool isRef = true );     // ref or copy
     void assign( char const* s, bool isRef = false );           // copy or ref
     void reserve( int capacity );                               // prepare memory
     void resize( int len, bool fillZero = true );               // cut( maybe damage utf8 ) or grow up
