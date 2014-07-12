@@ -51,3 +51,5 @@ http://blog.csdn.net/tspangle/article/details/23735369
 
 听说是一个很快的 tostring 项目
 https://code.google.com/p/stringencoders/
+string 相关
+http://www.codeproject.com/Articles/23198/C-String-Toolkit-StrTk-Tokenizer
