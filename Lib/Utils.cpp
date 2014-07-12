@@ -586,23 +586,19 @@ namespace Utils
 
 
 
-    int binaryRead( String& dest, char const* src, int len )
+    bool binaryRead( String& dest, char const* src, int len )
     {
         int destLen;
-        if( auto rtv = binaryRead( destLen, src, len ) ) return rtv;
+        if( !binaryRead( destLen, src, len ) ) return false;
         dest.resize( destLen, false );
         memcpy( dest.data(), src + sizeof( int ), destLen );
         return 0;
     }
 
-    int binaryRead( FlatBuffer& dest, char const* src, int len )
+    bool binaryRead( FlatBuffer& dest, char const* src, int len )
     {
         int destLen;
-        if( auto rtv = binaryRead( destLen, src, len ) ) return rtv;
-        dest.reserve( destLen );
-        memcpy( dest.data(), src + sizeof( int ), destLen );
-        dest.widx() = destLen;
-        dest.ridx() = 0;
+        if( !binaryRead( destLen, src, len ) ) return false;
+        dest.assign( src + sizeof( int ), 0, destLen );
     }
-
 }

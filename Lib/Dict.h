@@ -14,6 +14,11 @@ struct Dict
     };
     typedef Node NT;
     explicit Dict( int capacity = 64 );
+    // todo:
+    //Dict( Dict && o );
+    //Dict( Dict const & o ) = delete;    // todo
+    //Dict & operator=( Dict && o );
+    //Dict & operator=( Dict const & o ) = delete;    // todo
     ~Dict();
     template <typename KT, typename VT>
     std::pair<Node*, bool> insert( KT && k, VT && v, bool replace = false );    // if exists, return Node* + false. else add and return Node* + true
@@ -34,11 +39,6 @@ private:
 
 #include "Dict.hpp"
 
-// todo:
-//Dict( Dict && o );
-//Dict( Dict const & o ) = delete;    // todo
-//Dict & operator=( Dict && o );
-//Dict & operator=( Dict const & o ) = delete;    // todo
 
 
 #endif

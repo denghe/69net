@@ -90,10 +90,10 @@ void List<bool>::reserve( int capacity )
     if( capacity <= _maxSize ) return;
     auto len = (int)Utils::round2n( ( capacity - 1 ) / 8 + 1 );
     _maxSize = len * 8;
-    auto newBuffer = new char[ len ];
-    memcpy( newBuffer, _buf, byteSize() );
+    auto newBuf = new char[ len ];
+    memcpy( newBuf, _buf, byteSize() );
     delete[] _buf;
-    _buf = newBuffer;
+    _buf = newBuf;
 }
 
 char* List<bool>::data() const

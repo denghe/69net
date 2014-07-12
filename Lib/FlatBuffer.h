@@ -12,29 +12,31 @@ public:
     FlatBuffer& operator=( FlatBuffer const & other );                          // copy
     FlatBuffer& operator=( FlatBuffer && other );                               // move
     ~FlatBuffer();
+    void assign( char const* buf, int bufLen, int dataLen = 0, bool isRef = false );  // copy or ref
     void reserve( int capacity );
-    void clear();                                                               // ridx = widx = 0
-    int size() const;                                                           // widx
-    bool empty() const;
-    char* data() const;
-    char& operator[] ( int idx ) const;                                         // return _buf[ idx ]
-    char& operator[] ( int idx );                                               // return _buf[ idx ]
-    char at( int idx ) const;
-    char& at( int idx );
-    void set( int idx, char v );
-    int& widx();
-    int& ridx();
+    void resize( int widx );
+    void clear();                                                               // _dataLen = _offset = 0
+    int size() const;                                                           // _dataLen
+    int offset() const;                                                         // _offset
+    int& offset();                                                              // _offset
+    bool empty() const;                                                         // _dataLen == 0
+    bool eof() const;                                                           // _dataLen == _offset
+    char const* data() const;                                                   // _buf
+    char* data();                                                               // _buf
+    char operator[] ( int idx ) const;                                          // _buf[ idx ]
+    char& operator[] ( int idx );                                               // _buf[ idx ]
+    char at( int idx ) const;                                                   // _buf[ idx ]
+    char& at( int idx );                                                        // _buf[ idx ]
 
     template<typename T>
     void write( T const& v );
-    void write( char const* buf, int len );
+    void write( char const* buf, int dataLen );
     template<typename ...TS>
     void writes( TS const & ...vs );
 
-    // return 0: success    -1: overflow    1+: out of range
     template<typename T>
-    int read( T& v );
-    int read( char* buf, int len );
+    bool read( T& v );
+    bool read( char* buf, int dataLen );
 
 private:
     typedef void ( FlatBuffer::*Disposer )( );
@@ -43,8 +45,8 @@ private:
 
     char*       _buf;
     int         _bufLen;
-    int         _widx;
-    int         _ridx;
+    int         _dataLen;
+    int         _offset;
     Disposer    _disposer;
 };
 

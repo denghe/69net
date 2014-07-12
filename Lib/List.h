@@ -1,6 +1,7 @@
 #ifndef _LIST_H__
 #define _LIST_H__
 
+// todo: 将 _buf 声明为 T* 以方便调试时查看
 template<typename T>
 class List
 {
@@ -29,7 +30,7 @@ public:
     template<typename VT>
     void set( int idx, VT&& v );
 private:
-    char*       _buf;
+    T*          _buf;
     int         _size;
     int         _maxSize;  // new, reserve refresh
 };

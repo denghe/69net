@@ -2,12 +2,12 @@ template<typename T>
 List<T>::List( int capacity )
 {
     assert( capacity > 0 );
-    auto len = int( capacity * sizeof( T ) );
-    if( len < 64 ) len = 64;
-    else len = (int)Utils::round2n( len );
+    auto byteLen = int( capacity * sizeof( T ) );
+    if( byteLen < 64 ) byteLen = 64;
+    else byteLen = (int)Utils::round2n( byteLen );
     _size = 0;
-    _buf = new char[ len ];
-    _maxSize = len / sizeof( T );
+    _buf = (T*)new char[ byteLen ];
+    _maxSize = byteLen / sizeof( T );
 }
 
 template<typename T>
@@ -16,7 +16,7 @@ List<T>::~List()
     if( _buf )
     {
         clear();
-        delete[] _buf;
+        delete[] (char*)_buf;
     }
 }
 
@@ -37,14 +37,14 @@ List<T>::List( List const& other )
         memcpy( _buf, other._buf, other.byteSize() );
     else
         for( int i = 0; i < other._size; ++i )
-            new ( (T*)_buf + i ) T( ( (T*)other._buf )[ i ] );
+            new ( _buf + i ) T( other._buf[ i ] );
 }
 
 template<typename T>
 List<T>& List<T>::operator=( List && other )
 {
     clear();
-    delete[] _buf;
+    delete[] (char*)_buf;
     _buf = other._buf;
     _size = other._size;
     _maxSize = other._maxSize;
@@ -60,18 +60,18 @@ List<T>& List<T>::operator=( List const& other )
     _size = other._size;
     if( _maxSize < other._size )
     {
-        auto len = int( other._size * sizeof( T ) );
-        if( len < 64 ) len = 64;
-        else len = (int)Utils::round2n( len );
-        _maxSize = len / sizeof( T );
-        delete[] _buf;
-        _buf = new char[ len ];
+        auto byteLen = int( other._size * sizeof( T ) );
+        if( byteLen < 64 ) byteLen = 64;
+        else byteLen = (int)Utils::round2n( byteLen );
+        _maxSize = byteLen / sizeof( T );
+        delete[] (char*)_buf;
+        _buf = (T*)new char[ byteLen ];
     }
     if( Utils::isValueType<T>() )
         memcpy( _buf, other._buf, other.byteSize() );
     else
         for( int i = 0; i < other._size; ++i )
-            new ( (T*)_buf + i ) T( ( (T*)other._buf )[ i ] );
+            new ( _buf + i ) T( other._buf[ i ] );
     return *this;
 }
 
@@ -81,9 +81,9 @@ void List<T>::push( VT&& v )
 {
     if( _size == _maxSize ) reserve( _size + 1 );
     if( Utils::isValueType<T>() )
-        ( (T*)_buf )[ _size ] = v;
+        _buf[ _size ] = v;
     else
-        new ( (T*)_buf + _size ) T( std::forward<VT>( v ) );
+        new ( _buf + _size ) T( std::forward<VT>( v ) );
     ++_size;
 }
 
@@ -91,21 +91,21 @@ template<typename T>
 void List<T>::pop()
 {
     assert( _size > 0 );
-    ( (T*)_buf )[ --_size ].~T();
+    _buf[ --_size ].~T();
 }
 
 template<typename T>
 T& List<T>::top()
 {
     assert( _size > 0 );
-    return ( (T*)_buf )[ _size - 1 ];
+    return _buf[ _size - 1 ];
 }
 
 template<typename T>
 void List<T>::clear()
 {
     for( int i = 0; i < _size; ++i )
-        ( (T*)_buf )[ i ].~T();
+        _buf[ i ].~T();
     _size = 0;
 }
 
@@ -114,16 +114,16 @@ void List<T>::reserve( int capacity )
 {
     assert( capacity > 0 );
     if( capacity <= _maxSize ) return;
-    auto len = (int)Utils::round2n( capacity * sizeof( T ) );
-    _maxSize = len / sizeof( T );
-    auto newBuffer = new char[ len ];
+    auto byteLen = (int)Utils::round2n( capacity * sizeof( T ) );
+    _maxSize = byteLen / sizeof( T );
+    auto newBuf = (T*)new char[ byteLen ];
     if( Utils::isValueType<T>() )
-        memcpy( newBuffer, _buf, byteSize() );
+        memcpy( newBuf, _buf, byteSize() );
     else
         for( int i = 0; i < _size; ++i )
-            new ( (T*)newBuffer + i ) T( std::move( ( (T*)_buf )[ i ] ) );
-    delete[] _buf;
-    _buf = newBuffer;
+            new ( newBuf + i ) T( std::move( _buf[ i ] ) );
+    delete[] (char*)_buf;
+    _buf = newBuf;
 }
 
 template<typename T>
@@ -134,7 +134,7 @@ void List<T>::resize( int capacity, bool init /*= true */ )
     {
         if( !Utils::isValueType<T>() )
             for( int i = capacity; i < _size; ++i )
-                ( (T*)_buf )[ i ].~T();
+                _buf[ i ].~T();
     }
     else
     {
@@ -143,10 +143,10 @@ void List<T>::resize( int capacity, bool init /*= true */ )
         {
 
             if( Utils::isValueType<T>() )
-                memset( _buf + _size * sizeof( T ), 0, ( capacity - _size ) * sizeof( T ) );
+                memset( _buf + _size, 0, ( capacity - _size ) * sizeof( T ) );
             else
                 for( int i = _size; i < capacity; ++i )
-                    new ( (T*)_buf + i ) T();
+                    new ( _buf + i ) T();
         }
     }
     _size = capacity;
@@ -155,7 +155,7 @@ void List<T>::resize( int capacity, bool init /*= true */ )
 template<typename T>
 T* List<T>::data() const
 {
-    return (T*)_buf;
+    return _buf;
 }
 
 template<typename T>
@@ -179,25 +179,25 @@ int List<T>::byteMaxSize() const
 template<typename T>
 T const & List<T>::operator[]( int idx ) const
 {
-    return ( (T*)_buf )[ idx ];
+    return _buf[ idx ];
 }
 
 template<typename T>
 T& List<T>::operator[]( int idx )
 {
-    return ( (T*)_buf )[ idx ];
+    return _buf[ idx ];
 }
 
 template<typename T>
 T const & List<T>::at( int idx ) const
 {
-    return ( (T*)_buf )[ idx ];
+    return _buf[ idx ];
 }
 
 template<typename T>
 T& List<T>::at( int idx )
 {
-    return ( (T*)_buf )[ idx ];
+    return _buf[ idx ];
 }
 
 template<typename T>
@@ -206,7 +206,7 @@ void List<T>::set( int idx, VT&& v )
 {
     assert( idx >= 0 && idx < _size );
     if( Utils::isValueType<T>() )
-        ( (T*)_buf )[ idx ] = v;
+        _buf[ idx ] = v;
     else
-        ( (T*)_buf )[ idx ] = std::forward<VT>( v );
+        _buf[ idx ] = std::forward<VT>( v );
 }

@@ -39,9 +39,9 @@ int getSize( TS const & ...vs )         // 批量统计 binary 长度
 template<typename T>
 void FlatBuffer::write( T const& v )
 {
-    reserve( _widx + Utils::getSize( v ) );
-    Utils::binaryWrite( _buf + _widx, v );
-    _widx += sizeof( v );
+    reserve( _dataLen + Utils::getSize( v ) );
+    Utils::binaryWrite( _buf + _dataLen, v );
+    _dataLen += sizeof( v );
 }
 
 template<typename T>
@@ -61,17 +61,17 @@ void writesCore( char* buf, int& offset, T const& v, TS const & ...vs )
 template<typename ...TS>
 void FlatBuffer::writes( TS const & ...vs )
 {
-    reserve( _widx + Utils::getSize( vs ) );
-    writesCore( _buf, _widx, vs... );
+    reserve( _dataLen + Utils::getSize( vs ) );
+    writesCore( _buf, _dataLen, vs... );
 }
 
 
 template<typename T>
-int FlatBuffer::read( T& v )
+bool FlatBuffer::read( T& v )
 {
     auto len = Utils::getSize( v );
-    if( _ridx + len > _widx ) return 1;
-    Utils::binaryRead( v, _buf + _ridx );
-    _ridx += len;
-    return 0;
+    if( _offset + len > _dataLen ) return false;
+    Utils::binaryRead( v, _buf + _offset );
+    _offset += len;
+    return true;
 }

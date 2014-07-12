@@ -325,9 +325,37 @@ namespace Utils
 
 
 
+    template<typename T>
+    int getSizeCore( T const& v ) { return sizeof( T ); }
+    inline int getSizeCore( String const& v ) { return v.size() + sizeof( int ); };
+    inline int getSizeCore( FlatBuffer const& v ) { return v.size() + sizeof( int ); };
 
-    void binaryDumpCore( String & s, char const * buf, int len );
-    void binaryDump( String & s, char const * buf, int len );
+    template<typename T>
+    void getSizeCore( int& len, T const& v )
+    {
+        len += getSizeCore( v );
+    }
+
+    template<typename T, typename ...TS>
+    void getSizeCore( int& len, T const & v, TS const & ...vs )
+    {
+        getSizeCore( len, v );
+        getSizeCore( len, vs... );
+    }
+
+    template<typename ...TS>
+    int getSize( TS const & ...vs )         // 批量统计 binary 长度
+    {
+        int len = 0;
+        getSize( len, vs... );
+        return len;
+    }
+
+
+
+
+
+
 
     template<typename T>
     INLINE void binaryWrite( char* dest, T const& src )
@@ -364,9 +392,9 @@ namespace Utils
 
 
     template<typename T>
-    INLINE int binaryRead( T& dest, char const* src, int len )
+    INLINE bool binaryRead( T& dest, char const* src, int len )
     {
-        if( len < sizeof( T ) ) return 1;
+        if( len < sizeof( T ) ) return false;
 #ifdef __IA
         dest = *(T*)src;
 #else
@@ -392,40 +420,20 @@ namespace Utils
             p[ 7 ] = src[ 7 ];
         }
 #endif
-        return 0;
+        return true;
     }
-    int binaryRead( String& dest, char const* src, int len );
-    int binaryRead( FlatBuffer& dest, char const* src, int len );
+    bool binaryRead( String& dest, char const* src, int len );
+    bool binaryRead( FlatBuffer& dest, char const* src, int len );
 
 
 
 
 
-    template<typename T>
-    int getSizeCore( T const& v ) { return sizeof( T ); }
-    inline int getSizeCore( String const& v ) { return v.size() + sizeof( int ); };
-    inline int getSizeCore( FlatBuffer const& v ) { return v.size() + sizeof( int ); };
 
-    template<typename T>
-    void getSizeCore( int& len, T const& v )
-    {
-        len += getSizeCore( v );
-    }
 
-    template<typename T, typename ...TS>
-    void getSizeCore( int& len, T const & v, TS const & ...vs )
-    {
-        getSizeCore( len, v );
-        getSizeCore( len, vs... );
-    }
+    void binaryDumpCore( String & s, char const * buf, int len );
+    void binaryDump( String & s, char const * buf, int len );
 
-    template<typename ...TS>
-    int getSize( TS const & ...vs )         // 批量统计 binary 长度
-    {
-        int len = 0;
-        getSize( len, vs... );
-        return len;
-    }
 
 }
 
