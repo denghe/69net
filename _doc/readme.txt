@@ -48,3 +48,6 @@ http://coliru.stacked-crooked.com/
 一篇讲 2d 物理 engine 的好文，有助于 server 端集成
 http://blog.csdn.net/tspangle/article/details/23735369
 
+
+听说是一个很快的 tostring 项目
+https://code.google.com/p/stringencoders/
