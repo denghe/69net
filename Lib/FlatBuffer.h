@@ -40,10 +40,10 @@ public:
 
 
 
-    void write( char const* buf, int dataLen );
+    void write( char const* buf, int dataLen );                                 // do not write dataLen
 
     template<int len>
-    void write( char const( &s )[ len ] );
+    void write( char const( &s )[ len ] );                                      // same as String( len + buf )
 
     template<typename T>
     void write( T const& v );

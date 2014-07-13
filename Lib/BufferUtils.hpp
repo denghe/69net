@@ -4,41 +4,22 @@
 namespace BufferUtils
 {
 
-    HAS_FUNC( getSize_checker, getSize, void ( T::* )( ) const );
-
-    template<typename T, bool>
-    struct getSize_switch
-    {
-    };
-
+    HAS_FUNC( getSize_checker, getBufferSize, int ( T::* )( ) const );
     template<typename T>
-    struct getSize_switch < T, false >
+    typename std::enable_if<getSize_checker<T>::value, int>::type getSizeCore( T const& v )
     {
-        static int exec( T const& v )
-        {
-            return sizeof( T );
-        }
+        return v.getBufferSize();
     };
-
     template<typename T>
-    struct getSize_switch < T, true >
+    typename std::enable_if<!getSize_checker<T>::value, int>::type getSizeCore( T const& v )
     {
-        static int exec( T const& v )
-        {
-            return v.getBufferSize();
-        }
+        return sizeof( T );
     };
-
-    template<typename T>
-    int getSize_entry( T const& v )
-    {
-        return getSize_switch<T, getSize_checker<T>::value>::exec( v );
-    }
 
     template<typename T>
     int getSize( T const& v )
     {
-        return getSize_entry( v );
+        return getSizeCore( v );
     }
 
     template<int len>

@@ -158,29 +158,28 @@ HAS_FUNC
 
 /*
 
-SFINAE check menber function
+SFINAE check menber function exists
 sample：
 
-// 创建检测类
-HAS_FUNC( toString_checker, toString, void (T::*)() const );
+HAS_FUNC( FUNC_NAME_checker, T_MEMBER_FUNC_NAME, RETURN_TYPE ( T::* )( T_MEMBER_FUNC_PARMS ) const );
 
-// 目标函数
-template<typename T> void Console::Write( T const & v )
+template<typename T>
+typename std::enable_if<FUNC_NAME_checker<T>::value, RETURN_TYPE>::type FUNC_NAME_switch( T const& v )
 {
-toString_switch<T, toString_checker<T>::value>::func( v );
+    return v.T_MEMBER_FUNC_NAME( T_MEMBER_FUNC_PARMS );
+};
+template<typename T>
+typename std::enable_if<!FUNC_NAME_checker<T>::value, RETURN_TYPE>::type FUNC_NAME_switch( T const& v )
+{
+    return ................;
+};
+
+template<typename T>
+RETURN_TYPE FUNC_NAME( T const& v )
+{
+    return FUNC_NAME_switch( v );
 }
 
-// 辅助路由类
-template<typename T, bool> struct toString_switch { };
-
-// 带函数的会 call 这个
-template<typename T> struct toString_switch<T, true> { static bool func( T const & v ) {
-// ...
-} };
-
-template<typename T> struct toString_switch<T, false> { static bool func( T const & v ) {
-// ...
-} };
 
 */
 #define HAS_FUNC( CN, FN, FT )   \
