@@ -15,7 +15,13 @@ int main()
         llls.push( lls );
 
         FlatBuffer fb;
-        fb.writes( 123, llls, 1.23f, 1.23, "asdf", (byte)123 );
+        Stopwatch sw;
+        for( int i = 0; i < 9999999; i++ )
+        {
+            fb.clear();
+            fb.writes( llls, 123, 1.23f, 1.23, "asdfqwerzxcv1234", (byte)123, true );
+        }
+        cout << sw.elapsed() << endl;
         cout << fb.dump().c_str() << endl;
 
         fb111 = fb;

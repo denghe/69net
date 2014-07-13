@@ -46,7 +46,7 @@ void FlatBuffer::write( T const& v )
 template<int len>
 void FlatBuffer::writeDirect( char const( &s )[ len ] )
 {
-    writeDirect( len );
+    writeDirect( len - 1 );
     writeDirect( s, len - 1 );
 }
 template<int len>

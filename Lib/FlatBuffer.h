@@ -55,10 +55,6 @@ public:
     void write( T const& v );
 
     // reserve once
-    template<typename T>
-    void writesCore( T const& v );
-    template<typename T, typename ...TS>
-    void writesCore( T const& v, TS const& ...vs );
     template<typename ...TS>
     void writes( TS const& ...vs );
 
@@ -163,6 +159,12 @@ private:
     typedef void ( FlatBuffer::*Disposer )( );
     void disposePoolBuffer();
     void disposeNewBuffer();
+
+    template<typename T>
+    void writesCore( T const& v );
+    template<typename T, typename ...TS>
+    void writesCore( T const& v, TS const& ...vs );
+
 
     char*       _buf;
     int         _bufLen;
