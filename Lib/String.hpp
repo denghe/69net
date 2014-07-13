@@ -1,3 +1,7 @@
+#ifndef _STRING_HPP__
+#define _STRING_HPP__
+
+
 template<typename ...TS>
 void String::append( TS const & ...vs )
 {
@@ -116,3 +120,6 @@ void String::appendHex( T const& v )
     reserve( _dataLen + 16 );
     _dataLen += Utils::toHexString( _buf + _dataLen, v );
 }
+
+
+#endif

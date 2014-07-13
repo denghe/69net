@@ -1,7 +1,8 @@
 #ifndef _LIST_H__
 #define _LIST_H__
 
-// todo: 将 _buf 声明为 T* 以方便调试时查看
+class FlatBuffer;
+
 template<typename T>
 class List
 {
@@ -21,6 +22,7 @@ public:
     void resize( int capacity, bool init = true );
     T* data() const;
     int size() const;
+    int& size();
     int byteSize() const;
     int byteMaxSize() const;
     T const & operator[]( int idx ) const;
@@ -29,17 +31,21 @@ public:
     T& at( int idx );
     template<typename VT>
     void set( int idx, VT&& v );
+
+    // for FlatBuffer write
+    int getBufferSize() const;
+    void writeBuffer( FlatBuffer& fb ) const;
+
 private:
     T*          _buf;
     int         _size;
     int         _maxSize;  // new, reserve refresh
 };
 
-#include "List.hpp"
 
 
 template<>
-class List<bool>
+class List < bool >
 {
 public:
     List( int capacity = 512 );
@@ -53,14 +59,16 @@ public:
     bool top() const;
     void clear();
     void reserve( int capacity );
-    // todo void resize( int capacity, bool init = true );
+    // todo: void resize( int capacity, bool init = true );
     char* data() const;
     int size() const;
     int byteSize() const;
-    // todo int byteMaxSize() const;
+    // todo: int byteMaxSize() const;
     bool operator[]( int idx ) const;
     bool at( int idx ) const;
     void set( int idx, bool v );
+
+    // todo: for FlatBuffer write
 private:
     char*       _buf;
     int         _size;

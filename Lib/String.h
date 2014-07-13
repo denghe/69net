@@ -1,7 +1,9 @@
 #ifndef _STRING_H__
 #define _STRING_H__
 
-// todo: 支持各种常用 字串 处理 内存池
+
+class FlatBuffer;
+
 class String
 {
 public:
@@ -70,6 +72,12 @@ public:
 
     // todo: more util funcs
 
+
+    // for FlatBuffer
+    int getBufferSize() const;
+    void writeBuffer( FlatBuffer& fb ) const;
+
+
 private:
     template<typename T>
     void appendFormatCore( List<String>& ss, int& i, T const & v );
@@ -86,14 +94,6 @@ private:
     int         _dataLen;
     Disposer    _disposer;
 };
-
-#include "String.hpp"
-
-
-
-
-
-
 
 
 

@@ -17,6 +17,7 @@ public:
     void resize( int widx );
     void clear();                                                               // _dataLen = _offset = 0
     int size() const;                                                           // _dataLen
+    int& size();                                                                // _dataLen
     int offset() const;                                                         // _offset
     int& offset();                                                              // _offset
     bool empty() const;                                                         // _dataLen == 0
@@ -28,17 +29,131 @@ public:
     char at( int idx ) const;                                                   // _buf[ idx ]
     char& at( int idx );                                                        // _buf[ idx ]
 
+
+
+
+
+    // for FlatBuffer write
+    int getBufferSize();
+    void writeBuffer( FlatBuffer& fb );
+
+
+
+
+    void write( char const* buf, int dataLen );
+
+    template<int len>
+    void write( char const( &s )[ len ] );
+
     template<typename T>
     void write( T const& v );
-    void write( char const* buf, int dataLen );
+
+
+
+    template<typename T>
+    void writesCore( T const& v );
+    template<typename T, typename ...TS>
+    void writesCore( T const& v, TS const& ...vs );
     template<typename ...TS>
     void writes( TS const& ...vs );
 
-    template<typename T>
-    bool read( T& v );
-    bool read( char* buf, int dataLen );
 
-    // todo: List Dict support
+
+
+
+
+
+    //template<typename T>
+    //bool read( T& v )
+    //{
+    //    auto siz = BufferUtils::getSize( v );
+    //    if( _offset + siz > _dataLen ) return false;
+    //    if( Utils::isValueType<T>() )
+    //    {
+    //        BufferUtils::read( v, _buf );
+    //        return true;
+    //    }
+    //    // todo
+    //}
+
+    //inline bool read( char* buf, int dataLen )
+    //{
+    //    if( _offset + dataLen > _dataLen ) return false;
+    //    memcpy( buf, _buf + _offset, dataLen );
+    //    _offset += dataLen;
+    //    return true;
+    //}
+
+
+
+    //template<typename T>
+    //bool FlatBuffer::read( T& v )
+    //{
+    //    auto len = Utils::getSize( v );
+    //    if( _offset + len > _dataLen ) return false;
+    //    Utils::binaryRead( v, _buf + _offset );
+    //    _offset += len;
+    //    return true;
+    //}
+
+
+
+
+
+    //inline int binaryRead( String& dest, char const* src, int srcLen )
+    //{
+    //    int destLen;
+    //    int readLen = binaryRead( destLen, src, srcLen );
+    //    if( readLen <= 0 ) return readLen;
+    //    srcLen -= readLen;
+    //    src += readLen;
+    //    if( destLen > srcLen ) return srcLen - destLen;
+    //    dest.resize( destLen, false );
+    //    memcpy( dest.data(), src + sizeof( int ), destLen );
+    //    return destLen + readLen;
+    //}
+    //
+    //inline bool binaryRead( FlatBuffer& dest, char const* src, int srcLen )
+    //{
+    //    int destLen;
+    //    if( !binaryRead( destLen, src, srcLen ) ) return false;
+    //    dest.assign( src + sizeof( int ), 0, destLen );
+    //    return true;
+    //}
+    //template<typename T>
+    //bool binaryRead( List<T> const& dest, char const* src, int srcLen )
+    //{
+    //    int destLen;
+    //    if( !binaryRead( destLen, src, srcLen ) ) return false;
+    //    if( isValueType<T>() )
+    //    {
+    //        auto siz = destLen * sizeof( T );
+    //        if( siz > srcLen - sizeof( T ) ) return false;
+    //        dest.resize( destLen, false );
+    //        memcpy( dest.data(), src + sizeof( int ), siz );
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        dest.clear();
+    //        dest.reserve( destLen );
+    //        dest.size() = 0;
+    //        src += sizeof( int );
+    //        srcLen -= sizeof( int );
+    //        for( int i = 0; i < destLen; ++i )
+    //        {
+    //            new ( &dest[ i ] ) T();
+    //            dest.size() = i + 1;
+    //            if( !binaryRead( vs[ i ], src + sizeof( int ), srcLen - sizeof( int ) ) ) return false;
+    //        }
+    //        return true;
+    //    }
+    //
+    //}
+    //
+
+
+
 
     // todo: writeVar  readVar support
 
@@ -55,8 +170,6 @@ private:
     int         _offset;
     Disposer    _disposer;
 };
-
-#include "FlatBuffer.hpp"
 
 
 #endif

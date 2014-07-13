@@ -67,7 +67,12 @@ bool FlatBuffer::empty() const
 
 int FlatBuffer::size() const
 {
-    return _dataLen - _offset;
+    return _dataLen;
+}
+
+int& FlatBuffer::size()
+{
+    return _dataLen;
 }
 
 char const* FlatBuffer::data() const
@@ -209,21 +214,6 @@ int FlatBuffer::offset() const
     return _offset;
 }
 
-bool FlatBuffer::read( char* buf, int dataLen )
-{
-    if( _offset + dataLen > _dataLen ) return false;
-    memcpy( buf, _buf + _offset, dataLen );
-    _offset += dataLen;
-    return true;
-}
-
-void FlatBuffer::write( char const* buf, int dataLen )
-{
-    reserve( _dataLen + dataLen );
-    memcpy( _buf + _dataLen, buf, dataLen );
-    _dataLen += dataLen;
-}
-
 void FlatBuffer::disposeNewBuffer()
 {
     delete[] _buf;
@@ -232,6 +222,27 @@ void FlatBuffer::disposeNewBuffer()
 String FlatBuffer::dump()
 {
     String rtv;
-    Utils::binaryDump( rtv, _buf, _dataLen );
+    BufferUtils::dump( rtv, _buf, _dataLen );
     return rtv;
+}
+
+
+
+
+int FlatBuffer::getBufferSize()
+{
+    return sizeof( int ) + size();
+}
+
+void FlatBuffer::writeBuffer( FlatBuffer& fb )
+{
+    fb.write( _dataLen );
+    fb.write( _buf, _dataLen );
+}
+
+void FlatBuffer::write( char const* buf, int dataLen )
+{
+    reserve( _dataLen + dataLen );
+    memcpy( _buf + _dataLen, buf, dataLen );
+    _dataLen += dataLen;
 }

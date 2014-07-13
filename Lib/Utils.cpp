@@ -3,6 +3,31 @@
 
 namespace Utils
 {
+    int getToStringMaxLength( uint8   v ) { return 3; }
+    int getToStringMaxLength( uint16  v ) { return 5; }
+    int getToStringMaxLength( uint    v ) { return 10; }
+    int getToStringMaxLength( uint64  v ) { return 19; }
+    int getToStringMaxLength( int8    v ) { return 4; }
+    int getToStringMaxLength( int16   v ) { return 6; }
+    int getToStringMaxLength( int     v ) { return 11; }
+    int getToStringMaxLength( int64   v ) { return 20; }
+    int getToStringMaxLength( double  v ) { return 20; }
+    int getToStringMaxLength( float   v ) { return 20; }
+    int getToStringMaxLength( bool    v ) { return 5; }
+    int getToStringMaxLength( char    v ) { return 1; }
+    int getToStringMaxLength( std::string const & v ) { return (int)v.size(); }
+    int getToStringMaxLength( char const* v ) { return (int)strlen( v ); }
+    int getToStringMaxLength( String const & v ) { return v.size(); }
+
+
+
+
+
+
+
+
+
+
 
     // 取 整数 转换后的 string 长度系列
     // todo: if ( n < ...... ) 这种代码理论上讲可以优化成树形, 类似折半查找从而减少 if 次数
@@ -510,96 +535,52 @@ namespace Utils
         return _primes[ calc2n( n ) ];
     }
 
-
-
-
-
-
-
-
-
-
-    void binaryDumpCore( String & s, char const * buf, int len )
+    int getHashCode( String const & in )
     {
-        for( int i = 0; i < len; ++i )
-        {
-            uint8 c = buf[ i ];
-            if( c < 32 || c > 126 ) s.append( '.' );
-            else s.append( (char)c );
-        }
+        if( sizeof( size_t ) == 8 && in.size() >= 8 && ( (size_t)in.c_str() % 8 == 0 ) )
+            return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
+        else
+            return getHash_Lua( (byte const*)in.c_str(), (int)in.size() );
     }
 
-    void binaryDump( String & s, char const * buf, int len )
+    int getHashCode( std::string const & in )
     {
-        if( len == 0 ) return;
-        s.append( "\n--------  0  1  2  3 | 4  5  6  7 | 8  9  A  B | C  D  E  F" );
-        int i = 0;
-        for( ; i < len; ++i )
-        {
-            if( ( i % 16 ) == 0 )
-            {
-                if( i )
-                {           // output ascii to the end of the line
-                    s.append( "  " );
-                    binaryDumpCore( s, buf + i - 16, 16 );
-                }
-                s.append( '\n' );
-                s.appendHex( i );
-                s.append( "  " );
-            }
-            else if( i && ( i % 4 == 0 ) )
-            {
-                s.append( "  " );
-            }
-            else s.append( ' ' );
-            s.appendHex( (uint8)buf[ i ] );
-        }
-        int left = i % 16;
-        if( left )
-        {
-            len = len + 16 - left;
-            for( ; i < len; ++i )
-            {
-                if( i && ( i % 4 == 0 ) )
-                    s.append( "  " );
-                else s.append( ' ' );
-                s.append( "  " );
-            }
-            s.append( "  " );
-            binaryDumpCore( s, buf + i - 16, left );
-        }
+        if( sizeof( size_t ) == 8 && in.size() >= 8 && ( (size_t)in.c_str() % 8 == 0 ) )
+            return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
+        else
+            return getHash_Lua( (byte const*)in.c_str(), (int)in.size() );
+    }
+
+    int getHashCode( HashString const & in )
+    {
+        return in._h;
+    }
+
+    int getHashCode( HashString* const & in )
+    {
+        return in->_h;
+    }
+
+    bool equalsTo( HashString* const& a, HashString* const& b )
+    {
+        return *a == *b;
+    }
+
+    bool equalsTo( String* const& a, String* const& b )
+    {
+        return *a == *b;
     }
 
 
 
-    void binaryWrite( char* dest, String const& src )
-    {
-        binaryWrite( dest, src.size() );
-        memcpy( dest + sizeof( int ), src.data(), src.size() );
-    }
-
-    void binaryWrite( char* dest, FlatBuffer const& src )
-    {
-        binaryWrite( dest, src.size() );
-        memcpy( dest + sizeof( int ), src.data(), src.size() );
-    }
 
 
 
-    bool binaryRead( String& dest, char const* src, int len )
-    {
-        int destLen;
-        if( !binaryRead( destLen, src, len ) ) return false;
-        dest.resize( destLen, false );
-        memcpy( dest.data(), src + sizeof( int ), destLen );
-        return true;
-    }
 
-    bool binaryRead( FlatBuffer& dest, char const* src, int len )
-    {
-        int destLen;
-        if( !binaryRead( destLen, src, len ) ) return false;
-        dest.assign( src + sizeof( int ), 0, destLen );
-        return true;
-    }
+
+
+
+
+
+
 }

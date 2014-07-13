@@ -17,6 +17,8 @@ INLINE          NOINLINE
 LIKELY          UNLIKELY
 ALIGN2/4/8/16/32
 
+HAS_FUNC
+
 */
 
 /* CPU(X86) - i386 / x86 32-bit */
@@ -152,6 +154,54 @@ ALIGN2/4/8/16/32
 
 
 
+
+
+/*
+
+SFINAE check menber function
+sample：
+
+// 创建检测类
+HAS_FUNC( toString_checker, toString, void (T::*)() const );
+
+// 目标函数
+template<typename T> void Console::Write( T const & v )
+{
+toString_switch<T, toString_checker<T>::value>::func( v );
+}
+
+// 辅助路由类
+template<typename T, bool> struct toString_switch { };
+
+// 带函数的会 call 这个
+template<typename T> struct toString_switch<T, true> { static bool func( T const & v ) {
+// ...
+} };
+
+template<typename T> struct toString_switch<T, false> { static bool func( T const & v ) {
+// ...
+} };
+
+*/
+#define HAS_FUNC( CN, FN, FT )   \
+template<typename T>                                                                \
+class CN                                                                            \
+{                                                                                   \
+    template<typename T, FT> struct FuncMatcher;                                    \
+    template<typename T> static char hasFunc( FuncMatcher<T, &T::FN>* );            \
+    template<typename T> static int hasFunc( ... );                                 \
+public:                                                                             \
+    static const bool value = sizeof( hasFunc<T>( nullptr ) ) == sizeof(char);      \
+}
+
+
+
+
+
+
+
+
+
 #include <cmath>
 #include <cstdint>
 #include <cassert>
@@ -217,8 +267,21 @@ typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
 #include "CircleBuffer.h"
 #include "LRUCache.h"
 #include "FlatBuffer.h"
+#include "BufferUtils.h"
 #include "Utils.h"
 
+// ... more
+
+
+
+#include "BufferUtils.hpp"
+#include "FlatBuffer.hpp"
+#include "List.hpp"
+#include "LRUCache.hpp"
+#include "String.hpp"
+#include "Utils.hpp"
+
+// ... more
 
 
 #endif

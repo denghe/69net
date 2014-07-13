@@ -133,4 +133,3 @@ void List<bool>::set( int idx, bool v )
         ( (size_t*)_buf )[ idx / ( sizeof( size_t ) * 8 ) ] &=
         ~( size_t( 1 ) << ( idx % ( sizeof( size_t ) * 8 ) ) );
 }
-

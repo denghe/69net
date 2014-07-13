@@ -1,4 +1,7 @@
-﻿template <typename TK, typename TV>
+﻿#ifndef _DICT_HPP__
+#define _DICT_HPP__
+
+template <typename TK, typename TV>
 Dict<TK, TV>::Dict( int capacity /*= 64 */ )
 {
     _pool.init( sizeof( Node ), (int)Utils::round2n( sizeof( Node ) * capacity ), 2 );
@@ -211,3 +214,5 @@ void Dict<TK, TV>::resize()
         _buckets[ mod ] = o;
     }
 }
+
+#endif

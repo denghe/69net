@@ -1,7 +1,11 @@
+#ifndef _LIST_HPP__
+#define _LIST_HPP__
+
+
 template<typename T>
 List<T>::List( int capacity )
 {
-    assert( capacity > 0 );
+    assert( capacity >= 0 );
     auto byteLen = int( capacity * sizeof( T ) );
     if( byteLen < 64 ) byteLen = 64;
     else byteLen = (int)Utils::round2n( byteLen );
@@ -40,6 +44,7 @@ List<T>::List( List const& other )
     else
         for( int i = 0; i < other._size; ++i )
             new ( _buf + i ) T( other._buf[ i ] );
+    _size = other._size;
 }
 
 template<typename T>
@@ -169,6 +174,12 @@ int List<T>::size() const
 }
 
 template<typename T>
+int& List<T>::size()
+{
+    return _size;
+}
+
+template<typename T>
 int List<T>::byteSize() const
 {
     return _size * sizeof( T );
@@ -214,3 +225,42 @@ void List<T>::set( int idx, VT&& v )
     else
         _buf[ idx ] = std::forward<VT>( v );
 }
+
+
+
+
+
+template<typename T>
+int List<T>::getBufferSize() const
+{
+    if( Utils::isValueType<T>() )
+    {
+        return sizeof( int ) + sizeof( T ) * _size;
+    }
+
+    int siz = sizeof( int );
+    for( int i = 0; i < _size; ++i )
+    {
+        siz += BufferUtils::getSize( _buf[ i ] );
+    }
+    return siz;
+}
+
+template<typename T>
+void List<T>::writeBuffer( FlatBuffer& fb ) const
+{
+    fb.write( _size );
+    if( Utils::isValueType<T>() )
+    {
+        fb.write( (char*)_buf, _size * sizeof( T ) );
+        return;
+    }
+    for( int i = 0; i < _size; ++i )
+    {
+        fb.write( _buf[ i ] );
+    }
+}
+
+
+
+#endif

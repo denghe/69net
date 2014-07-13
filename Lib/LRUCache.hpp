@@ -1,4 +1,7 @@
-﻿template<typename KT, typename VT>
+﻿#ifndef _LRUCACHE_HPP__
+#define _LRUCACHE_HPP__
+
+template<typename KT, typename VT>
 template<typename PKT, typename PVT>
 LRUCacheItem<KT, VT>::LRUCacheItem( PKT && key, PVT && value )
     : _next( nullptr )
@@ -147,3 +150,4 @@ void LRUCache<KT, VT>::evict()
 }
 
 
+#endif

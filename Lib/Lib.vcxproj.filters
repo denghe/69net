@@ -16,6 +16,9 @@
     <ClInclude Include="LRUCache.hpp" />
     <ClInclude Include="FlatBuffer.h" />
     <ClInclude Include="FlatBuffer.hpp" />
+    <ClInclude Include="BufferUtils.h" />
+    <ClInclude Include="BufferUtils.hpp" />
+    <ClInclude Include="Utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
@@ -27,5 +30,6 @@
     <ClCompile Include="Pool.cpp" />
     <ClCompile Include="CircleBuffer.cpp" />
     <ClCompile Include="FlatBuffer.cpp" />
+    <ClCompile Include="BufferUtils.cpp" />
   </ItemGroup>
 </Project>

@@ -1,39 +1,78 @@
+#ifndef _FLATBUFFER_HPP__
+#define _FLATBUFFER_HPP__
+
+
+HAS_FUNC( writeBuffer_checker, writeBuffer, void ( T::* )( FlatBuffer& ) const );
+
+template<typename T, bool>
+struct writeBuffer_switch
+{
+};
+
+template<typename T>
+struct writeBuffer_switch < T, false >
+{
+    static void exec( FlatBuffer& fb, T const& v )
+    {
+        int siz = BufferUtils::getSize( v );
+        fb.reserve( fb.size() + siz );
+        BufferUtils::write( fb.data() + fb.size(), v );
+        fb.size() += siz;
+    }
+};
+
+template<typename T>
+struct writeBuffer_switch < T, true >
+{
+    static void exec( FlatBuffer& fb, T const& v )
+    {
+        v.writeBuffer( fb );
+    }
+};
+
+template<typename T>
+void writeBuffer_entry( FlatBuffer& fb, T const& v )
+{
+    writeBuffer_switch<T, writeBuffer_checker<T>::value>::exec( fb, v );
+}
+
+
 template<typename T>
 void FlatBuffer::write( T const& v )
 {
-    reserve( _dataLen + Utils::getSize( v ) );
-    Utils::binaryWrite( _buf + _dataLen, v );
-    _dataLen += Utils::getSize( v );
+    writeBuffer_entry( *this, v );
 }
 
-template<typename T>
-void writesCore( char* buf, int& offset, T const& v )
+template<int len>
+void FlatBuffer::write( char const( &s )[ len ] )
 {
-    Utils::binaryWrite( buf + offset, v );
-    offset += Utils::getSize( v );
+    write( s, len - 1 );
+}
+
+
+
+
+template<typename T>
+void FlatBuffer::writesCore( T const& v )
+{
+    write( v );
 }
 
 template<typename T, typename ...TS>
-void writesCore( char* buf, int& offset, T const& v, TS const & ...vs )
+void FlatBuffer::writesCore( T const& v, TS const& ...vs )
 {
-    writesCore( buf, offset, v );
-    writesCore( buf, offset, vs... );
+    write( v );
+    writesCore( vs... );
 }
 
 template<typename ...TS>
-void FlatBuffer::writes( TS const & ...vs )
+void FlatBuffer::writes( TS const& ...vs )
 {
-    reserve( _dataLen + Utils::getSize( vs... ) );
+    // todo: writeDirect
+    // reserve( _dataLen + Utils::getSize( vs... ) );
     writesCore( _buf, _dataLen, vs... );
 }
 
 
-template<typename T>
-bool FlatBuffer::read( T& v )
-{
-    auto len = Utils::getSize( v );
-    if( _offset + len > _dataLen ) return false;
-    Utils::binaryRead( v, _buf + _offset );
-    _offset += len;
-    return true;
-}
+
+#endif
