@@ -27,6 +27,8 @@ int main()
         fb111 = fb;
     }
 
+    // todo: FBRead
+
     //int I;
     //if( !fb111.read( I ) )
     //{

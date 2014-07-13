@@ -36,6 +36,8 @@ public:
     int getBufferSize() const;
     void writeBuffer( FlatBuffer& fb ) const;
     void writeBufferDirect( FlatBuffer& fb ) const;
+    bool readBuffer( FlatBuffer& fb );
+
 
 private:
     T*          _buf;

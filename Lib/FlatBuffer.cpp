@@ -136,18 +136,18 @@ void FlatBuffer::reserve( int capacity )
     _buf = newBuf;
 }
 
-void FlatBuffer::resize( int widx )
+void FlatBuffer::resize( int dataLen )
 {
-    if( widx == _dataLen ) return;
-    else if( widx < _dataLen )
+    if( dataLen == _dataLen ) return;
+    else if( dataLen < _dataLen )
     {
-        _dataLen = widx;
+        _dataLen = dataLen;
         if( _dataLen > _offset ) _offset = _dataLen;
     }
     else
     {
-        reserve( widx );
-        _dataLen = widx;
+        reserve( dataLen );
+        _dataLen = dataLen;
     }
 }
 
@@ -269,4 +269,26 @@ void FlatBuffer::write( char const* buf, int dataLen )
 {
     reserve( _dataLen + dataLen );
     writeDirect( buf, dataLen );
+}
+
+bool FlatBuffer::read( char* buf, int dataLen )
+{
+    if( _offset + dataLen > _dataLen ) return false;
+    memcpy( buf, _buf + _offset, dataLen );
+    _offset += dataLen;
+    return true;
+}
+
+bool FlatBuffer::readBuffer( FlatBuffer& fb )
+{
+    int len;
+    if( !fb.read( len )
+        || len < 0
+        || fb.offset() + len > fb.size() ) return false;             // todo: || len > maxStringLength
+    clear();
+    reserve( len );
+    _dataLen = len;
+    memcpy( _buf, fb.data() + fb.offset(), len );
+    fb.offset() += len;
+    return true;
 }

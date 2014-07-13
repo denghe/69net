@@ -23,6 +23,7 @@ String::String( Pool& p )
     _bufLen = p.itemBufLen() - sizeof( Pool* );
     _dataLen = 0;
     _disposer = &String::disposePoolBuffer;
+    _buf[ 0 ] = '\0';
 }
 
 String::String( char const* buf, int bufLen, int dataLen, bool isRef )
@@ -98,12 +99,7 @@ void String::assign( char const* buf, int bufLen, int dataLen /*= 0*/, bool isRe
         _disposer = nullptr;
         return;
     }
-    if( _bufLen > dataLen )
-    {
-        _dataLen = dataLen;
-        memcpy( _buf, buf, dataLen + 1 );
-    }
-    else
+    if( _bufLen <= dataLen )
     {
         if( _disposer ) ( this->*_disposer )( );
         _bufLen = (int)Utils::round2n( dataLen + 1 );
@@ -112,9 +108,10 @@ void String::assign( char const* buf, int bufLen, int dataLen /*= 0*/, bool isRe
         std::cout << "String& String::assign( ................ ) new char[ " << _bufLen << " ]\n";
 #endif
         _buf = new char[ _bufLen ];
-        _dataLen = dataLen;
-        memcpy( _buf, buf, dataLen + 1 );
     }
+    _dataLen = dataLen;
+    memcpy( _buf, buf, dataLen );
+    _buf[ _dataLen ] = '\0';
 }
 
 void String::assign( char const* s, bool isRef /*= false */ )
@@ -385,4 +382,15 @@ void String::writeBufferDirect( FlatBuffer& fb ) const
 {
     fb.writeDirect( _dataLen );
     fb.writeDirect( _buf, _dataLen );
+}
+
+bool String::readBuffer( FlatBuffer& fb )
+{
+    int len;
+    if( !fb.read( len )
+        || len < 0
+        || fb.offset() + len > fb.size() ) return false;             // todo: || len > maxStringLength
+    assign( fb.data() + fb.offset(), 0, len, false );
+    fb.offset() += len;
+    return true;
 }

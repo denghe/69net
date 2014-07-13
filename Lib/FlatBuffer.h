@@ -37,6 +37,8 @@ public:
     int getBufferSize();
     void writeBuffer( FlatBuffer& fb );
     void writeBufferDirect( FlatBuffer& fb );
+    bool readBuffer( FlatBuffer& fb );
+
 
 
 
@@ -59,55 +61,13 @@ public:
     void writes( TS const& ...vs );
 
 
-    //template<typename T>
-    //bool read( T& v )
-    //{
-    //    auto siz = BufferUtils::getSize( v );
-    //    if( _offset + siz > _dataLen ) return false;
-    //    if( Utils::isValueType<T>() )
-    //    {
-    //        BufferUtils::read( v, _buf );
-    //        return true;
-    //    }
-    //    // todo
-    //}
 
-    //inline bool read( char* buf, int dataLen )
-    //{
-    //    if( _offset + dataLen > _dataLen ) return false;
-    //    memcpy( buf, _buf + _offset, dataLen );
-    //    _offset += dataLen;
-    //    return true;
-    //}
+    // return true: success
+    template<typename T>
+    bool read( T& v );
+    bool read( char* buf, int dataLen );
 
 
-
-    //template<typename T>
-    //bool FlatBuffer::read( T& v )
-    //{
-    //    auto len = Utils::getSize( v );
-    //    if( _offset + len > _dataLen ) return false;
-    //    Utils::binaryRead( v, _buf + _offset );
-    //    _offset += len;
-    //    return true;
-    //}
-
-
-
-
-
-    //inline int binaryRead( String& dest, char const* src, int srcLen )
-    //{
-    //    int destLen;
-    //    int readLen = binaryRead( destLen, src, srcLen );
-    //    if( readLen <= 0 ) return readLen;
-    //    srcLen -= readLen;
-    //    src += readLen;
-    //    if( destLen > srcLen ) return srcLen - destLen;
-    //    dest.resize( destLen, false );
-    //    memcpy( dest.data(), src + sizeof( int ), destLen );
-    //    return destLen + readLen;
-    //}
     //
     //inline bool binaryRead( FlatBuffer& dest, char const* src, int srcLen )
     //{

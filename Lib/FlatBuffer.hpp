@@ -82,4 +82,31 @@ void FlatBuffer::writes( TS const& ...vs )
 
 
 
+
+HAS_FUNC( readBuffer_checker, readBuffer, bool ( T::* )( FlatBuffer& ) );
+template<typename T>
+typename std::enable_if<readBuffer_checker<T>::value, bool>::type readBuffer_switch( FlatBuffer& fb, T& v )
+{
+    return v.readBuffer( fb );
+};
+template<typename T>
+typename std::enable_if<!readBuffer_checker<T>::value, bool>::type readBuffer_switch( FlatBuffer& fb, T& v )
+{
+    assert( Utils::isValueType<T>() );
+    auto siz = BufferUtils::getSize( v );
+    if( fb.offset() + siz > fb.size() ) return false;
+    BufferUtils::read( v, fb.data() + fb.offset() );
+    fb.offset() += siz;
+    return true;
+};
+template<typename T>
+bool FlatBuffer::read( T& v )
+{
+    return readBuffer_switch( *this, v );
+}
+
+
+
+
+
 #endif

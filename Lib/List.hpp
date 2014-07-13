@@ -10,7 +10,7 @@ List<T>::List( int capacity )
     if( byteLen < 64 ) byteLen = 64;
     else byteLen = (int)Utils::round2n( byteLen );
     _size = 0;
-    _buf = (T*)new char[ byteLen ];
+    _buf = ( T* )new char[ byteLen ];
     _maxSize = byteLen / sizeof( T );
 }
 
@@ -20,7 +20,7 @@ List<T>::~List()
     if( _buf )
     {
         clear();
-        delete[] (char*)_buf;
+        delete[]( char* )_buf;
     }
 }
 
@@ -51,7 +51,7 @@ template<typename T>
 List<T>& List<T>::operator=( List&& other )
 {
     clear();
-    delete[] (char*)_buf;
+    delete[]( char* )_buf;
     _buf = other._buf;
     _size = other._size;
     _maxSize = other._maxSize;
@@ -73,8 +73,8 @@ List<T>& List<T>::operator=( List const& other )
         if( byteLen < 64 ) byteLen = 64;
         else byteLen = (int)Utils::round2n( byteLen );
         _maxSize = byteLen / sizeof( T );
-        delete[] (char*)_buf;
-        _buf = (T*)new char[ byteLen ];
+        delete[]( char* )_buf;
+        _buf = ( T* )new char[ byteLen ];
     }
     if( Utils::isValueType<T>() )
         memcpy( _buf, other._buf, other.byteSize() );
@@ -125,13 +125,13 @@ void List<T>::reserve( int capacity )
     if( capacity <= _maxSize ) return;
     auto byteLen = (int)Utils::round2n( capacity * sizeof( T ) );
     _maxSize = byteLen / sizeof( T );
-    auto newBuf = (T*)new char[ byteLen ];
+    auto newBuf = ( T* )new char[ byteLen ];
     if( Utils::isValueType<T>() )
         memcpy( newBuf, _buf, byteSize() );
     else
         for( int i = 0; i < _size; ++i )
             new ( newBuf + i ) T( std::move( _buf[ i ] ) );
-    delete[] (char*)_buf;
+    delete[]( char* )_buf;
     _buf = newBuf;
 }
 
@@ -275,6 +275,29 @@ void List<T>::writeBufferDirect( FlatBuffer& fb ) const
         fb.writeDirect( _buf[ i ] );
     }
 }
+
+
+template<typename T>
+bool List<T>::readBuffer( FlatBuffer& fb )
+{
+    int len;
+    if( !fb.read( len )
+        || len < 0 ) return false;              // todo: || len > maxListLength
+    //|| fb.offset() + len > fb.size() ) return false;
+    clear();
+    reserve( len );
+    //for( int i = 0; i < len; ++i )
+    //{
+    //    new ( &dest[ i ] ) T();
+    //    dest.size() = i + 1;
+    //    if( !binaryRead( vs[ i ], src + sizeof( int ), srcLen - sizeof( int ) ) ) return false;
+    //}
+
+    //memcpy( _buf, fb.data() + fb.offset(), len );
+    //fb.offset() += len;
+    return true;
+}
+
 
 
 #endif
