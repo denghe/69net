@@ -261,6 +261,20 @@ void List<T>::writeBuffer( FlatBuffer& fb ) const
     }
 }
 
+template<typename T>
+void List<T>::writeBufferDirect( FlatBuffer& fb ) const
+{
+    fb.writeDirect( _size );
+    if( Utils::isValueType<T>() )
+    {
+        fb.writeDirect( (char*)_buf, _size * sizeof( T ) );
+        return;
+    }
+    for( int i = 0; i < _size; ++i )
+    {
+        fb.writeDirect( _buf[ i ] );
+    }
+}
 
 
 #endif

@@ -76,6 +76,7 @@ public:
     // for FlatBuffer
     int getBufferSize() const;
     void writeBuffer( FlatBuffer& fb ) const;
+    void writeBufferDirect( FlatBuffer& fb ) const;
 
 
 private:

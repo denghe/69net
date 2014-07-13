@@ -2,10 +2,12 @@
 #define _FLATBUFFER_H__
 
 
+// todo: Pool, read
 class FlatBuffer
 {
 public:
     explicit FlatBuffer( int capacity = 1024 );                                 // prepare
+    FlatBuffer( Pool& p );                                                      // prepare with pool buffer
     FlatBuffer( char* buf, int bufLen, int dataLen = 0, bool isRef = false );   // copy or ref
     FlatBuffer( FlatBuffer const& other );                                      // copy
     FlatBuffer( FlatBuffer&& other );                                           // move
@@ -31,36 +33,34 @@ public:
 
 
 
-
-
     // for FlatBuffer write
     int getBufferSize();
     void writeBuffer( FlatBuffer& fb );
+    void writeBufferDirect( FlatBuffer& fb );
 
 
 
-
-    void write( char const* buf, int dataLen );                                 // do not write dataLen
-
+    // do not reserve
+    void writeDirect( char const* buf, int dataLen );                           // do not write dataLen
     template<int len>
-    void write( char const( &s )[ len ] );                                      // same as String( len + buf )
+    void writeDirect( char const( &s )[ len ] );                                // same as String( len + buf )
+    template<typename T>
+    void writeDirect( T const& v );
 
+    // reserve
+    void write( char const* buf, int dataLen );
+    template<int len>
+    void write( char const( &s )[ len ] );
     template<typename T>
     void write( T const& v );
 
-
-
+    // reserve once
     template<typename T>
     void writesCore( T const& v );
     template<typename T, typename ...TS>
     void writesCore( T const& v, TS const& ...vs );
     template<typename ...TS>
     void writes( TS const& ...vs );
-
-
-
-
-
 
 
     //template<typename T>

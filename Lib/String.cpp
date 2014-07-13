@@ -15,7 +15,7 @@ String::String( int capacity /*= 64 */ )
 
 String::String( Pool& p )
 {
-    assert( p.attackPointer() &&  p.itemBufLen() > sizeof(Pool*) );
+    assert( p.attackPointer() && p.itemBufLen() > sizeof( Pool* ) );
 #if __DEBUG_STRING
     std::cout << "String::String( Pool& p ) p.alloc()\n";
 #endif
@@ -380,4 +380,9 @@ void String::writeBuffer( FlatBuffer& fb ) const
 {
     fb.write( _dataLen );
     fb.write( _buf, _dataLen );
+}
+void String::writeBufferDirect( FlatBuffer& fb ) const
+{
+    fb.writeDirect( _dataLen );
+    fb.writeDirect( _buf, _dataLen );
 }

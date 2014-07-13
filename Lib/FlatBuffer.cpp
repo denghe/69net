@@ -10,6 +10,15 @@ FlatBuffer::FlatBuffer( int capacity )
     _dataLen = _offset = 0;
 }
 
+FlatBuffer::FlatBuffer( Pool& p )
+{
+    assert( p.attackPointer() && p.itemBufLen() > sizeof( Pool* ) );
+    _buf = (char*)p.alloc();
+    _bufLen = p.itemBufLen() - sizeof( Pool* );
+    _dataLen = 0;
+    _disposer = &FlatBuffer::disposePoolBuffer;
+}
+
 FlatBuffer::FlatBuffer( char* buf, int bufLen, int dataLen /*= 0*/, bool isRef /*= false */ )
 {
     _dataLen = dataLen;
@@ -36,7 +45,7 @@ FlatBuffer::FlatBuffer( FlatBuffer const & other )
     _dataLen = other._dataLen;
 }
 
-FlatBuffer::FlatBuffer( FlatBuffer && other )
+FlatBuffer::FlatBuffer( FlatBuffer&& other )
     : _buf( other._buf )
     , _bufLen( other._bufLen )
     , _dataLen( other._dataLen )
@@ -219,6 +228,12 @@ void FlatBuffer::disposeNewBuffer()
     delete[] _buf;
 }
 
+void FlatBuffer::disposePoolBuffer()
+{
+    auto p = *(Pool**)( _buf + _bufLen );
+    p->free( _buf );
+}
+
 String FlatBuffer::dump()
 {
     String rtv;
@@ -228,21 +243,30 @@ String FlatBuffer::dump()
 
 
 
-
 int FlatBuffer::getBufferSize()
 {
     return sizeof( int ) + size();
 }
-
 void FlatBuffer::writeBuffer( FlatBuffer& fb )
 {
     fb.write( _dataLen );
     fb.write( _buf, _dataLen );
 }
+void FlatBuffer::writeBufferDirect( FlatBuffer& fb )
+{
+    fb.writeDirect( _dataLen );
+    fb.writeDirect( _buf, _dataLen );
+}
 
+
+
+void FlatBuffer::writeDirect( char const* buf, int dataLen )
+{
+    memcpy( _buf + _dataLen, buf, dataLen );
+    _dataLen += dataLen;
+}
 void FlatBuffer::write( char const* buf, int dataLen )
 {
     reserve( _dataLen + dataLen );
-    memcpy( _buf + _dataLen, buf, dataLen );
-    _dataLen += dataLen;
+    writeDirect( buf, dataLen );
 }
