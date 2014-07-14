@@ -257,6 +257,19 @@ void FlatBuffer::writeBufferDirect( FlatBuffer& fb )
     fb.writeDirect( _dataLen );
     fb.writeDirect( _buf, _dataLen );
 }
+bool FlatBuffer::readBuffer( FlatBuffer& fb )
+{
+    int len;
+    if( !fb.read( len )
+        || len < 0
+        || fb.offset() + len > fb.size() ) return false;             // todo: || len > maxStringLength
+    clear();
+    reserve( len );
+    _dataLen = len;
+    memcpy( _buf, fb.data() + fb.offset(), len );
+    fb.offset() += len;
+    return true;
+}
 
 
 
@@ -279,16 +292,3 @@ bool FlatBuffer::read( char* buf, int dataLen )
     return true;
 }
 
-bool FlatBuffer::readBuffer( FlatBuffer& fb )
-{
-    int len;
-    if( !fb.read( len )
-        || len < 0
-        || fb.offset() + len > fb.size() ) return false;             // todo: || len > maxStringLength
-    clear();
-    reserve( len );
-    _dataLen = len;
-    memcpy( _buf, fb.data() + fb.offset(), len );
-    fb.offset() += len;
-    return true;
-}

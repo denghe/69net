@@ -283,21 +283,26 @@ bool List<T>::readBuffer( FlatBuffer& fb )
     int len;
     if( !fb.read( len )
         || len < 0 ) return false;              // todo: || len > maxListLength
-    //|| fb.offset() + len > fb.size() ) return false;
+    if( Utils::isValueType<T>() )
+    {
+        int siz = len * (int)sizeof( T );
+        if( fb.offset() + siz > fb.size() ) return false;
+        clear();
+        resize( len, false );
+        memcpy( _buf, fb.data() + fb.offset(), siz );
+        fb.offset() += siz;
+        return true;
+    }
     clear();
     reserve( len );
-    //for( int i = 0; i < len; ++i )
-    //{
-    //    new ( &dest[ i ] ) T();
-    //    dest.size() = i + 1;
-    //    if( !binaryRead( vs[ i ], src + sizeof( int ), srcLen - sizeof( int ) ) ) return false;
-    //}
-
-    //memcpy( _buf, fb.data() + fb.offset(), len );
-    //fb.offset() += len;
+    for( int i = 0; i < len; ++i )
+    {
+        new ( _buf + i ) T();
+        _size = i + 1;
+        if( !_buf[ i ].readBuffer( fb ) ) return false;
+    }
     return true;
 }
-
 
 
 #endif

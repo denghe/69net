@@ -80,6 +80,11 @@ void FlatBuffer::writes( TS const& ...vs )
     writesCore( vs... );
 }
 
+template<typename ...TS>
+void FlatBuffer::writesDirect( TS const& ...vs )
+{
+    writesCore( vs... );
+}
 
 
 
@@ -103,6 +108,27 @@ template<typename T>
 bool FlatBuffer::read( T& v )
 {
     return readBuffer_switch( *this, v );
+}
+
+
+
+template<typename T>
+bool FlatBuffer::readsCore( T& v )
+{
+    return read( v );
+}
+
+template<typename T, typename ...TS>
+bool FlatBuffer::readsCore( T& v, TS& ...vs )
+{
+    if( !read( v ) ) return false;
+    return readsCore( vs... );
+}
+
+template<typename ...TS>
+bool FlatBuffer::reads( TS& ...vs )
+{
+    return readsCore( vs... );
 }
 
 

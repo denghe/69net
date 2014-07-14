@@ -48,6 +48,8 @@ public:
     void writeDirect( char const( &s )[ len ] );                                // same as String( len + buf )
     template<typename T>
     void writeDirect( T const& v );
+    template<typename ...TS>
+    void writesDirect( TS const& ...vs );
 
     // reserve
     void write( char const* buf, int dataLen );
@@ -66,48 +68,8 @@ public:
     template<typename T>
     bool read( T& v );
     bool read( char* buf, int dataLen );
-
-
-    //
-    //inline bool binaryRead( FlatBuffer& dest, char const* src, int srcLen )
-    //{
-    //    int destLen;
-    //    if( !binaryRead( destLen, src, srcLen ) ) return false;
-    //    dest.assign( src + sizeof( int ), 0, destLen );
-    //    return true;
-    //}
-    //template<typename T>
-    //bool binaryRead( List<T> const& dest, char const* src, int srcLen )
-    //{
-    //    int destLen;
-    //    if( !binaryRead( destLen, src, srcLen ) ) return false;
-    //    if( isValueType<T>() )
-    //    {
-    //        auto siz = destLen * sizeof( T );
-    //        if( siz > srcLen - sizeof( T ) ) return false;
-    //        dest.resize( destLen, false );
-    //        memcpy( dest.data(), src + sizeof( int ), siz );
-    //        return true;
-    //    }
-    //    else
-    //    {
-    //        dest.clear();
-    //        dest.reserve( destLen );
-    //        dest.size() = 0;
-    //        src += sizeof( int );
-    //        srcLen -= sizeof( int );
-    //        for( int i = 0; i < destLen; ++i )
-    //        {
-    //            new ( &dest[ i ] ) T();
-    //            dest.size() = i + 1;
-    //            if( !binaryRead( vs[ i ], src + sizeof( int ), srcLen - sizeof( int ) ) ) return false;
-    //        }
-    //        return true;
-    //    }
-    //
-    //}
-    //
-
+    template<typename ...TS>
+    bool reads( TS& ...vs );
 
 
 
@@ -124,6 +86,12 @@ private:
     void writesCore( T const& v );
     template<typename T, typename ...TS>
     void writesCore( T const& v, TS const& ...vs );
+
+    template<typename T>
+    bool readsCore( T& v );
+    template<typename T, typename ...TS>
+    bool readsCore( T& v, TS& ...vs );
+
 
 
     char*       _buf;
