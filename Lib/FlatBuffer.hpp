@@ -66,7 +66,7 @@ void FlatBuffer::writeDirect( T const( &a )[ len ] )
     }
     else
     {
-        for( i = 0; i < len; ++i )
+        for( int i = 0; i < len; ++i )
         {
             writeBufferDirect_switch( *this, a[ i ] );
         }
@@ -152,7 +152,7 @@ bool FlatBuffer::read( T( &a )[ len ] )
     {
         int siz = len * ( int )sizeof( T );
         if( _offset + siz > _dataLen ) return false;
-        memcpy( a, _buf + _offset, siz );
+        memcpy( &a, _buf + _offset, siz );
         _offset += siz;
         return true;
     }

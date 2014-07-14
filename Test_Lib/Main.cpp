@@ -4,31 +4,40 @@ using namespace std;
 
 
 
-//
-//struct Foo
-//{
-//    int i;
-//    double d;
-//    float f;
-//    String s;
-//    // for FlatBuffer write
-//    inline int getBufferSize() const
-//    {
-//        return sizeof( int ) + sizeof( double ) + sizeof( float ) + s.size();
-//    }
-//    //inline void writeBuffer( FlatBuffer& fb ) const
-//    //{
-//    //    fb.writes( i, d, f, s );
-//    //}
-//    inline void writeBufferDirect( FlatBuffer& fb ) const
-//    {
-//        fb.writesDirect( i, d, f, s );
-//    }
-//    inline bool readBuffer( FlatBuffer& fb )
-//    {
-//        return fb.reads( i, d, f, s );
-//    }
-//};
+enum class Xxxxs : byte
+{
+    Asdf, Qwer, Zxcv
+};
+
+struct Foo
+{
+    int i;
+    double d;
+    float f;
+    String s;
+    byte b[ 9 ];
+    Xxxxs e[ 3 ];
+#pragma region
+    // for FlatBuffer write
+    inline int getBufferSize() const
+    {
+        return sizeof( int ) + sizeof( double ) + sizeof( float ) + s.size() + sizeof( b ) + sizeof( e );
+    }
+    inline void writeBuffer( FlatBuffer& fb ) const
+    {
+        fb.writes( i, d, f, s, b, e );
+    }
+    inline void writeBufferDirect( FlatBuffer& fb ) const
+    {
+        fb.writesDirect( i, d, f, s, b, e );
+    }
+    inline bool readBuffer( FlatBuffer& fb )
+    {
+        return fb.reads( i, d, f, s, b, e );
+    }
+#pragma endregion
+};
+
 //
 //struct Foos
 //{
@@ -56,24 +65,35 @@ using namespace std;
 //    }
 //};
 
-
-enum class Xxxxs : byte
-{
-    Asdf, Qwer, Zxcv
-};
-
 int main()
 {
-    FlatBuffer fb;
-    Xxxxs iii[] = { Xxxxs::Asdf, Xxxxs::Qwer, Xxxxs::Zxcv };
-    fb.write( iii );
-    cout << fb.dump().c_str() << endl;
-    
-    memset( iii, 0, sizeof(iii) );
-    cout << (int)iii[ 0 ] << (int)iii[ 1 ] << (int)iii[ 2 ] << endl;
 
-    fb.read( iii );
-    cout << (int)iii[ 0 ] << (int)iii[ 1 ] << (int)iii[ 2 ] << endl;
+    Foo f[] = { { 234, 234.5, 234.567f, "kjjljkjlkj"
+        , { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, { Xxxxs::Asdf, Xxxxs::Qwer, Xxxxs::Zxcv } } };
+
+    FlatBuffer fb;
+    fb.write( f );
+    cout << fb.dump().c_str() << endl;
+
+    Foo ff[1];
+    fb.read( ff );
+    auto& f2 = ff[ 0 ];
+    cout << f2.i << " " << f2.d << " " << f2.f << " " << f2.s.c_str() << " "
+        << (int)f2.b[ 0 ] << " " << (int)f2.b[ 8 ] << " " 
+        << (int)f2.e[ 0 ] << " " << (int)f2.e[ 2 ] << endl;
+
+
+
+    //FlatBuffer fb;
+    //Xxxxs iii[] = { Xxxxs::Asdf, Xxxxs::Qwer, Xxxxs::Zxcv };
+    //fb.write( iii );
+    //cout << fb.dump().c_str() << endl;
+    //
+    //memset( iii, 0, sizeof(iii) );
+    //cout << (int)iii[ 0 ] << (int)iii[ 1 ] << (int)iii[ 2 ] << endl;
+
+    //fb.read( iii );
+    //cout << (int)iii[ 0 ] << (int)iii[ 1 ] << (int)iii[ 2 ] << endl;
 
     //FlatBuffer fb;
     //fb.writes( 123, 234.0f, 345.01, "0123456789", true );
