@@ -46,8 +46,11 @@ public:
     void writeDirect( char const* buf, int dataLen );                           // do not write dataLen
     template<int len>
     void writeDirect( char const( &s )[ len ] );                                // same as String( len + buf )
+    template<typename T, int len>
+    void writeDirect( T const( &a )[ len ] );
     template<typename T>
     void writeDirect( T const& v );
+
     template<typename ...TS>
     void writesDirect( TS const& ...vs );
 
@@ -55,6 +58,8 @@ public:
     void write( char const* buf, int dataLen );
     template<int len>
     void write( char const( &s )[ len ] );
+    template<typename T, int len>
+    void write( T const( &a )[ len ] );
     template<typename T>
     void write( T const& v );
 
@@ -68,6 +73,8 @@ public:
     template<typename T>
     bool read( T& v );
     bool read( char* buf, int dataLen );
+    template<typename T, int len>
+    bool read( T( &a )[ len ] );
     template<typename ...TS>
     bool reads( TS& ...vs );
 

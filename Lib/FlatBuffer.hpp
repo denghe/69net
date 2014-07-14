@@ -52,8 +52,42 @@ void FlatBuffer::writeDirect( char const( &s )[ len ] )
 template<int len>
 void FlatBuffer::write( char const( &s )[ len ] )
 {
-    reserve( sizeof( int ) + len - 1 );
+    reserve( _dataLen + sizeof( int ) + len - 1 );
     writeDirect( s );
+}
+
+
+template<typename T, int len>
+void FlatBuffer::writeDirect( T const( &a )[ len ] )
+{
+    if( Utils::isValueType<T>() )
+    {
+        writeDirect( (char*)a, len * sizeof( T ) );
+    }
+    else
+    {
+        for( i = 0; i < len; ++i )
+        {
+            writeBufferDirect_switch( *this, a[ i ] );
+        }
+    }
+}
+template<typename T, int len>
+void FlatBuffer::write( T const( &a )[ len ] )
+{
+    if( Utils::isValueType<T>() )
+    {
+        auto siz = len * ( int )sizeof( T );
+        reserve( _dataLen + siz );
+        writeDirect( (char*)a, len * sizeof( T ) );
+    }
+    else
+    {
+        for( int i = 0; i < len; ++i )
+        {
+            writeBuffer_switch( *this, a[ i ] );
+        }
+    }
 }
 
 
@@ -108,6 +142,25 @@ template<typename T>
 bool FlatBuffer::read( T& v )
 {
     return readBuffer_switch( *this, v );
+}
+
+
+template<typename T, int len>
+bool FlatBuffer::read( T( &a )[ len ] )
+{
+    if( Utils::isValueType<T>() )
+    {
+        int siz = len * ( int )sizeof( T );
+        if( _offset + siz > _dataLen ) return false;
+        memcpy( a, _buf + _offset, siz );
+        _offset += siz;
+        return true;
+    }
+    for( int i = 0; i < len; ++i )
+    {
+        if( !readBuffer_switch( *this, a[ i ] ) ) return false;
+    }
+    return true;
 }
 
 

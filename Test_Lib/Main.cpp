@@ -2,60 +2,79 @@
 using namespace std;
 
 
-struct Foo
-{
-    int i;
-    double d;
-    float f;
-    String s;
-    // for FlatBuffer write
-    inline int getBufferSize() const
-    {
-        return sizeof( int ) + sizeof( double ) + sizeof( float ) + s.size();
-    }
-    inline void writeBuffer( FlatBuffer& fb ) const
-    {
-        fb.writes( i, d, f, s );
-    }
-    inline void writeBufferDirect( FlatBuffer& fb ) const
-    {
-        fb.writesDirect( i, d, f, s );
-    }
-    inline bool readBuffer( FlatBuffer& fb )
-    {
-        return fb.reads( i, d, f, s );
-    }
-};
 
-struct Foos
-{
-    int i;
-    double d;
-    float f;
-    String s;
-    List<Foo> fs;
-    // for FlatBuffer write
-    inline int getBufferSize() const
-    {
-        return sizeof( int ) + sizeof( double ) + sizeof( float ) + s.size() + fs.getBufferSize();
-    }
-    inline void writeBuffer( FlatBuffer& fb ) const
-    {
-        fb.writes( i, d, f, s, fs );
-    }
-    inline void writeBufferDirect( FlatBuffer& fb ) const
-    {
-        fb.writesDirect( i, d, f, s, fs );
-    }
-    inline bool readBuffer( FlatBuffer& fb )
-    {
-        return fb.reads( i, d, f, s, fs );
-    }
-};
 
+//
+//struct Foo
+//{
+//    int i;
+//    double d;
+//    float f;
+//    String s;
+//    // for FlatBuffer write
+//    inline int getBufferSize() const
+//    {
+//        return sizeof( int ) + sizeof( double ) + sizeof( float ) + s.size();
+//    }
+//    //inline void writeBuffer( FlatBuffer& fb ) const
+//    //{
+//    //    fb.writes( i, d, f, s );
+//    //}
+//    inline void writeBufferDirect( FlatBuffer& fb ) const
+//    {
+//        fb.writesDirect( i, d, f, s );
+//    }
+//    inline bool readBuffer( FlatBuffer& fb )
+//    {
+//        return fb.reads( i, d, f, s );
+//    }
+//};
+//
+//struct Foos
+//{
+//    int i;
+//    double d;
+//    float f;
+//    String s;
+//    List<Foo> fs;
+//    // for FlatBuffer write
+//    inline int getBufferSize() const
+//    {
+//        return sizeof( int ) + sizeof( double ) + sizeof( float ) + s.size() + fs.getBufferSize();
+//    }
+//    //inline void writeBuffer( FlatBuffer& fb ) const
+//    //{
+//    //    fb.writes( i, d, f, s, fs );
+//    //}
+//    inline void writeBufferDirect( FlatBuffer& fb ) const
+//    {
+//        fb.writesDirect( i, d, f, s, fs );
+//    }
+//    inline bool readBuffer( FlatBuffer& fb )
+//    {
+//        return fb.reads( i, d, f, s, fs );
+//    }
+//};
+
+
+enum class Xxxxs : byte
+{
+    Asdf, Qwer, Zxcv
+};
 
 int main()
 {
+    FlatBuffer fb;
+    Xxxxs iii[] = { Xxxxs::Asdf, Xxxxs::Qwer, Xxxxs::Zxcv };
+    fb.write( iii );
+    cout << fb.dump().c_str() << endl;
+    
+    memset( iii, 0, sizeof(iii) );
+    cout << (int)iii[ 0 ] << (int)iii[ 1 ] << (int)iii[ 2 ] << endl;
+
+    fb.read( iii );
+    cout << (int)iii[ 0 ] << (int)iii[ 1 ] << (int)iii[ 2 ] << endl;
+
     //FlatBuffer fb;
     //fb.writes( 123, 234.0f, 345.01, "0123456789", true );
     //int I;
@@ -98,25 +117,36 @@ int main()
 
     //cout << fb.offset() << endl;
 
-    FlatBuffer fb;
-    {
-        List<Foos> fooss;
-        Foos foos = { 234, 234.567, 234.567f, "kjjljkjlkj" };
-        Foo f = { 123, 123.456, 123.456f, "asdfqwer" };
-        foos.fs.push( f );
-        foos.fs.push( f );
-        foos.fs.push( f );
-        fooss.push( foos );
-        fooss.push( foos );
-        fooss.push( foos );
-        fb.write( fooss );
-    }
-    cout << fb.dump().c_str() << endl;
-    {
-        List<Foos> fooss;
-        fb.read( fooss );
-        cout << fooss.size() << endl;
-    }
+
+
+
+
+
+    //FlatBuffer fb;
+    //{
+    //    List<Foos> fooss;
+    //    Foos foos = { 234, 234.567, 234.567f, "kjjljkjlkj" };
+    //    Foo f = { 123, 123.456, 123.456f, "asdfqwer" };
+    //    foos.fs.push( f );
+    //    foos.fs.push( f );
+    //    foos.fs.push( f );
+    //    fooss.push( foos );
+    //    fooss.push( foos );
+    //    fooss.push( foos );
+    //    fb.write( fooss );
+    //}
+    //cout << fb.dump().c_str() << endl;
+    //{
+    //    fb.size()--;    // 故意令数据不全
+    //    List<Foos> fooss;
+    //    cout << (fb.read( fooss ) ? "read success\n" : "read fail\n");
+    //    cout << fooss.size() << endl;
+    //}
+
+
+
+
+
 
 
     //FlatBuffer fb111;
