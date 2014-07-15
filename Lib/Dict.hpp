@@ -215,4 +215,89 @@ void Dict<TK, TV>::resize()
     }
 }
 
+
+
+
+
+
+
+
+
+
+template <typename TK, typename TV>
+int Dict<TK, TV>::getBufferSize() const
+{
+    //if( Utils::isValueType<T>() )
+    //{
+    //    return sizeof( int ) + sizeof( T ) * _size;
+    //}
+
+    //int siz = sizeof( int );
+    //for( int i = 0; i < _size; ++i )
+    //{
+    //    siz += _buf[ i ].getBufferSize();
+    //}
+    //return siz;
+    return 0;
+}
+template <typename TK, typename TV>
+void Dict<TK, TV>::writeBuffer( FlatBuffer& fb ) const
+{
+    //fb.write( _size );
+    //if( Utils::isValueType<T>() )
+    //{
+    //    fb.write( (char*)_buf, _size * sizeof( T ) );
+    //    return;
+    //}
+    //for( int i = 0; i < _size; ++i )
+    //{
+    //    fb.write( _buf[ i ] );
+    //}
+}
+template <typename TK, typename TV>
+void Dict<TK, TV>::writeBufferDirect( FlatBuffer& fb ) const
+{
+    //fb.writeDirect( _size );
+    //if( Utils::isValueType<T>() )
+    //{
+    //    fb.writeDirect( (char*)_buf, _size * sizeof( T ) );
+    //    return;
+    //}
+    //for( int i = 0; i < _size; ++i )
+    //{
+    //    fb.writeDirect( _buf[ i ] );
+    //}
+}
+
+template <typename TK, typename TV>
+bool Dict<TK, TV>::readBuffer( FlatBuffer& fb )
+{
+    //int len;
+    //if( !fb.read( len )
+    //    || len < 0 ) return false;              // todo: || len > maxListLength
+    //if( Utils::isValueType<T>() )
+    //{
+    //    int siz = len * ( int )sizeof( T );
+    //    if( fb.offset() + siz > fb.size() ) return false;
+    //    clear();
+    //    resize( len, false );
+    //    memcpy( _buf, fb.data() + fb.offset(), siz );
+    //    fb.offset() += siz;
+    //    return true;
+    //}
+    //clear();
+    //reserve( len );
+    //for( int i = 0; i < len; ++i )
+    //{
+    //    new ( _buf + i ) T();
+    //    _size = i + 1;
+    //    if( !_buf[ i ].readBuffer( fb ) ) return false;
+    //}
+    return true;
+}
+
+
+
+
+
 #endif

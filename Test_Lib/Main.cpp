@@ -68,19 +68,27 @@ struct Foo
 int main()
 {
 
-    Foo f[] = { { 234, 234.5, 234.567f, "kjjljkjlkj"
-        , { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, { Xxxxs::Asdf, Xxxxs::Qwer, Xxxxs::Zxcv } } };
 
-    FlatBuffer fb;
-    fb.write( f );
-    cout << fb.dump().c_str() << endl;
 
-    Foo ff[1];
-    fb.read( ff );
-    auto& f2 = ff[ 0 ];
-    cout << f2.i << " " << f2.d << " " << f2.f << " " << f2.s.c_str() << " "
-        << (int)f2.b[ 0 ] << " " << (int)f2.b[ 8 ] << " " 
-        << (int)f2.e[ 0 ] << " " << (int)f2.e[ 2 ] << endl;
+
+
+
+
+
+
+    //Foo f[] = { { 234, 234.5, 234.567f, "kjjljkjlkj"
+    //    , { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, { Xxxxs::Asdf, Xxxxs::Qwer, Xxxxs::Zxcv } } };
+
+    //FlatBuffer fb;
+    //fb.write( f );
+    //cout << fb.dump().c_str() << endl;
+
+    //Foo ff[1];
+    //fb.read( ff );
+    //auto& f2 = ff[ 0 ];
+    //cout << f2.i << " " << f2.d << " " << f2.f << " " << f2.s.c_str() << " "
+    //    << (int)f2.b[ 0 ] << " " << (int)f2.b[ 8 ] << " " 
+    //    << (int)f2.e[ 0 ] << " " << (int)f2.e[ 2 ] << endl;
 
 
 

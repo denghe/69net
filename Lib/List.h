@@ -42,7 +42,7 @@ public:
 private:
     T*          _buf;
     int         _size;
-    int         _maxSize;  // new, reserve refresh
+    int         _maxSize;
 };
 
 
@@ -75,7 +75,7 @@ public:
 private:
     char*       _buf;
     int         _size;
-    int         _maxSize;  // new, reserve refresh
+    int         _maxSize;
 };
 
 

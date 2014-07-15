@@ -241,7 +241,7 @@ int List<T>::getBufferSize() const
     int siz = sizeof( int );
     for( int i = 0; i < _size; ++i )
     {
-        siz += BufferUtils::getSize( _buf[ i ] );
+        siz += _buf[ i ].getBufferSize();
     }
     return siz;
 }

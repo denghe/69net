@@ -28,6 +28,12 @@ struct Dict
     void reserve( int capacity );
     List<Node*> const& data() const;
     int size() const;
+
+    // for FlatBuffer write
+    int getBufferSize() const;
+    void writeBuffer( FlatBuffer& fb ) const;
+    void writeBufferDirect( FlatBuffer& fb ) const;
+    bool readBuffer( FlatBuffer& fb );
 private:
     void dispose( Node* n );
     void resize();
@@ -35,7 +41,5 @@ private:
     List<Node*>         _nodes;
     Pool                _pool;
 };
-
-
 
 #endif
