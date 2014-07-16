@@ -28,12 +28,15 @@ struct Dict
     void reserve( int capacity );
     List<Node*> const& data() const;
     int size() const;
+    Node* operator[]( TK const& k );            // find or insert ( default value ) and return
+    Node* at( TK const& k );                    // same as operator[]
+    
 
-    //// for FlatBuffer write
-    //int getBufferSize() const;
-    //void writeBuffer( FlatBuffer& fb ) const;
-    //void writeBufferDirect( FlatBuffer& fb ) const;
-    //bool readBuffer( FlatBuffer& fb );
+    // for FlatBuffer write
+    int getBufferSize() const;
+    void writeBuffer( FlatBuffer& fb ) const;
+    void writeBufferDirect( FlatBuffer& fb ) const;
+    bool readBuffer( FlatBuffer& fb );
 private:
     void dispose( Node* n );
     void resize();

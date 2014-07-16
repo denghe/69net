@@ -1,5 +1,4 @@
 #include "Lib/All.h"
-using namespace std;
 
 
 
@@ -65,12 +64,31 @@ struct Foo
 //    }
 //};
 
+template<typename ...TS>
+void cout( TS const& ...parms )
+{
+    String s;
+    s.append( parms... );
+    std::cout << s.c_str() << std::endl;
+}
+
 int main()
 {
-    Dict<int,int> d;
-    d.insert( 123, 456 );
+    Dict<int, int> d;
+    d.insert( 1, 1 );
+    d.insert( 2, 2 );
+    d.insert( 3, 3 );
+    FlatBuffer fb;
+    fb.write( d );
+    cout( fb.dump() );
 
-
+    Dict<int, int> d2;
+    fb.read( d2 );
+    for( int i = 0; i < d2.size(); ++i )
+    {
+        auto n = d2.data()[ i ];
+        cout( n->key, " ", n->value );
+    }
 
 
 

@@ -279,6 +279,7 @@ typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
 #include "LRUCache.hpp"
 #include "String.hpp"
 #include "Utils.hpp"
+#include "Dict.hpp"
 
 // ... more
 
