@@ -67,8 +67,8 @@ struct Foo
 
 int main()
 {
-
-
+    Dict<int,int> d;
+    d.insert( 123, 456 );
 
 
 

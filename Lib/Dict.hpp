@@ -219,82 +219,137 @@ void Dict<TK, TV>::resize()
 
 
 
-
-
-
-
-
-template <typename TK, typename TV>
-int Dict<TK, TV>::getBufferSize() const
-{
-    //if( Utils::isValueType<T>() )
-    //{
-    //    return sizeof( int ) + sizeof( T ) * _size;
-    //}
-
-    //int siz = sizeof( int );
-    //for( int i = 0; i < _size; ++i )
-    //{
-    //    siz += _buf[ i ].getBufferSize();
-    //}
-    //return siz;
-    return 0;
-}
-template <typename TK, typename TV>
-void Dict<TK, TV>::writeBuffer( FlatBuffer& fb ) const
-{
-    //fb.write( _size );
-    //if( Utils::isValueType<T>() )
-    //{
-    //    fb.write( (char*)_buf, _size * sizeof( T ) );
-    //    return;
-    //}
-    //for( int i = 0; i < _size; ++i )
-    //{
-    //    fb.write( _buf[ i ] );
-    //}
-}
-template <typename TK, typename TV>
-void Dict<TK, TV>::writeBufferDirect( FlatBuffer& fb ) const
-{
-    //fb.writeDirect( _size );
-    //if( Utils::isValueType<T>() )
-    //{
-    //    fb.writeDirect( (char*)_buf, _size * sizeof( T ) );
-    //    return;
-    //}
-    //for( int i = 0; i < _size; ++i )
-    //{
-    //    fb.writeDirect( _buf[ i ] );
-    //}
-}
-
-template <typename TK, typename TV>
-bool Dict<TK, TV>::readBuffer( FlatBuffer& fb )
-{
-    //int len;
-    //if( !fb.read( len )
-    //    || len < 0 ) return false;              // todo: || len > maxListLength
-    //if( Utils::isValueType<T>() )
-    //{
-    //    int siz = len * ( int )sizeof( T );
-    //    if( fb.offset() + siz > fb.size() ) return false;
-    //    clear();
-    //    resize( len, false );
-    //    memcpy( _buf, fb.data() + fb.offset(), siz );
-    //    fb.offset() += siz;
-    //    return true;
-    //}
-    //clear();
-    //reserve( len );
-    //for( int i = 0; i < len; ++i )
-    //{
-    //    new ( _buf + i ) T();
-    //    _size = i + 1;
-    //    if( !_buf[ i ].readBuffer( fb ) ) return false;
-    //}
-    return true;
-}
+//
+//
+//
+//
+//
+//template <typename TK, typename TV>
+//int Dict<TK, TV>::getBufferSize() const
+//{
+//    int siz = sizeof( int );
+//    if( !Utils::isValueType<TK>() && !Utils::isValueType<TV>() )
+//    {
+//        for( int i = 0; i < _size; ++i )
+//        {
+//            siz += _nodes[ i ]->key.getBufferSize();
+//            siz += _nodes[ i ]->value.getBufferSize();
+//        }
+//        return siz;
+//    }
+//    if( Utils::isValueType<TK>() )
+//    {
+//        siz += sizeof( TK ) * _nodes.size();
+//    }
+//    else
+//    {
+//        for( int i = 0; i < _size; ++i )
+//        {
+//            siz += _nodes[ i ]->value.getBufferSize();
+//        }
+//    }
+//    if( Utils::isValueType<TV>() )
+//    {
+//        siz += sizeof( TV ) * _nodes.size();
+//    }
+//    else
+//    {
+//        for( int i = 0; i < _size; ++i )
+//        {
+//            siz += _nodes[ i ]->key.getBufferSize();
+//        }
+//    }
+//    return siz;
+//}
+//template <typename TK, typename TV>
+//void Dict<TK, TV>::writeBuffer( FlatBuffer& fb ) const
+//{
+//    fb.write( _nodes.size() );
+//    for( int i = 0; i < _size; ++i )
+//    {
+//        fb.write( _nodes[ i ]->key );
+//        fb.write( _nodes[ i ]->value );
+//    }
+//}
+//template <typename TK, typename TV>
+//void Dict<TK, TV>::writeBufferDirect( FlatBuffer& fb ) const
+//{
+//    fb.writeDirect( _nodes.size() );
+//    for( int i = 0; i < _size; ++i )
+//    {
+//        fb.writeDirect( _nodes[ i ]->key );
+//        fb.writeDirect( _nodes[ i ]->value );
+//    }
+//}
+//
+//template <typename TK, typename TV>
+//bool Dict<TK, TV>::readBuffer( FlatBuffer& fb )
+//{
+//    int len;
+//    if( !fb.read( len ) || len < 0 ) return false;      // todo: || len > maxListLength
+//    clear();
+//    reserve( len );
+//    for( int i = 0; i < len; ++i )
+//    {
+//        ALIGN8( char kbuf[ sizeof( TK ) ] );
+//        TK* k = (TK*)kbuf;
+//        if( Utils::isValueType<TK>() )
+//        {
+//            if( !fb.read( *k ) ) return false;
+//        }
+//        else
+//        {
+//            new (kbuf) TK();
+//            if( !k.readBuffer( fb ) )
+//            {
+//                k.~TK();
+//                return false;
+//            }
+//        }
+//        uint hashCode = (uint)Utils::getHashCode( k );
+//        uint mod = hashCode % (uint)_buckets.size();
+//        auto node = _buckets[ mod ];
+//        while( node )
+//        {
+//            if( node->hash == hashCode && Utils::equalsTo( node->key, k ) )
+//                return false;                           // 正常情况下 key 值是不重的
+//            node = node->next;
+//        };
+//        auto n = (Node*)_pool.alloc();
+//        if( Utils::isValueType<TV>() )
+//        {
+//            if( !fb.read( n->value ) )
+//            {
+//                _pool.free( n );
+//                return false;
+//            }
+//        }
+//        else
+//        {
+//            new ( &n->value ) TV();
+//            if( !n->value.readBuffer( fb ) )
+//            {
+//                n->value.~TV();
+//                return false;
+//            }
+//        }
+//        n->next = _buckets[ mod ];
+//        n->hash = hashCode;
+//        n->index = _nodes.size();
+//        if( Utils::isValueType<TK>() )
+//        {
+//            *(TK*)&n->key = *k;
+//        }
+//        else
+//        {
+//            new ( (TK*)&n->key ) TK( std::move( k ) );
+//        }
+//
+//        _buckets[ mod ] = n;
+//        _nodes.push( n );
+//    }
+//    return true;
+//}
 
 
 
