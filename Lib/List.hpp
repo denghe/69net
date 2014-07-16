@@ -88,13 +88,17 @@ template<typename T>
 template<typename VT>
 void List<T>::push( VT&& v )
 {
-    if( _size == _maxSize ) reserve( _size + 1 );
-    if( Utils::isValueType<T>() )
-        _buf[ _size ] = v;
-    else
-        new ( _buf + _size ) T( std::forward<VT>( v ) );
-    ++_size;
+    emplace( std::forward<VT>( v ) );
 }
+
+template<typename T>
+template<typename ...PTS>
+T& List<T>::emplace( PTS&& ...ps )
+{
+    if( _size == _maxSize ) reserve( _size + 1 );
+    return *new ( _buf + _size++ ) T( std::forward<PTS>( ps )... );
+}
+
 
 template<typename T>
 void List<T>::pop()
@@ -281,8 +285,7 @@ template<typename T>
 bool List<T>::readBuffer( FlatBuffer& fb )
 {
     int len;
-    if( !fb.read( len )
-        || len < 0 ) return false;              // todo: || len > maxListLength
+    if( !fb.read( len ) || len < 0 ) return false;
     if( Utils::isValueType<T>() )
     {
         int siz = len * (int)sizeof( T );

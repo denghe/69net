@@ -15,7 +15,11 @@ public:
     List& operator=( List const& other );
     template<typename VT>
     void push( VT&& v );
+    template<typename ...PTS>
+    T& emplace( PTS&& ...ps );
+    // todo: insert
     void pop();
+    // todo: erase
     T& top();
     void clear();
     void reserve( int capacity );

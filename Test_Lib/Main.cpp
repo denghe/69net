@@ -91,9 +91,6 @@ int main()
     }
 
 
-
-
-
     //Foo f[] = { { 234, 234.5, 234.567f, "kjjljkjlkj"
     //    , { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, { Xxxxs::Asdf, Xxxxs::Qwer, Xxxxs::Zxcv } } };
 

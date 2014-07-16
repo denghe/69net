@@ -39,7 +39,7 @@ Dict<TK, TV>& Dict<TK, TV>::operator=( Dict const& o )
         n->next = _buckets[ mod ];
         n->hash = on->hash;
         n->index = _nodes.size();
-        new ( (TK*)&n->key ) TK( on->key );
+        new ( &n->key ) TK( on->key );
         new ( &n->value ) TV( on->value );
         _buckets[ mod ] = n;
         _nodes.push( n );
@@ -67,34 +67,42 @@ template <typename TK, typename TV>
 template <typename KT, typename VT>
 std::pair<typename Dict<TK, TV>::Node*, bool> Dict<TK, TV>::insert( KT && k, VT && v, bool replace /*= false */ )
 {
+    return emplace( replace, std::forward<KT>( k ), std::forward<KT>( v ) );
+}
+
+template <typename TK, typename TV>
+template<typename KT, typename ...VPTS>
+std::pair<typename Dict<TK, TV>::Node*, bool> Dict<TK, TV>::emplace( bool replace, KT&& k, VPTS&& ...vps )
+{
     std::pair<typename Dict<TK, TV>::Node*, bool> rtv;
-    uint hashCode = (uint)Utils::getHashCode( k );          // calc
-    uint mod = hashCode % (uint)_buckets.size();            // find
-    auto node = _buckets[ mod ];                            // get chain header
+    uint hashCode = (uint)Utils::getHashCode( k );
+    uint mod = hashCode % (uint)_buckets.size();
+    auto node = _buckets[ mod ];
     while( node )
     {
-        if( node->hash == hashCode && Utils::equalsTo( node->key, k ) )      // scan chain
+        if( node->hash == hashCode && Utils::equalsTo( node->key, k ) )
         {
-            if( replace ) node->value = std::forward<VT>( v );
+            if( replace ) node->value = TV( std::forward<VPTS>( vps )... );
             rtv.first = node;
             rtv.second = false;
             return rtv;
         }
         node = node->next;
     };
-    auto n = (Node*)_pool.alloc();                          // new & init
+    auto n = (Node*)_pool.alloc();
     n->next = _buckets[ mod ];
     n->hash = hashCode;
     n->index = _nodes.size();
-    new ( (TK*)&n->key ) TK( std::forward<KT>( k ) );
-    new ( &n->value ) TV( std::forward<VT>( v ) );
+    new ( &n->key ) TK( std::forward<KT>( k ) );
+    new ( &n->value ) TV( std::forward<VPTS>( vps )... );
     _buckets[ mod ] = n;
     _nodes.push( n );
-    if( _nodes.size() == _buckets.size() ) resize();        // grow
+    if( _nodes.size() == _buckets.size() ) resize();
     rtv.first = n;
     rtv.second = true;
     return rtv;
 }
+
 
 template <typename TK, typename TV>
 typename Dict<TK, TV>::Node* Dict<TK, TV>::find( TK const& k )
@@ -166,7 +174,7 @@ typename Dict<TK, TV>::Node* Dict<TK, TV>::operator[]( TK const& k )
     n->next = _buckets[ mod ];
     n->hash = hashCode;
     n->index = _nodes.size();
-    new ( (TK*)&n->key ) TK( std::forward<KT>( k ) );
+    new ( &n->key ) TK( std::forward<KT>( k ) );
     new ( &n->value ) TV();
     _buckets[ mod ] = n;
     _nodes.push( n );
@@ -317,56 +325,30 @@ template <typename TK, typename TV>
 bool Dict<TK, TV>::readBuffer( FlatBuffer& fb )
 {
     int len;
-    if( !fb.read( len ) || len < 0 ) return false;      // todo: || len > maxListLength
+    if( !fb.read( len ) || len < 0 ) return false;
     clear();
     reserve( len );
     for( int i = 0; i < len; ++i )
     {
-        ALIGN8( char kbuf[ sizeof( TK ) ] );
-        TK& k = *(TK*)kbuf;
-        if( !fb.read( k ) )
+        auto n = (Node*)_pool.alloc();                              // malloc
+        if( !Utils::isValueType<TK>() ) new ( &n->key ) TK();       // new key
+        if( !fb.read( n->key ) )
         {
-            if( !Utils::isValueType<TK>() )
-            {
-                k.~TK();
-            }
+            if( !Utils::isValueType<TK>() ) n->key.~TK();           // delete key
+            _pool.free( n );                                        // free
             return false;
         }
-        uint hashCode = (uint)Utils::getHashCode( k );
-        uint mod = hashCode % (uint)_buckets.size();
-        auto node = _buckets[ mod ];
-        while( node )
-        {
-            if( node->hash == hashCode && Utils::equalsTo( node->key, k ) )
-                return false;                           // 正常情况下 key 值是不重的
-            node = node->next;
-        };
-        auto n = (Node*)_pool.alloc();
-        if( !Utils::isValueType<TV>() )
-        {
-            new ( &n->value ) TV();
-        }
+        if( !Utils::isValueType<TV>() ) new ( &n->value ) TV();     // new value
         if( !fb.read( n->value ) )
         {
-            if( !Utils::isValueType<TV>() )
-            {
-                n->value.~TV();
-            }
-            _pool.free( n );
+            if( !Utils::isValueType<TV>() ) n->value.~TV();         // delete value
+            _pool.free( n );                                        // free
             return false;
         }
+        n->hash = (uint)Utils::getHashCode( n->key );
+        uint mod = n->hash % (uint)_buckets.size();
+        n->index = i;//_nodes.size();
         n->next = _buckets[ mod ];
-        n->hash = hashCode;
-        n->index = _nodes.size();
-        if( Utils::isValueType<TK>() )
-        {
-            *(TK*)&n->key = k;
-        }
-        else
-        {
-            new ( (TK*)&n->key ) TK( std::move( k ) );
-        }
-
         _buckets[ mod ] = n;
         _nodes.push( n );
     }

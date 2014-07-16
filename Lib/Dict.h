@@ -9,7 +9,7 @@ struct Dict
         Node*           next;
         uint            hash;                               // key's hashCode
         int             index;                              // _nodes[ index ]
-        TK const        key;
+        TK              key;
         TV              value;
     };
     typedef Node NT;
@@ -21,6 +21,8 @@ struct Dict
     ~Dict();
     template <typename KT, typename VT>
     std::pair<Node*, bool> insert( KT&& k, VT&& v, bool replace = false );      // if exists, return Node* + false. else add and return Node* + true
+    template<typename KT, typename ...VPTS>
+    std::pair<Node*, bool> emplace( bool replace, KT&& k, VPTS&& ...vps );      // same as insert but need value type's construct parameters
     Node* find( TK const& k );                                                  // if exists, return Node*. else return nullptr
     void erase( TK const& k );
     void erase( Node* n );
@@ -30,6 +32,7 @@ struct Dict
     int size() const;
     Node* operator[]( TK const& k );            // find or insert ( default value ) and return
     Node* at( TK const& k );                    // same as operator[]
+
     
 
     // for FlatBuffer write
