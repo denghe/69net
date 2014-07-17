@@ -70,12 +70,6 @@ namespace Utils
     }
 
     template<typename T>
-    bool isValueType() // 整数，浮点，枚举，指针
-    {
-        return std::is_enum<T>::value || std::is_integral<T>::value || std::is_pointer<T>::value || std::is_floating_point<T>::value;
-    }
-
-    template<typename T>
     int getHashCode( T const &in )
     {
         if( sizeof( T ) == 1 )

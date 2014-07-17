@@ -1,6 +1,6 @@
 #include "All.h"
 
-CircleBuffer::CircleBuffer( Pool& p )
+BlockBuffer::BlockBuffer( Pool& p )
     : _wp( nullptr )
     , _rp( nullptr )
     , _wpLen( 0 )
@@ -11,12 +11,12 @@ CircleBuffer::CircleBuffer( Pool& p )
     assert( p.itemBufLen() - sizeof( Page* ) > 0 );
 }
 
-CircleBuffer::~CircleBuffer()
+BlockBuffer::~BlockBuffer()
 {
     clear();
 }
 
-void CircleBuffer::clear()
+void BlockBuffer::clear()
 {
     Page* p = _rp;
     _wp->next = nullptr;
@@ -29,17 +29,17 @@ void CircleBuffer::clear()
     _wpLen = _rpLen = _size = 0;
 }
 
-bool CircleBuffer::empty() const
+bool BlockBuffer::empty() const
 {
     return _size == 0;
 }
 
-int CircleBuffer::size() const
+int BlockBuffer::size() const
 {
     return _size;
 }
 
-void CircleBuffer::write( char const* buf, int len )
+void BlockBuffer::write( char const* buf, int len )
 {
     assert( buf );
     if( !len ) return;
@@ -65,7 +65,7 @@ Begin:
     goto Begin;
 }
 
-void CircleBuffer::copy( char* buf, int len )
+void BlockBuffer::copy( char* buf, int len )
 {
     assert( len <= _size );
     int ps = _pool->itemBufLen() - sizeof( Page* );
@@ -86,7 +86,7 @@ Begin:
     goto Begin;
 }
 
-int CircleBuffer::read( char* buf, int bufLen )
+int BlockBuffer::read( char* buf, int bufLen )
 {
     if( !_size ) return 0;
     int ps = _pool->itemBufLen() - sizeof( Page* );

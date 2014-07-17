@@ -4,7 +4,7 @@
 class FlatBuffer;
 
 template<typename T>
-class List
+class List : Memmoveable
 {
 public:
     List( int capacity = 8 );
@@ -17,9 +17,13 @@ public:
     void push( VT&& v );
     template<typename ...PTS>
     T& emplace( PTS&& ...ps );
-    // todo: insert
+    template<typename ...PTS>
+    T& emplaceAt( int idx, PTS&& ...ps );
+    template<typename VT>
+    void insertAt( int idx, VT&& v );
+    int find( T const& v );
+    void erase( int idx );
     void pop();
-    // todo: erase
     T& top();
     void clear();
     void reserve( int capacity );
@@ -51,8 +55,9 @@ private:
 
 
 
+
 template<>
-class List < bool >
+class List<bool> : Memmoveable
 {
 public:
     List( int capacity = 512 );
@@ -66,16 +71,13 @@ public:
     bool top() const;
     void clear();
     void reserve( int capacity );
-    // todo: void resize( int capacity, bool init = true );
     char* data() const;
     int size() const;
     int byteSize() const;
-    // todo: int byteMaxSize() const;
     bool operator[]( int idx ) const;
     bool at( int idx ) const;
     void set( int idx, bool v );
-
-    // todo: for FlatBuffer write
+    // todo: more functions
 private:
     char*       _buf;
     int         _size;

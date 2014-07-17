@@ -269,7 +269,7 @@ template <typename TK, typename TV>
 int Dict<TK, TV>::getBufferSize() const
 {
     int siz = sizeof( int );
-    if( !Utils::isValueType<TK>() && !Utils::isValueType<TV>() )
+    if( !std::is_pod<TK>::value && !std::is_pod<TV>::value )
     {
         for( int i = 0; i < _size; ++i )
         {
@@ -278,7 +278,7 @@ int Dict<TK, TV>::getBufferSize() const
         }
         return siz;
     }
-    if( Utils::isValueType<TK>() )
+    if( std::is_pod<TK>::value )
     {
         siz += sizeof( TK ) * _nodes.size();
     }
@@ -289,7 +289,7 @@ int Dict<TK, TV>::getBufferSize() const
             siz += _nodes[ i ]->value.getBufferSize();
         }
     }
-    if( Utils::isValueType<TV>() )
+    if( std::is_pod<TV>::value )
     {
         siz += sizeof( TV ) * _nodes.size();
     }
@@ -333,17 +333,17 @@ bool Dict<TK, TV>::readBuffer( FlatBuffer& fb )
     for( int i = 0; i < len; ++i )
     {
         auto n = (Node*)_pool.alloc();                              // malloc
-        if( !Utils::isValueType<TK>() ) new ( &n->key ) TK();       // new key
+        if( !std::is_pod<TK>::value ) new ( &n->key ) TK();         // new key
         if( !fb.read( n->key ) )
         {
-            if( !Utils::isValueType<TK>() ) n->key.~TK();           // delete key
+            if( !std::is_pod<TK>::value ) n->key.~TK();             // delete key
             _pool.free( n );                                        // free
             return false;
         }
-        if( !Utils::isValueType<TV>() ) new ( &n->value ) TV();     // new value
+        if( !std::is_pod<TV>::value ) new ( &n->value ) TV();       // new value
         if( !fb.read( n->value ) )
         {
-            if( !Utils::isValueType<TV>() ) n->value.~TV();         // delete value
+            if( !std::is_pod<TV>::value ) n->value.~TV();           // delete value
             _pool.free( n );                                        // free
             return false;
         }

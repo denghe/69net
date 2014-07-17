@@ -1,4 +1,112 @@
 #include "Lib/All.h"
+template<typename ...TS>
+void cout( TS const& ...parms )
+{
+    String s;
+    s.append( parms... );
+    std::cout << s.c_str() << std::endl;
+}
+
+
+int main()
+{
+    int count = 9999999;
+    String s;
+    Stopwatch sw;
+    String tmp;
+    for( int i = 0; i < count; ++i )
+    {
+        tmp.clear();
+        tmp.appendFormat( "{2} {1} {0} {2} {1} {0} {2}", "World", "Hello", i );
+        s = tmp;
+    }
+    cout( sw.elapsed(), "  ", s );
+
+
+
+
+    /*String s;
+    int count = 999999;
+    Stopwatch sw;
+
+    sw.reset();
+    for( int i = 0; i < count; ++i )
+    {
+    s.clear();
+    s.appendFormat( "{1}{99}{1}"
+    , 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 100
+    );
+    }
+    cout( s, ' ', sw.elapsed() );
+
+    */
+
+    return 0;
+
+
+
+
+
+    //FlatBuffer fb;
+
+    //int count = 999999;
+    //// 仿一个字典数据
+    //fb.write( count );
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    fb.writes( i, String::toString( i ) );
+    //}
+
+    //Stopwatch sw;
+    //// 还原
+    //fb.offset() = 0;
+    //Dict<int, int> d;
+    //if( !fb.read( d ) ) cout( "read fail." );
+    //cout( d.size(), ' ', d[ 0 ], ' ', d[ count - 1 ], ", elapsed ms = ", sw.elapsed() );
+
+    //sw.reset();
+    //fb.offset() = 0;
+    //std::unordered_map<int, int> sd;
+    //int len;
+    //fb.read( len );
+    //for( int i = 0; i < len; ++i )
+    //{
+    //    int k, v;
+    //    if( !fb.read( k ) ) cout( "read fail." );
+    //    if( !fb.read( v ) ) cout( "read fail." );
+    //    sd.insert( std::make_pair( k, v ) );
+    //}
+    //cout( sd.size(), ' ', sd[ 0 ], ' ', sd[ count - 1 ], ", elapsed ms = ", sw.elapsed() );
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Lib/All.h"
 
 
 

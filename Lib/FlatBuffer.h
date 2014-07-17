@@ -2,8 +2,7 @@
 #define _FLATBUFFER_H__
 
 
-// todo: Pool, read
-class FlatBuffer
+class FlatBuffer : Memmoveable
 {
 public:
     explicit FlatBuffer( int capacity = 1024 );                                 // prepare

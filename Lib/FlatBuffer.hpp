@@ -10,7 +10,7 @@ typename std::enable_if<writeBufferDirect_checker<T>::value, void>::type writeBu
 template<typename T>
 typename std::enable_if<!writeBufferDirect_checker<T>::value, void>::type writeBufferDirect_switch( FlatBuffer& fb, T const& v )
 {
-    assert( Utils::isValueType<T>() );
+    assert( std::is_pod<T>::value );
     BufferUtils::write( fb.data() + fb.size(), v );
     fb.size() += BufferUtils::getSize( v );
 };
@@ -30,7 +30,7 @@ typename std::enable_if<writeBuffer_checker<T>::value, void>::type writeBuffer_s
 template<typename T>
 typename std::enable_if<!writeBuffer_checker<T>::value, void>::type writeBuffer_switch( FlatBuffer& fb, T const& v )
 {
-    assert( Utils::isValueType<T>() );
+    assert( std::is_pod<T>::value );
     int siz = BufferUtils::getSize( v );
     fb.reserve( fb.size() + siz );
     BufferUtils::write( fb.data() + fb.size(), v );
@@ -60,7 +60,7 @@ void FlatBuffer::write( char const( &s )[ len ] )
 template<typename T, int len>
 void FlatBuffer::writeDirect( T const( &a )[ len ] )
 {
-    if( Utils::isValueType<T>() )
+    if( std::is_pod<T>::value )
     {
         writeDirect( (char*)a, len * sizeof( T ) );
     }
@@ -75,7 +75,7 @@ void FlatBuffer::writeDirect( T const( &a )[ len ] )
 template<typename T, int len>
 void FlatBuffer::write( T const( &a )[ len ] )
 {
-    if( Utils::isValueType<T>() )
+    if( std::is_pod<T>::value )
     {
         auto siz = len * ( int )sizeof( T );
         reserve( _dataLen + siz );
@@ -131,7 +131,7 @@ typename std::enable_if<readBuffer_checker<T>::value, bool>::type readBuffer_swi
 template<typename T>
 typename std::enable_if<!readBuffer_checker<T>::value, bool>::type readBuffer_switch( FlatBuffer& fb, T& v )
 {
-    assert( Utils::isValueType<T>() );
+    assert( std::is_pod<T>::value );
     auto siz = BufferUtils::getSize( v );
     if( fb.offset() + siz > fb.size() ) return false;
     BufferUtils::read( v, fb.data() + fb.offset() );
@@ -148,7 +148,7 @@ bool FlatBuffer::read( T& v )
 template<typename T, int len>
 bool FlatBuffer::read( T( &a )[ len ] )
 {
-    if( Utils::isValueType<T>() )
+    if( std::is_pod<T>::value )
     {
         int siz = len * ( int )sizeof( T );
         if( _offset + siz > _dataLen ) return false;

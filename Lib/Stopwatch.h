@@ -1,17 +1,17 @@
 #ifndef __STOPWATCH_H__
 #define __STOPWATCH_H__
 
-#include <chrono>
-#include <stdint.h>
-typedef int8_t  int8, sbyte;
-typedef int16_t int16;
-typedef int32_t int32;
-typedef int64_t int64;
-
-typedef uint8_t  uint8, byte;
-typedef uint16_t uint16, ushort;
-typedef uint32_t uint32, uint;
-typedef uint64_t uint64;
+//#include <chrono>
+//#include <stdint.h>
+//typedef int8_t  int8, sbyte;
+//typedef int16_t int16;
+//typedef int32_t int32;
+//typedef int64_t int64;
+//
+//typedef uint8_t  uint8, byte;
+//typedef uint16_t uint16, ushort;
+//typedef uint32_t uint32, uint;
+//typedef uint64_t uint64;
 
 using std::chrono::duration_cast;
 using std::chrono::high_resolution_clock;

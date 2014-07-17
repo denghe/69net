@@ -260,9 +260,8 @@ void FlatBuffer::writeBufferDirect( FlatBuffer& fb )
 bool FlatBuffer::readBuffer( FlatBuffer& fb )
 {
     int len;
-    if( !fb.read( len )
-        || len < 0
-        || fb.offset() + len > fb.size() ) return false;             // todo: || len > maxStringLength
+    if( !fb.read( len ) || len < 0
+        || fb.offset() + len > fb.size() ) return false;
     clear();
     reserve( len );
     _dataLen = len;

@@ -11,7 +11,6 @@
     <ClInclude Include="Pool.h" />
     <ClInclude Include="Dict.hpp" />
     <ClInclude Include="Dict.h" />
-    <ClInclude Include="CircleBuffer.h" />
     <ClInclude Include="LRUCache.h" />
     <ClInclude Include="LRUCache.hpp" />
     <ClInclude Include="FlatBuffer.h" />
@@ -19,6 +18,7 @@
     <ClInclude Include="BufferUtils.h" />
     <ClInclude Include="BufferUtils.hpp" />
     <ClInclude Include="Utils.hpp" />
+    <ClInclude Include="BlockBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
@@ -28,8 +28,8 @@
     <ClCompile Include="String.cpp" />
     <ClCompile Include="List.cpp" />
     <ClCompile Include="Pool.cpp" />
-    <ClCompile Include="CircleBuffer.cpp" />
     <ClCompile Include="FlatBuffer.cpp" />
     <ClCompile Include="BufferUtils.cpp" />
+    <ClCompile Include="BlockBuffer.cpp" />
   </ItemGroup>
 </Project>

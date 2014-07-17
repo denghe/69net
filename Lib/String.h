@@ -4,7 +4,7 @@
 
 class FlatBuffer;
 
-class String
+class String : Memmoveable
 {
 public:
     explicit String( int capacity = 64 );                       // prepare
@@ -52,6 +52,7 @@ public:
     void appendFormat( char const* format, TS const & ...vs );
 
 
+
     template<typename ...TS>
     static String make( TS const & ...vs );
 
@@ -63,6 +64,12 @@ public:
 
     template<typename ...TS>
     static String makeFormat( Pool& p, char const* format, TS const & ...vs );
+
+    template<typename T>
+    static String toString( T const& v );
+
+    template<typename T>
+    static String toHexString( T const& v );
 
 
     std::string std_str();
@@ -83,12 +90,19 @@ public:
 
 
 
+
+
+
+
+
 private:
+
     template<typename T>
-    void appendFormatCore( List<String>& ss, int& i, T const & v );
+    void appendFormatCore( String& s, int& n, T const & v );
 
     template<typename T, typename ...TS>
-    void appendFormatCore( List<String>& ss, int& i, T const & v, TS const & ...vs );
+    void appendFormatCore( String& s, int& n, T const & v, TS const & ...vs );
+
 
     typedef void ( String::*Disposer )( );
     void disposePoolBuffer();
@@ -112,7 +126,7 @@ private:
 
 // todo
 
-class HashString
+class HashString : Memmoveable
 {
 public:
     HashString( String const& s )
@@ -155,7 +169,7 @@ public:
     //{
     //    return _s;
     //}
-//private:
+    //private:
     String _s;
     int _h;
 };

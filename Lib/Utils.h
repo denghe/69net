@@ -200,13 +200,6 @@ namespace Utils
 
 
 
-    template<typename T>
-    bool isValueType();   // 整数，浮点，枚举，指针
-
-
-
-
-
 
 
     int getHash_CS( byte const* buf, int len );             // 须 x64 下 8 字节 对齐内存 较长串( 估计就是 8+ ) 才能高速

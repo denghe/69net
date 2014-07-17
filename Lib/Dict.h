@@ -2,7 +2,7 @@
 #define _DICT_H_
 
 template <typename TK, typename TV>
-struct Dict
+struct Dict : Memmoveable
 {
     struct Node
     {

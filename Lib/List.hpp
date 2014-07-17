@@ -39,7 +39,7 @@ template<typename T>
 List<T>::List( List const& other )
     : List( other._size )
 {
-    if( Utils::isValueType<T>() )
+    if( std::is_pod<T>::value )
         memcpy( _buf, other._buf, other.byteSize() );
     else
         for( int i = 0; i < other._size; ++i )
@@ -76,7 +76,7 @@ List<T>& List<T>::operator=( List const& other )
         delete[]( char* )_buf;
         _buf = ( T* )new char[ byteLen ];
     }
-    if( Utils::isValueType<T>() )
+    if( std::is_pod<T>::value )
         memcpy( _buf, other._buf, other.byteSize() );
     else
         for( int i = 0; i < other._size; ++i )
@@ -130,7 +130,8 @@ void List<T>::reserve( int capacity )
     auto byteLen = (int)Utils::round2n( capacity * sizeof( T ) );
     _maxSize = byteLen / sizeof( T );
     auto newBuf = ( T* )new char[ byteLen ];
-    if( Utils::isValueType<T>() )
+    if( std::is_pod<T>::value
+        || std::is_base_of<Memmoveable, T>::value )
         memcpy( newBuf, _buf, byteSize() );
     else
         for( int i = 0; i < _size; ++i )
@@ -145,7 +146,7 @@ void List<T>::resize( int capacity, bool init /*= true */ )
     if( capacity == _size ) return;
     else if( capacity < _size )
     {
-        if( !Utils::isValueType<T>() )
+        if( !std::is_pod<T>::value )
             for( int i = capacity; i < _size; ++i )
                 _buf[ i ].~T();
     }
@@ -155,7 +156,7 @@ void List<T>::resize( int capacity, bool init /*= true */ )
         if( init )
         {
 
-            if( Utils::isValueType<T>() )
+            if( std::is_pod<T>::value )
                 memset( _buf + _size, 0, ( capacity - _size ) * sizeof( T ) );
             else
                 for( int i = _size; i < capacity; ++i )
@@ -224,11 +225,90 @@ template<typename VT>
 void List<T>::set( int idx, VT&& v )
 {
     assert( idx >= 0 && idx < _size );
-    if( Utils::isValueType<T>() )
+    if( std::is_pod<T>::value )
         _buf[ idx ] = v;
     else
         _buf[ idx ] = std::forward<VT>( v );
 }
+
+template<typename T>
+int List<T>::find( T const& v )
+{
+    for( int i = 0; i < _size; ++i )
+    {
+        if( _buf[ idx ] == v ) return i;
+    }
+    return -1;
+}
+template<typename T>
+void List<T>::erase( int idx )
+{
+    assert( idx >= 0 || idx < _size );
+    --_size;
+    if( std::is_pod<T>::value
+        || std::is_base_of<Memmoveable, T>::value )
+    {
+        memmove( _buf + idx, _buf + idx + 1, ( _size - idx )*sizeof( T ) );
+    }
+    else
+    {
+        _buf[ idx ].~T();
+        for( int i = idx; i < _size; ++i )
+        {
+            new ( _buf + i ) T( std::move( _buf[ i + 1 ] ) );
+        }
+    }
+}
+template<typename T>
+template<typename VT>
+void List<T>::insertAt( int idx, VT&& v )
+{
+    emplaceAt( idx, std::forward<VT>( v ) );
+}
+template<typename T>
+template<typename ...PTS>
+T& List<T>::emplaceAt( int idx, PTS&& ...ps )
+{
+    assert( idx >= 0 || idx < _size );
+    reserve( _size + 1 );                       // todo: 理论上讲这句可以展开，于扩容时直接将 insert 的元素的内存位置留出来
+
+    if( std::is_pod<T>::value
+        || std::is_base_of<Memmoveable, T>::value )
+    {
+        memmove( _buf + idx + 1, _buf + idx, ( _size - idx )*sizeof( T ) );
+        //_buf[ idx ] = v;
+        ++_size;
+        return *new ( _buf + idx ) T( std::forward<PTS>( ps )... );
+    }
+    else
+    {
+        for( int i = _size; i > idx; --i )
+        {
+            new ( _buf + i ) T( std::move( _buf[ i - 1 ] ) );
+        }
+        ++_size;
+        return *new ( _buf + idx ) T( std::forward<PTS>( ps )... );
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -237,7 +317,7 @@ void List<T>::set( int idx, VT&& v )
 template<typename T>
 int List<T>::getBufferSize() const
 {
-    if( Utils::isValueType<T>() )
+    if( std::is_pod<T>::value )
     {
         return sizeof( int ) + sizeof( T ) * _size;
     }
@@ -254,7 +334,7 @@ template<typename T>
 void List<T>::writeBuffer( FlatBuffer& fb ) const
 {
     fb.write( _size );
-    if( Utils::isValueType<T>() )
+    if( std::is_pod<T>::value )
     {
         fb.write( (char*)_buf, _size * sizeof( T ) );
         return;
@@ -269,7 +349,7 @@ template<typename T>
 void List<T>::writeBufferDirect( FlatBuffer& fb ) const
 {
     fb.writeDirect( _size );
-    if( Utils::isValueType<T>() )
+    if( std::is_pod<T>::value )
     {
         fb.writeDirect( (char*)_buf, _size * sizeof( T ) );
         return;
@@ -286,9 +366,9 @@ bool List<T>::readBuffer( FlatBuffer& fb )
 {
     int len;
     if( !fb.read( len ) || len < 0 ) return false;
-    if( Utils::isValueType<T>() )
+    if( std::is_pod<T>::value )
     {
-        int siz = len * (int)sizeof( T );
+        int siz = len * ( int )sizeof( T );
         if( fb.offset() + siz > fb.size() ) return false;
         clear();
         resize( len, false );

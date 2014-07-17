@@ -2,7 +2,7 @@
 #define _POOL_H__
 
 // todo: 可选择于 item 前面附加 this 指针
-class Pool
+class Pool : Memmoveable
 {
 public:
     Pool();     // need init

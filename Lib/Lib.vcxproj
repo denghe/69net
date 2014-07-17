@@ -22,7 +22,8 @@
     <ClInclude Include="All.h" />
     <ClInclude Include="BufferUtils.h" />
     <ClInclude Include="BufferUtils.hpp" />
-    <ClInclude Include="CircleBuffer.h" />
+    <ClInclude Include="BlockBuffer.h" />
+    <ClInclude Include="ClassAttributes.h" />
     <ClInclude Include="Dict.h" />
     <ClInclude Include="Dict.hpp" />
     <ClInclude Include="FlatBuffer.h" />
@@ -46,7 +47,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="BufferUtils.cpp" />
-    <ClCompile Include="CircleBuffer.cpp" />
+    <ClCompile Include="BlockBuffer.cpp" />
     <ClCompile Include="FlatBuffer.cpp" />
     <ClCompile Include="ftoa.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

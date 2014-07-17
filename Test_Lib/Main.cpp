@@ -8,36 +8,46 @@ void cout( TS const& ...parms )
 }
 int main()
 {
-    FlatBuffer fb;
-
-    int count = 999999;
-    // 仿一个字典数据
-    fb.write( count );
+    int count = 9999;
+    Stopwatch sw;
+    List<String> ss;
     for( int i = 0; i < count; ++i )
     {
-        fb.writes( i, i );
+        //ss.emplace( "asdfqwer" );
+        //ss.push( "asdfqwer" );
+        ss.insertAt( 0, "asdfqwer" );
     }
+    cout( sw.elapsed(), ", ", ss.size() );
 
-    Stopwatch sw;
-    // 还原
-    fb.offset() = 0;
-    Dict<int, int> d;
-    if( !fb.read( d ) ) cout( "read fail." );
-    cout( d.size(), ' ', d[ 0 ], ' ', d[ count - 1 ], ", elapsed ms = ", sw.elapsed() );
+    std::vector<String> ss2;
+    sw.reset();
+    for( int i = 0; i < count; ++i )
+    {
+        //ss2.emplace_back( "asdfqwer" );
+        //ss2.push_back( "asdfqwer" );
+        ss2.insert( ss2.begin(), "asdfqwer" );
+    }
+    cout( sw.elapsed(), ", ", ss2.size() );
+
 
     sw.reset();
-    fb.offset() = 0;
-    std::unordered_map<int, int> sd;
-    int len;
-    fb.read( len );
-    for( int i = 0; i < len; ++i )
+    int c = 0;
+    while( ss.size() )
     {
-        int k, v;
-        if( !fb.read( k ) ) cout( "read fail." );
-        if( !fb.read( v ) ) cout( "read fail." );
-        sd.insert( std::make_pair( k, v ) );
+        ss.erase( 0 );
+        c++;
     }
-    cout( sd.size(), ' ', sd[ 0 ], ' ', sd[ count - 1 ], ", elapsed ms = ", sw.elapsed() );
+    cout( sw.elapsed(), ", ", ss.size(), ",", c );
+
+    sw.reset();
+    c = 0;
+    while( ss2.size() )
+    {
+        ss2.erase( ss2.begin() );
+        c++;
+    }
+    cout( sw.elapsed(), ", ", ss2.size(), ",", c );
+
 
     return 0;
 }

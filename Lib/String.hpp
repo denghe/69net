@@ -47,31 +47,33 @@ String String::makeFormat( Pool& p, char const* format, TS const & ...vs )
 
 
 template<typename T>
-void String::appendFormatCore( List<String>& ss, int& i, T const & v )
+void String::appendFormatCore( String& s, int& n, T const & v )
 {
-    ss[ i ].append( v );
+    if( n-- == 0 )
+    {
+        s.append( v );
+        return;
+    }
 }
 
 template<typename T, typename ...TS>
-void String::appendFormatCore( List<String>& ss, int& i, T const & v, TS const & ...vs )
+void String::appendFormatCore( String& s, int& n, T const & v, TS const & ...vs )
 {
-    ss[ i++ ].append( v );
-    appendFormatCore( ss, i, vs... );
+    appendFormatCore( s, n, v );
+    appendFormatCore( s, n, vs... );
 }
 
 template<typename ...TS>
 void String::appendFormat( char const* format, TS const & ...vs )
 {
-    ALIGN8( char buf[ sizeof...( vs ) ][ 64 ] );
-    List<String> ss( sizeof...( vs ) );
-    for( int i = 0; i < sizeof...( vs ); ++i )
-        ss.push( String( buf[ i ], _countof( buf[ i ] ), 0 ) );
-    int num = 0;
-    appendFormatCore( ss, num, vs... );
+    struct flag { int idx, len; };
+    flag flags[ sizeof...( vs ) ];
+    memset( flags, 0, sizeof( flag )*sizeof...( vs ) );
 
-    char numBuf[ 32 ];
+    ALIGN8( char numBuf[ 32 ] );
     String numStr( numBuf, 32, 0 );
-    int offset = 0;
+
+    int offset = 0, i = 0, n = 0;
     while( auto c = format[ offset ] )
     {
         if( c == '{' )
@@ -87,13 +89,27 @@ void String::appendFormat( char const* format, TS const & ...vs )
                 {
                     if( c == '}' )
                     {
-                        Utils::fromString( num, numBuf );
+                        Utils::fromString( i, numBuf );
                         numStr.clear();
-                        if( num < 0 || num >= sizeof...( vs ) )
+                        if( i < 0 || i >= sizeof...( vs ) )
                         {
                             throw std::invalid_argument( "argument out of range." );
                         }
-                        append( ss[ num ] );
+                        if( flags[ i ].len )
+                        {
+                            reserve( _dataLen + flags[ i ].len );
+                            memcpy( _buf + _dataLen, _buf + flags[ i ].idx, flags[ i ].len );
+                            _dataLen += flags[ i ].len;
+                            _buf[ _dataLen ] = '\0';
+                        }
+                        else
+                        {
+                            flags[ i ].idx = _dataLen;
+                            n = i;
+                            appendFormatCore( *this, n, vs... );
+                            flags[ i ].len = _dataLen - flags[ i ].idx;
+                        }
+
                         break;
                     }
                     else
@@ -121,6 +137,24 @@ void String::appendHex( T const& v )
     _dataLen += Utils::toHexString( _buf + _dataLen, v );
     _buf[ _dataLen ] = '\0';
 }
+
+
+template<typename T>
+String String::toString( T const& v )
+{
+    String s( Utils::getToStringMaxLength( v ) );
+    s.append( v );
+    return s;
+}
+
+template<typename T>
+String String::toHexString( T const& v )
+{
+    String s( 17 );
+    s.appendHex( v );
+    return s;
+}
+
 
 
 #endif
