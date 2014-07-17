@@ -30,8 +30,10 @@ struct Dict
     void reserve( int capacity );
     List<Node*> const& data() const;
     int size() const;
-    Node* operator[]( TK const& k );            // find or insert ( default value ) and return
-    Node* at( TK const& k );                    // same as operator[]
+    template <typename KT>
+    TV& operator[]( KT&& k );                   // find or insert ( default value ) and return
+    template <typename KT>
+    TV& at( KT&& k );                           // same as operator[]
 
     
 

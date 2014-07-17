@@ -157,7 +157,8 @@ void Dict<TK, TV>::erase( Node* n )
 }
 
 template <typename TK, typename TV>
-typename Dict<TK, TV>::Node* Dict<TK, TV>::operator[]( TK const& k )
+template <typename KT>
+typename TV& Dict<TK, TV>::operator[]( KT&& k )
 {
     uint hashCode = (uint)Utils::getHashCode( k );
     uint mod = hashCode % (uint)_buckets.size();
@@ -166,7 +167,7 @@ typename Dict<TK, TV>::Node* Dict<TK, TV>::operator[]( TK const& k )
     {
         if( node->hash == hashCode && Utils::equalsTo( node->key, k ) )
         {
-            return node;
+            return node->value;
         }
         node = node->next;
     };
@@ -179,13 +180,14 @@ typename Dict<TK, TV>::Node* Dict<TK, TV>::operator[]( TK const& k )
     _buckets[ mod ] = n;
     _nodes.push( n );
     if( _nodes.size() == _buckets.size() ) resize();        // grow
-    return n;
+    return n->value;
 }
 
 template <typename TK, typename TV>
-typename Dict<TK, TV>::Node* Dict<TK, TV>::at( TK const& k )
+template <typename KT>
+typename TV& Dict<TK, TV>::at( KT&& k )
 {
-    return operator[]( k );
+    return operator[]( std::forward<KT>( k ) );
 }
 
 template <typename TK, typename TV>
