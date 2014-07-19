@@ -26,6 +26,7 @@ public:
     void eraseFast( int idx );
     void pop();
     T& top();
+    T const& top() const;
     void clear();
     void reserve( int capacity );
     void resize( int capacity, bool init = true );

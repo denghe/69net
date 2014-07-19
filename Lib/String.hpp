@@ -2,6 +2,18 @@
 #define _STRING_HPP__
 
 
+template<int len>
+String::String( Pool& p, char const ( &s )[ len ] )
+{
+    assert( p.attachThis() && p.itemBufLen() > sizeof( Pool* ) && p.itemBufLen() - sizeof( Pool* ) >= len );
+    _buf = (char*)p.alloc();
+    _bufLen = p.itemBufLen() - sizeof( Pool* );
+    _dataLen = len - 1;
+    _disposer = &String::disposePoolBuffer;
+    memcpy( _buf, s, len );
+}
+
+
 template<typename ...TS>
 void String::append( TS const & ...vs )
 {

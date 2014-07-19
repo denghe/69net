@@ -10,16 +10,8 @@ public:
     explicit String( int capacity = 64 );                       // prepare
     String( Pool& p );                                          // prepare with pool buffer
     template<int len>
-    String( Pool& p, char const ( &s )[ len ] )
-    {
-        assert( p.attachThis() && p.itemBufLen() > sizeof( Pool* ) && p.itemBufLen() - sizeof( Pool* ) >= len );
-        _buf = (char*)p.alloc();
-        _bufLen = p.itemBufLen() - sizeof( Pool* );
-        _dataLen = len - 1;
-        _disposer = &String::disposePoolBuffer;
-        memcpy( _buf, s, len );
-    }
-    // todo: more Pool + other
+    String( Pool& p, char const ( &s )[ len ] );                // get buf from pool and copy s into
+    String( Pool& p, char const* buf, int dataLen );            // get buf from pool and copy s into
     String( char const* buf, int bufLen, int dataLen, bool isRef = true );    // ref or copy
     String( char const* s, bool isRef = false );                // copy or ref
     String( String const& other );                              // copy
@@ -40,7 +32,14 @@ public:
     char at( int idx ) const;
     char& at( int idx );
     void push( char c );
-    // todo: top, pop
+    void pop();
+    char& top();
+    char const& top() const;
+
+    // todo: more util funcs like  find, trim, split, replace, ....
+    // todo: Formatter with appendTo( String& s ) interface
+    // sample: auto f = Formatter().setScale( 2 ).setWidth( 10, '0' );  s.append( ...... f( 1.2345 ) ...... ) will be append  0000001.23
+    // 
 
     bool operator==( String const& other ) const;
     bool operator!=( String const& other ) const;
@@ -88,7 +87,6 @@ public:
     template<typename T>
     void appendHex( T const& v );
 
-    // todo: more util funcs
 
 
     // for FlatBuffer

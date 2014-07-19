@@ -130,7 +130,7 @@ HAS_FUNC
 #endif
 #endif
 
-/* Memory address align */  // todo: delete or change to c11 alignof
+/* Memory address align */
 #if __MSVC
 #define ALIGN2( x )		        __declspec(align(2)) x
 #define ALIGN4( x )		        __declspec(align(4)) x

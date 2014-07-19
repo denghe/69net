@@ -113,6 +113,12 @@ T& List<T>::top()
     assert( _size > 0 );
     return _buf[ _size - 1 ];
 }
+template<typename T>
+T const& List<T>::top() const
+{
+    assert( _size > 0 );
+    return _buf[ _size - 1 ];
+}
 
 template<typename T>
 void List<T>::clear()
