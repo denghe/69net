@@ -6,6 +6,143 @@ void cout( TS const& ...parms )
     s.append( parms... );
     std::cout << s.c_str() << std::endl;
 }
+int main()
+{
+    int const count = 9999999;
+    Stopwatch sw;
+    {
+        Pool p( 4, 4096, count );
+        cout( p.size(), "  ", p.pageCount(), " new pool, elapsed time = ", sw.elapsed() );
+
+        sw.reset();
+        p.compress();
+        cout( p.size(), "  ", p.pageCount(), " compress, elapsed time = ", sw.elapsed() );
+
+        sw.reset();
+        List<void*> tmp( count );
+        for( int i = 0; i < count; ++i )
+        {
+            tmp.push( p.alloc() );
+        }
+        cout( p.size(), "  ", p.pageCount(), " alloc capacity, elapsed time = ", sw.elapsed() );
+
+        sw.reset();
+        while( tmp.size() )
+        {
+            p.free( tmp.top() );
+            tmp.pop();
+        }
+        cout( p.size(), "  ", p.pageCount(), " free capacity, elapsed time = ", sw.elapsed() );
+
+        sw.reset();
+        p.compress();
+        cout( p.size(), "  ", p.pageCount(), " compress, elapsed time = ", sw.elapsed() );
+    }
+    cout( "delete pool, elapsed time = ", sw.elapsed() );
+
+    system( "pause" );
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Lib/All.h"
+template<typename ...TS>
+void cout( TS const& ...parms )
+{
+    String s;
+    s.append( parms... );
+    std::cout << s.c_str() << std::endl;
+}
+int main()
+{
+    int count = 9999;
+    Stopwatch sw;
+    List<String> ss;
+    for( int i = 0; i < count; ++i )
+    {
+        //ss.emplace( "asdfqwer" );
+        //ss.push( "asdfqwer" );
+        ss.insertAt( 0, "asdfqwer" );
+    }
+    cout( sw.elapsed(), ", ", ss.size() );
+
+    std::vector<String> ss2;
+    sw.reset();
+    for( int i = 0; i < count; ++i )
+    {
+        //ss2.emplace_back( "asdfqwer" );
+        //ss2.push_back( "asdfqwer" );
+        ss2.insert( ss2.begin(), "asdfqwer" );
+    }
+    cout( sw.elapsed(), ", ", ss2.size() );
+
+
+    sw.reset();
+    int c = 0;
+    while( ss.size() )
+    {
+        ss.erase( 0 );
+        c++;
+    }
+    cout( sw.elapsed(), ", ", ss.size(), ",", c );
+
+    sw.reset();
+    c = 0;
+    while( ss2.size() )
+    {
+        ss2.erase( ss2.begin() );
+        c++;
+    }
+    cout( sw.elapsed(), ", ", ss2.size(), ",", c );
+
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Lib/All.h"
+template<typename ...TS>
+void cout( TS const& ...parms )
+{
+    String s;
+    s.append( parms... );
+    std::cout << s.c_str() << std::endl;
+}
 
 
 int main()

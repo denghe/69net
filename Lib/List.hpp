@@ -260,6 +260,23 @@ void List<T>::erase( int idx )
     }
 }
 template<typename T>
+void List<T>::eraseFast( int idx )
+{
+    assert( idx >= 0 || idx < _size );
+    --_size;
+    if( std::is_pod<T>::value
+        || std::is_base_of<Memmoveable, T>::value )
+    {
+        _buf[ idx ] = _buf[ _size ];
+    }
+    else
+    {
+        _buf[ idx ].~T();
+        new ( _buf + idx ) T( std::move( _buf[ _size ] ) );
+    }
+}
+
+template<typename T>
 template<typename VT>
 void List<T>::insertAt( int idx, VT&& v )
 {

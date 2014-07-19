@@ -6,8 +6,8 @@ class Pool : Memmoveable
 {
 public:
     Pool();     // need init
-    void init( int itemBufLen, int pageBufLen = 4096, int capacity = 128, bool attackPointer = false );
-    Pool( int itemBufLen, int pageBufLen = 4096, int capacity = 128, bool attackPointer = false );
+    void init( int itemBufLen, int pageBufLen = 4096, int capacity = 128, bool attachThis = false );
+    Pool( int itemBufLen, int pageBufLen = 4096, int capacity = 128, bool attachThis = false );
     ~Pool();
     Pool( Pool&& other );
     Pool& operator=( Pool&& other );
@@ -16,20 +16,20 @@ public:
     void* alloc();
     void free( void* p );
     void clear();
-    void collect();
+    void compress();    // free all no use page & item
     void reserve();     // new 1 page
     void reserve( int capacity );
     int size() const;
     int pageCount() const;
     int pageBufLen() const;
     int itemBufLen() const;
-    bool attackPointer() const;
+    bool attachThis() const;
 private:
     List<void*> _items;
     List<void*> _pages;
     int _itemBufLen;
     int _pageBufLen;
-    bool _attackPointer;
+    bool _attachThis;
 };
 
 #endif

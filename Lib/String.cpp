@@ -15,7 +15,7 @@ String::String( int capacity /*= 64 */ )
 
 String::String( Pool& p )
 {
-    assert( p.attackPointer() && p.itemBufLen() > sizeof( Pool* ) );
+    assert( p.attachThis() && p.itemBufLen() > sizeof( Pool* ) );
 #if __DEBUG_STRING
     std::cout << "String::String( Pool& p ) p.alloc()\n";
 #endif

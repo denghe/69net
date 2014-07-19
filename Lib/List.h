@@ -23,6 +23,7 @@ public:
     void insertAt( int idx, VT&& v );
     int find( T const& v );
     void erase( int idx );
+    void eraseFast( int idx );
     void pop();
     T& top();
     void clear();
