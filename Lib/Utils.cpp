@@ -494,24 +494,22 @@ namespace Utils
     {
         assert( (size_t)buf % 4 == 0 );
         if( !len ) return 0;
-        int n1 = 0x15051505, n2 = n1, mod = len % 8, i = 0;
-        int64 n = 0;
-        auto np = (int*)&n;
+        int n2 = 0x15051505, n1 = 0x15051505, mod = len % 8, i = 0;
         for( ; i < len - mod; i += 8 )
         {
-            n = *(uint64*)( buf + i );
-            n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ np[ 1 ];
-            n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ np[ 0 ];
+            n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ *(int*)( buf + i );
+            n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ *(int*)( buf + i + 4 );
         }
-        if( mod )
+        if( mod > 3 )
         {
-            auto n = *(uint64*)( buf + i );
-            auto np = (int*)&n;
-            n &= size_t( 0xFFFFFFFFFFFFFFFF ) >> ( ( 8 - mod ) * 8 );
-            n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ np[ 1 ];
-            if( np[ 0 ] ) n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ np[ 0 ];
+            n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ *(int*)( buf + i );
+            n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ ( *(int*)( buf + i + 4 ) & ( 0xFFFFFFFF >> (8 - mod) ) );
         }
-        return n1 + n2 * 0x5d588b65;
+        else if( mod )
+        {
+            n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ ( *(int*)( buf + i ) & ( 0xFFFFFFFF >> (4 - mod) ) );
+        }
+        return n2 + n1 * 0x5d588b65;
     }
 
     int getHash_Lua( byte const* buf, int len )
@@ -537,18 +535,26 @@ namespace Utils
 
     int getHashCode( String const & in )
     {
-        if( sizeof( size_t ) == 8 && in.size() >= 8 && ( (size_t)in.c_str() % 8 == 0 ) )
+#ifdef __IA
+        return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
+#else
+        if( in.size() >= 4 && ( (size_t)in.c_str() % 8 == 0 ) )
             return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
         else
             return getHash_Lua( (byte const*)in.c_str(), (int)in.size() );
+#endif
     }
 
     int getHashCode( std::string const & in )
     {
-        if( sizeof( size_t ) == 8 && in.size() >= 8 && ( (size_t)in.c_str() % 8 == 0 ) )
+#ifdef __IA
+        return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
+#else
+        if( in.size() >= 4 && ( (size_t)in.c_str() % 8 == 0 ) )
             return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
         else
             return getHash_Lua( (byte const*)in.c_str(), (int)in.size() );
+#endif
     }
 
     int getHashCode( HashString const & in )

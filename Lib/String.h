@@ -75,9 +75,11 @@ public:
     template<typename ...TS>
     static String makeFormat( Pool& p, char const* format, TS const & ...vs );
 
+    // dangerous: the buffer is from alloca, so: can't be NRV return, temporary use or expression is ok
     template<typename T>
-    static String toString( T const& v );
+    static String const toString( T const& v );
 
+    // dangerous: the buffer is from alloca, so: can't be NRV return, temporary use or expression is ok
     template<typename T>
     static String toHexString( T const& v );
 

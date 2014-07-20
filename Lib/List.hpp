@@ -249,7 +249,7 @@ int List<T>::find( T const& v )
 template<typename T>
 void List<T>::erase( int idx )
 {
-    assert( idx >= 0 || idx < _size );
+    assert( idx >= 0 && idx < _size );
     --_size;
     if( std::is_pod<T>::value
         || std::is_base_of<Memmoveable, T>::value )
@@ -268,7 +268,7 @@ void List<T>::erase( int idx )
 template<typename T>
 void List<T>::eraseFast( int idx )
 {
-    assert( idx >= 0 || idx < _size );
+    assert( idx >= 0 && idx < _size );
     --_size;
     if( std::is_pod<T>::value
         || std::is_base_of<Memmoveable, T>::value )
@@ -292,14 +292,13 @@ template<typename T>
 template<typename ...PTS>
 T& List<T>::emplaceAt( int idx, PTS&& ...ps )
 {
-    assert( idx >= 0 || idx < _size );
+    assert( idx >= 0 && idx <= _size );
     reserve( _size + 1 );                       // todo: 理论上讲这句可以展开，于扩容时直接将 insert 的元素的内存位置留出来
 
     if( std::is_pod<T>::value
         || std::is_base_of<Memmoveable, T>::value )
     {
         memmove( _buf + idx + 1, _buf + idx, ( _size - idx )*sizeof( T ) );
-        //_buf[ idx ] = v;
         ++_size;
         return *new ( _buf + idx ) T( std::forward<PTS>( ps )... );
     }

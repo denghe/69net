@@ -152,9 +152,10 @@ void String::appendHex( T const& v )
 
 
 template<typename T>
-String String::toString( T const& v )
+String const String::toString( T const& v )
 {
-    String s( Utils::getToStringMaxLength( v ) );
+    auto bufLen = Utils::getToStringMaxLength( v ) + 1;
+    String s( (char*)alloca( bufLen ), bufLen, 0 );
     s.append( v );
     return s;
 }
@@ -162,7 +163,7 @@ String String::toString( T const& v )
 template<typename T>
 String String::toHexString( T const& v )
 {
-    String s( 17 );
+    String s( (char*)alloca( 17 ), 17, 0 );
     s.appendHex( v );
     return s;
 }
