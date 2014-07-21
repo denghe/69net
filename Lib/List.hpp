@@ -5,7 +5,7 @@
 template<typename T>
 List<T>::List( int capacity )
 {
-    assert( capacity >= 0 );
+    assert( capacity > 0 );
     auto byteLen = int( capacity * sizeof( T ) );
     if( byteLen < 64 ) byteLen = 64;
     else byteLen = (int)Utils::round2n( byteLen );

@@ -40,7 +40,7 @@ Pool& Pool::operator=( Pool&& other )
 
 void Pool::init( int itemBufLen, int pageBufLen /*= 4096*/, int capacity /*= 128 */, bool attachThis /*= false*/ )
 {
-    assert( itemBufLen <= pageBufLen && itemBufLen > 0 && capacity >= 0 );
+    assert( itemBufLen <= pageBufLen && itemBufLen > 0 && capacity > 0 );
     _attachThis = attachThis;
     _itemBufLen = itemBufLen; //(int)Utils::round2n( itemSize );
     if( pageBufLen < 4096 )
