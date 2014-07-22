@@ -49,17 +49,17 @@ String String::makeFormat( Pool& p, char const* format, TS const & ...vs )
 template<typename T>
 void String::appendFormatCore( String& s, int& n, T const & v )
 {
-    if( n-- == 0 )
-    {
-        s.append( v );
-        return;
-    }
+    if( !n ) s.append( v );
 }
 
 template<typename T, typename ...TS>
 void String::appendFormatCore( String& s, int& n, T const & v, TS const & ...vs )
 {
-    appendFormatCore( s, n, v );
+    if( n-- == 0 )
+    {
+        s.append( v );
+        return;
+    }
     appendFormatCore( s, n, vs... );
 }
 
