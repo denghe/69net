@@ -34,7 +34,7 @@ public:
 
     void push( T const& v );
     template<typename ...PTS>
-    void emplace( PTS ...ps );
+    void emplace( PTS&& ...ps );
     void pop();
     T& top();
     T const& top() const;
@@ -43,6 +43,15 @@ private:
     T* _buf;
     int _maxSize, _head, _tail;
 };
+
+template <class T>
+template<typename ...PTS>
+void FlatQueue<T>::emplace( PTS&& ...ps )
+{
+    new ( _buf + _tail++ ) T( std::forward<PTS>( ps )... );
+    if( _tail == _maxSize ) _tail = 0;
+    if( _tail == _head ) reserve( _maxSize + 1, true );
+}
 
 template <class T>
 FlatQueue<T>::FlatQueue( int capacity )
@@ -172,14 +181,17 @@ void FlatQueue<T>::push( T const& v )
 template <class T>
 void FlatQueue<T>::clear()
 {
-    if( _head <= _tail )
+    if( std::is_pod<T>::value )
     {
-        for( int i = 0; i < _head; ++i ) _buf[ i ].~T();
-        for( int i = 0; i < _maxSize - _tail; ++i ) _buf[ _tail + i ].~T();
-    }
-    else
-    {
-        for( int i = _tail; i < _head; ++i ) _buf[ i ].~T();
+        if( _head <= _tail )
+        {
+            for( int i = 0; i < _head; ++i ) _buf[ i ].~T();
+            for( int i = 0; i < _maxSize - _tail; ++i ) _buf[ _tail + i ].~T();
+        }
+        else
+        {
+            for( int i = _tail; i < _head; ++i ) _buf[ i ].~T();
+        }
     }
     _head = 0;
     _tail = _maxSize;
@@ -220,24 +232,66 @@ T& FlatQueue<T>::at( int idx )
 
 int main()
 {
-    FlatQueue<int> fq( 9999999);
+    int count = 999999;
+    Pool p( 64, 4096, count, true );
+    FlatQueue<String> fq( count );
+    std::deque<std::string> dq;
 
     Stopwatch sw;
-    for( int i = 0; i < 9999999; ++i )
+    for( int i = 0; i < count; ++i )
     {
-        fq.push( i );
+        dq.emplace_back( "12345678901234567890123456789012345678901234567890" );
+    }
+    cout( sw.elapsed(), " ", dq.size() );
+
+
+    sw.reset();
+    for( int i = 0; i < count; ++i )
+    {
+        fq.emplace( p, "12345678901234567890123456789012345678901234567890" );
     }
     cout( sw.elapsed(), " ", fq.size() );
 
-    std::deque<int> dq;
-    dq.resize( 9999999 );
+    system( "pause" );
 
-    sw.reset();
-    for( int i = 0; i < 9999999; ++i )
-    {
-        dq.push_back( i );
-    }
-    cout( sw.elapsed(), " ", dq.size() );
+    //FlatQueue<std::string> fq;
+
+    //Stopwatch sw;
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    fq.emplace( "12345678901234567890123456789012345678901234567890" );
+    //}
+    //cout( sw.elapsed(), " ", fq.size() );
+
+    //std::deque<std::string> dq;
+
+    //sw.reset();
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    dq.emplace_back( "12345678901234567890123456789012345678901234567890" );
+    //}
+    //cout( sw.elapsed(), " ", dq.size() );
+
+
+
+    //FlatQueue<int> fq( count);
+
+    //Stopwatch sw;
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    fq.push( i );
+    //}
+    //cout( sw.elapsed(), " ", fq.size() );
+
+    //std::deque<int> dq;
+    //dq.resize( count );
+
+    //sw.reset();
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    dq.push_back( i );
+    //}
+    //cout( sw.elapsed(), " ", dq.size() );
 
 
     return 0;
