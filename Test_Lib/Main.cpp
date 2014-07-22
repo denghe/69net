@@ -30,7 +30,7 @@ public:
     void clear();
     void compress();
     bool find( T const& q );
-    void reserve( int capacity );
+    void reserve( int capacity, bool afterPush = false );
 
     void push( T const& v );
     template<typename ...PTS>
@@ -114,12 +114,12 @@ T& FlatQueue<T>::top()
 
 
 template <class T>
-void FlatQueue<T>::reserve( int capacity )
+void FlatQueue<T>::reserve( int capacity, bool afterPush )
 {
     assert( capacity > 0 );
     if( capacity <= _maxSize ) return;
 
-    int size = this->size();
+    int size = afterPush ? _maxSize : this->size();
 
     auto byteLen = (int)Utils::round2n( capacity * sizeof( T ) );
     auto newBuf = ( T* )new char[ byteLen ];
@@ -165,7 +165,7 @@ void FlatQueue<T>::push( T const& v )
 {
     new ( _buf + _tail++ ) T( v );
     if( _tail == _maxSize ) _tail = 0;
-    if( _tail == _head ) reserve( _maxSize + 1 );
+    if( _tail == _head ) reserve( _maxSize + 1, true );
 }
 
 
@@ -221,16 +221,22 @@ T& FlatQueue<T>::at( int idx )
 int main()
 {
     FlatQueue<int> fq;
-    fq.push( 1 );
-    fq.push( 2 );
-    fq.push( 3 );
-    fq.push( 4 );
 
-    while( fq.size() )
+    Stopwatch sw;
+    for( int i = 0; i < 9999999; ++i )
     {
-        cout( fq.top() );
-        fq.pop();
+        fq.push( i );
     }
+    cout( sw.elapsed(), " ", fq.size() );
+
+    sw.reset();
+    std::deque<int> dq;
+    for( int i = 0; i < 9999999; ++i )
+    {
+        dq.push_back( i );
+    }
+    cout( sw.elapsed(), " ", dq.size() );
+
 
     return 0;
 }
