@@ -9,6 +9,104 @@ void cout( TS const& ...parms )
 
 int main()
 {
+    int count = 999999;
+    Pool p( 64, 4096, count, true );
+    FlatQueue<String> fq( count );
+    std::deque<std::string> dq;
+
+    Stopwatch sw;
+    for( int i = 0; i < count; ++i )
+    {
+        dq.emplace_back( "12345678901234567890123456789012345678901234567890" );
+    }
+    cout( sw.elapsed(), " ", dq.size() );
+
+
+    sw.reset();
+    for( int i = 0; i < count; ++i )
+    {
+        fq.emplace( p, "12345678901234567890123456789012345678901234567890" );
+    }
+    cout( sw.elapsed(), " ", fq.size() );
+
+    system( "pause" );
+
+    //FlatQueue<std::string> fq;
+
+    //Stopwatch sw;
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    fq.emplace( "12345678901234567890123456789012345678901234567890" );
+    //}
+    //cout( sw.elapsed(), " ", fq.size() );
+
+    //std::deque<std::string> dq;
+
+    //sw.reset();
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    dq.emplace_back( "12345678901234567890123456789012345678901234567890" );
+    //}
+    //cout( sw.elapsed(), " ", dq.size() );
+
+
+
+    //FlatQueue<int> fq( count);
+
+    //Stopwatch sw;
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    fq.push( i );
+    //}
+    //cout( sw.elapsed(), " ", fq.size() );
+
+    //std::deque<int> dq;
+    //dq.resize( count );
+
+    //sw.reset();
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    dq.push_back( i );
+    //}
+    //cout( sw.elapsed(), " ", dq.size() );
+
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Lib/All.h"
+template<typename ...TS>
+void cout( TS const& ...parms )
+{
+    String s;
+    s.append( parms... );
+    std::cout << s.c_str() << std::endl;
+}
+
+int main()
+{
     Stopwatch sw;
     {
         std::string s;

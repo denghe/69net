@@ -19,6 +19,9 @@
     <ClInclude Include="BufferUtils.hpp" />
     <ClInclude Include="Utils.hpp" />
     <ClInclude Include="BlockBuffer.h" />
+    <ClInclude Include="ClassAttributes.h" />
+    <ClInclude Include="FlatQueue.h" />
+    <ClInclude Include="FlatQueue.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
