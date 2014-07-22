@@ -261,7 +261,7 @@ typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
 
 
 
-
+#include "ScopeGuard.h"
 #include "ClassAttributes.h"
 #include "Stopwatch.h"
 #include "List.h"

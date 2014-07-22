@@ -22,6 +22,7 @@
     <ClInclude Include="ClassAttributes.h" />
     <ClInclude Include="FlatQueue.h" />
     <ClInclude Include="FlatQueue.hpp" />
+    <ClInclude Include="ScopeGuard.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
@@ -34,5 +35,6 @@
     <ClCompile Include="FlatBuffer.cpp" />
     <ClCompile Include="BufferUtils.cpp" />
     <ClCompile Include="BlockBuffer.cpp" />
+    <ClCompile Include="ScopeGuard.cpp" />
   </ItemGroup>
 </Project>
