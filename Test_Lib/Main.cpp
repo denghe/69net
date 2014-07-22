@@ -72,9 +72,9 @@ template <class T>
 int FlatQueue<T>::size() const
 {
     if( _head <= _tail )
-        return _maxSize - _tail + _head;
+        return _tail - _head;
     else
-        return _head - _tail - 1;
+        return _maxSize - _head + _tail;
 }
 
 template <class T>
@@ -90,12 +90,8 @@ void FlatQueue<T>::pop()
 #ifdef __DEBUG
     assert( _head != _tail );
 #endif
-    if( ++_head == _maxSize )
-    {
-        _buf[ _maxSize - 1 ].~T();
-        _head = 0;
-    }
-    else _buf[ _head - 1 ].~T();
+    _buf[ _head++ ].~T();
+    if( _head == _maxSize ) _head = 0;
 }
 
 template <class T>
@@ -104,8 +100,7 @@ T const& FlatQueue<T>::top() const
 #ifdef __DEBUG
     assert( _head != _tail );
 #endif
-    if( _head ) return _buf[ _head - 1 ];
-    return _buf[ _maxSize - 1 ];
+    return _buf[ _head ];
 }
 
 template <class T>
@@ -114,8 +109,7 @@ T& FlatQueue<T>::top()
 #ifdef __DEBUG
     assert( _head != _tail );
 #endif
-    if( _head ) return _buf[ _head - 1 ];
-    return _buf[ _maxSize - 1 ];
+    return _buf[ _head ];
 }
 
 
@@ -125,11 +119,7 @@ void FlatQueue<T>::reserve( int capacity )
     assert( capacity > 0 );
     if( capacity <= _maxSize ) return;
 
-    int size = 0;
-    if( _head <= _tail )
-        size = _maxSize - _tail + _head;
-    else
-        size = _head - _tail;
+    int size = this->size();
 
     auto byteLen = (int)Utils::round2n( capacity * sizeof( T ) );
     auto newBuf = ( T* )new char[ byteLen ];
@@ -189,11 +179,10 @@ void FlatQueue<T>::clear()
     }
     else
     {
-        for( int i = _tail; i < _head; ++i )
-            _buf[ i ].~T();
+        for( int i = _tail; i < _head; ++i ) _buf[ i ].~T();
     }
     _head = 0;
-    _tail = 0;
+    _tail = _maxSize;
 }
 
 
