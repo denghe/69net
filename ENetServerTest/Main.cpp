@@ -9,19 +9,14 @@ int test()
 
     ENetAddress address = { ENET_HOST_ANY, 1234 };
     // enet_address_set_host( &address, "x.x.x.x" );
-    auto server = enet_host_create( &address,
-                                    32     /* allow up to 32 clients and/or outgoing connections */,
-                                    2      /* allow up to 2 channels to be used, 0 and 1 */,
-                                    0      /* assume any amount of incoming bandwidth */,
-                                    0      /* assume any amount of outgoing bandwidth */ );
+    auto server = enet_host_create( &address, 32, 2, 0, 0 );    // num of clients, num of channels, incoming bandwidth, outgoing bandwidth
     if( !server ) return -1;
     ScopeGuard sg_server( [ = ] { enet_host_destroy( server ); } );
 
     ENetEvent event;
     while( true )
     {
-        /* Wait up to 1000 milliseconds for an event. */
-        if( enet_host_service( server, &event, 1000 ) > 0 )
+        if( enet_host_service( server, &event, 1000 ) > 0 )     /* Wait up to 1000 milliseconds for an event. */
         {
             switch( event.type )
             {
@@ -30,7 +25,7 @@ int test()
                         event.peer->address.host,
                         event.peer->address.port );
                 /* Store any relevant client information here. */
-                event.peer->data = "Server information";
+                event.peer->data = "cccccc";
                 break;
             case ENET_EVENT_TYPE_RECEIVE:
                 printf( "A packet of length %u containing %s was received from %s on channel %u.\n",

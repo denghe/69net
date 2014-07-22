@@ -7,11 +7,7 @@ int test()
     if( auto rtv = enet_initialize() ) return rtv;
     ScopeGuard sg_enet_deinitialize( [] { enet_deinitialize(); } );
 
-    auto client = enet_host_create( nullptr /* create a client host */,
-                                    1 /* only allow 1 outgoing connection */,
-                                    2 /* allow up 2 channels to be used, 0 and 1 */,
-                                    57600 / 8 /* 56K modem with 56 Kbps downstream bandwidth */,
-                                    14400 / 8 /* 56K modem with 14 Kbps upstream bandwidth */ );
+    auto client = enet_host_create( nullptr, 1, 2, 57600 / 8, 14400 / 8 );
     if( !client ) return -1;
     ScopeGuard sg_client( [ = ] { enet_host_destroy( client ); } );
 
@@ -35,7 +31,7 @@ int test()
                         event.peer->address.host,
                         event.peer->address.port );
                 /* Store any relevant client information here. */
-                //event.peer->data = "Client information";
+                event.peer->data = "Client information";
                 break;
             case ENET_EVENT_TYPE_RECEIVE:
                 printf( "A packet of length %u containing %s was received from %s on channel %u.\n",
@@ -60,6 +56,7 @@ int test()
         gets( message );
         if( strlen( message ) > 0 )
         {
+            // 看上去 packet 似乎不能立即删掉 否则发不出去 猜测是在 service() 的时候才发
             auto packet = enet_packet_create( message, strlen( message ) + 1, ENET_PACKET_FLAG_RELIABLE );
             enet_peer_send( peer, 0, packet );
         }
