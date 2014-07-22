@@ -4,3 +4,13 @@
 Debug
 Release
 ipch
+/enet/callbacks.obj
+/enet/compress.obj
+/enet/host.obj
+/enet/list.obj
+/enet/packet.obj
+/enet/peer.obj
+/enet/protocol.obj
+/enet/unix.obj
+/enet/win32.obj
+/enet/vc120.pdb
