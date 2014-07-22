@@ -220,7 +220,7 @@ T& FlatQueue<T>::at( int idx )
 
 int main()
 {
-    FlatQueue<int> fq;
+    FlatQueue<int> fq( 9999999);
 
     Stopwatch sw;
     for( int i = 0; i < 9999999; ++i )
@@ -229,8 +229,10 @@ int main()
     }
     cout( sw.elapsed(), " ", fq.size() );
 
-    sw.reset();
     std::deque<int> dq;
+    dq.resize( 9999999 );
+
+    sw.reset();
     for( int i = 0; i < 9999999; ++i )
     {
         dq.push_back( i );
