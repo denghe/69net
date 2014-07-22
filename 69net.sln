@@ -33,8 +33,18 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_CSharpConsole", "Test_CSharpConsole\Test_CSharpConsole.csproj", "{DC4A3BBC-4861-4831-BE7F-48A6B7263E34}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ENetClientTest", "ENetClientTest\ENetClientTest.vcxproj", "{62E1E1A8-B3C8-4646-AA8C-7C66CC78FD05}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CB50DD63-28CF-47D2-BF20-E76C87C133C7} = {CB50DD63-28CF-47D2-BF20-E76C87C133C7}
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B} = {1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ENetServerTest", "ENetServerTest\ENetServerTest.vcxproj", "{F81E1781-F451-4CC7-A9DF-2BEF2D4E113D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CB50DD63-28CF-47D2-BF20-E76C87C133C7} = {CB50DD63-28CF-47D2-BF20-E76C87C133C7}
+		{1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B} = {1B0E3CF2-CB54-40A7-AE7E-E6F72C9DA76B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "enet", "enet\enet.vcxproj", "{CB50DD63-28CF-47D2-BF20-E76C87C133C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -115,6 +125,14 @@ Global
 		{F81E1781-F451-4CC7-A9DF-2BEF2D4E113D}.Release|Win32.ActiveCfg = Release|Win32
 		{F81E1781-F451-4CC7-A9DF-2BEF2D4E113D}.Release|Win32.Build.0 = Release|Win32
 		{F81E1781-F451-4CC7-A9DF-2BEF2D4E113D}.Release|x64.ActiveCfg = Release|Win32
+		{CB50DD63-28CF-47D2-BF20-E76C87C133C7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CB50DD63-28CF-47D2-BF20-E76C87C133C7}.Debug|Win32.Build.0 = Debug|Win32
+		{CB50DD63-28CF-47D2-BF20-E76C87C133C7}.Debug|x64.ActiveCfg = Debug|x64
+		{CB50DD63-28CF-47D2-BF20-E76C87C133C7}.Debug|x64.Build.0 = Debug|x64
+		{CB50DD63-28CF-47D2-BF20-E76C87C133C7}.Release|Win32.ActiveCfg = Release|Win32
+		{CB50DD63-28CF-47D2-BF20-E76C87C133C7}.Release|Win32.Build.0 = Release|Win32
+		{CB50DD63-28CF-47D2-BF20-E76C87C133C7}.Release|x64.ActiveCfg = Release|x64
+		{CB50DD63-28CF-47D2-BF20-E76C87C133C7}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

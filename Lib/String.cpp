@@ -22,7 +22,7 @@ String::String( Pool& p )
 
 String::String( Pool& p, char const* buf, int dataLen )
 {
-    assert( p.attachThis() && p.itemBufLen() > sizeof( Pool* ) && p.itemBufLen() - sizeof( Pool* ) >= dataLen + 1 );
+    assert( p.attachThis() && p.itemBufLen() > ( int )sizeof( Pool* ) && p.itemBufLen() - ( int )sizeof( Pool* ) >= dataLen + 1 );
     _buf = (char*)p.alloc();
     _bufLen = p.itemBufLen() - sizeof( Pool* );
     _dataLen = dataLen;
