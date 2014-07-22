@@ -14,3 +14,4 @@ ipch
 /enet/unix.obj
 /enet/win32.obj
 /enet/vc120.pdb
+/enet/x64
