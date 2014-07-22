@@ -130,25 +130,29 @@ HAS_FUNC
 #endif
 #endif
 
-/* Memory address align */  // todo: delete or change to c11 alignof
+/* Memory address align */
 #if __MSVC
 #define ALIGN2( x )		        __declspec(align(2)) x
 #define ALIGN4( x )		        __declspec(align(4)) x
 #define ALIGN8( x )		        __declspec(align(8)) x
 #define ALIGN16( x )		    __declspec(align(16)) x
 #define ALIGN32( x )		    __declspec(align(32)) x
+#define aligned_alloc( a, s )   _aligned_malloc( s, a )
+#define aligned_free( p )       _aligned_free( p )
 #elif __GCC
 #define ALIGN2( x )             x __attribute__ ((aligned (2)))
 #define ALIGN4( x )             x __attribute__ ((aligned (4)))
 #define ALIGN8( x )             x __attribute__ ((aligned (8)))
 #define ALIGN16( x )            x __attribute__ ((aligned (16)))
 #define ALIGN32( x )            x __attribute__ ((aligned (32)))
+#define aligned_free( p )       free( p )
 #else
-#define ALIGN2( x )	 x
-#define ALIGN4( x )	 x
-#define ALIGN8( x )	 x
-#define ALIGN16( x ) x
-#define ALIGN32( x ) x
+#define ALIGN2( x )	            x
+#define ALIGN4( x )	            x
+#define ALIGN8( x )	            x
+#define ALIGN16( x )            x
+#define ALIGN32( x )            x
+#define aligned_free( p )       free( p )
 #endif
 
 
@@ -204,6 +208,7 @@ public:                                                                         
 #include <cmath>
 #include <cstdint>
 #include <cassert>
+#include <cstdlib>
 
 #include <string>
 #include <vector>

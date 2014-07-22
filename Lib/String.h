@@ -9,6 +9,9 @@ class String : Memmoveable
 public:
     explicit String( int capacity = 64 );                       // prepare
     String( Pool& p );                                          // prepare with pool buffer
+    template<int len>
+    String( Pool& p, char const ( &s )[ len ] );                // get buf from pool and copy s into
+    String( Pool& p, char const* buf, int dataLen );            // get buf from pool and copy s into
     String( char const* buf, int bufLen, int dataLen, bool isRef = true );    // ref or copy
     String( char const* s, bool isRef = false );                // copy or ref
     String( String const& other );                              // copy
@@ -29,7 +32,14 @@ public:
     char at( int idx ) const;
     char& at( int idx );
     void push( char c );
-    // todo: top, pop
+    void pop();
+    char& top();
+    char const& top() const;
+
+    // todo: more util funcs like  find, trim, split, replace, ....
+    // todo: Formatter with appendTo( String& s ) interface
+    // sample: auto f = Formatter().setScale( 2 ).setWidth( 10, '0' );  s.append( ...... f( 1.2345 ) ...... ) will be append  0000001.23
+    // 
 
     bool operator==( String const& other ) const;
     bool operator!=( String const& other ) const;
@@ -65,9 +75,11 @@ public:
     template<typename ...TS>
     static String makeFormat( Pool& p, char const* format, TS const & ...vs );
 
+    // dangerous: the buffer is from alloca, so: can't be NRV return, temporary use or expression is ok
     template<typename T>
-    static String toString( T const& v );
+    static String const toString( T const& v );
 
+    // dangerous: the buffer is from alloca, so: can't be NRV return, temporary use or expression is ok
     template<typename T>
     static String toHexString( T const& v );
 
@@ -77,7 +89,6 @@ public:
     template<typename T>
     void appendHex( T const& v );
 
-    // todo: more util funcs
 
 
     // for FlatBuffer

@@ -1,28 +1,28 @@
 #include "All.h"
 
 
-Pool::Pool( int itemBufLen, int pageBufLen /*= 4096*/, int capacity /*= 128 */, bool attackPointer /*= false*/ )
+Pool::Pool( int itemBufLen, int pageBufLen /*= 4096*/, int capacity /*= 128 */, bool attachThis /*= false*/ )
 {
-    init( itemBufLen, pageBufLen, capacity, attackPointer );
+    init( itemBufLen, pageBufLen, capacity, attachThis );
 }
 
 Pool::Pool()
     : _itemBufLen( 0 )
     , _pageBufLen( 0 )
-    , _attackPointer( false )
+    , _attachThis( false )
 {
 }
 
 Pool::Pool( Pool&& other )
     : _itemBufLen( other._itemBufLen )
     , _pageBufLen( other._pageBufLen )
-    , _attackPointer( other._attackPointer )
+    , _attachThis( other._attachThis )
 {
     _items = std::move( other._items );
     _pages = std::move( other._pages );
     other._itemBufLen = 0;
     other._pageBufLen = 0;
-    other._attackPointer = false;
+    other._attachThis = false;
 }
 
 Pool& Pool::operator=( Pool&& other )
@@ -31,17 +31,17 @@ Pool& Pool::operator=( Pool&& other )
     _pages = std::move( other._pages );
     _itemBufLen = other._itemBufLen;
     _pageBufLen = other._pageBufLen;
-    _attackPointer = other._attackPointer;
+    _attachThis = other._attachThis;
     other._itemBufLen = 0;
     other._pageBufLen = 0;
-    other._attackPointer = false;
+    other._attachThis = false;
     return *this;
 }
 
-void Pool::init( int itemBufLen, int pageBufLen /*= 4096*/, int capacity /*= 128 */, bool attackPointer /*= false*/ )
+void Pool::init( int itemBufLen, int pageBufLen /*= 4096*/, int capacity /*= 128 */, bool attachThis /*= false*/ )
 {
-    assert( itemBufLen <= pageBufLen && itemBufLen > 0 && capacity >= 0 );
-    _attackPointer = attackPointer;
+    assert( itemBufLen <= pageBufLen && itemBufLen > 0 && capacity > 0 );
+    _attachThis = attachThis;
     _itemBufLen = itemBufLen; //(int)Utils::round2n( itemSize );
     if( pageBufLen < 4096 )
         _pageBufLen = 4096;
@@ -52,7 +52,7 @@ void Pool::init( int itemBufLen, int pageBufLen /*= 4096*/, int capacity /*= 128
 
 Pool::~Pool()
 {
-    for( int i = 0; i < _pages.size(); ++i ) delete[] _pages[ i ];
+    for( int i = 0; i < _pages.size(); ++i ) aligned_free( _pages[ i ] );
 }
 
 
@@ -81,44 +81,28 @@ void Pool::clear()
 }
 
 
-void Pool::collect()
+void Pool::compress()
 {
-    auto getPage = [ &]( void* item ) ->void*
-    {
-        for( int i = 0; i < _pages.size(); ++i )
-        {
-            auto ps = (size_t)_pages[ i ];
-            auto pe = (size_t)_pages[ i ] + _pageBufLen;
-            auto v = (size_t)item;
-            if( ps <= v && v < pe ) return _pages[ i ];
-        }
-        return 0;
-    };
-
-    std::unordered_map<void*, int> dict;    // todo: replace to Dict
+    auto mask = (size_t)-_pageBufLen;
+    auto numItemsPerPage = _pageBufLen / _itemBufLen;
+    Dict<size_t, int> dict;
     for( int i = 0; i < _items.size(); ++i )
     {
-        auto page = getPage( _items[ i ] );
-        dict[ page ] += 1;
+        dict[ (size_t)_items[ i ] & mask ] += 1;
+    }
+    for( int i = 0; i < _items.size(); ++i )
+    {
+        if( dict[ (size_t)_items[ i ] & mask ] == numItemsPerPage )
+        {
+            _items.eraseFast( i-- );
+        }
     }
     for( int i = 0; i < _pages.size(); ++i )
     {
-        if( dict[ _pages[ i ] ] == _pageBufLen / _itemBufLen )
+        if( dict[ (size_t)_pages[ i ] ] == numItemsPerPage )
         {
-            auto ps = (size_t)_pages[ i ];
-            auto pe = (size_t)_pages[ i ] + _pageBufLen;
-            for( int j = 0; j < _items.size(); ++j )
-            {
-                auto v = (size_t)_items[ j ];
-                if( ps <= v && v < pe )
-                {
-                    _items[ j-- ] = _items.top();
-                    _items.pop();
-                }
-            }
-            delete[] _pages[ i ];
-            _pages[ i-- ] = _pages.top();
-            _pages.pop();
+            aligned_free( _pages[ i ] );
+            _pages.eraseFast( i-- );
         }
     }
 }
@@ -126,9 +110,9 @@ void Pool::collect()
 
 void Pool::reserve()
 {
-    auto p = new char[ _pageBufLen ];        // maybe need align 8/16
+    auto p = (char*)aligned_alloc( _pageBufLen, _pageBufLen );
     _pages.push( p );
-    if( !_attackPointer )
+    if( !_attachThis )
     {
         for( int i = 0; i < _pageBufLen / _itemBufLen; ++i )
         {
@@ -171,8 +155,8 @@ int Pool::itemBufLen() const
     return _itemBufLen;
 }
 
-bool Pool::attackPointer() const
+bool Pool::attachThis() const
 {
-    return _attackPointer;
+    return _attachThis;
 }
 

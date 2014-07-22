@@ -6,24 +6,29 @@ String::String( int capacity /*= 64 */ )
     else _bufLen = (int)Utils::round2n( capacity );
     _disposer = &String::disposeNewBuffer;
     _dataLen = 0;
-#if __DEBUG_STRING
-    std::cout << "String::String( int capacity ) new char[ " << _bufLen << " ]\n";
-#endif
     _buf = new char[ _bufLen ];
     _buf[ 0 ] = '\0';
 }
 
 String::String( Pool& p )
 {
-    assert( p.attackPointer() && p.itemBufLen() > sizeof( Pool* ) );
-#if __DEBUG_STRING
-    std::cout << "String::String( Pool& p ) p.alloc()\n";
-#endif
+    assert( p.attachThis() && p.itemBufLen() > sizeof( Pool* ) );
     _buf = (char*)p.alloc();
     _bufLen = p.itemBufLen() - sizeof( Pool* );
     _dataLen = 0;
     _disposer = &String::disposePoolBuffer;
     _buf[ 0 ] = '\0';
+}
+
+String::String( Pool& p, char const* buf, int dataLen )
+{
+    assert( p.attachThis() && p.itemBufLen() > sizeof( Pool* ) && p.itemBufLen() - sizeof( Pool* ) >= dataLen + 1 );
+    _buf = (char*)p.alloc();
+    _bufLen = p.itemBufLen() - sizeof( Pool* );
+    _dataLen = dataLen;
+    _disposer = &String::disposePoolBuffer;
+    memcpy( _buf, buf, dataLen );
+    _buf[ dataLen ] = '\0';
 }
 
 String::String( char const* buf, int bufLen, int dataLen, bool isRef )
@@ -104,9 +109,6 @@ void String::assign( char const* buf, int bufLen, int dataLen /*= 0*/, bool isRe
         if( _disposer ) ( this->*_disposer )( );
         _bufLen = (int)Utils::round2n( dataLen + 1 );
         _disposer = &String::disposeNewBuffer;
-#if __DEBUG_STRING
-        std::cout << "String& String::assign( ................ ) new char[ " << _bufLen << " ]\n";
-#endif
         _buf = new char[ _bufLen ];
     }
     _dataLen = dataLen;
@@ -124,9 +126,6 @@ void String::reserve( int capacity )
 {
     if( capacity + 1 <= _bufLen ) return;
     _bufLen = (int)Utils::round2n( capacity + 1 );
-#if __DEBUG_STRING
-    std::cout << "void String::reserve( int capacity ) new char[ " << _bufLen << " ]\n";
-#endif
     auto newBuf = new char[ _bufLen ];
     memcpy( newBuf, _buf, _dataLen + 1 );
     if( _disposer ) ( this->*_disposer )( );
@@ -204,18 +203,12 @@ int String::size() const
 
 void String::disposePoolBuffer()
 {
-#if __DEBUG_STRING
-    std::cout << "pool.free( _buf )\n";
-#endif
     auto p = *(Pool**)( _buf + _bufLen );
     p->free( _buf );
 }
 
 void String::disposeNewBuffer()
 {
-#if __DEBUG_STRING
-    std::cout << "delete[] _buf\n";
-#endif
     delete[] _buf;
 }
 
@@ -234,9 +227,6 @@ String& String::operator=( String const & other )
         if( _disposer ) ( this->*_disposer )( );
         _bufLen = (int)Utils::round2n( other._dataLen + 1 );
         _disposer = &String::disposeNewBuffer;
-#if __DEBUG_STRING
-        std::cout << "String& String::operator=( String const & other ) new char[ " << _bufLen << " ]\n";
-#endif
         _buf = new char[ _bufLen ];
         _dataLen = other._dataLen;
         memcpy( _buf, other._buf, other._dataLen + 1 );
@@ -387,10 +377,27 @@ void String::writeBufferDirect( FlatBuffer& fb ) const
 bool String::readBuffer( FlatBuffer& fb )
 {
     int len;
-    if( !fb.read( len )
-        || len < 0
-        || fb.offset() + len > fb.size() ) return false;             // todo: || len > maxStringLength
+    if( !fb.read( len ) || len < 0
+        || fb.offset() + len > fb.size() ) return false;
     assign( fb.data() + fb.offset(), 0, len, false );
     fb.offset() += len;
     return true;
+}
+
+void String::pop()
+{
+    assert( _dataLen > 0 );
+    --_dataLen;
+}
+
+char& String::top()
+{
+    assert( _dataLen > 0 );
+    return _buf[ _dataLen - 1 ];
+}
+
+char const& String::top() const
+{
+    assert( _dataLen > 0 );
+    return _buf[ _dataLen - 1 ];
 }

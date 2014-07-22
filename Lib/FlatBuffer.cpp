@@ -12,7 +12,7 @@ FlatBuffer::FlatBuffer( int capacity )
 
 FlatBuffer::FlatBuffer( Pool& p )
 {
-    assert( p.attackPointer() && p.itemBufLen() > sizeof( Pool* ) );
+    assert( p.attachThis() && p.itemBufLen() > sizeof( Pool* ) );
     _buf = (char*)p.alloc();
     _bufLen = p.itemBufLen() - sizeof( Pool* );
     _dataLen = 0;

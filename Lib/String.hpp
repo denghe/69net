@@ -2,6 +2,18 @@
 #define _STRING_HPP__
 
 
+template<int len>
+String::String( Pool& p, char const ( &s )[ len ] )
+{
+    assert( p.attachThis() && p.itemBufLen() > sizeof( Pool* ) && p.itemBufLen() - sizeof( Pool* ) >= len );
+    _buf = (char*)p.alloc();
+    _bufLen = p.itemBufLen() - sizeof( Pool* );
+    _dataLen = len - 1;
+    _disposer = &String::disposePoolBuffer;
+    memcpy( _buf, s, len );
+}
+
+
 template<typename ...TS>
 void String::append( TS const & ...vs )
 {
@@ -140,9 +152,10 @@ void String::appendHex( T const& v )
 
 
 template<typename T>
-String String::toString( T const& v )
+String const String::toString( T const& v )
 {
-    String s( Utils::getToStringMaxLength( v ) );
+    auto bufLen = Utils::getToStringMaxLength( v ) + 1;
+    String s( (char*)alloca( bufLen ), bufLen, 0 );
     s.append( v );
     return s;
 }
@@ -150,7 +163,7 @@ String String::toString( T const& v )
 template<typename T>
 String String::toHexString( T const& v )
 {
-    String s( 17 );
+    String s( (char*)alloca( 17 ), 17, 0 );
     s.appendHex( v );
     return s;
 }
