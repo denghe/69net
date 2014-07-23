@@ -152,6 +152,13 @@ void String::appendHex( T const& v )
 
 
 template<typename T>
+String& String::operator << ( T const& v )
+{
+    append( v );
+    return *this;
+}
+
+template<typename T>
 String const String::toString( T const& v )
 {
     static int bufIdx = 0;

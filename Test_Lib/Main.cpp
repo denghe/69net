@@ -10,6 +10,10 @@ void cout( TS const& ...parms )
 int main()
 {
     int i = 0;
-    cout( String::toString( ++i ), String::toString( ++i ), String::toString( ++i ) );
+    String s;
+    s << ++i;
+    s << ++i;
+    s << ++i;
+    cout( s );
     return 0;
 }

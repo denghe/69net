@@ -61,7 +61,8 @@ public:
     template<typename ...TS>
     void appendFormat( char const* format, TS const & ...vs );
 
-
+    template<typename T>
+    String& operator<<( T const& v );
 
     template<typename ...TS>
     static String make( TS const & ...vs );
