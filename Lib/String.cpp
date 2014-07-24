@@ -322,7 +322,7 @@ bool String::operator!=( String const& other ) const
 bool String::operator<( String const& other ) const
 {
     if( this == &other ) return false;
-    auto r = memcmp( _buf, other._buf, std::min( _dataLen, other._dataLen ) );
+    auto r = memcmp( _buf, other._buf, MIN( _dataLen, other._dataLen ) );
     if( r == 0 ) return _dataLen < other._dataLen;
     return r < 0;
 }
@@ -330,7 +330,7 @@ bool String::operator<( String const& other ) const
 bool String::operator>( String const& other ) const
 {
     if( this == &other ) return false;
-    auto r = memcmp( _buf, other._buf, std::min( _dataLen, other._dataLen ) );
+    auto r = memcmp( _buf, other._buf, MIN( _dataLen, other._dataLen ) );
     if( r == 0 ) return _dataLen > other._dataLen;
     return r > 0;
 }

@@ -1,6 +1,12 @@
 #include "Lib/All.h"
 #include <enet/enet.h>
-using namespace std;
+template<typename ...TS>
+void cout( TS const& ...parms )
+{
+    String s;
+    s.append( parms... );
+    std::cout << s.c_str() << std::endl;
+}
 
 int test()
 {
@@ -31,7 +37,7 @@ int test()
                         event.peer->address.host,
                         event.peer->address.port );
                 /* Store any relevant client information here. */
-                event.peer->data = "Client information";
+                event.peer->data = "server information";
                 break;
             case ENET_EVENT_TYPE_RECEIVE:
                 printf( "A packet of length %u containing %s was received from %s on channel %u.\n",
@@ -41,7 +47,6 @@ int test()
                         event.channelID );
                 /* Clean up the packet now that we're done using it. */
                 enet_packet_destroy( event.packet );
-
                 break;
 
             case ENET_EVENT_TYPE_DISCONNECT:
@@ -56,7 +61,7 @@ int test()
         gets( message );
         if( strlen( message ) > 0 )
         {
-            // 看上去 packet 似乎不能立即删掉 否则发不出去 猜测是在 service() 的时候才发
+            // 这东西似乎是于 service() 或 flush() 的时候才发出且会自动删掉？？
             auto packet = enet_packet_create( message, strlen( message ) + 1, ENET_PACKET_FLAG_RELIABLE );
             enet_peer_send( peer, 0, packet );
         }
@@ -112,7 +117,7 @@ int main()
 {
     if( auto rtv = test() )
     {
-        cout << rtv << endl;
+        cout( rtv );
     }
 
     system( "pause" );

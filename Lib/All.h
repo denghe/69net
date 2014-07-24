@@ -198,9 +198,16 @@ public:                                                                         
 }
 
 
+#define MIN( a, b )  ( (a) < (b) ? (a) : (b) )
+#define MAX( a, b )  ( (a) > (b) ? (a) : (b) )
 
 
 
+#ifdef __WIN
+#define WIN32_LEAN_AND_MEAN
+#include <WinSock2.h>
+#include <windows.h>
+#endif
 
 
 
