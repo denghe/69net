@@ -42,12 +42,15 @@ int test()
 
     // 来个 counter 用于显示 以体现 循环速度
     int counter = 0;
+    // timer 相关
+    std::chrono::milliseconds duration( 200 );
+    std::chrono::time_point<std::chrono::system_clock> tp;
 
 
     while( true )
     {
         ENetEvent event;
-        if( enet_host_service( server, &event, 0 ) )
+        if( enet_host_service( server, &event, 1 ) )
         {
             switch( event.type )
             {
@@ -79,7 +82,16 @@ int test()
             }
         }
 
-        coutPos( 0, 0, counter++ ); // todo: 降低输出频度
+        ++counter;
+
+        // 低频输出 now 免得控制台输出耗 cpu 太多
+        auto now = std::chrono::system_clock::now();
+        if( now - tp > duration )
+        {
+            tp = now;
+            coutPos( 0, 0, counter );
+        }
+
         // other logic here
     }
     return 0;
