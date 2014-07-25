@@ -41,7 +41,7 @@ int test()
     ScopeGuard sg_server( [ = ] { enet_host_destroy( server ); } );
 
     // 来个 counter 用于显示 以体现 循环速度
-    int64 counter = 0;
+    size_t counter = 0;
     // timer 相关
     std::chrono::milliseconds refreshDuration( 200 );
     std::chrono::seconds durationSec1( 1 );
@@ -101,7 +101,7 @@ int test()
         {
             auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>( now - firstTime ).count();
             if( !elapsedSeconds ) elapsedSeconds = 1;
-            coutPos( 0, 0, counter, ", ", counter / elapsedSeconds );
+            coutPos( 0, 0, counter, ", ", counter / (int64)elapsedSeconds );
             lastTime = now;
         }
 

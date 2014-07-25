@@ -64,7 +64,11 @@ namespace Utils
 
     int getToStringSize( uint64 v )
     {
-        if( v < 10000000000LL ) return getToStringSize( (uint32)v );
+        if( v < 10000000000LL )
+        {
+            if( v >= 1000000000 ) return 10;
+            return getToStringSize( (uint32)v );
+        }
         else if( v < 100000000000LL ) return 11;
         else if( v < 1000000000000LL ) return 12;
         else if( v < 10000000000000LL ) return 13;
