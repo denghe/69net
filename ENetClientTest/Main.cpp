@@ -24,9 +24,10 @@ int test()
     auto peer = enet_host_connect( client, &address, 2, 0 );
     if( !peer ) return -2;
 
-    FlatBuffer buf( 65536 );
-    buf.resize( 65536 );
-    for( int i = 0; i < 65536; ++i )
+    int sendLen = 1024;
+    FlatBuffer buf( sendLen );
+    buf.resize( sendLen );
+    for( int i = 0; i < sendLen; ++i )
     {
         buf[ i ] = (byte)i;
     }
@@ -35,7 +36,7 @@ int test()
     while( true )
     {
         /* Wait up to 1000 milliseconds for an event. */
-        if( enet_host_service( client, &event, 0 ) )
+        if( enet_host_service( client, &event, 1 ) )
         {
             switch( event.type )
             {
@@ -67,6 +68,7 @@ int test()
                 event.peer->data = NULL;
             }
         }
+        //else std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
 
         //printf( "Say > " );
         //char message[ 1024 ];

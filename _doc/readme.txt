@@ -1,30 +1,30 @@
-ï»¿å„ç§æ–‡æ¡£, ä»£ç  "ç´ æ"
+¸÷ÖÖÎÄµµ, ´úÂë "ËØ²Ä"
 
-ä¸€äº›å…³é”®å­—:
-
-
+Ò»Ğ©¹Ø¼ü×Ö:
 
 
-ä¸‹é¢æ˜¯å„ç§è²Œä¼¼æœ‰ç”¨çš„ url
 
 
-æ¸¸æˆéšæœºåå­—ç›¸å…³( ç†è®ºä¸Šè®²å¯ä»¥åšä¸ª ios åº”ç”¨äº† )
+ÏÂÃæÊÇ¸÷ÖÖÃ²ËÆÓĞÓÃµÄ url
+
+
+ÓÎÏ·Ëæ»úÃû×ÖÏà¹Ø( ÀíÂÛÉÏ½²¿ÉÒÔ×ö¸ö ios Ó¦ÓÃÁË )
 http://www.youximingzi.com/
 
 
-é»‘è“å¼€æº3d engine, ä»£ç å·¥æ•´ç»„ç»‡åˆç†, å¯å‚è€ƒ
+ºÚİ®¿ªÔ´3d engine, ´úÂë¹¤Õû×éÖ¯ºÏÀí, ¿É²Î¿¼
 https://github.com/blackberry/GamePlay
 
-æŸäººçš„è²Œä¼¼é«˜æ•ˆçš„ç½‘ç»œåº“
+Ä³ÈËµÄÃ²ËÆ¸ßĞ§µÄÍøÂç¿â
 https://github.com/zsummer/zsummerX
 
-luaé›†æˆé€‰ç”¨çš„ç»„ä»¶
+lua¼¯³ÉÑ¡ÓÃµÄ×é¼ş
 http://luajit.org/
 
-ç¾¤å‹è´´çš„å¬è¯´æ˜¯ä¸€ä¸ªè®² IOCP ä¸é”™çš„æ–‡
+ÈºÓÑÌùµÄÌıËµÊÇÒ»¸ö½² IOCP ²»´íµÄÎÄ
 http://blog.csdn.net/piggyxp/article/details/6922277
 
-RakNet æ‰‹å†Œ( æºä»£ç  eval é‚®ä»¶ä¸‹è½½ )
+RakNet ÊÖ²á( Ô´´úÂë eval ÓÊ¼şÏÂÔØ )
 http://www.jenkinssoftware.com/raknet/manual/Doxygen/
 
 Enet engine
@@ -33,23 +33,26 @@ enet.bespin.org/
 UDT
 http://udt.sourceforge.net/
 
-// ä¸€äº›é¬¼ä½¬çš„ net é€‰æ‹©æ¢è®¨
+// Ò»Ğ©¹íÀĞµÄ net Ñ¡ÔñÌ½ÌÖ
 http://www.reddit.com/r/gamedev/comments/1al3w0/poco_vs_raknet_vs_ice_choosing_a_network_library/
 
 
-google FlatBuffers ç›¸å…³ï¼šçœ‹ä¸Šå»é…åˆå…±äº«å†…å­˜ï¼Œå¯¹æœ¬æœºè¿›ç¨‹é—´é€šä¿¡ææœ‰å¸®åŠ©
+google FlatBuffers Ïà¹Ø£º¿´ÉÏÈ¥ÅäºÏ¹²ÏíÄÚ´æ£¬¶Ô±¾»ú½ø³Ì¼äÍ¨ĞÅ¼«ÓĞ°ïÖú
 http://google.github.io/flatbuffers/index.html
 
 
-å¯ä»¥åœ¨çº¿ç¼–è¯‘è¿è¡Œ c++ ä»£ç çš„ç½‘é¡µï¼ï¼
+¿ÉÒÔÔÚÏß±àÒëÔËĞĞ c++ ´úÂëµÄÍøÒ³£¡£¡
 http://coliru.stacked-crooked.com/
 
 
-ä¸€ç¯‡è®² 2d ç‰©ç† engine çš„å¥½æ–‡ï¼Œæœ‰åŠ©äº server ç«¯é›†æˆ
+Ò»Æª½² 2d ÎïÀí engine µÄºÃÎÄ£¬ÓĞÖúÓÚ server ¶Ë¼¯³É
 http://blog.csdn.net/tspangle/article/details/23735369
 
 
-å¬è¯´æ˜¯ä¸€ä¸ªå¾ˆå¿«çš„ tostring é¡¹ç›®
+ÌıËµÊÇÒ»¸öºÜ¿ìµÄ tostring ÏîÄ¿
 https://code.google.com/p/stringencoders/
-string ç›¸å…³
+string Ïà¹Ø
 http://www.codeproject.com/Articles/23198/C-String-Toolkit-StrTk-Tokenizer
+
+¿´ÉÏÈ¥ÏñÊÇÒ»¸öÎŞËøÑ­»·¶ÓÁĞ
+http://www.oschina.net/code/snippet_54334_12505

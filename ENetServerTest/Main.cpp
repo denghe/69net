@@ -52,7 +52,7 @@ int test()
     while( true )
     {
         ENetEvent event;
-        if( enet_host_service( server, &event, 0 ) )
+        if( enet_host_service( server, &event, 1 ) )
         {
             switch( event.type )
             {
@@ -91,7 +91,7 @@ int test()
             }
             }
         }
-        //std::this_thread::sleep_for( std::chrono::milliseconds( 0 ) );
+        //else std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
         //++counter;    // counter 直接用于加收到的字节数
 
 
