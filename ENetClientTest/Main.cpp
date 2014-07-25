@@ -13,7 +13,7 @@ int test()
     if( auto rtv = enet_initialize() ) return rtv;
     ScopeGuard sg_enet_deinitialize( [] { enet_deinitialize(); } );
 
-    auto client = enet_host_create( nullptr, 1, 2, 57600 / 8, 14400 / 8 );
+    auto client = enet_host_create( nullptr, 1, 2, 0, 0 ); //57600 / 8, 14400 / 8 );
     if( !client ) return -1;
     ScopeGuard sg_client( [ = ] { enet_host_destroy( client ); } );
 
@@ -24,11 +24,18 @@ int test()
     auto peer = enet_host_connect( client, &address, 2, 0 );
     if( !peer ) return -2;
 
+    FlatBuffer buf( 65536 );
+    buf.resize( 65536 );
+    for( int i = 0; i < 65536; ++i )
+    {
+        buf[ i ] = (byte)i;
+    }
+
     ENetEvent event;
     while( true )
     {
         /* Wait up to 1000 milliseconds for an event. */
-        if( enet_host_service( client, &event, 1000 ) > 0 )
+        if( enet_host_service( client, &event, 0 ) )
         {
             switch( event.type )
             {
@@ -40,15 +47,20 @@ int test()
                 event.peer->data = "server information";
                 break;
             case ENET_EVENT_TYPE_RECEIVE:
-                printf( "A packet of length %u containing %s was received from %s on channel %u.\n",
-                        event.packet->dataLength,
-                        event.packet->data,
-                        event.peer->data,
-                        event.channelID );
+            {
+                //printf( "A packet of length %u containing %s was received from %s on channel %u.\n",
+                //        event.packet->dataLength,
+                //        event.packet->data,
+                //        event.peer->data,
+                //        event.channelID );
                 /* Clean up the packet now that we're done using it. */
+                // todo: check
                 enet_packet_destroy( event.packet );
-                break;
 
+                auto packet = enet_packet_create( buf.data(), buf.size(), ENET_PACKET_FLAG_RELIABLE );
+                enet_peer_send( peer, 0, packet );
+                break;
+            }
             case ENET_EVENT_TYPE_DISCONNECT:
                 printf( "%s disconnected.\n", event.peer->data );
                 /* Reset the peer's client information. */
@@ -56,15 +68,15 @@ int test()
             }
         }
 
-        printf( "Say > " );
-        char message[ 1024 ];
-        gets( message );
-        if( strlen( message ) > 0 )
-        {
-            // 这东西似乎是于 service() 或 flush() 的时候才发出且会自动删掉？？
-            auto packet = enet_packet_create( message, strlen( message ) + 1, ENET_PACKET_FLAG_RELIABLE );
-            enet_peer_send( peer, 0, packet );
-        }
+        //printf( "Say > " );
+        //char message[ 1024 ];
+        //gets( message );
+        //if( strlen( message ) > 0 )
+        //{
+        //    // 这东西似乎是于 service() 或 flush() 的时候才发出且会自动删掉？？
+        //    auto packet = enet_packet_create( message, strlen( message ) + 1, ENET_PACKET_FLAG_RELIABLE );
+        //    enet_peer_send( peer, 0, packet );
+        //}
     }
 
 

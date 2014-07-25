@@ -41,55 +41,68 @@ int test()
     ScopeGuard sg_server( [ = ] { enet_host_destroy( server ); } );
 
     // 来个 counter 用于显示 以体现 循环速度
-    int counter = 0;
+    int64 counter = 0;
     // timer 相关
-    std::chrono::milliseconds duration( 200 );
-    std::chrono::time_point<std::chrono::system_clock> tp;
+    std::chrono::milliseconds refreshDuration( 200 );
+    std::chrono::seconds durationSec1( 1 );
+    std::chrono::time_point<std::chrono::system_clock> lastTime;
+    auto firstTime = std::chrono::system_clock::now();
 
 
     while( true )
     {
         ENetEvent event;
-        if( enet_host_service( server, &event, 1 ) )
+        if( enet_host_service( server, &event, 0 ) )
         {
             switch( event.type )
             {
             case ENET_EVENT_TYPE_CONNECT:
+            {
                 printf( "A new client connected from %x:%u.\n",
                         event.peer->address.host,
                         event.peer->address.port );
                 /* Store any relevant client information here. */
                 event.peer->data = "cccccc";
+                auto packet = enet_packet_create( "go", 3, ENET_PACKET_FLAG_RELIABLE );
+                enet_peer_send( event.peer, 0, packet );
                 break;
+            }
             case ENET_EVENT_TYPE_RECEIVE:
-                printf( "A packet of length %u containing %s was received from %s on channel %u.\n",
-                        event.packet->dataLength,
-                        event.packet->data,
-                        event.peer->data,
-                        event.channelID );
+            {
+                //printf( "A packet of length %u containing %s was received from %s on channel %u.\n",
+                //        event.packet->dataLength,
+                //        event.packet->data,
+                //        event.peer->data,
+                //        event.channelID );
                 /* Clean up the packet now that we're done using it. */
+                // todo: counter += packet len
+                int len = event.packet->dataLength;
+                counter += event.packet->dataLength;
                 enet_packet_destroy( event.packet );
-                {
-                    auto packet = enet_packet_create( "hi!", 4, ENET_PACKET_FLAG_RELIABLE );
-                    enet_peer_send( event.peer, 0, packet );
-                }
+                auto packet = enet_packet_create( &len, 4, ENET_PACKET_FLAG_RELIABLE );
+                enet_peer_send( event.peer, 0, packet );
                 break;
-
+            }
             case ENET_EVENT_TYPE_DISCONNECT:
+            {
                 printf( "%s disconnected.\n", event.peer->data );
                 /* Reset the peer's client information. */
                 event.peer->data = NULL;
             }
+            }
         }
+        //std::this_thread::sleep_for( std::chrono::milliseconds( 0 ) );
+        //++counter;    // counter 直接用于加收到的字节数
 
-        ++counter;
 
         // 低频输出 now 免得控制台输出耗 cpu 太多
         auto now = std::chrono::system_clock::now();
-        if( now - tp > duration )
+        if( now - lastTime >= refreshDuration )
         {
-            tp = now;
-            coutPos( 0, 0, counter );
+            auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>( now - firstTime ).count();
+            if( !elapsedSeconds ) elapsedSeconds = 1;
+            coutPos( 0, 0, counter, ", ", counter / elapsedSeconds );
+            lastTime = now;
         }
 
         // other logic here
