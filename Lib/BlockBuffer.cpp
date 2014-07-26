@@ -86,12 +86,11 @@ Begin:
     goto Begin;
 }
 
-int BlockBuffer::read( char* buf, int bufLen )
+int BlockBuffer::read( char* buf, int len )
 {
     if( !_size ) return 0;
     int ps = _pool->itemBufLen() - sizeof( Page* );
-    int len = bufLen;
-    if( bufLen > _size ) len = _size;
+    if( len > _size ) len = _size;
     _size -= len;
     int bak = len;
 Begin:

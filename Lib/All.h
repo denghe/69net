@@ -198,8 +198,12 @@ public:                                                                         
 }
 
 
+#ifndef MIN
 #define MIN( a, b )  ( (a) < (b) ? (a) : (b) )
+#endif
+#ifndef MAX
 #define MAX( a, b )  ( (a) > (b) ? (a) : (b) )
+#endif
 
 
 
@@ -283,6 +287,7 @@ typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
 #include "FlatQueue.h"
 #include "Cout.h"
 #include "SharedMemory.h"
+#include "SMBuffer.h"
 
 // ... more
 

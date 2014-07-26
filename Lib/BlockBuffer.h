@@ -6,16 +6,16 @@ class BlockBuffer : Memmoveable
 {
 public:
     explicit BlockBuffer( Pool& p );
-    BlockBuffer( BlockBuffer const& other ) = delete;
-    BlockBuffer& operator=( BlockBuffer const& other ) = delete;
     ~BlockBuffer();
     void write( char const* buf, int len );
-    int read( char* buf, int bufLen );          // 试复制指定长度到 buf 并移动读指针. 返回实际复制的长度
+    int read( char* buf, int len );             // 试复制指定长度到 buf 并移动读指针. 返回实际复制的长度
     void copy( char* buf, int len );            // 复制指定长度到 buf, 如果 size 不足会出错
     void clear();
     bool empty() const;
     int size() const;                           // 未读之数据长
 private:
+    BlockBuffer( BlockBuffer const& other ) = delete;
+    BlockBuffer& operator=( BlockBuffer const& other ) = delete;
     struct Page
     {
         Page*   next;

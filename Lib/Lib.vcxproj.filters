@@ -27,6 +27,7 @@
     <ClInclude Include="Cout.hpp" />
     <ClInclude Include="SharedMemory.h" />
     <ClInclude Include="SharedMemory.hpp" />
+    <ClInclude Include="SMBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
@@ -41,5 +42,6 @@
     <ClCompile Include="BlockBuffer.cpp" />
     <ClCompile Include="ScopeGuard.cpp" />
     <ClCompile Include="SharedMemory.cpp" />
+    <ClCompile Include="SMBuffer.cpp" />
   </ItemGroup>
 </Project>

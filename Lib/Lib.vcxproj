@@ -40,6 +40,7 @@
     <ClInclude Include="ScopeGuard.h" />
     <ClInclude Include="SharedMemory.h" />
     <ClInclude Include="SharedMemory.hpp" />
+    <ClInclude Include="SMBuffer.h" />
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="String.hpp" />
@@ -67,6 +68,7 @@
     <ClCompile Include="Pool.cpp" />
     <ClCompile Include="ScopeGuard.cpp" />
     <ClCompile Include="SharedMemory.cpp" />
+    <ClCompile Include="SMBuffer.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
