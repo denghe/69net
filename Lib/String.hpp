@@ -17,16 +17,34 @@ String::String( Pool& p, char const ( &s )[ len ] )
 template<typename ...TS>
 void String::append( TS const & ...vs )
 {
-    int maxLen = Utils::getFillMaxLength( vs... ) + 1;
+    int maxLen = getFillMaxLength( vs... ) + 1;
     if( _dataLen + maxLen > _bufLen )
         reserve( _dataLen + maxLen );
-    _dataLen += Utils::fill( _buf + _dataLen, vs... );
+    _dataLen += fill( _buf + _dataLen, vs... );
 }
 
 template<typename ...TS>
 String String::make( TS const & ...vs )
 {
     String rtv;
+    rtv.append( vs... );
+    return rtv;
+}
+
+template<typename ...TS, int bufLen>
+String String::make( char( &buf )[ bufLen ], TS const & ...vs )
+{
+    String rtv( buf, bufLen, 0 );
+    rtv.append( vs... );
+    return rtv;
+}
+
+template<typename ...TS>
+String String::makeFast( TS const & ...vs )
+{
+    static std::atomic<int> bufIdx = 0;
+    static char bufs[ 32 ][ 1024 ];
+    String rtv( bufs[ ( bufIdx++ ) & 16 ], 1024, 0 );
     rtv.append( vs... );
     return rtv;
 }
@@ -161,12 +179,10 @@ String& String::operator << ( T const& v )
 template<typename T>
 String const String::toString( T const& v )
 {
-    static int bufIdx = 0;
-    static char bufs[ 16 ][ 128 ];
-
-    auto bufLen = Utils::getToStringMaxLength( v ) + 1;
-    if( bufLen > 128 ) return make( v );
-    String s( bufs[ ( bufIdx++ ) & 16 ], bufLen, 0 );
+    static std::atomic<int> bufIdx = 0;
+    static char bufs[ 32 ][ 128 ];
+    if( getToStringMaxLength( v ) >= 128 ) return make( v );
+    String s( bufs[ ( bufIdx++ ) & 16 ], 128, 0 );
     s.append( v );
     return s;
 }
@@ -174,12 +190,77 @@ String const String::toString( T const& v )
 template<typename T>
 String String::toHexString( T const& v )
 {
-    static int bufIdx = 0;
-    static char bufs[ 16 ][ 128 ];
-
+    static std::atomic<int> bufIdx = 0;
+    static char bufs[ 32 ][ 32 ];
     String s( bufs[ ( bufIdx++ ) & 16 ], 32, 0 );
     s.appendHex( v );
     return s;
+}
+
+
+template<typename T>
+void String::getFillMaxLengthCore( int & len, T const & v )
+{
+    len += Utils::getToStringMaxLength( v );
+}
+
+template<typename T, typename ...TS>
+void String::getFillMaxLengthCore( int & len, T const & v, TS const & ...vs )
+{
+    getFillMaxLengthCore( len, v );
+    getFillMaxLengthCore( len, vs... );
+}
+
+template<typename ...TS>
+int String::getFillMaxLength( TS const & ...vs )
+{
+    int len = 0;
+    getFillMaxLengthCore( len, vs... );
+    return len;
+}
+
+template<typename T>
+void String::fillCore( char * & buf, int & offset, T const & v )
+{
+    offset += Utils::toString( buf + offset, v );
+}
+
+template<typename T, typename ...TS>
+void String::fillCore( char * & buf, int & offset, T const & v, TS const & ...vs )
+{
+    fillCore( buf, offset, v );
+    fillCore( buf, offset, vs... );
+}
+
+template<typename ...TS>
+int String::fill( char * buf, TS const & ...vs )
+{
+    int offset = 0;
+    fillCore( buf, offset, vs... );
+    buf[ offset ] = '\0';
+    return offset;
+}
+
+template<typename T>
+void String::fillHexCore( char * & buf, int & offset, T const & v )
+{
+    offset += toHexString( buf + offset, v );
+}
+
+template<typename T, typename ...TS>
+void String::fillHexCore( char * & buf, int & offset, T const & v, TS const & ...vs )
+{
+    fillHexCore( buf, offset, v );
+    fillHexCore( buf, offset, vs... );
+}
+
+template<typename ...TS>
+int String::fillHex( char * buf, TS const & ...vs )
+{
+    int offset = 0;
+    fillHexCore( buf, offset, vs... );
+    buf[ offset ] = '\0';
+    return offset;
 }
 
 

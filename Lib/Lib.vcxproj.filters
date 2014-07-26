@@ -23,6 +23,10 @@
     <ClInclude Include="FlatQueue.h" />
     <ClInclude Include="FlatQueue.hpp" />
     <ClInclude Include="ScopeGuard.h" />
+    <ClInclude Include="Cout.h" />
+    <ClInclude Include="Cout.hpp" />
+    <ClInclude Include="SharedMemory.h" />
+    <ClInclude Include="SharedMemory.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
@@ -36,5 +40,6 @@
     <ClCompile Include="BufferUtils.cpp" />
     <ClCompile Include="BlockBuffer.cpp" />
     <ClCompile Include="ScopeGuard.cpp" />
+    <ClCompile Include="SharedMemory.cpp" />
   </ItemGroup>
 </Project>

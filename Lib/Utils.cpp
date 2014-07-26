@@ -542,7 +542,7 @@ namespace Utils
 #ifdef __IA
         return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
 #else
-        if( in.size() >= 4 && ( (size_t)in.c_str() % 8 == 0 ) )
+        if( in.size() >= 4 && ( (size_t)in.c_str() % sizeof(size_t) == 0 ) )
             return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
         else
             return getHash_Lua( (byte const*)in.c_str(), (int)in.size() );
@@ -554,7 +554,7 @@ namespace Utils
 #ifdef __IA
         return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
 #else
-        if( in.size() >= 4 && ( (size_t)in.c_str() % 8 == 0 ) )
+        if( in.size() >= 4 && ( (size_t)in.c_str() % sizeof(size_t) == 0 ) )
             return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
         else
             return getHash_Lua( (byte const*)in.c_str(), (int)in.size() );

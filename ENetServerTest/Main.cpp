@@ -76,7 +76,7 @@ int test()
                 //        event.channelID );
                 /* Clean up the packet now that we're done using it. */
                 // todo: counter += packet len
-                int len = event.packet->dataLength;
+                int len = (int)event.packet->dataLength;
                 counter += event.packet->dataLength;
                 enet_packet_destroy( event.packet );
                 auto packet = enet_packet_create( &len, 4, ENET_PACKET_FLAG_RELIABLE );

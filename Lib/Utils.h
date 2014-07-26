@@ -20,14 +20,6 @@ namespace Utils
     int getToStringMaxLength( char const* v );
     int getToStringMaxLength( String const & v );
 
-    template<typename T>
-    void getFillMaxLengthCore( int & len, T const & v );
-
-    template<typename T, typename ...TS>
-    void getFillMaxLengthCore( int & len, T const & v, TS const & ...vs );
-
-    template<typename ...TS>
-    int getFillMaxLength( TS const & ...vs );
 
 
 
@@ -61,15 +53,6 @@ namespace Utils
 
 
 
-    template<typename T>
-    void fillCore( char * & buf, int & offset, T const & v );
-
-    template<typename T, typename ...TS>
-    void fillCore( char * & buf, int & offset, T const & v, TS const & ...vs );
-
-    // fill 主用于高速填充 char * buffer 拼字串, 但须提前预估足长度. 可 assert 返回值 < len
-    template<typename ...TS>
-    int fill( char * buf, TS const & ...vs );
 
 
 
@@ -85,16 +68,6 @@ namespace Utils
     int toHexString( char * dstBuf, int16  v );
     int toHexString( char * dstBuf, int    v );
     int toHexString( char * dstBuf, int64  v );
-
-
-    template<typename T>
-    void fillHexCore( char * & buf, int & offset, T const & v );
-
-    template<typename T, typename ...TS>
-    void fillHexCore( char * & buf, int & offset, T const & v, TS const & ...vs );
-
-    template<typename ...TS>
-    int fillHex( char * buf, TS const & ...vs );
 
 
 
@@ -202,8 +175,8 @@ namespace Utils
 
 
 
-    int getHash_CS( byte const* buf, int len );             // 须 x64 下 8 字节 对齐内存 较长串( 估计就是 8+ ) 才能高速
-    int getHash_Lua( byte const* buf, int len );            // 32 位 或 短小字串时高速
+    int getHash_CS( byte const* buf, int len );             // if arm, the buf must be align of 4(32bit)/8(64bit)
+    int getHash_Lua( byte const* buf, int len );            // if len <=4, will be faster than 
 
     // todo: 将 getHashCode 改成是 T 的成员函数
     template<typename T>

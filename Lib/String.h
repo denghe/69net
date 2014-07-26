@@ -64,6 +64,16 @@ public:
     template<typename T>
     String& operator<<( T const& v );
 
+    // like append, return strlen.
+    // dangerous: buffer overflow
+    template<typename ...TS>
+    static int fill( char * buf, TS const & ...vs );
+
+    template<typename ...TS>
+    static int fillHex( char * buf, TS const & ...vs );
+
+
+
     template<typename ...TS>
     static String make( TS const & ...vs );
 
@@ -76,11 +86,19 @@ public:
     template<typename ...TS>
     static String makeFormat( Pool& p, char const* format, TS const & ...vs );
 
-    // dangerous: the buffer is from alloca, so: can't be NRV return, temporary use or expression is ok
+    template<typename ...TS, int bufLen>
+    static String make( char( &buf )[ bufLen ], TS const & ...vs );
+
+
+    // dangerous: get first buffer from static circle pool char[ 32 ][ 1024 ]
+    template<typename ...TS>
+    static String makeFast( TS const & ...vs );
+
+    // dangerous: get first buffer from static circle pool char[ 32 ][ 128 ]
     template<typename T>
     static String const toString( T const& v );
 
-    // dangerous: the buffer is from alloca, so: can't be NRV return, temporary use or expression is ok
+    // dangerous: get first buffer from static circle pool char[ 32 ][ 32 ]
     template<typename T>
     static String toHexString( T const& v );
 
@@ -114,6 +132,28 @@ private:
 
     template<typename T, typename ...TS>
     void appendFormatCore( String& s, int& n, T const & v, TS const & ...vs );
+
+    template<typename T>
+    static void fillCore( char * & buf, int & offset, T const & v );
+
+    template<typename T, typename ...TS>
+    static void fillCore( char * & buf, int & offset, T const & v, TS const & ...vs );
+
+    template<typename T>
+    static void fillHexCore( char * & buf, int & offset, T const & v );
+
+    template<typename T, typename ...TS>
+    static void fillHexCore( char * & buf, int & offset, T const & v, TS const & ...vs );
+
+    template<typename T>
+    static void getFillMaxLengthCore( int & len, T const & v );
+
+    template<typename T, typename ...TS>
+    static void getFillMaxLengthCore( int & len, T const & v, TS const & ...vs );
+
+    template<typename ...TS>
+    static int getFillMaxLength( TS const & ...vs );
+
 
 
     typedef void ( String::*Disposer )( );

@@ -281,6 +281,8 @@ typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
 #include "BufferUtils.h"
 #include "Utils.h"
 #include "FlatQueue.h"
+#include "Cout.h"
+#include "SharedMemory.h"
 
 // ... more
 
@@ -294,6 +296,8 @@ typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
 #include "Utils.hpp"
 #include "Dict.hpp"
 #include "FlatQueue.hpp"
+#include "Cout.hpp"
+#include "SharedMemory.hpp"
 
 // ... more
 

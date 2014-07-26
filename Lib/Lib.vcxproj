@@ -24,6 +24,8 @@
     <ClInclude Include="BufferUtils.hpp" />
     <ClInclude Include="BlockBuffer.h" />
     <ClInclude Include="ClassAttributes.h" />
+    <ClInclude Include="Cout.h" />
+    <ClInclude Include="Cout.hpp" />
     <ClInclude Include="Dict.h" />
     <ClInclude Include="Dict.hpp" />
     <ClInclude Include="FlatBuffer.h" />
@@ -36,6 +38,8 @@
     <ClInclude Include="LRUCache.hpp" />
     <ClInclude Include="Pool.h" />
     <ClInclude Include="ScopeGuard.h" />
+    <ClInclude Include="SharedMemory.h" />
+    <ClInclude Include="SharedMemory.hpp" />
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="String.hpp" />
@@ -62,6 +66,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Pool.cpp" />
     <ClCompile Include="ScopeGuard.cpp" />
+    <ClCompile Include="SharedMemory.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
