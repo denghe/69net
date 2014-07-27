@@ -4,6 +4,7 @@
 // 将结构体及内存全部构建在 SharedMemory 上的一个循环 buffer
 // 使用方法：直接将 SM 内存指针 硬转成这个类的指针
 // SM 创建者还须调用 init 函数初始化
+// 仅限一读一写两个进程/线程同时使用
 class SMBuffer
 {
 public:

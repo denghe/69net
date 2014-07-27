@@ -30,37 +30,37 @@ public:
     void reset() { _begin = high_resolution_clock::now(); }
 
     //ƒ¨»œ ‰≥ˆ∫¡√Î
-    inline int64_t elapsed() const
+    inline int64_t elapsedMillseconds() const
     {
         return duration_cast<milliseconds>( high_resolution_clock::now() - _begin ).count();
     }
 
     //Œ¢√Î
-    inline int64_t elapsed_micro() const
+    inline int64_t elapsedMicroseconds() const
     {
         return duration_cast<microseconds>( high_resolution_clock::now() - _begin ).count();
     }
 
     //ƒ…√Î
-    inline int64_t elapsed_nano() const
+    inline int64_t elapsedNanoseconds() const
     {
         return duration_cast<nanoseconds>( high_resolution_clock::now() - _begin ).count();
     }
 
     //√Î
-    inline int64_t elapsed_seconds() const
+    inline int64_t elapsedSeconds() const
     {
         return duration_cast<seconds>( high_resolution_clock::now() - _begin ).count();
     }
 
     //∑÷
-    inline int64_t elapsed_minutes() const
+    inline int64_t elapsedMinutes() const
     {
         return duration_cast<minutes>( high_resolution_clock::now() - _begin ).count();
     }
 
     // ±
-    inline int64_t elapsed_hours() const
+    inline int64_t elapsedHours() const
     {
         return duration_cast<hours>( high_resolution_clock::now() - _begin ).count();
     }
