@@ -18,20 +18,19 @@ int main()
         }
     };
 
-    int bufLen = 4096;
+    int bufLen = 1024 * 500;
     SharedMemory::setPrefixName( "69" );
     auto& smb = *(SMBuffer*)SharedMemory::get( 123, bufLen );
 
-
-    int64 buf;
+    int64 counter;
     while( true )
     {
-        if( smb.size() )
+        if( smb.size() >= sizeof( counter ) )
         {
-            smb.read( (char*)&buf, sizeof( buf ) );
-            cout( buf );
+            smb.read( (char*)&counter, sizeof( counter ) );
+            cout( counter );
         }
-        // else std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
+        else std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
     }
 
     system( "pause" );

@@ -20,7 +20,7 @@ int main()
     };
 
 
-    int bufLen = 4096;
+    int bufLen = 1024 * 500;
     SharedMemory::setPrefixName( "69" );
     auto& smb = *(SMBuffer*)SharedMemory::create( 123, bufLen );
     smb.init( bufLen );
@@ -34,7 +34,7 @@ int main()
             smb.write( (char*)&counter, sizeof( counter ) );
             cout( counter );
         }
-        //else std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
+        else std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
     }
 
     system( "pause" );
