@@ -5,7 +5,7 @@ int main()
     // wait sm keeper( Agent project ) create sm
     std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
 
-    // 每 0.2 秒显示一次的 cout
+    // 每 0.2 秒显示一次
     std::chrono::milliseconds refreshDuration( 200 );
     std::chrono::time_point<std::chrono::system_clock> lastTime;
     auto cout = [ &]( int64 val )
@@ -18,9 +18,9 @@ int main()
         }
     };
 
-    int bufLen = 102400;
+    int bufLen = 4096;
     SharedMemory::setPrefixName( "69" );
-    auto& smb = *(SMBuffer*)SharedMemory::create( 123, bufLen );
+    auto& smb = *(SMBuffer*)SharedMemory::get( 123, bufLen );
 
 
     int64 buf;

@@ -20,7 +20,7 @@ int main()
     };
 
 
-    int bufLen = 102400;
+    int bufLen = 4096;
     SharedMemory::setPrefixName( "69" );
     auto& smb = *(SMBuffer*)SharedMemory::create( 123, bufLen );
     smb.init( bufLen );
