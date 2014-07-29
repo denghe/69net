@@ -14,7 +14,7 @@ namespace PacketGenerator
         public static string Gen( Template t, string outputDirPath, string fn )
         {
             _fn = fn = fn.Substring( "PacketTemplate_".Length );
-            var nss = t.Classes.Select( a => a.Namespace ).Concat( t.Enums.Select( a => a.Namespace ) ).Distinct().ToList();
+            var nss = t.Namespaces;
 
             var sb = new StringBuilder();
 

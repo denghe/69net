@@ -19,25 +19,25 @@ namespace PacketGenerator
             var libNSdot = libNS + ".";
             var projEnum = "__projects";            // 重要：生成过程中通过这个枚举来识别项目分类
 
-            // 扫项目列表
-            var r_enums = from t in asm.GetTypes() where ( t.IsEnum ) && t.Namespace != libNS && t.Name == projEnum select t;
-            if( r_enums.Count() > 0 )
-            {
-                var e = r_enums.First();
-                var r_fields = e.GetFields( BindingFlags.Static | BindingFlags.Public );
-                foreach( var r_field in r_fields )
-                {
-                    var p = new Project { Name = r_field.Name };
-                    foreach( var a in r_field.GetCustomAttributes( false ) )
-                    {
-                        if( a is LIB.Desc ) p.Desc = ( (LIB.Desc)a ).Value;
-                    }
-                    template.Projects.Add( p );
-                }
-            }
+            //// 扫项目列表
+            //var r_enums = from t in asm.GetTypes() where ( t.IsEnum ) && t.Namespace != libNS && t.Name == projEnum select t;
+            //if( r_enums.Count() > 0 )
+            //{
+            //    var e = r_enums.First();
+            //    var r_fields = e.GetFields( BindingFlags.Static | BindingFlags.Public );
+            //    foreach( var r_field in r_fields )
+            //    {
+            //        var p = new Project { Name = r_field.Name };
+            //        foreach( var a in r_field.GetCustomAttributes( false ) )
+            //        {
+            //            if( a is LIB.Desc ) p.Desc = ( (LIB.Desc)a ).Value;
+            //        }
+            //        template.Projects.Add( p );
+            //    }
+            //}
 
             // 扫枚举
-            r_enums = from t in asm.GetTypes() where ( t.IsEnum ) && t.Namespace != libNS && t.Name != projEnum select t;
+            var r_enums = from t in asm.GetTypes() where ( t.IsEnum ) && t.Namespace != libNS && t.Name != projEnum select t;
             foreach( var r_enum in r_enums )
             {
                 var e = new Enum();
@@ -195,20 +195,20 @@ namespace PacketGenerator
 
             // todo: 所有 Binary, String, WString, List<T> 都应该做长度限制, 不限就应该警告
 
-            // 整理引用关系, 调整 Encode, Decode
-            foreach( var c in template.Classes )
-            {
-                // todo
-            }
+            //// 整理引用关系, 调整 Encode, Decode
+            //foreach( var c in template.Classes )
+            //{
+            //    // todo
+            //}
 
-            // 整理 enable 属性( 合并 encode & decode )
-            foreach( var c in template.Classes )
-            {
-                if( c.Encode.Count + c.Decode.Count == 0 )
-                    c.Enable = c.Encode = c.Decode = template.Projects;
-                else
-                    c.Enable = c.Encode.Concat( c.Decode ).Distinct().ToList();
-            }
+            //// 整理 enable 属性( 合并 encode & decode )
+            //foreach( var c in template.Classes )
+            //{
+            //    if( c.Encode.Count + c.Decode.Count == 0 )
+            //        c.Enable = c.Encode = c.Decode = template.Projects;
+            //    else
+            //        c.Enable = c.Encode.Concat( c.Decode ).Distinct().ToList();
+            //}
 
             // 整理数据类型
             foreach( var c in template.Classes )
@@ -265,6 +265,11 @@ namespace PacketGenerator
 
                 }
             }
+
+            // 整理命名空间
+            template.Namespaces = template.Classes.Select( a => a.Namespace ).Concat( template.Enums.Select( a => a.Namespace ) ).Distinct().ToList();
+
+
             return template;
         }
 
