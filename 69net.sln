@@ -46,6 +46,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ENetServerTest", "ENetServe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "enet", "enet\enet.vcxproj", "{CB50DD63-28CF-47D2-BF20-E76C87C133C7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PacketGenerations", "PacketGenerations", "{7534E87D-FC1B-40A8-9762-A77974091221}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketGenerator", "PacketGenerator\PacketGenerator.csproj", "{A78691EC-9267-41E6-8386-0E60D635B840}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketTemplate_PacketGlobal", "PacketTemplate_PacketGlobal\PacketTemplate_PacketGlobal.csproj", "{041A249E-525C-438E-8E2A-EF60BCB23A05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketLibrary", "PacketLibrary\PacketLibrary.csproj", "{8FA9E84A-998C-4164-9844-DBE79F6D7101}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketTemplate_PacketTest", "PacketTemplate_PacketTest\PacketTemplate_PacketTest.csproj", "{E333B0FA-EDA8-4381-B482-99D94683210A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -134,8 +144,38 @@ Global
 		{CB50DD63-28CF-47D2-BF20-E76C87C133C7}.Release|Win32.Build.0 = Release|Win32
 		{CB50DD63-28CF-47D2-BF20-E76C87C133C7}.Release|x64.ActiveCfg = Release|x64
 		{CB50DD63-28CF-47D2-BF20-E76C87C133C7}.Release|x64.Build.0 = Release|x64
+		{A78691EC-9267-41E6-8386-0E60D635B840}.Debug|Win32.ActiveCfg = Debug|x86
+		{A78691EC-9267-41E6-8386-0E60D635B840}.Debug|Win32.Build.0 = Debug|x86
+		{A78691EC-9267-41E6-8386-0E60D635B840}.Debug|x64.ActiveCfg = Debug|x64
+		{A78691EC-9267-41E6-8386-0E60D635B840}.Debug|x64.Build.0 = Debug|x64
+		{A78691EC-9267-41E6-8386-0E60D635B840}.Release|Win32.ActiveCfg = Release|Any CPU
+		{A78691EC-9267-41E6-8386-0E60D635B840}.Release|x64.ActiveCfg = Release|Any CPU
+		{041A249E-525C-438E-8E2A-EF60BCB23A05}.Debug|Win32.ActiveCfg = Debug|x86
+		{041A249E-525C-438E-8E2A-EF60BCB23A05}.Debug|Win32.Build.0 = Debug|x86
+		{041A249E-525C-438E-8E2A-EF60BCB23A05}.Debug|x64.ActiveCfg = Debug|x64
+		{041A249E-525C-438E-8E2A-EF60BCB23A05}.Debug|x64.Build.0 = Debug|x64
+		{041A249E-525C-438E-8E2A-EF60BCB23A05}.Release|Win32.ActiveCfg = Release|Any CPU
+		{041A249E-525C-438E-8E2A-EF60BCB23A05}.Release|x64.ActiveCfg = Release|Any CPU
+		{8FA9E84A-998C-4164-9844-DBE79F6D7101}.Debug|Win32.ActiveCfg = Debug|x86
+		{8FA9E84A-998C-4164-9844-DBE79F6D7101}.Debug|Win32.Build.0 = Debug|x86
+		{8FA9E84A-998C-4164-9844-DBE79F6D7101}.Debug|x64.ActiveCfg = Debug|x64
+		{8FA9E84A-998C-4164-9844-DBE79F6D7101}.Debug|x64.Build.0 = Debug|x64
+		{8FA9E84A-998C-4164-9844-DBE79F6D7101}.Release|Win32.ActiveCfg = Release|Any CPU
+		{8FA9E84A-998C-4164-9844-DBE79F6D7101}.Release|x64.ActiveCfg = Release|Any CPU
+		{E333B0FA-EDA8-4381-B482-99D94683210A}.Debug|Win32.ActiveCfg = Debug|x86
+		{E333B0FA-EDA8-4381-B482-99D94683210A}.Debug|Win32.Build.0 = Debug|x86
+		{E333B0FA-EDA8-4381-B482-99D94683210A}.Debug|x64.ActiveCfg = Debug|x64
+		{E333B0FA-EDA8-4381-B482-99D94683210A}.Debug|x64.Build.0 = Debug|x64
+		{E333B0FA-EDA8-4381-B482-99D94683210A}.Release|Win32.ActiveCfg = Release|Any CPU
+		{E333B0FA-EDA8-4381-B482-99D94683210A}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A78691EC-9267-41E6-8386-0E60D635B840} = {7534E87D-FC1B-40A8-9762-A77974091221}
+		{041A249E-525C-438E-8E2A-EF60BCB23A05} = {7534E87D-FC1B-40A8-9762-A77974091221}
+		{8FA9E84A-998C-4164-9844-DBE79F6D7101} = {7534E87D-FC1B-40A8-9762-A77974091221}
+		{E333B0FA-EDA8-4381-B482-99D94683210A} = {7534E87D-FC1B-40A8-9762-A77974091221}
 	EndGlobalSection
 EndGlobal
