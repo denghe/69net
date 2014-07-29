@@ -28,9 +28,9 @@ public class Class : ClassBase
 {
     public List<ClassField> Fields = new List<ClassField>();
     public string Desc = "";
+    public ushort TypeID = 0;                               // 该值将自增填充
     //public List<Project> Decode = new List<Project>();    // 被引用到的类 即便没有直接设置 Attribute，也会继承引用类的设置
     //public List<Project> Encode = new List<Project>();    // 同上
-    //public ushort Opcode = 0;
 }
 
 public class ClassField
@@ -49,8 +49,8 @@ public class ClassField
     // ...
     public string Desc = "";
 
-    //public uint MinLen = 0;
-    //public uint MaxLen = 0;
+    public uint MinLen = 0;
+    public uint MaxLen = 0;
     //public decimal MinValue = 0;
     //public decimal MaxValue = 0;
     //public DecodeCondation DecodeCondation = new DecodeCondation( "", Operators.Equal, null );

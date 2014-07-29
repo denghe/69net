@@ -10,19 +10,12 @@ namespace PacketGenerator
 {
     public static class GenCS
     {
-        public static string _fn;
-        public static string Gen( Template t, string outputDirPath, string fn )
+        public static string _pn;
+        public static string Gen( Template t, string outputDirPath, string pn )
         {
-            _fn = fn = fn.Substring( "PacketTemplate_".Length );
-            var nss = t.Namespaces;
+            _pn = pn;
 
             var sb = new StringBuilder();
-
-
-
-
-
-
 
 
             sb.Clear();
@@ -35,17 +28,17 @@ public Action<Bytes>[] PacketHandlers;
 
 // 向数组存入对应的处理函数
 //
-PacketHandlers = new Action<Bytes, params object[]>[ (int)" + fn + @"_AllClassEnums.ZMaxValue ];
+PacketHandlers = new Action<Bytes, params object[]>[ (int)" + pn + @"_AllClassEnums.ZMaxValue ];
 
 " );
-            foreach( var ns_ in nss )
+            foreach( var ns_ in t.Namespaces )
             {
-                var ns = ( ns_ != "" ? ns_ : fn );
+                var ns = ( ns_ != "" ? ns_ : pn );
                 foreach( var c in t.Classes.Where( a => a.Namespace == ns_ ) )
                 {
                     var en = ns.Replace( ".", "_" ) + "_" + c.Name;
                     sb.Append( @"
-PacketHandlers[ (int)" + fn + @"_AllClassEnums." + en + @" ] = " + en + @";" );
+PacketHandlers[ (int)" + pn + @"_AllClassEnums." + en + @" ] = " + en + @";" );
                 }
             }
 
@@ -54,9 +47,9 @@ PacketHandlers[ (int)" + fn + @"_AllClassEnums." + en + @" ] = " + en + @";" );
 // 不获取标记位系列函数实现空壳
 
 " );
-            foreach( var ns_ in nss )
+            foreach( var ns_ in t.Namespaces )
             {
-                var ns = ( ns_ != "" ? ns_ : fn );
+                var ns = ( ns_ != "" ? ns_ : pn );
                 foreach( var c in t.Classes.Where( a => a.Namespace == ns_ ) )
                 {
                     var en = ns.Replace( ".", "_" ) + "_" + c.Name;
@@ -82,9 +75,9 @@ private void " + en + @"( Bytes b, params object[] extPs )
 
 " );
 
-            foreach( var ns_ in nss )
+            foreach( var ns_ in t.Namespaces )
             {
-                var ns = ( ns_ != "" ? ns_ : fn );
+                var ns = ( ns_ != "" ? ns_ : pn );
                 foreach( var c in t.Classes.Where( a => a.Namespace == ns_ ) )
                 {
                     var en = ns.Replace( ".", "_" ) + "_" + c.Name;
@@ -124,9 +117,9 @@ private void " + en + @"( Bytes b, params object[] ext_ps )
 
 
 " );
-            foreach( var ns_ in nss )
+            foreach( var ns_ in t.Namespaces )
             {
-                var ns = ( ns_ != "" ? ns_ : fn );
+                var ns = ( ns_ != "" ? ns_ : pn );
                 foreach( var c in t.Classes.Where( a => a.Namespace == ns_ ) )
                 {
                     var en = ns.Replace( ".", "_" ) + "_" + c.Name;
@@ -193,9 +186,9 @@ LabEnd:
 
 private void RegisterHandler<T>( dynamic func ) where T : ISC
 {");
-            foreach( var ns_ in nss )
+            foreach( var ns_ in t.Namespaces )
             {
-                var ns = ( ns_ != "" ? ns_ : fn );
+                var ns = ( ns_ != "" ? ns_ : pn );
                 foreach( var c in t.Classes.Where( a => a.Namespace == ns_ ) )
                 {
                     var en = ns.Replace( ".", "_" ) + "_" + c.Name;
@@ -207,9 +200,9 @@ private void RegisterHandler<T>( dynamic func ) where T : ISC
 }
 private void UnegisterHandler<T>( dynamic func ) where T : ISC
 {" );
-            foreach( var ns_ in nss )
+            foreach( var ns_ in t.Namespaces )
             {
-                var ns = ( ns_ != "" ? ns_ : fn );
+                var ns = ( ns_ != "" ? ns_ : pn );
                 foreach( var c in t.Classes.Where( a => a.Namespace == ns_ ) )
                 {
                     var en = ns.Replace( ".", "_" ) + "_" + c.Name;
@@ -232,7 +225,7 @@ private void UnegisterHandler<T>( dynamic func ) where T : ISC
 
             try
             {
-                sb.WriteToFile( Path.Combine( outputDirPath, fn + "_Samples.txt" ) );
+                sb.WriteToFile( Path.Combine( outputDirPath, pn + "_Samples.txt" ) );
             }
             catch( Exception ex )
             {
@@ -248,22 +241,22 @@ private void UnegisterHandler<T>( dynamic func ) where T : ISC
             sb.Clear();
             sb.Append( @"using SerialHelper;
 
-public static partial class " + fn + @"_AllClassHandler
+public static partial class " + pn + @"_AllClassHandler
 {
     public static ISC read( int opcode, byte[] buf )
     {
         var b = new Bytes( buf, buf.Length );
-        switch( (" + fn + @"_AllClassEnums)opcode )
+        switch( (" + pn + @"_AllClassEnums)opcode )
         {" );
-            foreach( var ns_ in nss )
+            foreach( var ns_ in t.Namespaces )
             {
-                var ns = ( ns_ != "" ? ns_ : fn );
+                var ns = ( ns_ != "" ? ns_ : pn );
                 foreach( var c in t.Classes.Where( a => a.Namespace == ns_ ) )
                 {
                     var en = ns.Replace( ".", "_" ) + "_" + c.Name;
 
                     sb.Append( @"
-            case " + fn + @"_AllClassEnums." + en + @":
+            case " + pn + @"_AllClassEnums." + en + @":
             {
                 var o = new " + ns + @"." + c.Name + @"();
                 var rtv = o.readFrom( b );
@@ -282,7 +275,7 @@ public static partial class " + fn + @"_AllClassHandler
 
             try
             {
-                sb.WriteToFile( Path.Combine( outputDirPath, fn + "_AllClassHandler.cs" ) );
+                sb.WriteToFile( Path.Combine( outputDirPath, pn + "_AllClassHandler.cs" ) );
             }
             catch( Exception ex )
             {
@@ -296,12 +289,12 @@ public static partial class " + fn + @"_AllClassHandler
 
             sb.Clear();
             sb.Append( @"
-public enum " + fn + @"_AllClassEnums
+public enum " + pn + @"_AllClassEnums
 {" );
             int idx = 0;
-            foreach( var ns_ in nss )
+            foreach( var ns_ in t.Namespaces )
             {
-                var ns = ( ns_ != "" ? ns_ : fn );
+                var ns = ( ns_ != "" ? ns_ : pn );
                 foreach( var c in t.Classes.Where( a => a.Namespace == ns_ ) )
                 {
                     var en = ns.Replace( ".", "_" ) + "_" + c.Name;
@@ -316,7 +309,7 @@ public enum " + fn + @"_AllClassEnums
 
             try
             {
-                sb.WriteToFile( Path.Combine( outputDirPath, fn + "_AllClassEnums.cs" ) );
+                sb.WriteToFile( Path.Combine( outputDirPath, pn + "_AllClassEnums.cs" ) );
             }
             catch( Exception ex )
             {
@@ -327,9 +320,9 @@ public enum " + fn + @"_AllClassEnums
 
 
             sb.Clear();
-            foreach( var ns_ in nss )
+            foreach( var ns_ in t.Namespaces )
             {
-                var ns = ( ns_ != "" ? ns_ : fn );
+                var ns = ( ns_ != "" ? ns_ : pn );
                 sb.Append( @"
 namespace " + ns + @"
 {" );
@@ -355,7 +348,7 @@ namespace " + ns + @"
 
             try
             {
-                sb.WriteToFile( Path.Combine( outputDirPath, fn + "_Enum.cs" ) );
+                sb.WriteToFile( Path.Combine( outputDirPath, pn + "_Enum.cs" ) );
             }
             catch( Exception ex )
             {
@@ -381,7 +374,7 @@ namespace SerialHelper
     {" );
             foreach( var e in t.Enums )
             {
-                var ns = ( e.Namespace != "" ? e.Namespace : fn );
+                var ns = ( e.Namespace != "" ? e.Namespace : pn );
                 var tn = ns + "." + e.Name;
                 sb.Append( @"
         public void write( List<" + tn + @"> v )
@@ -436,8 +429,8 @@ namespace SerialHelper
             foreach( var g in t.Classes.SelectMany( a => a.Fields ).Where( a => a.IsDictionary ).GroupBy( a => a.KeyTypeNamespace + "." + a.KeyType + "," + a.TypeNamespace + "." + a.Type ) )
             {
                 var f = g.First();
-                var ktn = f.GetKeyTypeKeyword();
-                var vtn = f.GetTypeKeyword();
+                var ktn = GetKeyTypeKeyword( f );
+                var vtn = GetTypeKeyword( f );
                 sb.Append( @"
         public void write( Dictionary<" + ktn + @", " + vtn + @"> v )
         {
@@ -497,7 +490,7 @@ namespace SerialHelper
 " );
             try
             {
-                sb.WriteToFile( Path.Combine( outputDirPath, fn + "_BytesPartial.cs" ) );
+                sb.WriteToFile( Path.Combine( outputDirPath, pn + "_BytesPartial.cs" ) );
             }
             catch( Exception ex )
             {
@@ -515,9 +508,9 @@ namespace SerialHelper
 using System.Collections.Generic;
 using SerialHelper;
 " );
-            foreach( var ns_ in nss )
+            foreach( var ns_ in t.Namespaces )
             {
-                var ns = ( ns_ != "" ? ns_ : fn );
+                var ns = ( ns_ != "" ? ns_ : pn );
                 sb.Append( @"
 namespace " + ns + @"
 {" );
@@ -547,17 +540,17 @@ namespace " + ns + @"
                         if( f.IsArray )
                         {
                             sb.Append( @"
-        public List<" + f.GetTypeKeyword() + @"> " + f.Name + ";" );// + @" = " + GetDefaultValueByType( f ) + @";" );
+        public List<" + GetTypeKeyword( f ) + @"> " + f.Name + ";" );// + @" = " + GetDefaultValueByType( f ) + @";" );
                         }
                         else if( f.IsDictionary )
                         {
                             sb.Append( @"
-        public Dictionary<" + f.GetKeyTypeKeyword() + ", " + f.GetTypeKeyword() + @"> " + f.Name + ";" );// + @" = " + GetDefaultValueByType( f ) + @";" );
+        public Dictionary<" + GetKeyTypeKeyword( f ) + ", " + GetTypeKeyword( f ) + @"> " + f.Name + ";" );// + @" = " + GetDefaultValueByType( f ) + @";" );
                         }
                         else
                         {
                             sb.Append( @"
-        public " + f.GetTypeKeyword() + @" " + f.Name + ";" );// + @" = " + GetDefaultValueByType( f ) + @";" );
+        public " + GetTypeKeyword( f ) + @" " + f.Name + ";" );// + @" = " + GetDefaultValueByType( f ) + @";" );
                         }
                     }
                     sb.Append( @"
@@ -572,7 +565,7 @@ namespace " + ns + @"
 
             try
             {
-                sb.WriteToFile( Path.Combine( outputDirPath, fn + "_Class.cs" ) );
+                sb.WriteToFile( Path.Combine( outputDirPath, pn + "_Class.cs" ) );
             }
             catch( Exception ex )
             {
@@ -592,9 +585,9 @@ namespace " + ns + @"
 using System.Collections.Generic;
 using SerialHelper;
 " );
-            foreach( var ns_ in nss )
+            foreach( var ns_ in t.Namespaces )
             {
-                var ns = ( ns_ != "" ? ns_ : fn );
+                var ns = ( ns_ != "" ? ns_ : pn );
                 sb.Append( @"
 namespace " + ns + @"
 {" );
@@ -608,17 +601,17 @@ namespace " + ns + @"
                         if( f.IsArray )
                         {
                             sb.Append( @"
-        public List<" + f.GetTypeKeyword() + @"> __prop__" + f.Name + " { get { return " + f.Name + "; } }" );
+        public List<" + GetTypeKeyword( f ) + @"> __prop__" + f.Name + " { get { return " + f.Name + "; } }" );
                         }
                         else if( f.IsDictionary )
                         {
                             sb.Append( @"
-        public Dictionary<" + f.GetKeyTypeKeyword() + ", " + f.GetTypeKeyword() + @"> __prop__" + f.Name + " { get { return " + f.Name + "; } }" );
+        public Dictionary<" + GetKeyTypeKeyword( f ) + ", " + GetTypeKeyword( f ) + @"> __prop__" + f.Name + " { get { return " + f.Name + "; } }" );
                         }
                         else
                         {
                             sb.Append( @"
-        public " + f.GetTypeKeyword() + @" __prop__" + f.Name + " { get { return " + f.Name + "; } }" );
+        public " + GetTypeKeyword( f ) + @" __prop__" + f.Name + " { get { return " + f.Name + "; } }" );
                         }
                     }
                     sb.Append( @"
@@ -633,7 +626,7 @@ namespace " + ns + @"
 
             try
             {
-                sb.WriteToFile( Path.Combine( outputDirPath, fn + "_ClassProp.cs" ) );
+                sb.WriteToFile( Path.Combine( outputDirPath, pn + "_ClassProp.cs" ) );
             }
             catch( Exception ex )
             {
@@ -654,9 +647,9 @@ using System.Text;
 using System.Linq;
 using SerialHelper;
 " );
-            foreach( var ns_ in nss )
+            foreach( var ns_ in t.Namespaces )
             {
-                var ns = ( ns_ != "" ? ns_ : fn );
+                var ns = ( ns_ != "" ? ns_ : pn );
                 sb.Append( @"
 namespace " + ns + @"
 {" );
@@ -668,11 +661,11 @@ namespace " + ns + @"
     {
         public int getOpcode()
         {
-            return (int)" + fn + @"_AllClassEnums." + en + @";
+            return (int)" + pn + @"_AllClassEnums." + en + @";
         }
-        public " + fn + @"_AllClassEnums getOpcodeEnum()
+        public " + pn + @"_AllClassEnums getOpcodeEnum()
         {
-            return " + fn + @"_AllClassEnums." + en + @";
+            return " + pn + @"_AllClassEnums." + en + @";
         }
 
         public void writeTo( Bytes bin )
@@ -741,7 +734,7 @@ namespace " + ns + @"
                         {
                             if( f.TypeClass != null && f.TypeClass.IsEnum && !f.IsArray )
                             {
-                                var tn = ( f.TypeNamespace != "" ? f.TypeNamespace : fn ) + "." + f.Type;
+                                var tn = ( f.TypeNamespace != "" ? f.TypeNamespace : pn ) + "." + f.Type;
                                 var e = ( f.TypeClass as Enum );
                                 sb.Append( @"
                 { " + e.GetTypeKeyword() + @" tmp = 0; rtv = bin.read( ref tmp ); if( rtv != ReadState.Success ) return rtv; this." + f.Name + @" = (" + tn + @")tmp; }" );
@@ -773,7 +766,7 @@ namespace " + ns + @"
                             if( f.TypeClass != null && f.TypeClass.IsEnum && !f.IsArray )
                             {
                                 var e = ( f.TypeClass as Enum );
-                                var tn = ( f.TypeNamespace != "" ? f.TypeNamespace : fn ) + "." + f.Type;
+                                var tn = ( f.TypeNamespace != "" ? f.TypeNamespace : pn ) + "." + f.Type;
                                 sb.Append( @"
                 if( ms[ i ] == " + c.Name + @"_e." + f.Name + @" ) { " + e.GetTypeKeyword() + @" tmp = 0; rtv = bin.read( ref tmp ); if( rtv != ReadState.Success ) return rtv; else if ( filledMembers != null ) filledMembers[ (int)" + c.Name + @"_e." + f.Name + @" ] = true; this." + f.Name + @" = (" + tn + @")tmp; if( ++i == ms.Length ) return rtv; }" );
                             }
@@ -811,7 +804,7 @@ namespace " + ns + @"
 
             try
             {
-                sb.WriteToFile( Path.Combine( outputDirPath, fn + "_Partial.cs" ) );
+                sb.WriteToFile( Path.Combine( outputDirPath, pn + "_Partial.cs" ) );
             }
             catch( Exception ex )
             {
@@ -827,11 +820,11 @@ namespace " + ns + @"
         {
             if( f.IsArray )
             {
-                return "null"; // "new List<" + f.GetTypeKeyword() + ">()";
+                return "null"; // "new List<" + GetTypeKeyword( f ) + ">()";
             }
             else if( f.IsDictionary )
             {
-                return "null"; // "new Dictionary<" + f.GetKeyTypeKeyword() + ", " + f.GetTypeKeyword() + ">()";
+                return "null"; // "new Dictionary<" + GetKeyTypeKeyword( f ) + ", " + GetTypeKeyword( f ) + ">()";
             }
             else
             {
@@ -858,10 +851,10 @@ namespace " + ns + @"
                 default:
                     if( f.TypeClass != null && f.TypeClass.IsEnum )
                     {
-                        return ( f.TypeNamespace != "" ? f.TypeNamespace : _fn ) + "." + f.Type + "." + ( (Enum)f.TypeClass ).Fields.First().Name;
+                        return ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type + "." + ( (Enum)f.TypeClass ).Fields.First().Name;
                     }
                     else
-                        return "null"; // "new " + ( f.TypeNamespace != "" ? f.TypeNamespace : _fn ) + "." + f.Type + "()";
+                        return "null"; // "new " + ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type + "()";
                 }
             }
         }
@@ -913,10 +906,10 @@ sps + @"/// <summary>
             default:
                 if( f.TypeClass != null && f.TypeClass.IsEnum )
                 {
-                    return ( f.TypeNamespace != "" ? f.TypeNamespace : _fn ) + "." + f.Type;
+                    return ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type;
                 }
                 else
-                    return ( f.TypeNamespace != "" ? f.TypeNamespace : _fn ) + "." + f.Type;
+                    return ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type;
             }
         }
         public static string GetKeyTypeKeyword( this ClassField f )
@@ -940,10 +933,10 @@ sps + @"/// <summary>
             default:
                 if( f.KeyTypeClass != null && f.KeyTypeClass.IsEnum )
                 {
-                    return ( f.KeyTypeNamespace != "" ? f.KeyTypeNamespace : _fn ) + "." + f.KeyType;
+                    return ( f.KeyTypeNamespace != "" ? f.KeyTypeNamespace : _pn ) + "." + f.KeyType;
                 }
                 else
-                    return ( f.TypeNamespace != "" ? f.TypeNamespace : _fn ) + "." + f.Type;
+                    return ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type;
             }
         }
 

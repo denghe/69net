@@ -12,8 +12,6 @@ namespace PacketGenerator
     public static class Program
     {
 
-        public static string FileName = "";
-
         static void Main( string[] args )
         {
             //var inputDirPath = System.IO.Path.Combine( Application.StartupPath, "Input" );
@@ -40,7 +38,7 @@ namespace PacketGenerator
             foreach( var fn in Directory.GetFiles( Application.StartupPath, "PacketTemplate_*.dll" ) )
             {
                 var asm = Assembly.LoadFile( fn );
-                var sd = Helpers.GetTemplate( asm );
+                var t = Helpers.GetTemplate( asm );
                 var shortfn = new FileInfo( fn ).Name;
                 shortfn = shortfn.Substring( 0, shortfn.LastIndexOf( '.' ) );
                 var path = System.IO.Path.Combine( outputDirPath, shortfn.Replace( ".", "_" ) );
@@ -58,7 +56,7 @@ namespace PacketGenerator
                     }
                 }
 
-                var rtv = GenCS.Gen( sd, path, shortfn );
+                var rtv = GenCPP.Gen( t, path, shortfn.Substring( "PacketTemplate_".Length ) );
                 if( rtv != "" )
                 {
                     Console.WriteLine( rtv );

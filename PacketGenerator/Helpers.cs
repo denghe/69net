@@ -123,6 +123,7 @@ namespace PacketGenerator
                     foreach( var r_attribute in r_field.GetCustomAttributes( false ) )
                     {
                         if( r_attribute is LIB.Desc ) f.Desc = ( (LIB.Desc)r_attribute ).Value;
+                        else if( r_attribute is LIB.Limit ) { f.MinLen = ( (LIB.Limit)r_attribute ).Min; f.MaxLen = ( (LIB.Limit)r_attribute ).Max; }
                         //else if( r_attribute is LIB.Decode ) c.Decode.AddRange( ( (LIB.Decode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
                         //else if( r_attribute is LIB.Encode ) c.Encode.AddRange( ( (LIB.Encode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
                         //// more field attributes
@@ -210,6 +211,9 @@ namespace PacketGenerator
             //        c.Enable = c.Encode.Concat( c.Decode ).Distinct().ToList();
             //}
 
+            // 自增 type id
+            ushort tid = 0;
+
             // 整理数据类型
             foreach( var c in template.Classes )
             {
@@ -264,10 +268,15 @@ namespace PacketGenerator
                     }
 
                 }
+
+                // 填充自增 TypeID
+                c.TypeID = tid++;
             }
 
             // 整理命名空间
             template.Namespaces = template.Classes.Select( a => a.Namespace ).Concat( template.Enums.Select( a => a.Namespace ) ).Distinct().ToList();
+
+
 
 
             return template;
@@ -316,7 +325,6 @@ namespace PacketGenerator
 }
 
 //else if( a is Enabled ) fps.Enabled = ( (Enabled)a ).Value;
-//else if( a is Limit ) { fps.MinLen = ( (Limit)a ).Min; fps.MaxLen = ( (Limit)a ).Max; }
 //else if( a is DecodeCondation ) fps.DecodeCondation = (DecodeCondation)a;
 //else if( a is EncodeCondation ) fps.EncodeCondation = (EncodeCondation)a;
 // "ChkValue": fps.MinValue = ((ChkValue)a).Min; fps.MinValue = ((ChkValue)a).Max; break;

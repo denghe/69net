@@ -54,7 +54,6 @@ namespace PacketLibrary
     public class List<V> { }
     public class Dict<K, V> { }
 
-
     /// <summary>
     /// 备注。可用于类/枚举 及其 成员
     /// </summary>
@@ -63,7 +62,6 @@ namespace PacketLibrary
         public Desc( System.String v ) { Value = v; }
         public System.String Value { get; set; }
     }
-
 
     /// <summary>
     /// 针对最外层级的 数组, byte[], string 做长度限制。单个长度值为定长
@@ -77,14 +75,14 @@ namespace PacketLibrary
         }
         public Limit( System.UInt32 min, System.UInt32 max )
         {
-            if( max < min )
-                throw new System.Exception( "error: max < min" );
+            if( max < min ) throw new System.Exception( "error: max < min" );
             Min = min;
             Max = max;
         }
         public System.UInt32 Min { get; set; }
         public System.UInt32 Max { get; set; }
     }
+
 }
 
 
