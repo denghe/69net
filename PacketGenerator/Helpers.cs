@@ -15,7 +15,7 @@ namespace PacketGenerator
         public static Template GetTemplate( Assembly asm )
         {
             var template = new Template();
-            var libNS = "PacketTemplateLib";        // 重要：这个字串需要保持与模板 Lib 名一致
+            var libNS = "PacketLibrary";            // 重要：这个字串需要保持与模板 Lib 名一致
             var libNSdot = libNS + ".";
             var projEnum = "__projects";            // 重要：生成过程中通过这个枚举来识别项目分类
 
@@ -92,9 +92,9 @@ namespace PacketGenerator
                 foreach( var r_attribute in r_class.GetCustomAttributes( false ) )
                 {
                     if( r_attribute is LIB.Desc ) c.Desc = ( (LIB.Desc)r_attribute ).Value;
-                    else if( r_attribute is LIB.Decode ) c.Decode.AddRange( ( (LIB.Decode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
-                    else if( r_attribute is LIB.Encode ) c.Encode.AddRange( ( (LIB.Encode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
-                    // more class attributes
+                    //else if( r_attribute is LIB.Decode ) c.Decode.AddRange( ( (LIB.Decode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
+                    //else if( r_attribute is LIB.Encode ) c.Encode.AddRange( ( (LIB.Encode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
+                    //// more class attributes
                 }
                 template.Classes.Add( c );
                 // 从子类中先把父类属性移除，再插入到前面，以确保父类属性在前
@@ -123,9 +123,9 @@ namespace PacketGenerator
                     foreach( var r_attribute in r_field.GetCustomAttributes( false ) )
                     {
                         if( r_attribute is LIB.Desc ) f.Desc = ( (LIB.Desc)r_attribute ).Value;
-                        else if( r_attribute is LIB.Decode ) c.Decode.AddRange( ( (LIB.Decode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
-                        else if( r_attribute is LIB.Encode ) c.Encode.AddRange( ( (LIB.Encode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
-                        // more field attributes
+                        //else if( r_attribute is LIB.Decode ) c.Decode.AddRange( ( (LIB.Decode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
+                        //else if( r_attribute is LIB.Encode ) c.Encode.AddRange( ( (LIB.Encode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
+                        //// more field attributes
                     }
                     f.Name = r_field.Name;
                     if( r_field.FieldType.Name.LastIndexOf( "[]" ) == r_field.FieldType.Name.Length - 2 && r_field.FieldType.Name!= "Byte[]" )
@@ -140,7 +140,7 @@ namespace PacketGenerator
                     //}
                     else if( r_field.FieldType.Name.StartsWith( "Dict`2" ) )
                     {
-                        // PacketTemplateLib.Dictionary`2[[Enum1, PacketTemplate_Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
+                        // PacketLibrary.Dict`2[[Enum1, PacketTemplate_Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
                         f.IsDictionary = true;
                         var ss = r_field.FieldType.FullName.Replace( libNSdot + "Dict`2[[", "" ).Replace( "]]", "" ).Split( new string[] { "],[" }, StringSplitOptions.None );
                         f.KeyType = ss[ 0 ].Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ];

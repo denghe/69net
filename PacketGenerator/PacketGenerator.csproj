@@ -99,6 +99,14 @@
       <Project>{8fa9e84a-998c-4164-9844-dbe79f6d7101}</Project>
       <Name>PacketLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PacketTemplate_PacketGlobal\PacketTemplate_PacketGlobal.csproj">
+      <Project>{041a249e-525c-438e-8e2a-ef60bcb23a05}</Project>
+      <Name>PacketTemplate_PacketGlobal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PacketTemplate_PacketTest\PacketTemplate_PacketTest.csproj">
+      <Project>{e333b0fa-eda8-4381-b482-99d94683210a}</Project>
+      <Name>PacketTemplate_PacketTest</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
