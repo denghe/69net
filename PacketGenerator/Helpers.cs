@@ -54,14 +54,14 @@ namespace PacketGenerator
                 e.Type = ut.Name;
                 switch( ut.Name )
                 {
-                    case "Byte": e.Size = 1; e.Unsigned = true; break;
-                    case "SByte": e.Size = 1; e.Unsigned = false; break;
-                    case "UInt16": e.Size = 2; e.Unsigned = true; break;
-                    case "Int16": e.Size = 2; e.Unsigned = false; break;
-                    case "UInt32": e.Size = 4; e.Unsigned = true; break;
-                    case "Int32": e.Size = 4; e.Unsigned = false; break;
-                    case "UInt64": e.Size = 8; e.Unsigned = true; break;
-                    case "Int64": e.Size = 8; e.Unsigned = false; break;
+                case "Byte": e.Size = 1; e.Unsigned = true; break;
+                case "SByte": e.Size = 1; e.Unsigned = false; break;
+                case "UInt16": e.Size = 2; e.Unsigned = true; break;
+                case "Int16": e.Size = 2; e.Unsigned = false; break;
+                case "UInt32": e.Size = 4; e.Unsigned = true; break;
+                case "Int32": e.Size = 4; e.Unsigned = false; break;
+                case "UInt64": e.Size = 8; e.Unsigned = true; break;
+                case "Int64": e.Size = 8; e.Unsigned = false; break;
                 }
                 var r_fields = r_enum.GetFields( BindingFlags.Static | BindingFlags.Public );
                 foreach( var r_field in r_fields )
@@ -120,16 +120,30 @@ namespace PacketGenerator
                 {
                     var f = new ClassField { Class = c };
                     c.Fields.Add( f );
+                }
+                for( int fidx = 0; fidx < c.Fields.Count; ++fidx )
+                {
+                    var r_field = r_fields[ fidx ];
+                    var f = c.Fields[ fidx ];
                     foreach( var r_attribute in r_field.GetCustomAttributes( false ) )
                     {
                         if( r_attribute is LIB.Desc ) f.Desc = ( (LIB.Desc)r_attribute ).Value;
                         else if( r_attribute is LIB.Limit ) { f.MinLen = ( (LIB.Limit)r_attribute ).Min; f.MaxLen = ( (LIB.Limit)r_attribute ).Max; }
+                        else if( r_attribute is LIB.Condation )
+                        {
+                            var ps = ( (LIB.Condation)r_attribute ).Value;
+                            for( int i=0; i < ps.Length; i += 2 )
+                            {
+                                // todo: 检查如果被引用的 fields 位于当前 field 的后方，条件非法
+                                f.Condation.Add( c.Fields.Find( a => a.Name == (string)ps[ i ] ), ps[ i + 1 ] );
+                            }
+                        }
                         //else if( r_attribute is LIB.Decode ) c.Decode.AddRange( ( (LIB.Decode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
                         //else if( r_attribute is LIB.Encode ) c.Encode.AddRange( ( (LIB.Encode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
                         //// more field attributes
                     }
                     f.Name = r_field.Name;
-                    if( r_field.FieldType.Name.LastIndexOf( "[]" ) == r_field.FieldType.Name.Length - 2 && r_field.FieldType.Name!= "Byte[]" )
+                    if( r_field.FieldType.Name.LastIndexOf( "[]" ) == r_field.FieldType.Name.Length - 2 && r_field.FieldType.Name != "Byte[]" )
                     {
                         f.IsArray = true;
                         f.Type = r_field.FieldType.FullName.Substring( 0, r_field.FieldType.FullName.Length - 2 ).Replace( libNSdot, "" );
@@ -286,20 +300,20 @@ namespace PacketGenerator
         {
             switch( t )
             {
-                case "Byte":
-                case "Byte[]":
-                case "UInt16":
-                case "UInt32":
-                case "UInt64":
-                case "SByte":
-                case "Int16":
-                case "Int32":
-                case "Int64":
-                case "Double":
-                case "Single":
-                case "Boolean":
-                case "String":
-                case "DateTime": return true;
+            case "Byte":
+            case "Byte[]":
+            case "UInt16":
+            case "UInt32":
+            case "UInt64":
+            case "SByte":
+            case "Int16":
+            case "Int32":
+            case "Int64":
+            case "Double":
+            case "Single":
+            case "Boolean":
+            case "String":
+            case "DateTime": return true;
             }
             return false;
         }
@@ -309,14 +323,14 @@ namespace PacketGenerator
         {
             switch( ut.Name )
             {
-                case "Byte": return Convert.ToByte( enumValue ).ToString();
-                case "SByte": return Convert.ToSByte( enumValue ).ToString();
-                case "UInt16": return Convert.ToUInt16( enumValue ).ToString();
-                case "Int16": return Convert.ToInt16( enumValue ).ToString();
-                case "UInt32": return Convert.ToUInt32( enumValue ).ToString();
-                case "Int32": return Convert.ToInt32( enumValue ).ToString();
-                case "UInt64": return Convert.ToUInt64( enumValue ).ToString();
-                case "Int64": return Convert.ToInt64( enumValue ).ToString();
+            case "Byte": return Convert.ToByte( enumValue ).ToString();
+            case "SByte": return Convert.ToSByte( enumValue ).ToString();
+            case "UInt16": return Convert.ToUInt16( enumValue ).ToString();
+            case "Int16": return Convert.ToInt16( enumValue ).ToString();
+            case "UInt32": return Convert.ToUInt32( enumValue ).ToString();
+            case "Int32": return Convert.ToInt32( enumValue ).ToString();
+            case "UInt64": return Convert.ToUInt64( enumValue ).ToString();
+            case "Int64": return Convert.ToInt64( enumValue ).ToString();
             }
             throw new Exception( "unknown Underlying Type" );
         }

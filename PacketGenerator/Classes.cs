@@ -51,6 +51,8 @@ public class ClassField
 
     public uint MinLen = 0;
     public uint MaxLen = 0;
+    public Dictionary<ClassField, object> Condation = new Dictionary<ClassField,object>();
+
     //public decimal MinValue = 0;
     //public decimal MaxValue = 0;
     //public DecodeCondation DecodeCondation = new DecodeCondation( "", Operators.Equal, null );

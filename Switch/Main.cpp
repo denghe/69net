@@ -17,13 +17,17 @@ void toString( String& s ) const;           \
 static ushort getTypeID();
 
 
+// 生成所有前置声明: 含 namespace
+namespace SwitchPackets             // 根命名空间: 模板名 + Packets
+{
+    class Ping;
+    // ... other class
+}
+// ... other namespace
 
-// 项目包根命名空间
+
 namespace SwitchPackets
 {
-    // 前置声明区
-    class Ping;
-
     class Ping : Memmoveable
     {
         PACKET_CLASS_HEADER( Ping );
