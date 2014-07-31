@@ -1,38 +1,31 @@
 ﻿using PacketLibrary;
 
-[Desc( "this is Enum1" )]
-enum Enum1 : byte
-{
-    a = 1,
-    [Desc( "this is Enum1.b" )]
-    b,
-    c
-}
-
-[Desc( "this is Foo" )]
 class Foo
 {
-    [Desc( "this is Foo.e1" )]
-    Enum1 e1;
-    Enum1[] e2;
-    int[] p1;
-    string[] p2;
-    byte[][] p3;
-    Dict<Enum1, string> p4;
+     byte    Byte  ;
+     ushort  Ushort;
+     uint    Uint  ;
+     ulong   Ulong ;
+     sbyte   Sbyte ;
+     short   Short ;
+     int     Int   ;
+     long    Long  ;
+     double  Double;
+     float   Float ;
+     bool    Bool;
 }
 
-
-class Item
+class Bar
 {
-    int level;
-    string name;
-}
-class Player
-{
-    int level;
-    string nickname;
-    double hp;
-    double atk;
-    double def;
-    Item[] items;
+    [Limit( 16 )] byte  [] Bytes;
+    [Limit( 16 )] ushort[] Ushorts;
+    [Limit( 16 )] uint  [] Uints;
+    [Limit( 16 )] ulong [] Ulongs;
+    [Limit( 16 )] sbyte [] Sbytes;
+    [Limit( 16 )] short [] Shorts;
+    [Limit( 16 )] int   [] Ints;
+    [Limit( 16 )] long  [] Longs;
+    [Limit( 16 )] double[] Doubles;
+    [Limit( 16 )] float [] Floats;
+    [Limit( 16 )] bool  [] Bools;
 }

@@ -335,6 +335,21 @@ namespace PacketGenerator
             throw new Exception( "unknown Underlying Type" );
         }
 
+
+        public static string ToFirstUpper( this string s )
+        {
+            if( s.Length <= 1 ) return s.ToUpper();
+            return s.Substring( 0, 1 ).ToUpper() + s.Substring( 1 );
+        }
+
+        public static string ToFirstLower( this string s )
+        {
+            if( s.Length <= 1 ) return s.ToLower();
+            return s.Substring( 0, 1 ).ToLower() + s.Substring( 1 );
+        }
+
+
+
     }
 }
 
