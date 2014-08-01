@@ -17,11 +17,9 @@ namespace PacketGenerator
 
             var sb = new StringBuilder();
 
-            sb.Append( @"
-#ifndef __" + pn.ToUpper() + @"_H__
+            sb.Append( @"#ifndef __" + pn.ToUpper() + @"_H__
 #define __" + pn.ToUpper() + @"_H__
 
-#define ""Lib/All.h""
 
 namespace " + pn + @"Packets
 {" );
@@ -38,17 +36,19 @@ namespace " + pn + @"Packets
 
             foreach( var c in t.Classes )
             {
-                sb.Append( @"
+                sb.Append( ( c.Desc == "" ? "" : GetComment( c.Desc, 4 ) ) + @"
     class " + c.Name + @" : Memmoveable
-    {" );
+    {
+        PACKET_CLASS_HEADER" + ( IsPod( c ) ? "_POD" : "" ) + @"( " + c.Name + @" );
+" );
                 foreach( var f in c.Fields )
                 {
                     var tn = GetTypeKeyword( f );
-                    sb.Append( @"
-        " + tn + " _" + f.Name.ToFirstLower() );
+                    sb.Append( ( f.Desc == "" ? "" : GetComment( f.Desc, 8 ) ) + @"
+        " + tn + " _" + f.Name.ToFirstLower() + ( ( c.SetDefault && GetDefaultValueByType( f ) != "" ) ? ( " = " + GetDefaultValueByType( f ) ) : "" ) + ";" );
                 }
                 sb.Append( @"
-        PACKET_CLASS_HEADER( " + c.Name + @" );
+
         static void fill( FlatBuffer& fb" );
                 foreach( var f in c.Fields )
                 {
@@ -58,15 +58,31 @@ namespace " + pn + @"Packets
                 }
                 sb.Append( @" );
 " );
-                foreach( var f in c.Fields )
+                if( c.GenProperty )
                 {
-                    var tn = GetTypeKeyword( f );
-                    sb.Append( @"
-        " + tn + " const& get" + f.Name.ToFirstUpper() + @"();
-        template<typename VT> void set" + f.Name.ToFirstUpper() + @"(VT&& v )
+                    foreach( var f in c.Fields )
+                    {
+                        var tn = GetTypeKeyword( f );
+                        sb.Append( @"
+        " + tn + " const& get" + f.Name.ToFirstUpper() + @"();" );
+
+                        if( IsSimpleType( f ) )
+                        {
+                            sb.Append( @"
+        inline void set" + f.Name.ToFirstUpper() + @"( " + tn + @" v )
+        {
+            _" + f.Name.ToFirstLower() + @" = v;
+        }" );
+                        }
+                        else
+                        {
+                            sb.Append( @"
+        template<typename VT> void set" + f.Name.ToFirstUpper() + @"( VT&& v )
         {
             _" + f.Name.ToFirstLower() + @" = std::forward<VT>( v );
         }" );
+                        }
+                    }
                 }
                 sb.Append( @"
     };" );
@@ -91,7 +107,9 @@ namespace " + pn + @"Packets
 
 
 
-            sb.Append( @"
+            sb.Append( @"#include ""Lib/All.h""
+#include """ + pn + @".h""
+
 namespace " + pn + @"Packets
 {" );
             foreach( var c in t.Classes )
@@ -101,66 +119,72 @@ namespace " + pn + @"Packets
     {
         return " + c.TypeID + @";
     }" );
-                // todo: pod check. if is pod, do not generate copy constructors
 
-                sb.Append( @"
-    " + c.Name + @"::" + c.Name + @"( " + c.Name + @" const& other )" );
-                bool isFirst = true;
-                foreach( var f in c.Fields )
+                if( !IsPod( c ) )
                 {
                     sb.Append( @"
+    " + c.Name + @"::" + c.Name + @"( " + c.Name + @" const& other )" );
+                    bool isFirst = true;
+                    foreach( var f in c.Fields )
+                    {
+                        sb.Append( @"
         " + ( isFirst ? ":" : "," ) + " _" + f.Name.ToFirstLower() + @"( other._" + f.Name.ToFirstLower() + @" )" );
-                    isFirst = false;
-                }
-                sb.Append( @"
+                        isFirst = false;
+                    }
+                    sb.Append( @"
     {
     }
 
     " + c.Name + @"::" + c.Name + @"( " + c.Name + @"&& other )" );
-                isFirst = true;
-                foreach( var f in c.Fields )
-                {
-                    sb.Append( @"
+                    isFirst = true;
+                    foreach( var f in c.Fields )
+                    {
+                        sb.Append( @"
         " + ( isFirst ? ":" : "," ) + " _" + f.Name.ToFirstLower() + @"( std::move( other._" + f.Name.ToFirstLower() + @" ) )" );
-                    isFirst = false;
-                }
-                sb.Append( @"
+                        isFirst = false;
+                    }
+                    sb.Append( @"
     {
     }
 
     " + c.Name + @"& " + c.Name + @"::operator=( " + c.Name + @" const& other )
     {" );
-                foreach( var f in c.Fields )
-                {
-                    sb.Append( @"
+                    foreach( var f in c.Fields )
+                    {
+                        sb.Append( @"
         _" + f.Name.ToFirstLower() + @" = other._" + f.Name.ToFirstLower() + @";" );
-                }
-                sb.Append( @"
+                    }
+                    sb.Append( @"
         return *this;
     }
 
     " + c.Name + @"& " + c.Name + @"::operator=( " + c.Name + @"&& other )
     {" );
-                foreach( var f in c.Fields )
-                {
+                    foreach( var f in c.Fields )
+                    {
+                        sb.Append( @"
+        _" + f.Name.ToFirstLower() + @" = std::move( other._" + f.Name.ToFirstLower() + @" );" );
+                    }
                     sb.Append( @"
-        _" + f.Name.ToFirstLower() + @" = sd::move( other._" + f.Name.ToFirstLower() + @" );" );
-                }
-                sb.Append( @"
         return *this;
     }
 
 " );
-                foreach( var f in c.Fields )
+                }
+
+                if( c.GenProperty )
                 {
-                    var tn = GetTypeKeyword( f );
-                    sb.Append( @"
+
+                    foreach( var f in c.Fields )
+                    {
+                        var tn = GetTypeKeyword( f );
+                        sb.Append( @"
     " + tn + " const& " + c.Name + @"::get" + f.Name.ToFirstUpper() + @"()
     {
         return _" + f.Name.ToFirstLower() + @";
     }" );
+                    }
                 }
-
 
                 sb.Append( @"
     void " + c.Name + @"::fill( FlatBuffer& fb" );
@@ -175,13 +199,11 @@ namespace " + pn + @"Packets
                 if( c.Fields.Count > 0 )
                 {
                     sb.Append( @"
-        fb.write(" );
-                    isFirst = true;
+        fb.writes(" );
                     foreach( var f in c.Fields )
                     {
                         sb.Append( @"
             p" + f.Name.ToFirstUpper() + ( f == c.Fields[ c.Fields.Count - 1 ] ? "" : @", " ) );
-                        isFirst = false;
                     }
                     sb.Append( @" );" );
                 }
@@ -195,7 +217,7 @@ namespace " + pn + @"Packets
                 if( c.Fields.Count > 0 )
                 {
                     sb.Append( @"
-        fb.write(" );
+        fb.writes(" );
                     foreach( var f in c.Fields )
                     {
                         var tn = GetTypeKeyword( f );
@@ -229,7 +251,6 @@ namespace " + pn + @"Packets
 
             sb.Append( @"
 }
-#endif
 " );
 
 
@@ -270,52 +291,102 @@ namespace " + pn + @"Packets
                 foreach( var f in c.Fields )
                 {
                     if( f.TypeNamespace == "" ) continue;
-                    f.TypeNamespace = ( baseNS == "" ? "" : ( "::" + baseNS + "::" ) ) + f.TypeNamespace.Replace( ".", "::" );
+                    if( f.TypeNamespace == "System" )
+                    {
+                        f.TypeNamespace = "";
+                    }
+                    else
+                    {
+                        f.TypeNamespace = ( baseNS == "" ? "" : ( "::" + baseNS + "::" ) ) + f.TypeNamespace.Replace( ".", "::" );
+                    }
                 }
             }
         }
 
 
-        public static string GetDefaultValueByType( ClassField f )
+        /// <summary>
+        /// 成员数据类型 全是简单数据类型, 或由 简单数据类型组成的类
+        /// </summary>
+        public static bool IsPod( Class c )
         {
-            if( f.IsArray )
+            foreach( var f in c.Fields )
             {
-                return "null"; // "new List<" + f.GetTypeKeyword() + ">()";
-            }
-            else if( f.IsDictionary )
-            {
-                return "null"; // "new Dictionary<" + f.GetKeyTypeKeyword() + ", " + f.GetTypeKeyword() + ">()";
-            }
-            else
-            {
+                if( f.IsList || f.IsDictionary || f.Type == "String" && f.TypeNamespace == "" )
+                {
+                    return false;
+                }
+                if( f.TypeClass != null && f.TypeClass.IsEnum ) continue;
                 switch( f.Type )
                 {
-                case "Byte[]": return "null";   // "new byte[0]";
                 case "Byte":
-                case "UInt8":
                 case "UInt16":
                 case "UInt32":
                 case "UInt64":
                 case "SByte":
-                case "Int8":
                 case "Int16":
                 case "Int32":
                 case "Int64":
                 case "Double":
-                case "Float":
-                case "Single": return "0";
+                case "Single":
                 case "Boolean":
-                case "Bool": return "false";
-                case "String": return "\"\"";
-                case "DateTime": return "DateTime.MinValue";
-                default:
-                    if( f.TypeClass != null && f.TypeClass.IsEnum )
-                    {
-                        return ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type + "." + ( (Enum)f.TypeClass ).Fields.First().Name;
-                    }
-                    else
-                        return "null"; // "new " + ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type + "()";
+                    continue;
                 }
+                if( !IsPod( (Class)f.TypeClass ) ) return false;
+            }
+            return true;
+        }
+
+
+        public static bool IsSimpleType( ClassField f )
+        {
+            if( f.IsList || f.IsDictionary || f.Type == "String" && f.TypeNamespace == "" )
+            {
+                return false;
+            }
+            if( f.TypeClass != null && f.TypeClass.IsEnum ) return true;
+            switch( f.Type )
+            {
+            case "Byte":
+            case "UInt16":
+            case "UInt32":
+            case "UInt64":
+            case "SByte":
+            case "Int16":
+            case "Int32":
+            case "Int64":
+            case "Double":
+            case "Single":
+            case "Boolean":
+                return true;
+            }
+            return false;
+        }
+
+        public static string GetDefaultValueByType( ClassField f )
+        {
+            if( f.IsArray || f.IsList || f.IsDictionary )
+            {
+                return "";
+            }
+            switch( f.Type )
+            {
+            case "Byte":
+            case "UInt16":
+            case "UInt32":
+            case "UInt64":
+            case "SByte":
+            case "Int16":
+            case "Int32":
+            case "Int64":
+            case "Double":
+            case "Single": return "0";
+            case "Boolean": return "false";
+            default:
+                if( f.TypeClass != null && f.TypeClass.IsEnum )
+                {
+                    return ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type + "." + ( (Enum)f.TypeClass ).Fields.First().Name;
+                }
+                return "";
             }
         }
 
@@ -324,9 +395,9 @@ namespace " + pn + @"Packets
             if( s.Trim() == "" ) return "";
             var sps = new string( ' ', space );
             return "\r\n" +
-sps + @"/// <summary>
-" + sps + @"/// " + s + @"
-" + sps + @"/// </summary>";
+sps + @"/*
+" + sps + @" * " + s + @"
+" + sps + @"*/";
         }
 
         public static string GetTypeKeyword( Enum c )
@@ -334,14 +405,13 @@ sps + @"/// <summary>
             switch( c.Type )
             {
             case "Byte": return "byte";
-            case "Byte[]": return "byte[]";
             case "SByte": return "sbyte";
             case "UInt16": return "ushort";
             case "Int16": return "short";
             case "UInt32": return "uint";
             case "Int32": return "int";
-            case "UInt64": return "ulong";
-            case "Int64": return "long";
+            case "UInt64": return "uint64";
+            case "Int64": return "int64";
             }
             throw new Exception( "it can't be" );
         }
@@ -350,55 +420,48 @@ sps + @"/// <summary>
             switch( f.Type )
             {
             case "Byte": return "byte";
-            case "Byte[]": return "byte[]";
             case "SByte": return "sbyte";
             case "UInt16": return "ushort";
             case "Int16": return "short";
             case "UInt32": return "uint";
             case "Int32": return "int";
-            case "UInt64": return "ulong";
-            case "Int64": return "long";
+            case "UInt64": return "uint64";
+            case "Int64": return "int64";
             case "Double": return "double";
             case "Single": return "float";
             case "Boolean": return "bool";
-            case "String": return "string";
-            case "DateTime": return "DateTime";
+            //case "String": return "String";
             default:
-                if( f.TypeClass != null && f.TypeClass.IsEnum )
-                {
-                    return ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type;
-                }
-                else
-                    return ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type;
+                return ( f.TypeNamespace != "" ? f.TypeNamespace : ( "::" + _pn + "Packets" ) ) + "::" + f.Type;
             }
         }
-        public static string GetKeyTypeKeyword( ClassField f )
-        {
-            switch( f.KeyType )
-            {
-            case "Byte": return "byte";
-            case "Byte[]": return "byte[]";
-            case "SByte": return "sbyte";
-            case "UInt16": return "ushort";
-            case "Int16": return "short";
-            case "UInt32": return "uint";
-            case "Int32": return "int";
-            case "UInt64": return "ulong";
-            case "Int64": return "long";
-            case "Double": return "double";
-            case "Single": return "float";
-            case "Boolean": return "bool";
-            case "String": return "string";
-            case "DateTime": return "DateTime";
-            default:
-                if( f.KeyTypeClass != null && f.KeyTypeClass.IsEnum )
-                {
-                    return ( f.KeyTypeNamespace != "" ? f.KeyTypeNamespace : _pn ) + "." + f.KeyType;
-                }
-                else
-                    return ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type;
-            }
-        }
+        //public static string GetKeyTypeKeyword( ClassField f )
+        //{
+        //    switch( f.KeyType )
+        //    {
+        //    case "Byte": return "byte";
+        //    case "Byte[]": return "byte[]";
+        //    case "SByte": return "sbyte";
+        //    case "UInt16": return "ushort";
+        //    case "Int16": return "short";
+        //    case "UInt32": return "uint";
+        //    case "Int32": return "int";
+        //    case "UInt64": return "ulong";
+        //    case "Int64": return "long";
+        //    case "Double": return "double";
+        //    case "Single": return "float";
+        //    case "Boolean": return "bool";
+        //    case "String": return "string";
+        //    case "DateTime": return "DateTime";
+        //    default:
+        //        if( f.KeyTypeClass != null && f.KeyTypeClass.IsEnum )
+        //        {
+        //            return ( f.KeyTypeNamespace != "" ? f.KeyTypeNamespace : _pn ) + "." + f.KeyType;
+        //        }
+        //        else
+        //            return ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type;
+        //    }
+        //}
 
     }
 }

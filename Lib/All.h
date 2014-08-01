@@ -198,6 +198,28 @@ public:                                                                         
 }
 
 
+
+
+#define PACKET_CLASS_HEADER_POD( TN )       \
+public:                                     \
+static ushort getTypeID();                  \
+void writeBuffer( FlatBuffer& fb ) const;   \
+bool readBuffer( FlatBuffer& fb );
+
+#define PACKET_CLASS_HEADER( TN )           \
+PACKET_CLASS_HEADER_POD( TN );              \
+TN() = default;                             \
+TN( TN const& other );                      \
+TN( TN&& other );                           \
+TN& operator=( TN const& other );           \
+TN& operator=( TN&& other );
+
+
+
+
+
+
+
 #ifndef MIN
 #define MIN( a, b )  ( (a) < (b) ? (a) : (b) )
 #endif

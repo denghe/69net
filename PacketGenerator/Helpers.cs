@@ -92,6 +92,9 @@ namespace PacketGenerator
                 foreach( var r_attribute in r_class.GetCustomAttributes( false ) )
                 {
                     if( r_attribute is LIB.Desc ) c.Desc = ( (LIB.Desc)r_attribute ).Value;
+                    else if( r_attribute is LIB.SetDefault ) c.SetDefault = ( (LIB.SetDefault)r_attribute ).Value;
+                    else if( r_attribute is LIB.GenProperty ) c.GenProperty = ( (LIB.GenProperty)r_attribute ).Value;
+
                     //else if( r_attribute is LIB.Decode ) c.Decode.AddRange( ( (LIB.Decode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
                     //else if( r_attribute is LIB.Encode ) c.Encode.AddRange( ( (LIB.Encode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
                     //// more class attributes
@@ -301,7 +304,6 @@ namespace PacketGenerator
             switch( t )
             {
             case "Byte":
-            case "Byte[]":
             case "UInt16":
             case "UInt32":
             case "UInt64":
@@ -313,7 +315,8 @@ namespace PacketGenerator
             case "Single":
             case "Boolean":
             case "String":
-            case "DateTime": return true;
+            case "Byte[]":
+            return true;
             }
             return false;
         }

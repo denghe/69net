@@ -2,18 +2,6 @@
 #include "Lib/All.h"
 
 
-#define PACKET_CLASS_HEADER( TN )           \
-public:                                     \
-static ushort getTypeID();                  \
-TN() = default;                             \
-TN( TN const& other );                      \
-TN( TN&& other );                           \
-TN& operator=( TN const& other );           \
-TN& operator=( TN&& other );                \
-void writeBuffer( FlatBuffer& fb ) const;   \
-bool readBuffer( FlatBuffer& fb );
-
-
 // 生成所有前置声明: 含 namespace
 namespace SwitchPackets             // 根命名空间: 模板名 + Packets
 {

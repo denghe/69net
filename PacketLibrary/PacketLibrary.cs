@@ -38,23 +38,23 @@
 /********************************************************/
 // 输出
 
-// c++ 对应   |  c# 对应               |  lua 类型对应
-//------------+------------------------+------------------------
-// uint8      |  Byte     或  byte     | double
-// uint16     |  UInt16   或  ushort   | double
-// uint32     |  UInt32   或  uint     | double
-// uint64     |  UInt64   或  ulong    | double
-// int8       |  SByte    或  sbyte    | double
-// int16      |  Int16    或  short    | double
-// int32      |  Int32    或  int      | double
-// int64      |  Int64    或  long     | double
-// double     |  Double   或  double   | double
-// single     |  Single   或  float    | double
-// bool       |  Boolean  或  bool     | bool
-// []         |  []                    | table
-// String     |  String   或  string   | string
-// List       |  List                  | table
-// Dict       |  Dictionary            | table
+// c++ 对应   |  c# 对应      |  lua 类型对应
+//------------+---------------+------------------------
+// byte       |  byte         | double
+// ushort     |  ushort       | double
+// uint       |  uint         | double
+// uint64     |  ulong        | double
+// sbyte      |  sbyte        | double
+// short      |  short        | double
+// int        |  int          | double
+// int64      |  long         | double
+// double     |  double       | double
+// float      |  float        | double
+// bool       |  bool         | bool
+// []         |  []           | table
+// String     |  string       | string
+// List       |  List         | table
+// Dict       |  Dictionary   | table
 
 namespace PacketLibrary
 {
@@ -99,6 +99,25 @@ namespace PacketLibrary
         public Condation( params object[] ps ) { Value = ps; }
         public object[] Value { get; set; }
     }
+
+    /// <summary>
+    /// 是否初始化初始值。默认为初始化。用于类。
+    /// </summary>
+    public class SetDefault : System.Attribute
+    {
+        public SetDefault( System.Boolean v ) { Value = v; }
+        public System.Boolean Value { get; set; }
+    }
+
+    /// <summary>
+    /// 是否创建 fields 的 properties。默认为创建。用于类。
+    /// </summary>
+    public class GenProperty : System.Attribute
+    {
+        public GenProperty( System.Boolean v ) { Value = v; }
+        public System.Boolean Value { get; set; }
+    }
+    
 }
 
 
@@ -107,6 +126,15 @@ namespace PacketLibrary
 // 下面的东西当前未启用, 也不完整. 先放这，待整理
 /***********************************************************************************/
 
+
+///// <summary>
+///// 是否启用。默认为启用。可用于类和属性。
+///// </summary>
+//public class Enabled : System.Attribute
+//{
+//    public Enabled( System.Boolean v ) { Value = v; }
+//    public System.Boolean Value { get; set; }
+//}
 
 
 ///// <summary>
@@ -149,14 +177,6 @@ namespace PacketLibrary
 //}
 
 
-///// <summary>
-///// 是否启用。默认为启用。可用于类和属性
-///// </summary>
-//public class Enable : System.Attribute
-//{
-//    public Enabled( System.Boolean v ) { Value = v; }
-//    public System.Boolean Value { get; set; }
-//}
 
 
 ///// <summary>
