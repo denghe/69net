@@ -44,7 +44,7 @@ String String::makeFast( TS const & ...vs )
 {
     static std::atomic<int> bufIdx = 0;
     static char bufs[ 32 ][ 1024 ];
-    String rtv( bufs[ ( bufIdx++ ) & 32 ], 1024, 0 );
+    String rtv( bufs[ ( bufIdx++ ) % 32 ], 1024, 0 );
     rtv.append( vs... );
     return rtv;
 }
@@ -182,7 +182,7 @@ String const String::toString( T const& v )
     static std::atomic<int> bufIdx = 0;
     static char bufs[ 32 ][ 128 ];
     if( getToStringMaxLength( v ) >= 128 ) return make( v );
-    String s( bufs[ ( bufIdx++ ) & 32 ], 128, 0 );
+    String s( bufs[ ( bufIdx++ ) % 32 ], 128, 0 );
     s.append( v );
     return s;
 }
@@ -192,7 +192,7 @@ String String::toHexString( T const& v )
 {
     static std::atomic<int> bufIdx = 0;
     static char bufs[ 32 ][ 32 ];
-    String s( bufs[ ( bufIdx++ ) & 32 ], 32, 0 );
+    String s( bufs[ ( bufIdx++ ) % 32 ], 32, 0 );
     s.appendHex( v );
     return s;
 }
