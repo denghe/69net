@@ -109,7 +109,7 @@ namespace " + pn + @"Packets
                 foreach( var f in c.Fields )
                 {
                     sb.Append( @"
-        " + ( isFirst ? ":" : "," ) + " _" + f.Name.ToFirstLower() + @"( " + f.Name.ToFirstLower() + @" )" );
+        " + ( isFirst ? ":" : "," ) + " _" + f.Name.ToFirstLower() + @"( other._" + f.Name.ToFirstLower() + @" )" );
                     isFirst = false;
                 }
                 sb.Append( @"
@@ -121,7 +121,7 @@ namespace " + pn + @"Packets
                 foreach( var f in c.Fields )
                 {
                     sb.Append( @"
-        " + ( isFirst ? ":" : "," ) + " _" + f.Name.ToFirstLower() + @"( std::move( " + f.Name.ToFirstLower() + @" ) )" );
+        " + ( isFirst ? ":" : "," ) + " _" + f.Name.ToFirstLower() + @"( std::move( other._" + f.Name.ToFirstLower() + @" ) )" );
                     isFirst = false;
                 }
                 sb.Append( @"
