@@ -66,6 +66,37 @@ namespace PacketTestPackets
         return true;
     }
 
+    void Foo::writeBufferDirect( FlatBuffer& fb ) const
+    {
+        fb.writesDirect(
+            _byte, 
+            _ushort, 
+            _uint, 
+            _ulong, 
+            _sbyte, 
+            _short, 
+            _int, 
+            _long, 
+            _double, 
+            _float, 
+            _bool );
+    }
+
+    int Foo::getWriteBufferSize() const
+    {
+        return 
+            sizeof( _byte ) + 
+            sizeof( _ushort ) + 
+            sizeof( _uint ) + 
+            sizeof( _ulong ) + 
+            sizeof( _sbyte ) + 
+            sizeof( _short ) + 
+            sizeof( _int ) + 
+            sizeof( _long ) + 
+            sizeof( _double ) + 
+            sizeof( _float ) + 
+            sizeof( _bool );
+    }
 
     ushort Foo2::getTypeID()
     {
@@ -74,7 +105,7 @@ namespace PacketTestPackets
     void Foo2::fill( FlatBuffer& fb
         , short pShort
         , int pInt
-        , ::PacketTestPackets::Foo pF
+        , Foo pF
         , int64 pLong )
     {
         fb.writes(
@@ -102,5 +133,22 @@ namespace PacketTestPackets
         return true;
     }
 
+    void Foo2::writeBufferDirect( FlatBuffer& fb ) const
+    {
+        fb.writesDirect(
+            _short, 
+            _int, 
+            _f, 
+            _long );
+    }
+
+    int Foo2::getWriteBufferSize() const
+    {
+        return 
+            sizeof( _short ) + 
+            sizeof( _int ) + 
+            _f.getWriteBufferSize() + 
+            sizeof( _long );
+    }
 
 }

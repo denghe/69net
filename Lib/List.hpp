@@ -337,7 +337,7 @@ T& List<T>::emplaceAt( int idx, PTS&& ...ps )
 
 
 template<typename T>
-int List<T>::getBufferSize() const
+int List<T>::getWriteBufferSize() const
 {
     if( std::is_pod<T>::value )
     {
@@ -347,7 +347,7 @@ int List<T>::getBufferSize() const
     int siz = sizeof( int );
     for( int i = 0; i < _size; ++i )
     {
-        siz += _buf[ i ].getBufferSize();
+        siz += _buf[ i ].getWriteBufferSize();
     }
     return siz;
 }

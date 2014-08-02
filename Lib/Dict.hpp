@@ -266,15 +266,15 @@ void Dict<TK, TV>::resize()
 
 
 template <typename TK, typename TV>
-int Dict<TK, TV>::getBufferSize() const
+int Dict<TK, TV>::getWriteBufferSize() const
 {
     int siz = sizeof( int );
     if( !std::is_pod<TK>::value && !std::is_pod<TV>::value )
     {
         for( int i = 0; i < _size; ++i )
         {
-            siz += _nodes[ i ]->key.getBufferSize();
-            siz += _nodes[ i ]->value.getBufferSize();
+            siz += _nodes[ i ]->key.getWriteBufferSize();
+            siz += _nodes[ i ]->value.getWriteBufferSize();
         }
         return siz;
     }
@@ -286,7 +286,7 @@ int Dict<TK, TV>::getBufferSize() const
     {
         for( int i = 0; i < _size; ++i )
         {
-            siz += _nodes[ i ]->value.getBufferSize();
+            siz += _nodes[ i ]->value.getWriteBufferSize();
         }
     }
     if( std::is_pod<TV>::value )
@@ -297,7 +297,7 @@ int Dict<TK, TV>::getBufferSize() const
     {
         for( int i = 0; i < _size; ++i )
         {
-            siz += _nodes[ i ]->key.getBufferSize();
+            siz += _nodes[ i ]->key.getWriteBufferSize();
         }
     }
     return siz;

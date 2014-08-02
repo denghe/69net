@@ -33,7 +33,7 @@ public:
 
 
     // for FlatBuffer write
-    int getBufferSize();
+    int getWriteBufferSize();
     void writeBuffer( FlatBuffer& fb );
     void writeBufferDirect( FlatBuffer& fb );
     bool readBuffer( FlatBuffer& fb );

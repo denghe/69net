@@ -55,6 +55,7 @@ public:
 
     int getHashCode() const;
 
+
     template<typename ...TS>
     void append( TS const & ...vs );
 
@@ -62,7 +63,11 @@ public:
     void appendFormat( char const* format, TS const & ...vs );
 
     template<typename T>
+    void appendHex( T const& v );
+
+    template<typename T>
     String& operator<<( T const& v );
+
 
     // like append, return strlen.
     // dangerous: buffer overflow
@@ -89,6 +94,14 @@ public:
     template<typename ...TS, int bufLen>
     static String make( char( &buf )[ bufLen ], TS const & ...vs );
 
+    template<typename T>
+    static String toString( T const& v );
+
+    template<typename T>
+    static String toHexString( T const& v );
+
+
+
 
     // dangerous: get first buffer from static circle pool char[ 32 ][ 1024 ]
     template<typename ...TS>
@@ -96,22 +109,22 @@ public:
 
     // dangerous: get first buffer from static circle pool char[ 32 ][ 128 ]
     template<typename T>
-    static String const toString( T const& v );
+    static String const toStringFast( T const& v );
 
     // dangerous: get first buffer from static circle pool char[ 32 ][ 32 ]
     template<typename T>
-    static String toHexString( T const& v );
+    static String const toHexStringFast( T const& v );
+
+
 
 
     std::string std_str();
 
-    template<typename T>
-    void appendHex( T const& v );
 
 
 
     // for FlatBuffer
-    int getBufferSize() const;
+    int getWriteBufferSize() const;
     void writeBuffer( FlatBuffer& fb ) const;
     void writeBufferDirect( FlatBuffer& fb ) const;
     bool readBuffer( FlatBuffer& fb );

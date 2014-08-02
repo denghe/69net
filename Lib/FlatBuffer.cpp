@@ -243,7 +243,7 @@ String FlatBuffer::dump()
 
 
 
-int FlatBuffer::getBufferSize()
+int FlatBuffer::getWriteBufferSize()
 {
     return sizeof( int ) + size();
 }

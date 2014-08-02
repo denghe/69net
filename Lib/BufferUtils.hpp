@@ -4,15 +4,16 @@
 namespace BufferUtils
 {
 
-    HAS_FUNC( getSize_checker, getBufferSize, int ( T::* )( ) const );
+    HAS_FUNC( getSize_checker, getWriteBufferSize, int ( T::* )( ) const );
     template<typename T>
     typename std::enable_if<getSize_checker<T>::value, int>::type getSizeCore( T const& v )
     {
-        return v.getBufferSize();
+        return v.getWriteBufferSize();
     };
     template<typename T>
     typename std::enable_if<!getSize_checker<T>::value, int>::type getSizeCore( T const& v )
     {
+        static_assert( std::is_pod<T>::value, "forget impl getWriteBufferSize func ?" );
         return sizeof( T );
     };
 

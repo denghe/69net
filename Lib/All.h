@@ -204,7 +204,10 @@ public:                                                                         
 public:                                     \
 static ushort getTypeID();                  \
 void writeBuffer( FlatBuffer& fb ) const;   \
-bool readBuffer( FlatBuffer& fb );
+bool readBuffer( FlatBuffer& fb );          \
+int getWriteBufferSize() const;             \
+void writeBufferDirect( FlatBuffer& fb ) const;
+
 
 #define PACKET_CLASS_HEADER( TN )           \
 PACKET_CLASS_HEADER_POD( TN );              \

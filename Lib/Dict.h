@@ -38,7 +38,7 @@ struct Dict : Memmoveable
     
 
     // for FlatBuffer write
-    int getBufferSize() const;
+    int getWriteBufferSize() const;
     void writeBuffer( FlatBuffer& fb ) const;
     void writeBufferDirect( FlatBuffer& fb ) const;
     bool readBuffer( FlatBuffer& fb );

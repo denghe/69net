@@ -358,7 +358,7 @@ std::string String::std_str()
 
 
 
-int String::getBufferSize() const
+int String::getWriteBufferSize() const
 {
     return sizeof( int ) + size();
 }

@@ -599,7 +599,7 @@ struct Foo
     Xxxxs e[ 3 ];
 #pragma region
     // for FlatBuffer write
-    inline int getBufferSize() const
+    inline int getWriteBufferSize() const
     {
         return sizeof( int ) + sizeof( double ) + sizeof( float ) + s.size() + sizeof( b ) + sizeof( e );
     }
@@ -627,9 +627,9 @@ struct Foo
 //    String s;
 //    List<Foo> fs;
 //    // for FlatBuffer write
-//    inline int getBufferSize() const
+//    inline int getWriteBufferSize() const
 //    {
-//        return sizeof( int ) + sizeof( double ) + sizeof( float ) + s.size() + fs.getBufferSize();
+//        return sizeof( int ) + sizeof( double ) + sizeof( float ) + s.size() + fs.getWriteBufferSize();
 //    }
 //    //inline void writeBuffer( FlatBuffer& fb ) const
 //    //{
@@ -893,7 +893,7 @@ struct Foo
     Xxxxs e[ 3 ];
 #pragma region
     // for FlatBuffer write
-    inline int getBufferSize() const
+    inline int getWriteBufferSize() const
     {
         return sizeof( int ) + sizeof( double ) + sizeof( float ) + s.size() + sizeof( b ) + sizeof( e );
     }
@@ -921,9 +921,9 @@ struct Foo
 //    String s;
 //    List<Foo> fs;
 //    // for FlatBuffer write
-//    inline int getBufferSize() const
+//    inline int getWriteBufferSize() const
 //    {
-//        return sizeof( int ) + sizeof( double ) + sizeof( float ) + s.size() + fs.getBufferSize();
+//        return sizeof( int ) + sizeof( double ) + sizeof( float ) + s.size() + fs.getWriteBufferSize();
 //    }
 //    //inline void writeBuffer( FlatBuffer& fb ) const
 //    //{

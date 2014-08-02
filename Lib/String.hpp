@@ -177,7 +177,14 @@ String& String::operator << ( T const& v )
 }
 
 template<typename T>
-String const String::toString( T const& v )
+String String::toString( T const& v )
+{
+    return make( v );
+}
+
+
+template<typename T>
+String const String::toStringFast( T const& v )
 {
     static std::atomic<int> bufIdx = 0;
     static char bufs[ 32 ][ 128 ];
@@ -189,6 +196,14 @@ String const String::toString( T const& v )
 
 template<typename T>
 String String::toHexString( T const& v )
+{
+    String s;
+    s.appendHex( v );
+    return s;
+}
+
+template<typename T>
+String const String::toHexStringFast( T const& v )
 {
     static std::atomic<int> bufIdx = 0;
     static char bufs[ 32 ][ 32 ];

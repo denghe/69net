@@ -40,6 +40,7 @@ namespace " + pn + @"Packets
     class " + c.Name + @" : Memmoveable
     {
         PACKET_CLASS_HEADER" + ( IsPod( c ) ? "_POD" : "" ) + @"( " + c.Name + @" );
+public:
 " );
                 foreach( var f in c.Fields )
                 {
@@ -245,6 +246,50 @@ namespace " + pn + @"Packets
         return true;
     }
 
+    void " + c.Name + @"::writeBufferDirect( FlatBuffer& fb ) const
+    {" );
+                if( c.Fields.Count > 0 )
+                {
+                    sb.Append( @"
+        fb.writesDirect(" );
+                    foreach( var f in c.Fields )
+                    {
+                        var tn = GetTypeKeyword( f );
+                        sb.Append( @"
+            _" + f.Name.ToFirstLower() + ( f == c.Fields[ c.Fields.Count - 1 ] ? "" : @", " ) );
+                    }
+                    sb.Append( @" );" );
+                }
+
+                sb.Append( @"
+    }
+
+    int " + c.Name + @"::getWriteBufferSize() const
+    {" );
+                if( c.Fields.Count > 0 )
+                {
+                    sb.Append( @"
+        return " );
+                    foreach( var f in c.Fields )
+                    {
+                        var tn = GetTypeKeyword( f );
+                        if( IsSimpleType( f ) )
+                        {
+                            sb.Append( @"
+            sizeof( _" + f.Name.ToFirstLower() + " )" );
+                        }
+                        else
+                        {
+                            sb.Append( @"
+            _" + f.Name.ToFirstLower() +".getWriteBufferSize()" );
+                        }
+                        sb.Append( f == c.Fields[ c.Fields.Count - 1 ] ? "" : @" + " );
+                    }
+                    sb.Append( @";" );
+                }
+
+                sb.Append( @"
+    }
 " );
 
             }
@@ -432,7 +477,8 @@ sps + @"/*
             case "Boolean": return "bool";
             //case "String": return "String";
             default:
-                return ( f.TypeNamespace != "" ? f.TypeNamespace : ( "::" + _pn + "Packets" ) ) + "::" + f.Type;
+                //return ( f.TypeNamespace != "" ? f.TypeNamespace : ( "::" + _pn + "Packets" ) ) + "::" + f.Type;
+                return ( f.TypeNamespace != "" ? ( f.TypeNamespace + "::" ) : "" ) + f.Type;
             }
         }
         //public static string GetKeyTypeKeyword( ClassField f )
