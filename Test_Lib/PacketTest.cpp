@@ -162,7 +162,7 @@ namespace PacketTestPackets
     }
 
     Foo3::Foo3( Foo3&& other )
-        : _f( std::move( other._f ) )
+        : _f( other._f )
         , _s( std::move( other._s ) )
     {
     }
@@ -176,7 +176,7 @@ namespace PacketTestPackets
 
     Foo3& Foo3::operator=( Foo3&& other )
     {
-        _f = std::move( other._f );
+        _f = other._f;
         _s = std::move( other._s );
         return *this;
     }

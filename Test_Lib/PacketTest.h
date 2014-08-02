@@ -10,7 +10,7 @@ namespace PacketTestPackets
 }
 namespace PacketTestPackets
 {
-    class Foo
+    class Foo : Memmoveable
     {
         PACKET_CLASS_HEADER_POD( Foo );
 public:
@@ -53,7 +53,7 @@ public:
     /*
      * pod class too
     */
-    class Foo2
+    class Foo2 : Memmoveable
     {
         PACKET_CLASS_HEADER_POD( Foo2 );
 public:

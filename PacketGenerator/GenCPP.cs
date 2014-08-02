@@ -142,8 +142,16 @@ namespace " + pn + @"Packets
                     isFirst = true;
                     foreach( var f in c.Fields )
                     {
-                        sb.Append( @"
+                        if( f.TypeClass is Class && IsPod( (Class)f.TypeClass ) )
+                        {
+                            sb.Append( @"
+        " + ( isFirst ? ":" : "," ) + " _" + f.Name.ToFirstLower() + @"( other._" + f.Name.ToFirstLower() + @" )" );
+                        }
+                        else 
+                        {
+                            sb.Append( @"
         " + ( isFirst ? ":" : "," ) + " _" + f.Name.ToFirstLower() + @"( std::move( other._" + f.Name.ToFirstLower() + @" ) )" );
+                        }
                         isFirst = false;
                     }
                     sb.Append( @"
@@ -165,8 +173,16 @@ namespace " + pn + @"Packets
     {" );
                     foreach( var f in c.Fields )
                     {
-                        sb.Append( @"
+                        if( f.TypeClass is Class && IsPod( (Class)f.TypeClass ) )
+                        {
+                            sb.Append( @"
+        _" + f.Name.ToFirstLower() + @" = other._" + f.Name.ToFirstLower() + @";" );
+                        }
+                        else
+                        {
+                            sb.Append( @"
         _" + f.Name.ToFirstLower() + @" = std::move( other._" + f.Name.ToFirstLower() + @" );" );
+                        }
                     }
                     sb.Append( @"
         return *this;

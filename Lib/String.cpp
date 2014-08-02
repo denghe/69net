@@ -87,6 +87,42 @@ String::String( String&& other )
     other._disposer = nullptr;
 }
 
+
+String& String::operator=( String const & other )
+{
+    if( this == &other ) return *this;
+    if( _bufLen > other._dataLen )
+    {
+        _dataLen = other._dataLen;
+        memcpy( _buf, other._buf, other._dataLen + 1 );
+    }
+    else
+    {
+        if( _disposer ) ( this->*_disposer )( );
+        _bufLen = (int)Utils::round2n( other._dataLen + 1 );
+        _disposer = &String::disposeNewBuffer;
+        _buf = new char[ _bufLen ];
+        _dataLen = other._dataLen;
+        memcpy( _buf, other._buf, other._dataLen + 1 );
+    }
+    return *this;
+}
+
+String& String::operator=( String && other )
+{
+    if( _disposer ) ( this->*_disposer )( );
+    _buf = other._buf;
+    _bufLen = other._bufLen;
+    _dataLen = other._dataLen;
+    _disposer = other._disposer;
+    other._buf = nullptr;
+    other._bufLen = 0;
+    other._dataLen = 0;
+    other._disposer = nullptr;
+    return *this;
+}
+
+
 String::~String()
 {
     if( _disposer ) ( this->*_disposer )( );
@@ -213,40 +249,6 @@ void String::disposeNewBuffer()
 }
 
 
-
-String& String::operator=( String const & other )
-{
-    if( this == &other ) return *this;
-    if( _bufLen > other._dataLen )
-    {
-        _dataLen = other._dataLen;
-        memcpy( _buf, other._buf, other._dataLen + 1 );
-    }
-    else
-    {
-        if( _disposer ) ( this->*_disposer )( );
-        _bufLen = (int)Utils::round2n( other._dataLen + 1 );
-        _disposer = &String::disposeNewBuffer;
-        _buf = new char[ _bufLen ];
-        _dataLen = other._dataLen;
-        memcpy( _buf, other._buf, other._dataLen + 1 );
-    }
-    return *this;
-}
-
-String& String::operator=( String && other )
-{
-    if( _disposer ) ( this->*_disposer )( );
-    _buf = other._buf;
-    _bufLen = other._bufLen;
-    _dataLen = other._dataLen;
-    _disposer = other._disposer;
-    other._buf = nullptr;
-    other._bufLen = 0;
-    other._dataLen = 0;
-    other._disposer = nullptr;
-    return *this;
-}
 
 
 static byte const lowerchars[] =

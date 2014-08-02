@@ -1,7 +1,7 @@
 #include "Lib/All.h"
 #include "PacketTest.h"
-
 using namespace PacketTestPackets;
+
 int main()
 {
     FlatBuffer fb;
@@ -14,12 +14,16 @@ int main()
     f._f._int = 5;
     f._s = "asdfqwer";
 
-    fb.write( f );
-    Cout( fb.dump() );
+    auto f2 = std::move( f );
 
-    Cout( std::is_pod<Foo>::value );
-    Cout( std::is_pod<Foo2>::value );
-    Cout( std::is_pod<Foo3>::value );
+    // todo: move 后清0简单类型的生成？ 简单类型不需要加 move?
+
+    //fb.write( f );
+    //Cout( fb.dump() );
+
+    //Cout( std::is_pod<Foo>::value );
+    //Cout( std::is_pod<Foo2>::value );
+    //Cout( std::is_pod<Foo3>::value );
 
     system( "pause" );
     return 0;
