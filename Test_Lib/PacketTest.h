@@ -6,10 +6,11 @@ namespace PacketTestPackets
 {
     class Foo;
     class Foo2;
+    class Foo3;
 }
 namespace PacketTestPackets
 {
-    class Foo : Memmoveable
+    class Foo
     {
         PACKET_CLASS_HEADER_POD( Foo );
 public:
@@ -52,7 +53,7 @@ public:
     /*
      * pod class too
     */
-    class Foo2 : Memmoveable
+    class Foo2
     {
         PACKET_CLASS_HEADER_POD( Foo2 );
 public:
@@ -67,6 +68,22 @@ public:
             , int Int
             , Foo f
             , int64 Long );
+
+    };
+    /*
+     * have string member, is not pod but can memmove
+    */
+    class Foo3 : Memmoveable
+    {
+        PACKET_CLASS_HEADER( Foo3 );
+public:
+
+        Foo2 _f;
+        String _s;
+
+        static void fill( FlatBuffer& fb
+            , Foo2 f
+            , String s );
 
     };
 }

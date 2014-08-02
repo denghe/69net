@@ -92,9 +92,6 @@ namespace PacketGenerator
                 foreach( var r_attribute in r_class.GetCustomAttributes( false ) )
                 {
                     if( r_attribute is LIB.Desc ) c.Desc = ( (LIB.Desc)r_attribute ).Value;
-                    else if( r_attribute is LIB.SetDefault ) c.SetDefault = ( (LIB.SetDefault)r_attribute ).Value;
-                    else if( r_attribute is LIB.GenProperty ) c.GenProperty = ( (LIB.GenProperty)r_attribute ).Value;
-
                     //else if( r_attribute is LIB.Decode ) c.Decode.AddRange( ( (LIB.Decode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
                     //else if( r_attribute is LIB.Encode ) c.Encode.AddRange( ( (LIB.Encode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
                     //// more class attributes
@@ -131,6 +128,9 @@ namespace PacketGenerator
                     foreach( var r_attribute in r_field.GetCustomAttributes( false ) )
                     {
                         if( r_attribute is LIB.Desc ) f.Desc = ( (LIB.Desc)r_attribute ).Value;
+                        else if( r_attribute is LIB.Default ) f.Default = ( (LIB.Default)r_attribute ).Value;
+                        else if( r_attribute is LIB.Get ) f.Get = ( (LIB.Get)r_attribute ).Value;
+                        else if( r_attribute is LIB.Get ) f.Get = ( (LIB.Get)r_attribute ).Value;
                         else if( r_attribute is LIB.Limit ) { f.MinLen = ( (LIB.Limit)r_attribute ).Min; f.MaxLen = ( (LIB.Limit)r_attribute ).Max; }
                         else if( r_attribute is LIB.Condation )
                         {

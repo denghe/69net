@@ -1,6 +1,5 @@
 ﻿using PacketLibrary;
 
-[SetDefault( true ), GenProperty( false )]
 class Foo
 {
     [Desc( "Byte的备注" )]
@@ -19,13 +18,20 @@ class Foo
     bool    Bool;
 }
 
-[GenProperty( false ), Desc("pod class too")]
+[Desc( "pod class too" )]
 class Foo2
 {
     short   Short;
     int     Int;
     Foo     f;
     long    Long;
+}
+
+[Desc( "have string member, is not pod but can memmove" )]
+class Foo3
+{
+    Foo2    f;
+    string  s;
 }
 
 //class Bar

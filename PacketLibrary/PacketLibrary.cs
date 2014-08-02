@@ -101,23 +101,34 @@ namespace PacketLibrary
     }
 
     /// <summary>
-    /// 是否初始化初始值。默认为初始化。用于类。
+    /// 设置 field 初始值
     /// </summary>
-    public class SetDefault : System.Attribute
+    public class Default : System.Attribute
     {
-        public SetDefault( System.Boolean v ) { Value = v; }
+        public Default( object v ) { Value = v; }
+        public object Value { get; set; }
+    }
+
+    /// <summary>
+    /// 是否创建 Get 函数
+    /// </summary>
+    public class Get : System.Attribute
+    {
+        public Get() { Value = true; }
+        public Get( System.Boolean v ) { Value = v; }
         public System.Boolean Value { get; set; }
     }
 
     /// <summary>
-    /// 是否创建 fields 的 properties。默认为创建。用于类。
+    /// 是否创建 Set 函数
     /// </summary>
-    public class GenProperty : System.Attribute
+    public class Set : System.Attribute
     {
-        public GenProperty( System.Boolean v ) { Value = v; }
+        public Set() { Value = true; }
+        public Set( System.Boolean v ) { Value = v; }
         public System.Boolean Value { get; set; }
     }
-    
+
 }
 
 

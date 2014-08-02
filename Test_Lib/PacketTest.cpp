@@ -151,4 +151,72 @@ namespace PacketTestPackets
             sizeof( _long );
     }
 
+    ushort Foo3::getTypeID()
+    {
+        return 2;
+    }
+    Foo3::Foo3( Foo3 const& other )
+        : _f( other._f )
+        , _s( other._s )
+    {
+    }
+
+    Foo3::Foo3( Foo3&& other )
+        : _f( std::move( other._f ) )
+        , _s( std::move( other._s ) )
+    {
+    }
+
+    Foo3& Foo3::operator=( Foo3 const& other )
+    {
+        _f = other._f;
+        _s = other._s;
+        return *this;
+    }
+
+    Foo3& Foo3::operator=( Foo3&& other )
+    {
+        _f = std::move( other._f );
+        _s = std::move( other._s );
+        return *this;
+    }
+
+
+    void Foo3::fill( FlatBuffer& fb
+        , Foo2 pF
+        , String pS )
+    {
+        fb.writes(
+            pF, 
+            pS );
+    }
+
+    void Foo3::writeBuffer( FlatBuffer& fb ) const
+    {
+        fb.writes(
+            _f, 
+            _s );
+    }
+
+    bool Foo3::readBuffer( FlatBuffer& fb )
+    {
+        if( !fb.read( _f ) ) return false;
+        if( !fb.read( _s ) ) return false;
+        return true;
+    }
+
+    void Foo3::writeBufferDirect( FlatBuffer& fb ) const
+    {
+        fb.writesDirect(
+            _f, 
+            _s );
+    }
+
+    int Foo3::getWriteBufferSize() const
+    {
+        return 
+            _f.getWriteBufferSize() + 
+            _s.getWriteBufferSize();
+    }
+
 }

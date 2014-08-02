@@ -46,7 +46,7 @@ public:
                 {
                     var tn = GetTypeKeyword( f );
                     sb.Append( ( f.Desc == "" ? "" : GetComment( f.Desc, 8 ) ) + @"
-        " + tn + " _" + f.Name.ToFirstLower() + ( ( c.SetDefault && GetDefaultValueByType( f ) != "" ) ? ( " = " + GetDefaultValueByType( f ) ) : "" ) + ";" );
+        " + tn + " _" + f.Name.ToFirstLower() + ( ( GetDefaultValueByType( f ) != "" ) ? ( " = " + GetDefaultValueByType( f ) ) : "" ) + ";" );
                 }
                 sb.Append( @"
 
@@ -59,14 +59,16 @@ public:
                 }
                 sb.Append( @" );
 " );
-                if( c.GenProperty )
+                foreach( var f in c.Fields )
                 {
-                    foreach( var f in c.Fields )
+                    var tn = GetTypeKeyword( f );
+                    if( f.Get )
                     {
-                        var tn = GetTypeKeyword( f );
                         sb.Append( @"
         " + tn + " const& get" + f.Name.ToFirstUpper() + @"();" );
-
+                    }
+                    if( f.Set )
+                    {
                         if( IsSimpleType( f ) )
                         {
                             sb.Append( @"
@@ -173,10 +175,10 @@ namespace " + pn + @"Packets
 " );
                 }
 
-                if( c.GenProperty )
-                {
 
-                    foreach( var f in c.Fields )
+                foreach( var f in c.Fields )
+                {
+                    if( f.Get )
                     {
                         var tn = GetTypeKeyword( f );
                         sb.Append( @"
@@ -281,7 +283,7 @@ namespace " + pn + @"Packets
                         else
                         {
                             sb.Append( @"
-            _" + f.Name.ToFirstLower() +".getWriteBufferSize()" );
+            _" + f.Name.ToFirstLower() + ".getWriteBufferSize()" );
                         }
                         sb.Append( f == c.Fields[ c.Fields.Count - 1 ] ? "" : @" + " );
                     }
@@ -350,7 +352,7 @@ namespace " + pn + @"Packets
 
 
         /// <summary>
-        /// 成员数据类型 全是简单数据类型, 或由 简单数据类型组成的类
+        /// 成员数据类型 全是简单数据类型, 或由 简单数据类型组成的类( 这个和 c++ 的 std::is_pod 不一样，没那么严格 ) 
         /// </summary>
         public static bool IsPod( Class c )
         {

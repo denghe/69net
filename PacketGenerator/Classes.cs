@@ -29,8 +29,6 @@ public class Class : ClassBase
     public List<ClassField> Fields = new List<ClassField>();
     public string Desc = "";
     public ushort TypeID = 0;                               // 该值将自增填充
-    public bool SetDefault = true;
-    public bool GenProperty = true;
     //public List<Project> Decode = new List<Project>();    // 被引用到的类 即便没有直接设置 Attribute，也会继承引用类的设置
     //public List<Project> Encode = new List<Project>();    // 同上
 }
@@ -51,6 +49,10 @@ public class ClassField
     public ClassBase KeyTypeClass = null;       // IsDictionary 时有意义
     // ...
     public string Desc = "";
+
+    public bool Get = false;
+    public bool Set = false;
+    public object Default = true;
 
     public uint MinLen = 0;
     public uint MaxLen = 0;
