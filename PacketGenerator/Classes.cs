@@ -20,8 +20,8 @@ public class ClassBase
 {
     public string Namespace = "";
     public string Name = "";
-    //public List<Project> Enable = new List<Project>();    // 这个并不直接来源于属性，一但被某个属于某个 __project 的类引用到，则须生成到该 project
     public bool IsEnum = true;
+    //public List<Project> Enable = new List<Project>();    // 这个并不直接来源于属性，一但被某个属于某个 __project 的类引用到，则须生成到该 project
 }
 
 public class Class : ClassBase
@@ -40,13 +40,15 @@ public class ClassField
     public string TypeNamespace = "";
     public string Type = "";
     public ClassBase TypeClass = null;
-    public bool Nullable = false;
-    public bool IsArray = false;
-    public bool IsList = false;
-    public bool IsDictionary = false;
-    public string KeyTypeNamespace = "";        // IsDictionary 时有意义
-    public string KeyType = "";                 // IsDictionary 时有意义
-    public ClassBase KeyTypeClass = null;       // IsDictionary 时有意义
+    public Container Container = null;
+
+    //public bool Nullable = false;
+    //public bool IsArray = false;
+    //public bool IsList = false;
+    //public bool IsDictionary = false;
+    //public string KeyTypeNamespace = "";        // IsDictionary 时有意义
+    //public string KeyType = "";                 // IsDictionary 时有意义
+    //public ClassBase KeyTypeClass = null;       // IsDictionary 时有意义
     // ...
     public string Desc = "";
 
@@ -62,6 +64,25 @@ public class ClassField
     //public decimal MaxValue = 0;
     //public DecodeCondation DecodeCondation = new DecodeCondation( "", Operators.Equal, null );
     //public EncodeCondation EncodeCondation = new EncodeCondation( "", Operators.Equal, null );
+}
+
+public enum ContainerTypes
+{
+    Array,
+    List,
+    Dict
+}
+public class Container
+{
+    public ContainerTypes Type;
+    public Container ParentContainer;
+
+    public string KeyType = "";
+
+    public string ValueTypeNamespace = "";
+    public string ValueType = "";
+    public ClassBase ValueTypeClass = null;
+    public Container ValueContainer = null;
 }
 
 public class Enum : ClassBase

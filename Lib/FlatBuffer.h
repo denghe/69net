@@ -78,6 +78,13 @@ public:
     bool reads( TS& ...vs );
 
 
+    template<typename T>
+    void readDirect( T& v );
+    template<typename ...TS>
+    void readsDirect( TS& ...vs );
+
+
+
 
     // todo: writeVar  readVar support
 
@@ -98,6 +105,10 @@ private:
     template<typename T, typename ...TS>
     bool readsCore( T& v, TS& ...vs );
 
+    template<typename T>
+    void readsDirectCore( T& v );
+    template<typename T, typename ...TS>
+    void readsDirectCore( T& v, TS& ...vs );
 
 
     char*       _buf;

@@ -188,4 +188,36 @@ bool FlatBuffer::reads( TS& ...vs )
 
 
 
+
+template<typename T>
+void FlatBuffer::readDirect( T& v )
+{
+    assert( std::is_pod<T>::value );
+    BufferUtils::read( v, _buf + _offset );
+    _offset += BufferUtils::getSize( v );
+}
+template<typename T>
+void FlatBuffer::readsDirectCore( T& v )
+{
+    readDirect( v );
+}
+
+template<typename T, typename ...TS>
+void FlatBuffer::readsDirectCore( T& v, TS& ...vs )
+{
+    readDirect( v );
+    readsDirectCore( vs... );
+}
+
+template<typename ...TS>
+void FlatBuffer::readsDirect( TS& ...vs )
+{
+    readsDirectCore( vs... );
+}
+
+
+
+
+
+
 #endif

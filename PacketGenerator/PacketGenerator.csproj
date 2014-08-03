@@ -85,7 +85,7 @@
     <Compile Include="Classes.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GenCPP.cs" />
-    <Compile Include="GenCS.cs" />
+    <None Include="GenCS.cs" />
     <Compile Include="GenEmpty.cs" />
     <Compile Include="GenLua.cs" />
     <Compile Include="Helpers.cs" />

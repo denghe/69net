@@ -148,7 +148,7 @@ namespace PacketGenerator
                     f.Name = r_field.Name;
                     if( r_field.FieldType.Name.LastIndexOf( "[]" ) == r_field.FieldType.Name.Length - 2 && r_field.FieldType.Name != "Byte[]" )
                     {
-                        f.IsArray = true;
+                        //f.IsArray = true;
                         f.Type = r_field.FieldType.FullName.Substring( 0, r_field.FieldType.FullName.Length - 2 ).Replace( libNSdot, "" );
                     }
                     //else if( r_field.FieldType.Name.StartsWith( "List`1" ) )
@@ -159,10 +159,10 @@ namespace PacketGenerator
                     else if( r_field.FieldType.Name.StartsWith( "Dict`2" ) )
                     {
                         // PacketLibrary.Dict`2[[Enum1, PacketTemplate_Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
-                        f.IsDictionary = true;
-                        var ss = r_field.FieldType.FullName.Replace( libNSdot + "Dict`2[[", "" ).Replace( "]]", "" ).Split( new string[] { "],[" }, StringSplitOptions.None );
-                        f.KeyType = ss[ 0 ].Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ];
-                        f.Type = ss[ 1 ].Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ];
+                        //f.IsDictionary = true;
+                        //var ss = r_field.FieldType.FullName.Replace( libNSdot + "Dict`2[[", "" ).Replace( "]]", "" ).Split( new string[] { "],[" }, StringSplitOptions.None );
+                        //f.KeyType = ss[ 0 ].Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ];
+                        //f.Type = ss[ 1 ].Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ];
                     }
                     else
                     {
@@ -180,18 +180,18 @@ namespace PacketGenerator
                         f.TypeNamespace = "System";
                     }
 
-                    if( f.IsDictionary )
-                    {
-                        if( f.KeyType.Contains( '.' ) )
-                        {
-                            f.KeyTypeNamespace = f.KeyType.Substring( 0, f.KeyType.LastIndexOf( '.' ) );
-                            f.KeyType = f.KeyType.Substring( f.KeyType.LastIndexOf( '.' ) + 1 );
-                        }
-                        if( f.KeyTypeNamespace == libNS )
-                        {
-                            f.KeyTypeNamespace = "System";
-                        }
-                    }
+                    //if( f.IsDictionary )
+                    //{
+                    //    if( f.KeyType.Contains( '.' ) )
+                    //    {
+                    //        f.KeyTypeNamespace = f.KeyType.Substring( 0, f.KeyType.LastIndexOf( '.' ) );
+                    //        f.KeyType = f.KeyType.Substring( f.KeyType.LastIndexOf( '.' ) + 1 );
+                    //    }
+                    //    if( f.KeyTypeNamespace == libNS )
+                    //    {
+                    //        f.KeyTypeNamespace = "System";
+                    //    }
+                    //}
 
                     // todo: check List
                     //if( f.FieldType.Name.StartsWith( "Nullable`1" ) )
@@ -258,31 +258,31 @@ namespace PacketGenerator
                             throw new Exception( "unhandled type: " + f.TypeNamespace + "." + f.Type + " " + c.Name + "." + f.Name );
                         }
                     }
-                    if( f.IsDictionary )
-                    {
-                        if( f.KeyTypeNamespace == "System" )
-                        {
-                            if( !ValidateSystemDataType( f.KeyType ) )
-                            {
-                                throw new Exception( "unhandled type: " + f.KeyTypeNamespace + "." + f.KeyType + " " + c.Name + "." + f.Name );
-                            }
-                        }
-                        else
-                        {
-                            if( template.Enums.Exists( a => a.Namespace == f.KeyTypeNamespace && a.Name == f.KeyType ) )
-                            {
-                                f.KeyTypeClass = template.Enums.First( a => a.Namespace == f.KeyTypeNamespace && a.Name == f.KeyType );
-                            }
-                            else if( template.Classes.Exists( a => a.Namespace == f.KeyTypeNamespace && a.Name == f.KeyType ) )
-                            {
-                                f.KeyTypeClass = template.Classes.First( a => a.Namespace == f.KeyTypeNamespace && a.Name == f.KeyType );
-                            }
-                            else
-                            {
-                                throw new Exception( "unhandled key type: " + f.KeyTypeNamespace + "." + f.KeyType + " " + c.Name + "." + f.Name );
-                            }
-                        }
-                    }
+                    //if( f.IsDictionary )
+                    //{
+                    //    if( f.KeyTypeNamespace == "System" )
+                    //    {
+                    //        if( !ValidateSystemDataType( f.KeyType ) )
+                    //        {
+                    //            throw new Exception( "unhandled type: " + f.KeyTypeNamespace + "." + f.KeyType + " " + c.Name + "." + f.Name );
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        if( template.Enums.Exists( a => a.Namespace == f.KeyTypeNamespace && a.Name == f.KeyType ) )
+                    //        {
+                    //            f.KeyTypeClass = template.Enums.First( a => a.Namespace == f.KeyTypeNamespace && a.Name == f.KeyType );
+                    //        }
+                    //        else if( template.Classes.Exists( a => a.Namespace == f.KeyTypeNamespace && a.Name == f.KeyType ) )
+                    //        {
+                    //            f.KeyTypeClass = template.Classes.First( a => a.Namespace == f.KeyTypeNamespace && a.Name == f.KeyType );
+                    //        }
+                    //        else
+                    //        {
+                    //            throw new Exception( "unhandled key type: " + f.KeyTypeNamespace + "." + f.KeyType + " " + c.Name + "." + f.Name );
+                    //        }
+                    //    }
+                    //}
 
                 }
 

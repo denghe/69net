@@ -1,5 +1,5 @@
 ﻿#include "Lib/All.h"
-#include "PacketTest.h"
+#include "PacketTestPackets.h"
 
 namespace PacketTestPackets
 {
@@ -52,50 +52,59 @@ namespace PacketTestPackets
 
     bool Foo::readBuffer( FlatBuffer& fb )
     {
-        if( !fb.read( _byte ) ) return false;
-        if( !fb.read( _ushort ) ) return false;
-        if( !fb.read( _uint ) ) return false;
-        if( !fb.read( _ulong ) ) return false;
-        if( !fb.read( _sbyte ) ) return false;
-        if( !fb.read( _short ) ) return false;
-        if( !fb.read( _int ) ) return false;
-        if( !fb.read( _long ) ) return false;
-        if( !fb.read( _double ) ) return false;
-        if( !fb.read( _float ) ) return false;
-        if( !fb.read( _bool ) ) return false;
+        if( fb.size() < getWriteBufferSize() + fb.offset() ) return false;
+        memcpy( this, fb.data() + fb.offset(), sizeof( Foo ) );
+        fb.offset() += sizeof( Foo );
+
+        //return fb.reads(
+        //    _byte, 
+        //    _ushort, 
+        //    _uint, 
+        //    _ulong, 
+        //    _sbyte, 
+        //    _short, 
+        //    _int, 
+        //    _long, 
+        //    _double, 
+        //    _float, 
+        //    _bool );
         return true;
     }
 
     void Foo::writeBufferDirect( FlatBuffer& fb ) const
     {
-        fb.writesDirect(
-            _byte, 
-            _ushort, 
-            _uint, 
-            _ulong, 
-            _sbyte, 
-            _short, 
-            _int, 
-            _long, 
-            _double, 
-            _float, 
-            _bool );
+        fb.reserve( fb.size() + sizeof( Foo ) );
+        memcpy( fb.data() + fb.size(), this, sizeof( Foo ) );
+        fb.size() += sizeof( Foo );
+        //fb.writesDirect(
+        //    _byte, 
+        //    _ushort, 
+        //    _uint, 
+        //    _ulong, 
+        //    _sbyte, 
+        //    _short, 
+        //    _int, 
+        //    _long, 
+        //    _double, 
+        //    _float, 
+        //    _bool );
     }
 
     int Foo::getWriteBufferSize() const
     {
-        return 
-            sizeof( _byte ) + 
-            sizeof( _ushort ) + 
-            sizeof( _uint ) + 
-            sizeof( _ulong ) + 
-            sizeof( _sbyte ) + 
-            sizeof( _short ) + 
-            sizeof( _int ) + 
-            sizeof( _long ) + 
-            sizeof( _double ) + 
-            sizeof( _float ) + 
-            sizeof( _bool );
+        return sizeof( Foo );
+        //return 
+        //    sizeof( _byte ) + 
+        //    sizeof( _ushort ) + 
+        //    sizeof( _uint ) + 
+        //    sizeof( _ulong ) + 
+        //    sizeof( _sbyte ) + 
+        //    sizeof( _short ) + 
+        //    sizeof( _int ) + 
+        //    sizeof( _long ) + 
+        //    sizeof( _double ) + 
+        //    sizeof( _float ) + 
+        //    sizeof( _bool );
     }
 
     ushort Foo2::getTypeID()
@@ -126,11 +135,11 @@ namespace PacketTestPackets
 
     bool Foo2::readBuffer( FlatBuffer& fb )
     {
-        if( !fb.read( _short ) ) return false;
-        if( !fb.read( _int ) ) return false;
-        if( !fb.read( _f ) ) return false;
-        if( !fb.read( _long ) ) return false;
-        return true;
+        return fb.reads(
+            _short, 
+            _int, 
+            _f, 
+            _long );
     }
 
     void Foo2::writeBufferDirect( FlatBuffer& fb ) const
@@ -200,9 +209,9 @@ namespace PacketTestPackets
 
     bool Foo3::readBuffer( FlatBuffer& fb )
     {
-        if( !fb.read( _f ) ) return false;
-        if( !fb.read( _s ) ) return false;
-        return true;
+        return fb.reads(
+            _f, 
+            _s );
     }
 
     void Foo3::writeBufferDirect( FlatBuffer& fb ) const
