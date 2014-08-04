@@ -10,18 +10,26 @@ namespace Test_CSharpConsole
 {
     public static class Program
     {
-        static void dump(Type t)
+        static void dump( Type t )
         {
+            Console.WriteLine( t.Name );
             Console.WriteLine( t.IsGenericType );
             Console.WriteLine( t.GenericTypeArguments.Length );
             foreach( var ct in t.GenericTypeArguments )
             {
-                dump( ct );
+                if( ct.IsArray )
+                {
+                    var at = Type.GetType( ct.FullName.Substring( 0, ct.FullName.Length - 2 ) );
+                    dump( at );
+                }
+                else
+                    dump( ct );
             }
         }
         static void Main( string[] args )
         {
-            var t = typeof( Dictionary<int, List<string>> );
+            var t = typeof( Dictionary<int, Dictionary<int, string[]>[]> );
+
             dump( t );
 
 
