@@ -97,29 +97,67 @@ namespace PacketGenerator
                     //// more class attributes
                 }
                 template.Classes.Add( c );
-                // 从子类中先把父类属性移除，再插入到前面，以确保父类属性在前
+
                 var r_fields = r_class.GetFields( BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance ).ToList();
                 if( r_class.BaseType != typeof( object ) )
                 {
                     r_fields.InsertRange( 0, r_class.BaseType.GetFields( BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance ) );
-
-                    //var r_parent_field_names = r_class.BaseType.GetFields( BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance ).Select( a => a.Name ).ToList();
-                    //var tmp = new List<FieldInfo>();
-                    //while( r_fields.Any( a => r_parent_field_names.Contains( a.Name ) ) )
-                    //{
-                    //    var o = r_fields.First( a => r_parent_field_names.Contains( a.Name ) );
-                    //    tmp.Add( o );
-                    //    r_fields.Remove( o );
-                    //}
-                    //for( int i = 0; i < tmp.Count; i++ )
-                    //{
-                    //    r_fields.Insert( i, tmp[ i ] );
-                    //}
                 }
+
                 foreach( var r_field in r_fields )
                 {
                     var f = new ClassField { Class = c };
+                    f.Name = r_field.Name;
                     c.Fields.Add( f );
+
+                    var ft = r_field.FieldType;
+                    if( ft.IsArray ) f.Declare.IsArray = true;
+                    if( ft.IsGenericType )
+                    {
+                        if( ft.Namespace == libNS )
+                            throw new Exception( "unknown data type." );
+                        f.Declare.DataType = DataTypes.Generic;
+                        // fill Childs.....
+                        
+                    }
+                    else if( ft.Namespace == "System" )
+                    {
+                        switch( ft.Name )
+                        {
+                        case "Byte":
+                        case "UInt16":
+                        case "UInt32":
+                        case "UInt64":
+                        case "SByte":
+                        case "Int16":
+                        case "Int32":
+                        case "Int64":
+                        case "Double":
+                        case "Single":
+                        case "Boolean":
+                            f.Declare.DataType = DataTypes.BuiltIn;
+                            f.Declare.Name = ft.Name;
+                            f.Declare.Namespace = "";
+                        default:
+                            throw new Exception( "unknown data type." );
+                        }
+                    }
+                    else if( ft.Namespace == libNS )
+                    {
+                        // class or enum
+                        f.Declare.DataType = DataTypes.Custom;
+                        f.Declare.Name = ft.Name;
+                        f.Declare.Namespace = libNS;
+
+                    }
+                    //if( f.Declare.Namespace == libNS )
+                    //{
+                    //    if( f.Declare.DataType == DataTypes.BuiltIn )
+                    //    {
+                    //        f.Declare.Namespace = "System";
+                    //    }
+                    //}
+
                 }
                 for( int fidx = 0; fidx < c.Fields.Count; ++fidx )
                 {
@@ -131,7 +169,7 @@ namespace PacketGenerator
                         else if( r_attribute is LIB.Default ) f.Default = ( (LIB.Default)r_attribute ).Value;
                         else if( r_attribute is LIB.Get ) f.Get = ( (LIB.Get)r_attribute ).Value;
                         else if( r_attribute is LIB.Get ) f.Get = ( (LIB.Get)r_attribute ).Value;
-                        else if( r_attribute is LIB.Limit ) { f.MinLen = ( (LIB.Limit)r_attribute ).Min; f.MaxLen = ( (LIB.Limit)r_attribute ).Max; }
+                        else if( r_attribute is LIB.Limit ) { f.Declare.MinLen = ( (LIB.Limit)r_attribute ).Min; f.Declare.MaxLen = ( (LIB.Limit)r_attribute ).Max; }
                         else if( r_attribute is LIB.Condation )
                         {
                             var ps = ( (LIB.Condation)r_attribute ).Value;
@@ -145,40 +183,34 @@ namespace PacketGenerator
                         //else if( r_attribute is LIB.Encode ) c.Encode.AddRange( ( (LIB.Encode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
                         //// more field attributes
                     }
-                    f.Name = r_field.Name;
-                    if( r_field.FieldType.Name.LastIndexOf( "[]" ) == r_field.FieldType.Name.Length - 2 && r_field.FieldType.Name != "Byte[]" )
-                    {
-                        //f.IsArray = true;
-                        f.Type = r_field.FieldType.FullName.Substring( 0, r_field.FieldType.FullName.Length - 2 ).Replace( libNSdot, "" );
-                    }
+
+
                     //else if( r_field.FieldType.Name.StartsWith( "List`1" ) )
                     //{
                     //    f.IsArray = true;
                     //    f.Type = r_field.FieldType.FullName.Replace( libNSdot, "" ).Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ].Replace( "List`1[[", "" );
                     //}
-                    else if( r_field.FieldType.Name.StartsWith( "Dict`2" ) )
-                    {
-                        // PacketLibrary.Dict`2[[Enum1, PacketTemplate_Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
-                        //f.IsDictionary = true;
-                        //var ss = r_field.FieldType.FullName.Replace( libNSdot + "Dict`2[[", "" ).Replace( "]]", "" ).Split( new string[] { "],[" }, StringSplitOptions.None );
-                        //f.KeyType = ss[ 0 ].Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ];
-                        //f.Type = ss[ 1 ].Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ];
-                    }
-                    else
-                    {
-                        f.Type = r_field.FieldType.Name;
-                        f.TypeNamespace = r_field.FieldType.Namespace ?? "";
-                    }
+                    //else if( r_field.FieldType.Name.StartsWith( "Dict`2" ) )
+                    //{
+                    //    // PacketLibrary.Dict`2[[Enum1, PacketTemplate_Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
+                    //    //f.IsDictionary = true;
+                    //    //var ss = r_field.FieldType.FullName.Replace( libNSdot + "Dict`2[[", "" ).Replace( "]]", "" ).Split( new string[] { "],[" }, StringSplitOptions.None );
+                    //    //f.KeyType = ss[ 0 ].Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ];
+                    //    //f.Type = ss[ 1 ].Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ];
+                    //}
+                    //else
+                    //{
+                    //    f.Type = r_field.FieldType.Name;
+                    //    f.TypeNamespace = r_field.FieldType.Namespace ?? "";
+                    //}
 
-                    if( f.Type.Contains( '.' ) )
-                    {
-                        f.TypeNamespace = f.Type.Substring( 0, f.Type.LastIndexOf( '.' ) );
-                        f.Type = f.Type.Substring( f.Type.LastIndexOf( '.' ) + 1 );
-                    }
-                    if( f.TypeNamespace == libNS )
-                    {
-                        f.TypeNamespace = "System";
-                    }
+                    //if( f.Type.Contains( '.' ) )
+                    //{
+                    //    f.TypeNamespace = f.Type.Substring( 0, f.Type.LastIndexOf( '.' ) );
+                    //    f.Type = f.Type.Substring( f.Type.LastIndexOf( '.' ) + 1 );
+                    //}
+
+
 
                     //if( f.IsDictionary )
                     //{
@@ -316,7 +348,7 @@ namespace PacketGenerator
             case "Boolean":
             case "String":
             case "Byte[]":
-            return true;
+                return true;
             }
             return false;
         }

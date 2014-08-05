@@ -37,52 +37,20 @@ public class ClassField
 {
     public Class Class = null;
     public string Name = "";
-    public string TypeNamespace = "";
-    public string Type = "";
-    public ClassBase TypeClass = null;
-    public Container Container = null;
-
-    //public bool Nullable = false;
-    //public bool IsArray = false;
-    //public bool IsList = false;
-    //public bool IsDictionary = false;
-    //public string KeyTypeNamespace = "";        // IsDictionary 时有意义
-    //public string KeyType = "";                 // IsDictionary 时有意义
-    //public ClassBase KeyTypeClass = null;       // IsDictionary 时有意义
-    // ...
+    public Declare Declare = new Declare();
     public string Desc = "";
 
     public bool Get = false;
     public bool Set = false;
     public object Default = true;
 
-    public uint MinLen = 0;
-    public uint MaxLen = 0;
     public Dictionary<ClassField, object> Condation = new Dictionary<ClassField,object>();
 
+    //public bool Enable
     //public decimal MinValue = 0;
     //public decimal MaxValue = 0;
     //public DecodeCondation DecodeCondation = new DecodeCondation( "", Operators.Equal, null );
     //public EncodeCondation EncodeCondation = new EncodeCondation( "", Operators.Equal, null );
-}
-
-public enum ContainerTypes
-{
-    Array,
-    List,
-    Dict
-}
-public class Container
-{
-    public ContainerTypes Type;
-    public Container ParentContainer;
-
-    public string KeyType = "";
-
-    public string ValueTypeNamespace = "";
-    public string ValueType = "";
-    public ClassBase ValueTypeClass = null;
-    public Container ValueContainer = null;
 }
 
 public class Enum : ClassBase
@@ -101,4 +69,22 @@ public class EnumField
     public string Name = "";
     public string Value = "";
     public string Desc = "";
+}
+
+public enum DataTypes
+{
+    BuiltIn,    // 内置 各种整数浮点
+    Custom,     // 用户类，枚举
+    Generic     // 泛型
+}
+public class Declare
+{
+    public DataTypes DataType;
+    public string Name;
+    public string Namespace;
+    public ClassBase Class;     // 只针对 用户类，枚举
+    public bool IsArray;
+    public uint MinLen = 0;
+    public uint MaxLen = 0;
+    public List<Declare> Childs = new List<Declare>();  // 只针对 数组 或 泛型
 }
