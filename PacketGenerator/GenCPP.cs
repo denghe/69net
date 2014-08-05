@@ -45,24 +45,34 @@ public:
 " );
                 foreach( var f in c.Fields )
                 {
-                    var tn = GetTypeKeyword( f.Type, f.TypeNamespace );
+                    var tn = SplitTypeKeyword( GetTypeKeyword( f.Declare ), f.Declare );
                     sb.Append( ( f.Desc == "" ? "" : GetComment( f.Desc, 8 ) ) + @"
-        " + tn + " _" + f.Name.ToFirstLower() + ( ( GetDefaultValueByType( f ) != "" ) ? ( " = " + GetDefaultValueByType( f ) ) : "" ) + ";" );
+        " + tn.Key + " _" + f.Name.ToFirstLower() + tn.Value + ( ( GetDefaultValueByType( f ) != "" ) ? ( " = " + GetDefaultValueByType( f ) ) : "" ) + ";" );
                 }
                 sb.Append( @"
 
         static void fill( FlatBuffer& fb" );
                 foreach( var f in c.Fields )
                 {
-                    var tn = GetTypeKeyword( f.Type, f.TypeNamespace );
-                    sb.Append( @"
+                    var tn = GetTypeKeyword( f.Declare );
+                    var atn = SplitTypeKeyword( GetTypeKeyword( f.Declare ), f.Declare );
+                    if( f.Declare.DataType == DataTypes.Array )
+                    {
+                        sb.Append( @"
+            , " + atn.Key + "( &" + f.Name + " )" + atn.Value );
+                    }
+                    else
+                    {
+                        sb.Append( @"
             , " + tn + " " + f.Name );
+                    }
                 }
                 sb.Append( @" );
 " );
                 foreach( var f in c.Fields )
                 {
-                    var tn = GetTypeKeyword( f.Type, f.TypeNamespace );
+                    var tn = GetTypeKeyword( f.Declare );
+                    var atn = SplitTypeKeyword( GetTypeKeyword( f.Declare ), f.Declare );
                     if( f.Get )
                     {
                         sb.Append( @"
@@ -72,11 +82,22 @@ public:
                     {
                         if( IsSimpleType( f ) )
                         {
-                            sb.Append( @"
+                            if( f.Declare.DataType == DataTypes.Array )
+                            {
+                                sb.Append( @"
+        inline void set" + f.Name.ToFirstUpper() + @"( " + atn.Key + @"( &v )" + atn.Value + @" )
+        {
+            _" + f.Name.ToFirstLower() + @" = v;
+        }" );
+                            }
+                            else
+                            {
+                                sb.Append( @"
         inline void set" + f.Name.ToFirstUpper() + @"( " + tn + @" v )
         {
             _" + f.Name.ToFirstLower() + @" = v;
         }" );
+                            }
                         }
                         else
                         {
@@ -143,7 +164,7 @@ namespace " + pn + @"Packets
                     isFirst = true;
                     foreach( var f in c.Fields )
                     {
-                        if( f.TypeClass is Class && IsPod( (Class)f.TypeClass ) )
+                        if( ( f.Declare.Class as Class != null ) && IsPod( (Class)f.Declare.Class ) )
                         {
                             sb.Append( @"
         " + ( isFirst ? ":" : "," ) + " _" + f.Name.ToFirstLower() + @"( other._" + f.Name.ToFirstLower() + @" )" );
@@ -174,7 +195,7 @@ namespace " + pn + @"Packets
     {" );
                     foreach( var f in c.Fields )
                     {
-                        if( f.TypeClass is Class && IsPod( (Class)f.TypeClass ) )
+                        if( ( f.Declare.Class as Class != null ) && IsPod( (Class)f.Declare.Class ) )
                         {
                             sb.Append( @"
         _" + f.Name.ToFirstLower() + @" = other._" + f.Name.ToFirstLower() + @";" );
@@ -197,7 +218,7 @@ namespace " + pn + @"Packets
                 {
                     if( f.Get )
                     {
-                        var tn = GetTypeKeyword( f.Type, f.TypeNamespace );
+                        var tn = GetTypeKeyword( f.Declare );
                         sb.Append( @"
     " + tn + " const& " + c.Name + @"::get" + f.Name.ToFirstUpper() + @"()
     {
@@ -210,9 +231,18 @@ namespace " + pn + @"Packets
     void " + c.Name + @"::fill( FlatBuffer& fb" );
                 foreach( var f in c.Fields )
                 {
-                    var tn = GetTypeKeyword( f.Type, f.TypeNamespace );
-                    sb.Append( @"
+                    var tn = GetTypeKeyword( f.Declare );
+                    var atn = SplitTypeKeyword( GetTypeKeyword( f.Declare ), f.Declare );
+                    if( f.Declare.DataType == DataTypes.Array )
+                    {
+                        sb.Append( @"
+        , " + atn.Key + @"( &p" + f.Name.ToFirstUpper() + " )" + atn.Value );
+                    }
+                    else
+                    {
+                        sb.Append( @"
         , " + tn + @" p" + f.Name.ToFirstUpper() );
+                    }
                 }
                 sb.Append( @" )
     {" );
@@ -240,7 +270,6 @@ namespace " + pn + @"Packets
         fb.writes(" );
                     foreach( var f in c.Fields )
                     {
-                        var tn = GetTypeKeyword( f.Type, f.TypeNamespace );
                         sb.Append( @"
             _" + f.Name.ToFirstLower() + ( f == c.Fields[ c.Fields.Count - 1 ] ? "" : @", " ) );
                     }
@@ -258,7 +287,6 @@ namespace " + pn + @"Packets
         return fb.reads(" );
                     foreach( var f in c.Fields )
                     {
-                        var tn = GetTypeKeyword( f.Type, f.TypeNamespace );
                         sb.Append( @"
             _" + f.Name.ToFirstLower() + ( f == c.Fields[ c.Fields.Count - 1 ] ? "" : @", " ) );
                     }
@@ -280,7 +308,6 @@ namespace " + pn + @"Packets
         fb.writesDirect(" );
                     foreach( var f in c.Fields )
                     {
-                        var tn = GetTypeKeyword( f.Type, f.TypeNamespace );
                         sb.Append( @"
             _" + f.Name.ToFirstLower() + ( f == c.Fields[ c.Fields.Count - 1 ] ? "" : @", " ) );
                     }
@@ -298,7 +325,6 @@ namespace " + pn + @"Packets
         return " );
                     foreach( var f in c.Fields )
                     {
-                        var tn = GetTypeKeyword( f.Type, f.TypeNamespace );
                         if( IsSimpleType( f ) )
                         {
                             sb.Append( @"
@@ -307,7 +333,7 @@ namespace " + pn + @"Packets
                         else
                         {
                             sb.Append( @"
-            _" + f.Name.ToFirstLower() + ".getWriteBufferSize()" );
+            BufferUtils::getSizes( _" + f.Name.ToFirstLower() + " )" );
                         }
                         sb.Append( f == c.Fields[ c.Fields.Count - 1 ] ? "" : @" + " );
                     }
@@ -361,14 +387,14 @@ namespace " + pn + @"Packets
                 c.Namespace = c.Namespace.Replace( ".", "::" );
                 foreach( var f in c.Fields )
                 {
-                    if( f.TypeNamespace == "" ) continue;
-                    if( f.TypeNamespace == "System" )
+                    if( f.Declare.Namespace == "" ) continue;
+                    if( f.Declare.Namespace == "System" )
                     {
-                        f.TypeNamespace = "";
+                        f.Declare.Namespace = "";
                     }
                     else
                     {
-                        f.TypeNamespace = ( baseNS == "" ? "" : ( "::" + baseNS + "::" ) ) + f.TypeNamespace.Replace( ".", "::" );
+                        f.Declare.Namespace = ( baseNS == "" ? "" : ( "::" + baseNS + "::" ) ) + f.Declare.Namespace.Replace( ".", "::" );
                     }
                 }
             }
@@ -382,27 +408,19 @@ namespace " + pn + @"Packets
         {
             foreach( var f in c.Fields )
             {
-                //if( f.IsList || f.IsDictionary || f.Type == "String" && f.TypeNamespace == "" )
-                //{
-                //    return false;
-                //}
-                if( f.TypeClass.IsEnum ) continue;
-                switch( f.Type )
+                if( f.Declare.Name == "String" )
+                    return false;
+                if( f.Declare.DataType == DataTypes.Generic ) return false;
+                if( f.Declare.DataType == DataTypes.BuiltIn ) continue;
+                if( f.Declare.DataType == DataTypes.Custom )
                 {
-                case "Byte":
-                case "UInt16":
-                case "UInt32":
-                case "UInt64":
-                case "SByte":
-                case "Int16":
-                case "Int32":
-                case "Int64":
-                case "Double":
-                case "Single":
-                case "Boolean":
-                    continue;
+                    if( f.Declare.Class == null )
+                    {
+                        throw new Exception( "should not be null" );
+                    }
+                    if( f.Declare.Class != null && f.Declare.Class.IsEnum ) continue;
+                    if( !IsPod( (Class)f.Declare.Class ) ) return false;
                 }
-                if( !IsPod( (Class)f.TypeClass ) ) return false;
             }
             return true;
         }
@@ -410,12 +428,13 @@ namespace " + pn + @"Packets
 
         public static bool IsSimpleType( ClassField f )
         {
-            if( f.Type == "String" && f.TypeNamespace == "" )       // f.IsList || f.IsDictionary || 
+            if( f.Declare.DataType != DataTypes.BuiltIn ) return false;
+            if( f.Declare.Name == "String" )
             {
                 return false;
             }
-            if( f.TypeClass != null && f.TypeClass.IsEnum ) return true;
-            switch( f.Type )
+            if( f.Declare.Class != null && f.Declare.Class.IsEnum ) return true;
+            switch( f.Declare.Name )
             {
             case "Byte":
             case "UInt16":
@@ -435,11 +454,11 @@ namespace " + pn + @"Packets
 
         public static string GetDefaultValueByType( ClassField f )
         {
-            //if( f.IsArray || f.IsList || f.IsDictionary )
-            //{
-            //    return "";
-            //}
-            switch( f.Type )
+            if( f.Declare.DataType != DataTypes.BuiltIn )
+            {
+                return "";
+            }
+            switch( f.Declare.Name )
             {
             case "Byte":
             case "UInt16":
@@ -452,10 +471,11 @@ namespace " + pn + @"Packets
             case "Double":
             case "Single": return "0";
             case "Boolean": return "false";
+            case "String": return "";
             default:
-                if( f.TypeClass != null && f.TypeClass.IsEnum )
+                if( f.Declare.Class != null && f.Declare.Class.IsEnum )
                 {
-                    return ( f.TypeNamespace != "" ? f.TypeNamespace : _pn ) + "." + f.Type + "." + ( (Enum)f.TypeClass ).Fields.First().Name;
+                    return ( f.Declare.Namespace != "" ? f.Declare.Namespace : _pn ) + "." + f.Declare.Name + "." + ( (Enum)f.Declare.Class ).Fields.First().Name;
                 }
                 return "";
             }
@@ -471,42 +491,60 @@ sps + @"/*
 " + sps + @"*/";
         }
 
-        public static string GetTypeKeyword( Enum c )
+        public static string GetTypeKeyword( Declare d )
         {
-            switch( c.Type )
+            string rtv = "";
+            if( d.DataType == DataTypes.Array )
             {
-            case "Byte": return "byte";
-            case "SByte": return "sbyte";
-            case "UInt16": return "ushort";
-            case "Int16": return "short";
-            case "UInt32": return "uint";
-            case "Int32": return "int";
-            case "UInt64": return "uint64";
-            case "Int64": return "int64";
+                rtv = GetTypeKeyword( d.Childs[ 0 ] ) + "[" + d.MinLen + "]";
             }
-            throw new Exception( "it can't be" );
-        }
-        public static string GetTypeKeyword( string tn, string tns )
-        {
-            switch( tn )
+            else if( d.DataType == DataTypes.BuiltIn )
             {
-            case "Byte": return "byte";
-            case "SByte": return "sbyte";
-            case "UInt16": return "ushort";
-            case "Int16": return "short";
-            case "UInt32": return "uint";
-            case "Int32": return "int";
-            case "UInt64": return "uint64";
-            case "Int64": return "int64";
-            case "Double": return "double";
-            case "Single": return "float";
-            case "Boolean": return "bool";
-            //case "String": return "String";
-            default:
-                //return ( f.TypeNamespace != "" ? f.TypeNamespace : ( "::" + _pn + "Packets" ) ) + "::" + f.Type;
-                return ( tns != "" ? ( tns + "::" ) : "" ) + tn;
+                switch( d.Name )
+                {
+                case "Byte": rtv = "byte"; break;
+                case "SByte": rtv = "sbyte"; break;
+                case "UInt16": rtv = "ushort"; break;
+                case "Int16": rtv = "short"; break;
+                case "UInt32": rtv = "uint"; break;
+                case "Int32": rtv = "int"; break;
+                case "UInt64": rtv = "uint64"; break;
+                case "Int64": rtv = "int64"; break;
+                case "Double": rtv = "double"; break;
+                case "Single": rtv = "float"; break;
+                case "Boolean": rtv = "bool"; break;
+                default:
+                    rtv = ( d.Namespace != "" ? ( d.Namespace + "::" ) : "" ) + d.Name;
+                    break;
+                }
             }
+            else if( d.DataType == DataTypes.Custom )
+            {
+                rtv = ( d.Namespace != "" ? d.Namespace : ( "::" + _pn + "Packets" ) ) + "::" + d.Name;
+            }
+            else
+            {
+                rtv = d.Name + "<";
+                for( int i = 0; i < d.Childs.Count; ++i )
+                {
+                    if( i > 0 ) rtv += ",";
+                    rtv += GetTypeKeyword( d.Childs[ i ] );
+                }
+                rtv += ">";
+            }
+            return rtv;
         }
 
+        // todo: 将类型声明尾部的 1组或多组 [???] 分离并返回
+        public static KeyValuePair<string, string> SplitTypeKeyword( string k, Declare d )
+        {
+            int n = 0;
+            while( d.DataType == DataTypes.Array )
+            {
+                n += 2 + d.MinLen.ToString().Length;
+                d = d.Childs[ 0 ];
+            }
+            return new KeyValuePair<string, string>( k.Substring( 0, k.Length - n ), k.Substring( k.Length - n, n ) );
+        }
     }
 }

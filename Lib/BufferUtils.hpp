@@ -30,6 +30,39 @@ namespace BufferUtils
     }
 
 
+    template<typename T, int len>
+    typename std::enable_if<getSize_checker<T>::value, int>::type getArraySizeCore( T const( &v )[ len ] )
+    {
+        int siz = 0;
+        for( int i = 0; i < len; ++i )
+        {
+            siz += v[ i ].getWriteBufferSize();
+        }
+        return siz;
+    };
+    template<typename T, int len>
+    typename std::enable_if<!getSize_checker<T>::value, int>::type getArraySizeCore( T const( &v )[ len ] )
+    {
+        if( std::is_pod<T>::value )
+        {
+            return sizeof( T ) * len;
+        }
+        else
+        {
+            int siz = 0;
+            for( int i = 0; i < len; ++i )
+            {
+                siz += getSize( v[ i ] );
+            }
+            return siz;
+        }
+    };
+    template<typename T, int len>
+    int getSize( T const( &v )[ len ] )
+    {
+        return getArraySizeCore( v );
+    }
+
 
     template<typename T>
     void getSizesCore( int& len, T const& v )
@@ -85,6 +118,16 @@ namespace BufferUtils
 #endif
     }
 
+    template<typename T, int len>
+    void write( char* dest, T const( &src )[ len ] )
+    {
+        for( int i = 0; i < len; ++i )
+        {
+            write( dest + sizeof( T ) * i, src[ i ] );
+        }
+    }
+
+
 
 
 
@@ -117,6 +160,17 @@ namespace BufferUtils
         }
 #endif
     }
+
+    template<typename T, int len>
+    void read( T( &dest )[ len ], char const* src )
+    {
+        for( int i = 0; i < len; ++i )
+        {
+            read( dest[ i ], src + sizeof( T ) * i );
+        }
+    }
+
+
 
 }
 

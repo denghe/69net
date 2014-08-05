@@ -347,7 +347,7 @@ int List<T>::getWriteBufferSize() const
     int siz = sizeof( int );
     for( int i = 0; i < _size; ++i )
     {
-        siz += _buf[ i ].getWriteBufferSize();
+        siz += BufferUtils::getSize( _buf[ i ] );
     }
     return siz;
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class Template
 {
-    //public List<Project> Projects = new List<Project>();
+    public List<Project> Projects = new List<Project>();
     public List<Class> Classes = new List<Class>();
     public List<Enum> Enums = new List<Enum>();
     public List<String> Namespaces = new List<string>();
@@ -75,7 +75,8 @@ public enum DataTypes
 {
     BuiltIn,    // 内置 各种整数浮点
     Custom,     // 用户类，枚举
-    Generic     // 泛型
+    Generic,    // 泛型
+    Array       // 数组
 }
 public class Declare
 {
@@ -83,8 +84,7 @@ public class Declare
     public string Name;
     public string Namespace;
     public ClassBase Class;     // 只针对 用户类，枚举
-    public bool IsArray;
-    public uint MinLen = 0;
-    public uint MaxLen = 0;
+    public int MinLen = 0;
+    public int MaxLen = 0;
     public List<Declare> Childs = new List<Declare>();  // 只针对 数组 或 泛型
 }

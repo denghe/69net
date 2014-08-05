@@ -271,7 +271,7 @@ int Dict<TK, TV>::getWriteBufferSize() const
     int siz = sizeof( int );
     if( !std::is_pod<TK>::value && !std::is_pod<TV>::value )
     {
-        for( int i = 0; i < _size; ++i )
+        for( int i = 0; i < _nodes.size(); ++i )
         {
             siz += _nodes[ i ]->key.getWriteBufferSize();
             siz += _nodes[ i ]->value.getWriteBufferSize();
@@ -284,7 +284,7 @@ int Dict<TK, TV>::getWriteBufferSize() const
     }
     else
     {
-        for( int i = 0; i < _size; ++i )
+        for( int i = 0; i < _nodes.size(); ++i )
         {
             siz += _nodes[ i ]->value.getWriteBufferSize();
         }
@@ -295,7 +295,7 @@ int Dict<TK, TV>::getWriteBufferSize() const
     }
     else
     {
-        for( int i = 0; i < _size; ++i )
+        for( int i = 0; i < _nodes.size(); ++i )
         {
             siz += _nodes[ i ]->key.getWriteBufferSize();
         }

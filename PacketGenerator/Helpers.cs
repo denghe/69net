@@ -12,32 +12,32 @@ namespace PacketGenerator
 {
     public static class Helpers
     {
+        public static string libNS = "PacketLibrary";            // 重要：这个字串需要保持与模板 Lib 名一致
+        public static string libNSdot = libNS + ".";
+        public static string projEnum = "__projects";            // 重要：生成过程中通过这个枚举来识别项目分类
+
         public static Template GetTemplate( Assembly asm )
         {
             var template = new Template();
-            var libNS = "PacketLibrary";            // 重要：这个字串需要保持与模板 Lib 名一致
-            var libNSdot = libNS + ".";
-            var projEnum = "__projects";            // 重要：生成过程中通过这个枚举来识别项目分类
 
-            //// 扫项目列表
-            //var r_enums = from t in asm.GetTypes() where ( t.IsEnum ) && t.Namespace != libNS && t.Name == projEnum select t;
-            //if( r_enums.Count() > 0 )
-            //{
-            //    var e = r_enums.First();
-            //    var r_fields = e.GetFields( BindingFlags.Static | BindingFlags.Public );
-            //    foreach( var r_field in r_fields )
-            //    {
-            //        var p = new Project { Name = r_field.Name };
-            //        foreach( var a in r_field.GetCustomAttributes( false ) )
-            //        {
-            //            if( a is LIB.Desc ) p.Desc = ( (LIB.Desc)a ).Value;
-            //        }
-            //        template.Projects.Add( p );
-            //    }
-            //}
+            // 扫项目列表
+            var r_enums = from t in asm.GetTypes() where ( t.IsEnum ) && t.Namespace != libNS && t.Name == projEnum select t;
+            if( r_enums.Count() > 0 )
+            {
+                var e = r_enums.First();
+                var r_fields = e.GetFields( BindingFlags.Static | BindingFlags.Public );
+                foreach( var r_field in r_fields )
+                {
+                    var p = new Project { Name = r_field.Name };
+                    foreach( var a in r_field.GetCustomAttributes( false ) )
+                    {
+                        if( a is LIB.Desc ) p.Desc = ( (LIB.Desc)a ).Value;
+                    }
+                    template.Projects.Add( p );
+                }
+            }
 
             // 扫枚举
-            var r_enums = from t in asm.GetTypes() where ( t.IsEnum ) && t.Namespace != libNS && t.Name != projEnum select t;
             foreach( var r_enum in r_enums )
             {
                 var e = new Enum();
@@ -86,7 +86,7 @@ namespace PacketGenerator
             {
                 var c = new Class();
                 c.IsEnum = false;
-                c.Name = r_class.Name.ToString();
+                c.Name = r_class.Name;
                 c.Namespace = r_class.Namespace ?? "";
                 var cis = r_class.GetInterfaces();
                 foreach( var r_attribute in r_class.GetCustomAttributes( false ) )
@@ -97,69 +97,38 @@ namespace PacketGenerator
                     //// more class attributes
                 }
                 template.Classes.Add( c );
+            }
 
+            // 自增 type id
+            ushort tid = 0;
+            foreach( var c in template.Classes )
+            {
+                // 填充自增 TypeID
+                c.TypeID = tid++;
+            }
+
+            // 继续扫类
+            foreach( var r_class in r_classes )
+            {
+                var c = template.Classes.Find( a => a.Name == r_class.Name && a.Namespace == ( r_class.Namespace ?? "" ) );
+
+                // 扫继承字段
                 var r_fields = r_class.GetFields( BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance ).ToList();
                 if( r_class.BaseType != typeof( object ) )
                 {
                     r_fields.InsertRange( 0, r_class.BaseType.GetFields( BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance ) );
                 }
 
+                // 扫字段
                 foreach( var r_field in r_fields )
                 {
                     var f = new ClassField { Class = c };
                     f.Name = r_field.Name;
                     c.Fields.Add( f );
-
-                    //// 下面这段代码可能需要独立成一个函数方便递归
-                    //var ft = r_field.FieldType;
-                    //var ftn = ft.Name;
-                    //if( ft.IsArray )
-                    //{
-                    //    f.Declare.IsArray = true;
-                    //    // todo: 去 ftn 尾的 []
-                    //    // todo: 如果是数组的数组？递归填充 Childs
-                    //}
-                    //if( ft.IsGenericType )
-                    //{
-                    //    if( ft.Namespace == libNS )
-                    //        throw new Exception( "unknown data type." );
-                    //    f.Declare.DataType = DataTypes.Generic;
-                    //    // fill Childs..... todo: recursive fill
-                        
-                    //}
-                    //else if( ft.Namespace == "System" )
-                    //{
-                    //    switch( ft.Name )
-                    //    {
-                    //    case "Byte":
-                    //    case "UInt16":
-                    //    case "UInt32":
-                    //    case "UInt64":
-                    //    case "SByte":
-                    //    case "Int16":
-                    //    case "Int32":
-                    //    case "Int64":
-                    //    case "Double":
-                    //    case "Single":
-                    //    case "Boolean":
-                    //        f.Declare.DataType = DataTypes.BuiltIn;
-                    //        f.Declare.Name = ft.Name;
-                    //        f.Declare.Namespace = "";
-                    //    default:
-                    //        throw new Exception( "unknown data type." );
-                    //    }
-                    //}
-                    //else if( ft.Namespace == libNS )
-                    //{
-                    //    // class or enum
-                    //    f.Declare.DataType = DataTypes.Custom;
-                    //    f.Declare.Name = ft.Name;
-                    //    f.Declare.Namespace = libNS;
-
-                    //}
-
+                    fillDeclare( template.Classes, f.Declare, r_field.FieldType );
                 }
 
+                // 继续扫字段
                 for( int fidx = 0; fidx < c.Fields.Count; ++fidx )
                 {
                     var r_field = r_fields[ fidx ];
@@ -171,6 +140,7 @@ namespace PacketGenerator
                         else if( r_attribute is LIB.Get ) f.Get = ( (LIB.Get)r_attribute ).Value;
                         else if( r_attribute is LIB.Get ) f.Get = ( (LIB.Get)r_attribute ).Value;
                         else if( r_attribute is LIB.Limit ) { f.Declare.MinLen = ( (LIB.Limit)r_attribute ).Min; f.Declare.MaxLen = ( (LIB.Limit)r_attribute ).Max; }
+                        else if( r_attribute is LIB.Limits ) { fillDeclareLimits( f.Declare, (LIB.Limits)r_attribute ); }
                         else if( r_attribute is LIB.Condation )
                         {
                             var ps = ( (LIB.Condation)r_attribute ).Value;
@@ -184,67 +154,10 @@ namespace PacketGenerator
                         //else if( r_attribute is LIB.Encode ) c.Encode.AddRange( ( (LIB.Encode)r_attribute ).Value.Select( o => template.Projects.FirstOrDefault( oo => oo.Name == o.ToString() ) ) );
                         //// more field attributes
                     }
-
-
-                    //else if( r_field.FieldType.Name.StartsWith( "List`1" ) )
-                    //{
-                    //    f.IsArray = true;
-                    //    f.Type = r_field.FieldType.FullName.Replace( libNSdot, "" ).Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ].Replace( "List`1[[", "" );
-                    //}
-                    //else if( r_field.FieldType.Name.StartsWith( "Dict`2" ) )
-                    //{
-                    //    // PacketLibrary.Dict`2[[Enum1, PacketTemplate_Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
-                    //    //f.IsDictionary = true;
-                    //    //var ss = r_field.FieldType.FullName.Replace( libNSdot + "Dict`2[[", "" ).Replace( "]]", "" ).Split( new string[] { "],[" }, StringSplitOptions.None );
-                    //    //f.KeyType = ss[ 0 ].Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ];
-                    //    //f.Type = ss[ 1 ].Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ];
-                    //}
-                    //else
-                    //{
-                    //    f.Type = r_field.FieldType.Name;
-                    //    f.TypeNamespace = r_field.FieldType.Namespace ?? "";
-                    //}
-
-                    //if( f.Type.Contains( '.' ) )
-                    //{
-                    //    f.TypeNamespace = f.Type.Substring( 0, f.Type.LastIndexOf( '.' ) );
-                    //    f.Type = f.Type.Substring( f.Type.LastIndexOf( '.' ) + 1 );
-                    //}
-
-
-
-                    //if( f.IsDictionary )
-                    //{
-                    //    if( f.KeyType.Contains( '.' ) )
-                    //    {
-                    //        f.KeyTypeNamespace = f.KeyType.Substring( 0, f.KeyType.LastIndexOf( '.' ) );
-                    //        f.KeyType = f.KeyType.Substring( f.KeyType.LastIndexOf( '.' ) + 1 );
-                    //    }
-                    //    if( f.KeyTypeNamespace == libNS )
-                    //    {
-                    //        f.KeyTypeNamespace = "System";
-                    //    }
-                    //}
-
-                    // todo: check List
-                    //if( f.FieldType.Name.StartsWith( "Nullable`1" ) )
-                    //{
-                    //    fps.Nullable = true;
-                    //    fps.Type = f.FieldType.FullName.Replace( libNSdot, "" ).Split( new string[] { ", " }, StringSplitOptions.None )[ 0 ].Replace( "Nullable`1[[", "" );
-                    //}
-                    //else
-                    //{
-                    //    fps.Type = f.FieldType.FullName.Replace( "[]", "" ).Replace( libNSdot, "" );
-                    //}
-                    //if( fps.Type.Contains( '.' ) )
-                    //{
-                    //    fps.TypeNamespace = fps.Type.Substring( 0, fps.Type.LastIndexOf( '.' ) );
-                    //    fps.Type = fps.Type.Substring( fps.Type.LastIndexOf( '.' ) + 1 );
-                    //}
                 }
             }
 
-            // todo: 所有 Binary, String, WString, List<T> 都应该做长度限制, 不限就应该警告
+            // todo: 所有容器都应该做长度限制, 不限就应该警告
 
             //// 整理引用关系, 调整 Encode, Decode
             //foreach( var c in template.Classes )
@@ -261,78 +174,107 @@ namespace PacketGenerator
             //        c.Enable = c.Encode.Concat( c.Decode ).Distinct().ToList();
             //}
 
-            // 自增 type id
-            ushort tid = 0;
-
-            // 整理数据类型
-            foreach( var c in template.Classes )
-            {
-                foreach( var f in c.Fields )
-                {
-                    //if( f.TypeNamespace == "System" )
-                    //{
-                    //    if( !ValidateSystemDataType( f.Type ) )
-                    //    {
-                    //        throw new Exception( "unhandled type: " + f.TypeNamespace + "." + f.Type + " " + c.Name + "." + f.Name );
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    if( template.Enums.Exists( a => a.Namespace == f.TypeNamespace && a.Name == f.Type ) )
-                    //    {
-                    //        f.TypeClass = template.Enums.First( a => a.Namespace == f.TypeNamespace && a.Name == f.Type );
-                    //    }
-                    //    else if( template.Classes.Exists( a => a.Namespace == f.TypeNamespace && a.Name == f.Type ) )
-                    //    {
-                    //        f.TypeClass = template.Classes.First( a => a.Namespace == f.TypeNamespace && a.Name == f.Type );
-                    //    }
-                    //    else
-                    //    {
-                    //        throw new Exception( "unhandled type: " + f.TypeNamespace + "." + f.Type + " " + c.Name + "." + f.Name );
-                    //    }
-                    //}
-
-
-                    //if( f.IsDictionary )
-                    //{
-                    //    if( f.KeyTypeNamespace == "System" )
-                    //    {
-                    //        if( !ValidateSystemDataType( f.KeyType ) )
-                    //        {
-                    //            throw new Exception( "unhandled type: " + f.KeyTypeNamespace + "." + f.KeyType + " " + c.Name + "." + f.Name );
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        if( template.Enums.Exists( a => a.Namespace == f.KeyTypeNamespace && a.Name == f.KeyType ) )
-                    //        {
-                    //            f.KeyTypeClass = template.Enums.First( a => a.Namespace == f.KeyTypeNamespace && a.Name == f.KeyType );
-                    //        }
-                    //        else if( template.Classes.Exists( a => a.Namespace == f.KeyTypeNamespace && a.Name == f.KeyType ) )
-                    //        {
-                    //            f.KeyTypeClass = template.Classes.First( a => a.Namespace == f.KeyTypeNamespace && a.Name == f.KeyType );
-                    //        }
-                    //        else
-                    //        {
-                    //            throw new Exception( "unhandled key type: " + f.KeyTypeNamespace + "." + f.KeyType + " " + c.Name + "." + f.Name );
-                    //        }
-                    //    }
-                    //}
-
-                }
-
-                // 填充自增 TypeID
-                c.TypeID = tid++;
-            }
 
             // 整理命名空间
             template.Namespaces = template.Classes.Select( a => a.Namespace ).Concat( template.Enums.Select( a => a.Namespace ) ).Distinct().ToList();
 
-
-
-
             return template;
         }
+
+        public static void fillDeclareLimits( Declare d, LIB.Limits ls, int i = 0 )
+        {
+            if( d.DataType == DataTypes.Array )
+            {
+                if( i >= ls.Value.Length )
+                {
+                    throw new Exception( "the Limits is not enough length." );
+                }
+                d.MinLen = ls.Value[ i++ ];
+                fillDeclareLimits( d.Childs[ 0 ], ls, i );
+            }
+            else if( d.DataType == DataTypes.Generic )
+            {
+                if( i >= ls.Value.Length )
+                {
+                    throw new Exception( "the Limits is not enough length." );
+                }
+                d.MinLen = ls.Value[ i++ ];
+                if( i >= ls.Value.Length )
+                {
+                    throw new Exception( "the Limits is not enough length." );
+                }
+                d.MaxLen = ls.Value[ i++ ];
+                foreach( var cd in d.Childs )
+                {
+                    fillDeclareLimits( cd, ls, i );
+                }
+            }
+        }
+
+        public static void fillDeclare( List<Class> cs, Declare d, Type t )
+        {
+            var tn = t.Name;
+            if( t.IsArray )
+            {
+                d.DataType = DataTypes.Array;
+                d.Namespace = "System";
+                d.Name = "[]";
+                var cd = new Declare();
+                d.Childs.Add( cd );
+                fillDeclare( cs, cd, t.GetElementType() );
+            }
+            else if( t.IsGenericType )
+            {
+                if( t.Namespace != libNS )
+                    throw new Exception( "unknown data type." );
+                d.DataType = DataTypes.Generic;
+                d.Name = tn.Substring( 0, tn.LastIndexOf('`') );
+                d.Namespace = "";
+                foreach( var ct in t.GenericTypeArguments )
+                {
+                    var cd = new Declare();
+                    d.Childs.Add( cd );
+                    fillDeclare( cs, cd, ct );
+                }
+            }
+            else if( t.Namespace == "System" )
+            {
+                switch( t.Name )
+                {
+                case "Byte":
+                case "UInt16":
+                case "UInt32":
+                case "UInt64":
+                case "SByte":
+                case "Int16":
+                case "Int32":
+                case "Int64":
+                case "Double":
+                case "Single":
+                case "Boolean":
+                case "String":
+                    d.DataType = DataTypes.BuiltIn;
+                    d.Name = t.Name;
+                    d.Namespace = "";
+                    break;
+                default:
+                    throw new Exception( "unknown data type." );
+                }
+            }
+            else
+            {
+                if( t.Namespace != null )   //  && t.Namespace != libNS
+                {
+                    throw new Exception( "unknown data type." );
+                }
+                d.DataType = DataTypes.Custom;
+                d.Name = t.Name;
+                d.Namespace = "";
+                d.Class = cs.Find( a => a.Name == t.Name && a.Namespace == "" );
+            }
+        }
+
+
 
         public static bool ValidateSystemDataType( string t )
         {

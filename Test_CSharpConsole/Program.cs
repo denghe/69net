@@ -12,6 +12,10 @@ namespace Test_CSharpConsole
     {
         static void dump( Type t )
         {
+            if( t.IsArray )
+            {
+                t = Type.GetType( t.FullName.Substring( 0, t.FullName.Length - 2 ) );
+            }
             Console.WriteLine( t.Name );
             Console.WriteLine( t.IsGenericType );
             Console.WriteLine( t.GenericTypeArguments.Length );
@@ -29,7 +33,7 @@ namespace Test_CSharpConsole
         static void Main( string[] args )
         {
             //var t = typeof( Dictionary<int, Dictionary<int, string[]>[]> );
-            var t = typeof( List<int>[] );
+            var t = typeof( Byte[] );
 
             dump( t );
 

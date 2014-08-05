@@ -1,4 +1,5 @@
-﻿using PacketLibrary;
+﻿#pragma warning disable 0169
+using PacketLibrary;
 
 //[Desc( "this is Enum1" )]
 //enum Enum1 : byte

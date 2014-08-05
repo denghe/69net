@@ -10,7 +10,8 @@ namespace BufferUtils
     template<int len>
     int getSize( char const( &v )[ len ] );
 
-
+    template<typename T, int len>
+    int getSize( T const( &v )[ len ] );
 
 
     template<typename T>
@@ -28,9 +29,14 @@ namespace BufferUtils
     template<typename T>
     void write( char* dest, T const& src );
 
+    template<typename T, int len>
+    void write( char* dest, T const( &src )[ len ] );
+
     template<typename T>
     void read( T& dest, char const* src );
 
+    template<typename T, int len>
+    void read( T ( &dest )[ len ], char const* src );
 
 
 
@@ -39,5 +45,6 @@ namespace BufferUtils
     void dump( String & s, char const * buf, int len );
 
 }
+
 
 #endif

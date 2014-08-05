@@ -10,7 +10,7 @@ typename std::enable_if<writeBufferDirect_checker<T>::value, void>::type writeBu
 template<typename T>
 typename std::enable_if<!writeBufferDirect_checker<T>::value, void>::type writeBufferDirect_switch( FlatBuffer& fb, T const& v )
 {
-    static_assert( std::is_pod<T>::value, "forget impl writeBufferDirect func ?" );
+    //static_assert( std::is_pod<T>::value, "forget impl writeBufferDirect func ?" );
     BufferUtils::write( fb.data() + fb.size(), v );
     fb.size() += BufferUtils::getSize( v );
 };
@@ -30,7 +30,7 @@ typename std::enable_if<writeBuffer_checker<T>::value, void>::type writeBuffer_s
 template<typename T>
 typename std::enable_if<!writeBuffer_checker<T>::value, void>::type writeBuffer_switch( FlatBuffer& fb, T const& v )
 {
-    static_assert( std::is_pod<T>::value, "forget impl writeBuffer func ?" );
+    //static_assert( std::is_pod<T>::value, "forget impl writeBuffer func ?" );
     int siz = BufferUtils::getSize( v );
     fb.reserve( fb.size() + siz );
     BufferUtils::write( fb.data() + fb.size(), v );

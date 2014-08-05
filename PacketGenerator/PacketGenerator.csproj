@@ -84,7 +84,7 @@
   <ItemGroup>
     <Compile Include="Classes.cs" />
     <Compile Include="Extensions.cs" />
-    <None Include="GenCPP.cs" />
+    <Compile Include="GenCPP.cs" />
     <None Include="GenCS.cs" />
     <Compile Include="GenEmpty.cs" />
     <Compile Include="GenLua.cs" />

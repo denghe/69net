@@ -72,8 +72,8 @@ namespace PacketLibrary
     /// </summary>
     public class Desc : System.Attribute
     {
-        public Desc( System.String v ) { Value = v; }
-        public System.String Value { get; set; }
+        public Desc( string v ) { Value = v; }
+        public string Value { get; set; }
     }
 
     /// <summary>
@@ -81,19 +81,28 @@ namespace PacketLibrary
     /// </summary>
     public class Limit : System.Attribute
     {
-        public Limit( System.UInt32 fix )
+        public Limit( int fix )
         {
             Min = fix;
             Max = fix;
         }
-        public Limit( System.UInt32 min, System.UInt32 max )
+        public Limit( int min, int max )
         {
             if( max < min ) throw new System.Exception( "error: max < min" );
             Min = min;
             Max = max;
         }
-        public System.UInt32 Min { get; set; }
-        public System.UInt32 Max { get; set; }
+        public int Min { get; set; }
+        public int Max { get; set; }
+    }
+
+    public class Limits : System.Attribute
+    {
+        public Limits( params int[] v )
+        {
+            Value = v;
+        }
+        public int[] Value { get; set; }
     }
 
     /// <summary>
@@ -120,8 +129,8 @@ namespace PacketLibrary
     public class Get : System.Attribute
     {
         public Get() { Value = true; }
-        public Get( System.Boolean v ) { Value = v; }
-        public System.Boolean Value { get; set; }
+        public Get( bool v ) { Value = v; }
+        public bool Value { get; set; }
     }
 
     /// <summary>
@@ -130,8 +139,8 @@ namespace PacketLibrary
     public class Set : System.Attribute
     {
         public Set() { Value = true; }
-        public Set( System.Boolean v ) { Value = v; }
-        public System.Boolean Value { get; set; }
+        public Set( bool v ) { Value = v; }
+        public bool Value { get; set; }
     }
 
 }
@@ -148,8 +157,8 @@ namespace PacketLibrary
 ///// </summary>
 //public class Enabled : System.Attribute
 //{
-//    public Enabled( System.Boolean v ) { Value = v; }
-//    public System.Boolean Value { get; set; }
+//    public Enabled( bool v ) { Value = v; }
+//    public bool Value { get; set; }
 //}
 
 
@@ -200,8 +209,8 @@ namespace PacketLibrary
 ///// </summary>
 //public class SeeAlso : System.Attribute
 //{
-//    public SeeAlso( params  System.String[] v ) { Value = v; }
-//    public System.String[] Value { get; set; }
+//    public SeeAlso( params  string[] v ) { Value = v; }
+//    public string[] Value { get; set; }
 //}
 
 
@@ -240,8 +249,8 @@ namespace PacketLibrary
 ///// </summary>
 //public class DecodeCondation : System.Attribute
 //{
-//    public DecodeCondation( System.String k, Operators o, System.Object v ) { Key = k; Operate = o; Value = v; }
-//    public System.String Key { get; set; }
+//    public DecodeCondation( string k, Operators o, System.Object v ) { Key = k; Operate = o; Value = v; }
+//    public string Key { get; set; }
 //    public Operators Operate { get; set; }
 //    public System.Object Value { get; set; }
 //}
@@ -252,8 +261,8 @@ namespace PacketLibrary
 ///// </summary>
 //public class EncodeCondation : System.Attribute
 //{
-//    public EncodeCondation( System.String k, Operators o, System.Object v ) { Key = k; Operate = o; Value = v; }
-//    public System.String Key { get; set; }
+//    public EncodeCondation( string k, Operators o, System.Object v ) { Key = k; Operate = o; Value = v; }
+//    public string Key { get; set; }
 //    public Operators Operate { get; set; }
 //    public System.Object Value { get; set; }
 //}

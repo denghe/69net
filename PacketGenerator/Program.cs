@@ -49,13 +49,13 @@ namespace PacketGenerator
                     }
                 }
 
-                //var rtv = GenCPP.Gen( t, path, shortfn.Substring( "PacketTemplate_".Length ) );
-                //if( rtv != "" )
-                //{
-                //    Console.WriteLine( rtv );
-                //    Console.ReadKey();
-                //    return;
-                //}
+                var rtv = GenCPP.Gen( t, path, shortfn.Substring( "PacketTemplate_".Length ) );
+                if( rtv != "" )
+                {
+                    Console.WriteLine( rtv );
+                    Console.ReadKey();
+                    return;
+                }
             }
         }
 
