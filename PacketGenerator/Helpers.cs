@@ -110,55 +110,56 @@ namespace PacketGenerator
                     f.Name = r_field.Name;
                     c.Fields.Add( f );
 
-                    var ft = r_field.FieldType;
-                    if( ft.IsArray ) f.Declare.IsArray = true;
-                    if( ft.IsGenericType )
-                    {
-                        if( ft.Namespace == libNS )
-                            throw new Exception( "unknown data type." );
-                        f.Declare.DataType = DataTypes.Generic;
-                        // fill Childs.....
-                        
-                    }
-                    else if( ft.Namespace == "System" )
-                    {
-                        switch( ft.Name )
-                        {
-                        case "Byte":
-                        case "UInt16":
-                        case "UInt32":
-                        case "UInt64":
-                        case "SByte":
-                        case "Int16":
-                        case "Int32":
-                        case "Int64":
-                        case "Double":
-                        case "Single":
-                        case "Boolean":
-                            f.Declare.DataType = DataTypes.BuiltIn;
-                            f.Declare.Name = ft.Name;
-                            f.Declare.Namespace = "";
-                        default:
-                            throw new Exception( "unknown data type." );
-                        }
-                    }
-                    else if( ft.Namespace == libNS )
-                    {
-                        // class or enum
-                        f.Declare.DataType = DataTypes.Custom;
-                        f.Declare.Name = ft.Name;
-                        f.Declare.Namespace = libNS;
-
-                    }
-                    //if( f.Declare.Namespace == libNS )
+                    //// 下面这段代码可能需要独立成一个函数方便递归
+                    //var ft = r_field.FieldType;
+                    //var ftn = ft.Name;
+                    //if( ft.IsArray )
                     //{
-                    //    if( f.Declare.DataType == DataTypes.BuiltIn )
+                    //    f.Declare.IsArray = true;
+                    //    // todo: 去 ftn 尾的 []
+                    //    // todo: 如果是数组的数组？递归填充 Childs
+                    //}
+                    //if( ft.IsGenericType )
+                    //{
+                    //    if( ft.Namespace == libNS )
+                    //        throw new Exception( "unknown data type." );
+                    //    f.Declare.DataType = DataTypes.Generic;
+                    //    // fill Childs..... todo: recursive fill
+                        
+                    //}
+                    //else if( ft.Namespace == "System" )
+                    //{
+                    //    switch( ft.Name )
                     //    {
-                    //        f.Declare.Namespace = "System";
+                    //    case "Byte":
+                    //    case "UInt16":
+                    //    case "UInt32":
+                    //    case "UInt64":
+                    //    case "SByte":
+                    //    case "Int16":
+                    //    case "Int32":
+                    //    case "Int64":
+                    //    case "Double":
+                    //    case "Single":
+                    //    case "Boolean":
+                    //        f.Declare.DataType = DataTypes.BuiltIn;
+                    //        f.Declare.Name = ft.Name;
+                    //        f.Declare.Namespace = "";
+                    //    default:
+                    //        throw new Exception( "unknown data type." );
                     //    }
+                    //}
+                    //else if( ft.Namespace == libNS )
+                    //{
+                    //    // class or enum
+                    //    f.Declare.DataType = DataTypes.Custom;
+                    //    f.Declare.Name = ft.Name;
+                    //    f.Declare.Namespace = libNS;
+
                     //}
 
                 }
+
                 for( int fidx = 0; fidx < c.Fields.Count; ++fidx )
                 {
                     var r_field = r_fields[ fidx ];
@@ -268,28 +269,30 @@ namespace PacketGenerator
             {
                 foreach( var f in c.Fields )
                 {
-                    if( f.TypeNamespace == "System" )
-                    {
-                        if( !ValidateSystemDataType( f.Type ) )
-                        {
-                            throw new Exception( "unhandled type: " + f.TypeNamespace + "." + f.Type + " " + c.Name + "." + f.Name );
-                        }
-                    }
-                    else
-                    {
-                        if( template.Enums.Exists( a => a.Namespace == f.TypeNamespace && a.Name == f.Type ) )
-                        {
-                            f.TypeClass = template.Enums.First( a => a.Namespace == f.TypeNamespace && a.Name == f.Type );
-                        }
-                        else if( template.Classes.Exists( a => a.Namespace == f.TypeNamespace && a.Name == f.Type ) )
-                        {
-                            f.TypeClass = template.Classes.First( a => a.Namespace == f.TypeNamespace && a.Name == f.Type );
-                        }
-                        else
-                        {
-                            throw new Exception( "unhandled type: " + f.TypeNamespace + "." + f.Type + " " + c.Name + "." + f.Name );
-                        }
-                    }
+                    //if( f.TypeNamespace == "System" )
+                    //{
+                    //    if( !ValidateSystemDataType( f.Type ) )
+                    //    {
+                    //        throw new Exception( "unhandled type: " + f.TypeNamespace + "." + f.Type + " " + c.Name + "." + f.Name );
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    if( template.Enums.Exists( a => a.Namespace == f.TypeNamespace && a.Name == f.Type ) )
+                    //    {
+                    //        f.TypeClass = template.Enums.First( a => a.Namespace == f.TypeNamespace && a.Name == f.Type );
+                    //    }
+                    //    else if( template.Classes.Exists( a => a.Namespace == f.TypeNamespace && a.Name == f.Type ) )
+                    //    {
+                    //        f.TypeClass = template.Classes.First( a => a.Namespace == f.TypeNamespace && a.Name == f.Type );
+                    //    }
+                    //    else
+                    //    {
+                    //        throw new Exception( "unhandled type: " + f.TypeNamespace + "." + f.Type + " " + c.Name + "." + f.Name );
+                    //    }
+                    //}
+
+
                     //if( f.IsDictionary )
                     //{
                     //    if( f.KeyTypeNamespace == "System" )

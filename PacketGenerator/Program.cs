@@ -14,13 +14,7 @@ namespace PacketGenerator
 
         static void Main( string[] args )
         {
-            //var inputDirPath = System.IO.Path.Combine( Application.StartupPath, "Input" );
             var outputDirPath = System.IO.Path.Combine( Application.StartupPath, "Output" );
-            //if( !Directory.Exists( inputDirPath ) ) {
-            //    Console.WriteLine( "请把模板项目生成的 DLL 文件放到执行文件同目录的 Input 目录中" );
-            //    Console.ReadKey();
-            //    return;
-            //}
             if( !Directory.Exists( outputDirPath ) )
             {
                 try
@@ -34,7 +28,6 @@ namespace PacketGenerator
                     return;
                 }
             }
-            //foreach( var fn in Directory.GetFiles( inputDirPath, "*.dll" ) ) {
             foreach( var fn in Directory.GetFiles( Application.StartupPath, "PacketTemplate_*.dll" ) )
             {
                 var asm = Assembly.LoadFile( fn );
@@ -56,13 +49,13 @@ namespace PacketGenerator
                     }
                 }
 
-                var rtv = GenCPP.Gen( t, path, shortfn.Substring( "PacketTemplate_".Length ) );
-                if( rtv != "" )
-                {
-                    Console.WriteLine( rtv );
-                    Console.ReadKey();
-                    return;
-                }
+                //var rtv = GenCPP.Gen( t, path, shortfn.Substring( "PacketTemplate_".Length ) );
+                //if( rtv != "" )
+                //{
+                //    Console.WriteLine( rtv );
+                //    Console.ReadKey();
+                //    return;
+                //}
             }
         }
 

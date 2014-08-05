@@ -28,7 +28,8 @@ namespace Test_CSharpConsole
         }
         static void Main( string[] args )
         {
-            var t = typeof( Dictionary<int, Dictionary<int, string[]>[]> );
+            //var t = typeof( Dictionary<int, Dictionary<int, string[]>[]> );
+            var t = typeof( List<int>[] );
 
             dump( t );
 
