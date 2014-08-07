@@ -14,11 +14,9 @@ namespace PacketTestPackets
 public:
 
         int _isss[3][2][1];
-        Dict<String,List<byte[8]>> _eee[5][3];
 
         static void fill( FlatBuffer& fb
-            , int( &isss )[3][2][1]
-            , Dict<String,List<byte[8]>>( &eee )[5][3] );
+            , int( &isss )[3][2][1] );
 
     };
 }

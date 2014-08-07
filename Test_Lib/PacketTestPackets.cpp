@@ -8,40 +8,34 @@ namespace PacketTestPackets
         return 0;
     }
     void Foo::fill( FlatBuffer& fb
-        , int( &pIsss )[3][2][1]
-        , Dict<String,List<byte[8]>>( &pEee )[5][3] )
+        , int( &pIsss )[3][2][1] )
     {
         fb.writes(
-            pIsss, 
-            pEee );
+            pIsss );
     }
 
     void Foo::writeBuffer( FlatBuffer& fb ) const
     {
         fb.writes(
-            _isss, 
-            _eee );
+            _isss );
     }
 
     bool Foo::readBuffer( FlatBuffer& fb )
     {
         return fb.reads(
-            _isss, 
-            _eee );
+            _isss );
     }
 
     void Foo::writeBufferDirect( FlatBuffer& fb ) const
     {
         fb.writesDirect(
-            _isss, 
-            _eee );
+            _isss );
     }
 
     int Foo::getWriteBufferSize() const
     {
         return 
-            BufferUtils::getSizes( _isss ) + 
-            BufferUtils::getSizes( _eee );
+            BufferUtils::getSizes( _isss );
     }
 
 }

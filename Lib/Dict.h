@@ -1,6 +1,8 @@
 ﻿#ifndef _DICT_H_
 #define _DICT_H_
 
+// todo: 如果 TK 是简单数据类型（ 可直接拿来做 hash 的 ），路由到无 hash 值版
+
 template <typename TK, typename TV>
 struct Dict : Memmoveable
 {
@@ -12,7 +14,6 @@ struct Dict : Memmoveable
         TK              key;
         TV              value;
     };
-    typedef Node NT;
     explicit Dict( int capacity = 64 );
     Dict( Dict&& o );
     Dict( Dict const& o );

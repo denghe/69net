@@ -6,8 +6,8 @@ class Foo
     [Limits( 1, 2, 3 )]
     int[][][] isss;
 
-    [Limits( 3, 5, 1, 16, 0, 100, 8 )]
-    Dict<string, List<byte[]>>[][] eee;
+    //[Limits( 3, 5, 1, 16, 0, 100, 8 )]
+    //Dict<string, List<byte[]>>[][] eee;
 }
 
 //class Foo
