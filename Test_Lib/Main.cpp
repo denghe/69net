@@ -6,7 +6,17 @@
 #include <cassert>
 #include "lib/All.h"
 using namespace std;
-template<int len>
+
+typedef function<void()> StepTimerItemType;
+struct StepTimerItemHandlerType
+{
+    inline static void handle( StepTimerItemType& o )
+    {
+        o();
+    }
+};
+
+template<int len, typename T = StepTimerItemType, typename HT = StepTimerItemHandlerType>
 class StepTimer
 {
 public:
@@ -16,7 +26,7 @@ public:
         for( int i = 0; i < elapsed; ++i )
         {
             auto& os = _oss[ ( _counter + i ) % len ];
-            for( int i = 0; i < os.size(); ++i ) os[ i ]();
+            for( int i = 0; i < os.size(); ++i ) HT::handle( os[ i ] );
             os.clear();
         }
         _counter += elapsed;
@@ -24,9 +34,9 @@ public:
     template<typename VT>
     void insert( int n, VT&& v )
     {
-        assert( n < len );
-        _oss[ ( _counter + n ) % len ].emplace_back( std::forward<VT>( v ) );
-        //_oss[ ( _counter + n ) % len ].emplace( std::forward<VT>( v ) );
+        assert( n > 0 && n < len );
+        _oss[ ( _counter + n ) % len ].push_back( std::forward<VT>( v ) );
+        //_oss[ ( _counter + n ) % len ].push( std::forward<VT>( v ) );
     }
     void clear()
     {
@@ -35,46 +45,72 @@ public:
     }
 private:
     int _counter;
-    vector<function<void()>> _oss[ len ];
-    //List<function<void()>> _oss[ len ];
+    vector<T> _oss[ len ];
+    //List<T> _oss[ len ];
 };
 
 struct EEE
 {
-    void xxx() { cout << "eee"; }
+    void xxx()
+    {
+        //cout << "eee";
+    }
 };
+
+
+struct FooBase
+{
+    function<void()> _timerCallback;
+};
+
+struct FooBaseTimerCallbackHandler
+{
+    inline static void handle( weak_ptr<FooBase>& o )
+    {
+        if( auto p = o.lock() )
+            p->_timerCallback();
+    }
+};
+
+
+
+
+struct Foo : public FooBase
+{
+};
+
 
 int main()
 {
     int n = 0;
-    typedef StepTimer<999> TT;
-    TT t( n );
-    function<void()> f;
-    f = [ &]
+    StepTimer<999, weak_ptr<FooBase>, FooBaseTimerCallbackHandler> t( n );
+    int _counter = 0;
+    vector<shared_ptr<Foo>> _foos;
+    for( int i = 0; i < 1000; ++i )
     {
-        //cout << n << "\n";
-        t.insert( 3, f );
-    };
-
-    //auto e = make_shared<EEE>();
-    //weak_ptr<EEE> we( e );
-    //t.insert( 10, [ we ]
-    //{
-    //    if( auto p = we.lock() )
-    //        p->xxx();
-    //} );
+        auto f = make_shared<Foo>();
+        auto wf = weak_ptr<Foo>( f );
+        f->_timerCallback = [&t, &_counter, wf]
+        {
+            _counter++;
+            t.insert( 1, wf );
+        };
+        t.insert( 1, wf );
+        _foos.push_back( f );
+    }
 
     Stopwatch sw;
-    n = 0;
-    t.clear();
-    t.insert( 0, f );
-    while( n++ < 9999999 )
+    while( n < 10000 )
     {
         t.update();
-        //if( n == 5 ) e.reset();
+        //if( n == 1000 )
+        //{
+        //    for( auto& f : _foos ) f.reset();
+        //}
+        ++n;
     }
     Cout( sw.elapsedMillseconds() );
-    cout << "\nn = " << n << endl;
+    Cout( "\nn = ", n, ", counter = ", _counter );
 
     system( "pause" );
     return 0;
@@ -82,63 +118,3 @@ int main()
 
 
 
-//#include "Lib/All.h"
-//#include "PacketTestPackets.h"
-//using namespace PacketTestPackets;
-//
-//int main()
-//{
-//
-//    // todo: 生成物增加 fillTo( fb, p1, p2, ... ) 以及 fillTo( fb, T& dest ) 版
-//
-//    //FlatBuffer fb;
-//    //Foo f;
-//    //f._isss[ 0 ][ 0 ][ 0 ] = 1;
-//    //f._isss[ 1 ][ 0 ][ 0 ] = 2;
-//    //f._isss[ 2 ][ 0 ][ 0 ] = 3;
-//    //f._isss[ 0 ][ 1 ][ 0 ] = 4;
-//    //f._isss[ 1 ][ 1 ][ 0 ] = 5;
-//    //f._isss[ 2 ][ 1 ][ 0 ] = 6;
-//    //fb.write( f );
-//    //Cout( fb.dump() );
-//
-//    ////FlatBuffer fb;
-//    //////Foo3 f;
-//    //////f._f._f._bool = true;
-//    //////f._f._f._byte = 1;
-//    //////f._f._f._short = 2;
-//    //////f._f._f._int = 3;
-//    //////f._f._f._long = 4;
-//    //////f._f._int = 5;
-//    //////f._s = "asdfqwer";
-//
-//    ////int n = 99999999;
-//
-//    ////Foo f;
-//    ////Stopwatch sw;
-//    ////sw.reset();
-//    ////for( int i = 0; i < n; ++i )
-//    ////{
-//    ////    fb.clear();
-//    ////    f.writeBufferDirect( fb );
-//    ////}
-//    ////Cout( sw.elapsedMillseconds() );
-//    ////Cout( fb.dump() );
-//
-//    ////sw.reset();
-//    ////for( int i = 0; i < n; ++i )
-//    ////{
-//    ////    fb.offset() = 0;
-//    ////    if( !f.readBuffer( fb ) ) return 0;
-//    ////}
-//    ////Cout( sw.elapsedMillseconds() );
-//    ////Cout( f._byte );
-//    //////Cout( f._long );
-//
-//    ////Cout( std::is_pod<Foo>::value );
-//    ////Cout( std::is_pod<Foo2>::value );
-//    ////Cout( std::is_pod<Foo3>::value );
-//
-//    system( "pause" );
-//    return 0;
-//}
