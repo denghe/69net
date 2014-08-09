@@ -4,7 +4,6 @@
 #include <array>
 #include <memory>
 #include <cassert>
-#include "lib/All.h"
 using namespace std;
 
 typedef function<void()> StepTimerItemType;
@@ -26,7 +25,7 @@ public:
         for( int i = 0; i < elapsed; ++i )
         {
             auto& os = _oss[ ( _counter + i ) % len ];
-            for( int i = 0; i < os.size(); ++i ) HT::handle( os[ i ] );
+            for( int i = 0; i < (int)os.size(); ++i ) HT::handle( os[ i ] );
             os.clear();
         }
         _counter += elapsed;
@@ -36,7 +35,6 @@ public:
     {
         assert( n > 0 && n < len );
         _oss[ ( _counter + n ) % len ].push_back( std::forward<VT>( v ) );
-        //_oss[ ( _counter + n ) % len ].push( std::forward<VT>( v ) );
     }
     void clear()
     {
@@ -46,7 +44,6 @@ public:
 private:
     int _counter;
     vector<T> _oss[ len ];
-    //List<T> _oss[ len ];
 };
 
 struct EEE
@@ -99,7 +96,7 @@ int main()
         _foos.push_back( f );
     }
 
-    Stopwatch sw;
+//    Stopwatch sw;
     while( n < 10000 )
     {
         t.update();
@@ -109,8 +106,8 @@ int main()
         //}
         ++n;
     }
-    Cout( sw.elapsedMillseconds() );
-    Cout( "\nn = ", n, ", counter = ", _counter );
+//    Cout( sw.elapsedMillseconds() );
+    cout << "\nn = " << n << ", counter = " << _counter;
 
     system( "pause" );
     return 0;
