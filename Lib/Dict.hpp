@@ -67,7 +67,7 @@ template <typename TK, typename TV>
 template <typename KT, typename VT>
 std::pair<typename Dict<TK, TV>::Node*, bool> Dict<TK, TV>::insert( KT && k, VT && v, bool replace /*= false */ )
 {
-    return emplace( replace, std::forward<KT>( k ), std::forward<KT>( v ) );
+    return emplace( replace, std::forward<KT>( k ), std::forward<VT>( v ) );
 }
 
 template <typename TK, typename TV>
@@ -239,6 +239,14 @@ void Dict<TK, TV>::dispose( Node* n )
     n->key.~TK();
     n->value.~TV();
 }
+
+
+template <typename TK, typename TV>
+bool Dict<TK, TV>::empty()
+{
+    return _nodes.size() == 0;
+}
+
 
 template <typename TK, typename TV>
 void Dict<TK, TV>::resize()

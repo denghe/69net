@@ -28,6 +28,7 @@ struct Dict : Memmoveable
     void erase( TK const& k );
     void erase( Node* n );
     void clear();
+    bool empty();
     void reserve( int capacity );
     List<Node*> const& data() const;
     int size() const;
@@ -43,7 +44,7 @@ struct Dict : Memmoveable
     void writeBuffer( FlatBuffer& fb ) const;
     void writeBufferDirect( FlatBuffer& fb ) const;
     bool readBuffer( FlatBuffer& fb );
-private:
+protected:
     void dispose( Node* n );
     void resize();
     List<Node*>         _buckets;
