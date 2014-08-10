@@ -47,7 +47,7 @@ struct Ref
         {
             auto tmp = _p;
             _p = nullptr;
-            tmp->del();
+            tmp->del();     // 是否不应该调用这句？
         }
     }
     Ref( Ref&& other )
