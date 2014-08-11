@@ -4,7 +4,7 @@ struct Object
 {
     void retain() { ++_refs; }
     void release() { --_refs; }
-    virtual void dispose() 
+    virtual void dispose()
     {
         if( !_refs )
         {
@@ -13,7 +13,7 @@ struct Object
         }
         _disposed = true;
     }
-    virtual void del() = 0;                         // free memory
+    virtual void del() = 0;                         // free memory( call distructor )
 protected:
     int _id;                                        // auto increase identity
     int _refs;                                      // weak reference counter
@@ -45,10 +45,9 @@ struct Ref
         _p->release();
         if( _p->_disposed && _p->_refs == 0 )
         {
-            auto tmp = _p;
-            _p = nullptr;
-            tmp->del();     // 是否不应该调用这句？
+            _p->del();
         }
+        _p = nullptr;
     }
     Ref( Ref&& other )
         : _p( other._p )
@@ -156,7 +155,6 @@ private:
     Dict<int, Object*>* _oc;
     virtual void del() override
     {
-        _oc->erase( _id );
         delete this;
     }
     Foo( ObjectContainer& c )
@@ -167,6 +165,7 @@ private:
     }
     ~Foo()
     {
+        _oc->erase( _id );
     }
 };
 
@@ -176,7 +175,7 @@ int main()
         ObjectContainer oc;
         auto f1 = Foo::create( oc );
         f1->_friend = f1;
-        //f1->dispose();
+        f1->dispose();
     }
 
     //auto f1 = new ( p.alloc() ) Foo();
