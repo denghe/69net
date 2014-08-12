@@ -178,21 +178,6 @@ int main()
         f1->dispose();
     }
 
-    //auto f1 = new ( p.alloc() ) Foo();
-    //objs.insert( f1->_id, f1 );
-
-    //auto f2 = new ( p.alloc() ) Foo();
-    //objs.insert( f2->_id, f2 );
-
-    //f2->retain();
-    //f1->_friend = f2;
-
-    //f1->retain();
-    //f2->_friend = f1;
-
-    //f2->dispose();
-
-
     system( "pause" );
     return 0;
 }
