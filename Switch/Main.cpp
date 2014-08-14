@@ -1,146 +1,226 @@
 #include "Lib/All.h"
 
 template<typename T>
-struct RefBase
+struct Share
 {
-    RefBase() : _copys( 1 ), _weaks( 0 ) {}
-    virtual ~RefBase() {}
+    typename std::aligned_storage<sizeof( T ), std::alignment_of<T>::value>::type _data;
+    int _copys;
+    int _weaks;
+    typedef std::function<void()> DT;
+    DT _deleter;
 
-    virtual void _destroy() = 0;
-    virtual void _delete() = 0;
-    
-    int _copys, _weaks;
-
-    T* _t;
+    template<typename... PTS>
+    Share( PTS&&... ps )
+        : _copys( 1 )
+        , _weaks( 0 )
+    {
+        new ( (void *)&_data ) T( std::forward<PTS>( ps )... );
+    }
+    T* ptr()
+    {
+        return (T*)&_data;
+    }
 };
 
+template<typename T>
+struct Strong
+{
+    typedef typename Share<T>::DT DT;
+    Share<T>* _p;
+    Strong()
+        :_p( nullptr )
+    {
+    }
+    void clear()
+    {
+        if( !_p ) return;
+        if( --_p->_copys == 0 )
+        {
+            _p->deleter();
+        }
+        _p = nullptr;
+    }
+    void assign( Share<T>* p, typename DT deleter = nullptr )
+    {
+        assert( p && !p->_copys );
+        // todo: clear
+        _p = p;
+        if( deleter ) _p->_deleter = deleter;
+        else _p->_deleter = [ p ] { delete p; };
+    }
+    Strong( Share<T>* p, typename DT deleter = nullptr )
+    {
+        assign( p, deleter );
+    }
+    Strong( Strong& other )
+    {
+        _p = other._p;
+        ++other._p->_copys;
+    }
+    Strong( Strong&& other )
+    {
+        _p = other._p;
+        other._p = nullptr;
+    }
+    Strong& operator=( Strong& other )
+    {
+        // todo: clear
+    }
+    Strong& operator=( Strong&& other )
+    {
+        // todo: clear
+        _p = other._p;
+        other._p = nullptr;
+    }
+    ~Strong()
+    {
+        if( !_p || --_p->_copys ) return;
+        _p->ptr()->~T();
+        if( !_p->_weaks )
+        {
+            _p->_deleter();
+        }
+        _p = nullptr;
+    }
+    T* ptr()
+    {
+        if( _p == nullptr || !_p->_copys ) return nullptr;
+        return _p->ptr();
+    }
+};
+
+template<typename T>
+struct Weak
+{
+    Share<T>* _p;
+    void clear()
+    {
+        if( !_p ) return;
+        --_p->_weaks;
+        _p = nullptr;
+    }
+    Weak& operator=( Share<T>* p )
+    {
+        // todo: clear();
+        if( p && p->_copys )
+        {
+            _p = p;
+            ++p->_weaks;
+        }
+        else
+        {
+            _p = nullptr;
+        }
+        return *this;
+    }
+    Weak& operator=( Strong<T>& p )
+    {
+        return operator=( p._p );
+    }
+    Weak& operator=( Weak<T>& p )
+    {
+        return operator=( p._p );
+    }
+    Weak& operator=( Weak<T>&& other )
+    {
+        _p = other._p;
+        other._p = nullptr;
+    }
+    Weak( Strong<T>& s )
+    {
+        operator=( s );
+    }
+    Weak( Weak<T>& other )
+    {
+        operator=( other );
+    }
+    Weak( Weak<T>&& other )
+    {
+        _p = other._p;
+        other._p = nullptr;
+    }
+    Weak( Share<T>* p )
+    {
+        operator=( p );
+    }
+    ~Weak()
+    {
+        if( !_p ) return;
+        --_p->_weaks;
+        if( !_p->_copys && !_p->_weaks )
+        {
+            _p->_deleter();
+        }
+        _p = nullptr;
+    }
+    T* ptr()
+    {
+        if( _p == nullptr || !_p->_copys ) return nullptr;
+        return _p->ptr();
+    }
+};
+
+template<typename T, typename... PTS>
+Strong<T> makeStrong( PTS&&... ps )
+{
+    return Strong<T>( new Share<T>( std::forward<PTS>( ps )... ) );
+}
+
+template<typename T, typename... PTS>
+Strong<T> makeStrongEx( void* addr, typename Share<T>::DT deleter, PTS&&... ps )
+{
+    auto p = new (addr)Share<T>( std::forward<PTS>( ps )... );
+    return Strong<T>( p, deleter );
+}
+
+template<typename T, typename... PTS>
+Strong<T> makeStrongEx( Pool* pool, PTS&&... ps )
+{
+    assert( pool->itemBufLen() >= sizeof( Share<T> ) );
+    auto addr = pool->alloc();
+    auto p = new (addr)Share<T>( std::forward<PTS>( ps )... );
+    return Strong<T>( p, [ pool, addr ] { pool->free( addr ); } );
+}
+
+struct Foo
+{
+    Foo()
+    {
+        Cout( "Foo()" );
+    }
+    ~Foo()
+    {
+        Cout( "~Foo()" );
+    }
+};
 
 
 int main()
 {
-    std::shared_ptr<int> x;
+    Pool fp( sizeof( Share<Foo> ) );
+    Cout( p.size() );
+    {
+        auto addr = p.alloc();
+        auto f = makeStrongEx<Foo>( &fp );
+        Cout( p.size() );
 
-    system( "pause" );
+        Weak<Foo> w( f );
+        Cout( w._p->_weaks );
+        auto w2 = w;
+        Cout( w._p->_weaks );
+    }
+    Cout( p.size() );
+
     return 0;
 }
 
 
-//struct Object
-//{
-//    void retain() { ++_refs; }
-//    void release() { --_refs; }
-//    virtual void dispose()
-//    {
-//        if( !_refs )
-//        {
-//            del();
-//            return;
-//        }
-//        _disposed = true;
-//    }
-//    virtual void del() = 0;                         // free memory( call distructor )
-//protected:
-//    int _id;                                        // auto increase identity
-//    int _refs;                                      // weak reference counter
-//    bool _disposed;                                 // dead flag
-//    Object() : _refs( 0 ), _disposed( false )
-//    {
-//        static int id = 0;
-//        _id = id++;
-//    }
-//    virtual ~Object() {};
-//};
-//
-//template<typename T>
-//struct Ref
-//{
-//    Ref( T* p = nullptr )
-//    {
-//        if( !p || p->_disposed )
-//        {
-//            _p = nullptr;
-//            return;
-//        }
-//        _p = p;
-//        p->retain();
-//    }
-//    ~Ref()
-//    {
-//        if( !_p ) return;
-//        _p->release();
-//        if( _p->_disposed && _p->_refs == 0 )
-//        {
-//            _p->del();
-//        }
-//        _p = nullptr;
-//    }
-//    Ref( Ref&& other )
-//        : _p( other._p )
-//    {
-//        other._p = nullptr;
-//    }
-//    Ref( Ref const& other )
-//        : _p( other._p )
-//    {
-//        if( _p ) _p->retain();
-//    }
-//    Ref& operator=( T* p )
-//    {
-//        clear();
-//        _p = p;
-//        if( p ) p->retain();
-//        return *this;
-//    }
-//    Ref& operator=( Ref&& other )
-//    {
-//        clear();
-//        _p = other._p;
-//        other._p = nullptr;
-//    }
-//    Ref& operator=( Ref const& other )
-//    {
-//        clear();
-//        _p = other._p;
-//        if( _p ) _p->retain();
-//    }
-//    void clear()
-//    {
-//        if( !_p ) return;
-//        _p->release();
-//        if( _p->_disposed && _p->_refs == 0 )
-//        {
-//            _p->del();
-//        }
-//        _p = nullptr;
-//    }
-//    T* reset( T* p = nullptr )
-//    {
-//        clear();
-//        if( !p || p->_disposed ) return;
-//        _p = p;
-//        p->retain();
-//    }
-//    T* lock()
-//    {
-//        if( !_p ) return nullptr;
-//        if( _p->_disposed && _p->_refs == 0 )
-//        {
-//            _p->del();
-//            _p = nullptr;
-//            return nullptr;
-//        }
-//        return _p;
-//    }
-//    T* get()
-//    {
-//        return _p;
-//    }
-//
-//protected:
-//    T* _p;
-//};
-//
-//
+//Strong<Foo> f( new SharedData<Foo>() );
+//auto f2 = makeStrong<Foo>();
+//ALIGN8( char buf[ sizeof( SharedData<Foo> ) ] );
+//auto f3 = makeStrongEx<Foo>( buf, [] {} );
+
+
 //struct ObjectContainer : public Dict < int, Object* >
 //{
 //    ~ObjectContainer()
@@ -155,42 +235,6 @@ int main()
 //        {
 //            at( keys[ i ] )->del();
 //        }
-//    }
-//};
-//
-//struct Foo : public Object
-//{
-//    Ref<Foo> _friend;
-//    virtual void dispose() override
-//    {
-//        _friend.clear();
-//        Object::dispose();
-//    }
-//    // blah blah blah
-//
-//public:
-//    template<typename... PTS>
-//    static Foo* create( PTS&& ... ps )
-//    {
-//        return new Foo( std::forward<PTS>( ps )... );
-//    }
-//    friend Ref < Foo > ;
-//    friend ObjectContainer;
-//private:
-//    Dict<int, Object*>* _oc;
-//    virtual void del() override
-//    {
-//        delete this;
-//    }
-//    Foo( ObjectContainer& c )
-//    {
-//        _oc = &c;
-//        c.insert( _id, this );
-//        // blah blah blah
-//    }
-//    ~Foo()
-//    {
-//        _oc->erase( _id );
 //    }
 //};
 //
