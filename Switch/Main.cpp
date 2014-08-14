@@ -1,7 +1,7 @@
 #include "Lib/All.h"
 
 template<typename T>
-struct Share
+struct SharedType
 {
     typename std::aligned_storage<sizeof( T ), std::alignment_of<T>::value>::type _data;
     int _copys;
@@ -10,7 +10,7 @@ struct Share
     DT _deleter;
 
     template<typename... PTS>
-    Share( PTS&&... ps )
+    SharedType( PTS&&... ps )
         : _copys( 1 )
         , _weaks( 0 )
     {
@@ -23,11 +23,11 @@ struct Share
 };
 
 template<typename T>
-struct Strong
+struct Shared
 {
-    typedef typename Share<T>::DT DT;
-    Share<T>* _p;
-    Strong()
+    typedef typename SharedType<T>::DT DT;
+    SharedType<T>* _p;
+    Shared()
         :_p( nullptr )
     {
     }
@@ -40,68 +40,99 @@ struct Strong
         }
         _p = nullptr;
     }
-    void assign( Share<T>* p, typename DT deleter = nullptr )
+    void assign( SharedType<T>* p, typename DT deleter = nullptr )
     {
-        assert( p && !p->_copys );
-        // todo: clear
+        assert( p && p->_copys );
+        clear();
+        ++p->_copys;
         _p = p;
         if( deleter ) _p->_deleter = deleter;
         else _p->_deleter = [ p ] { delete p; };
     }
-    Strong( Share<T>* p, typename DT deleter = nullptr )
+    Shared( SharedType<T>* p, typename DT deleter = nullptr )
     {
-        assign( p, deleter );
+        _p = p;
+        if( deleter ) _p->_deleter = deleter;
+        else _p->_deleter = [ p ] { delete p; };
     }
-    Strong( Strong& other )
+    Shared( Shared& other )
     {
-        _p = other._p;
-        ++other._p->_copys;
-    }
-    Strong( Strong&& other )
-    {
-        _p = other._p;
-        other._p = nullptr;
-    }
-    Strong& operator=( Strong& other )
-    {
-        // todo: clear
-    }
-    Strong& operator=( Strong&& other )
-    {
-        // todo: clear
-        _p = other._p;
-        other._p = nullptr;
-    }
-    ~Strong()
-    {
-        if( !_p || --_p->_copys ) return;
-        _p->ptr()->~T();
-        if( !_p->_weaks )
+        if( !other._p || !other._p->_copys )
         {
-            _p->_deleter();
+            _p = nullptr;
         }
-        _p = nullptr;
+        else
+        {
+            _p = other._p;
+            ++other._p->_copys;
+        }
+    }
+    Shared( Shared&& other )
+    {
+        _p = other._p;
+        other._p = nullptr;
+    }
+    Shared& operator=( Shared& other )
+    {
+        clear();
+        if( !other._p || !other._p->_copys )
+        {
+            _p = nullptr;
+        }
+        else
+        {
+            _p = other._p;
+            ++other._p->_copys;
+        }
+    }
+    Shared& operator=( Shared&& other )
+    {
+        clear();
+        _p = other._p;
+        other._p = nullptr;
+    }
+    ~Shared()
+    {
+        if( !_p ) return;
+        if( _p->_copys > 1 )
+        {
+            --_p->_copys;
+            return;
+        }
+        else
+        {
+            _p->ptr()->~T();
+            if( !_p->_weaks )
+            {
+                _p->_deleter();
+            }
+            _p = nullptr;
+        }
     }
     T* ptr()
     {
         if( _p == nullptr || !_p->_copys ) return nullptr;
         return _p->ptr();
     }
+    T* operator->( )
+    {
+        return ptr();
+    }
 };
 
 template<typename T>
 struct Weak
 {
-    Share<T>* _p;
+    SharedType<T>* _p;
     void clear()
     {
         if( !_p ) return;
         --_p->_weaks;
         _p = nullptr;
     }
-    Weak& operator=( Share<T>* p )
+    Weak& operator=( SharedType<T>* p )
     {
-        // todo: clear();
+        clear();
         if( p && p->_copys )
         {
             _p = p;
@@ -113,7 +144,7 @@ struct Weak
         }
         return *this;
     }
-    Weak& operator=( Strong<T>& p )
+    Weak& operator=( Shared<T>& p )
     {
         return operator=( p._p );
     }
@@ -123,25 +154,54 @@ struct Weak
     }
     Weak& operator=( Weak<T>&& other )
     {
+        clear();
         _p = other._p;
         other._p = nullptr;
     }
-    Weak( Strong<T>& s )
+    Weak()
+        : _p( nullptr )
     {
-        operator=( s );
+    }
+    Weak( Shared<T>& other )
+    {
+        if( other._p && other._p->_copys )
+        {
+            _p = other._p;
+            ++other._p->_weaks;
+        }
+        else
+        {
+            _p = nullptr;
+        }
     }
     Weak( Weak<T>& other )
     {
-        operator=( other );
+        if( other._p && other._p->_copys )
+        {
+            _p = other._p;
+            ++other._p->_weaks;
+        }
+        else
+        {
+            _p = nullptr;
+        }
     }
     Weak( Weak<T>&& other )
     {
         _p = other._p;
         other._p = nullptr;
     }
-    Weak( Share<T>* p )
+    Weak( SharedType<T>* p )
     {
-        operator=( p );
+        if( p && p->_copys )
+        {
+            _p = p;
+            ++p->_weaks;
+        }
+        else
+        {
+            _p = nullptr;
+        }
     }
     ~Weak()
     {
@@ -161,25 +221,25 @@ struct Weak
 };
 
 template<typename T, typename... PTS>
-Strong<T> makeStrong( PTS&&... ps )
+Shared<T> makeShared( PTS&&... ps )
 {
-    return Strong<T>( new Share<T>( std::forward<PTS>( ps )... ) );
+    return Shared<T>( new SharedType<T>( std::forward<PTS>( ps )... ) );
 }
 
 template<typename T, typename... PTS>
-Strong<T> makeStrongEx( void* addr, typename Share<T>::DT deleter, PTS&&... ps )
+Shared<T> makeSharedEx( void* addr, typename SharedType<T>::DT deleter, PTS&&... ps )
 {
-    auto p = new (addr)Share<T>( std::forward<PTS>( ps )... );
-    return Strong<T>( p, deleter );
+    auto p = new (addr)SharedType<T>( std::forward<PTS>( ps )... );
+    return Shared<T>( p, deleter );
 }
 
 template<typename T, typename... PTS>
-Strong<T> makeStrongEx( Pool* pool, PTS&&... ps )
+Shared<T> makeSharedEx( Pool* pool, PTS&&... ps )
 {
-    assert( pool->itemBufLen() >= sizeof( Share<T> ) );
+    assert( pool->itemBufLen() >= sizeof( SharedType<T> ) );
     auto addr = pool->alloc();
-    auto p = new (addr)Share<T>( std::forward<PTS>( ps )... );
-    return Strong<T>( p, [ pool, addr ] { pool->free( addr ); } );
+    auto p = new (addr)SharedType<T>( std::forward<PTS>( ps )... );
+    return Shared<T>( p, [ pool, addr ] { pool->free( addr ); } );
 }
 
 struct Foo
@@ -192,62 +252,42 @@ struct Foo
     {
         Cout( "~Foo()" );
     }
+    void xxx()
+    {
+        Cout( "xxx" );
+    }
+
+    Weak<Foo> parent;
 };
 
 
 int main()
 {
-    Pool fp( sizeof( Share<Foo> ) );
-    Cout( p.size() );
+    Pool fp( sizeof( SharedType<Foo> ) );
+    Cout( fp.size() );
     {
-        auto addr = p.alloc();
-        auto f = makeStrongEx<Foo>( &fp );
-        Cout( p.size() );
+        auto f = makeSharedEx<Foo>( &fp );
+        //f->xxx();
+        //Cout( fp.size() );
+        //Cout( f._p->_copys );
+        //{
+        //    auto f2 = f;
+        //    Cout( f._p->_copys );
+        //}
+        //Cout( f._p->_copys );
 
         Weak<Foo> w( f );
+        //Cout( w._p->_weaks );
+        //{
+        //    auto w2 = w;
+        //    Cout( w._p->_weaks );
+        //}
         Cout( w._p->_weaks );
-        auto w2 = w;
+
+        f->parent = w;
         Cout( w._p->_weaks );
     }
-    Cout( p.size() );
+    Cout( fp.size() );
 
     return 0;
 }
-
-
-//Strong<Foo> f( new SharedData<Foo>() );
-//auto f2 = makeStrong<Foo>();
-//ALIGN8( char buf[ sizeof( SharedData<Foo> ) ] );
-//auto f3 = makeStrongEx<Foo>( buf, [] {} );
-
-
-//struct ObjectContainer : public Dict < int, Object* >
-//{
-//    ~ObjectContainer()
-//    {
-//        if( empty() ) return;
-//        List<int> keys( _nodes.size() );
-//        for( auto i = 0; i < _nodes.size(); ++i )
-//        {
-//            keys.push( _nodes[ i ]->key );
-//        }
-//        for( auto i = 0; i < _nodes.size(); ++i )
-//        {
-//            at( keys[ i ] )->del();
-//        }
-//    }
-//};
-//
-//int main()
-//{
-//    {
-//        ObjectContainer oc;
-//        auto f1 = Foo::create( oc );
-//        f1->_friend = f1;
-//        f1->dispose();
-//    }
-//
-//    system( "pause" );
-//    return 0;
-//}
-//
