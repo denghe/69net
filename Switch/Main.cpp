@@ -26,79 +26,79 @@ template<typename T>
 struct Shared
 {
     typedef typename SharedType<T>::DT DT;
-    SharedType<T>* _p;
+    SharedType<T>* _st;
     Shared()
-        :_p( nullptr )
+        :_st( nullptr )
     {
     }
     void clear()
     {
-        if( !_p ) return;
-        if( _p->_copys > 1 )
+        if( !_st ) return;
+        if( _st->_copys > 1 )
         {
-            --_p->_copys;
+            --_st->_copys;
         }
         else
         {
-            _p->ptr()->~T();
-            if( !_p->_weaks )
+            _st->ptr()->~T();
+            if( !_st->_weaks )
             {
-                _p->_deleter();
+                _st->_deleter();
             }
-            _p->_copys = 0;
+            _st->_copys = 0;
         }
-        _p = nullptr;
+        _st = nullptr;
     }
-    void assign( SharedType<T>* p, typename DT deleter = nullptr )
+    void assign( SharedType<T>* st, typename DT deleter = nullptr )
     {
-        assert( p && p->_copys );
+        assert( st && st->_copys );
         clear();
-        ++p->_copys;
-        _p = p;
-        if( deleter ) _p->_deleter = deleter;
-        else _p->_deleter = [ p ] { delete p; };
+        ++st->_copys;
+        _st = st;
+        if( deleter ) _st->_deleter = deleter;
+        else _st->_deleter = [ st ] { delete st; };
     }
-    Shared( SharedType<T>* p, typename DT deleter = nullptr )
+    Shared( SharedType<T>* st, typename DT deleter = nullptr )
     {
-        _p = p;
-        if( deleter ) _p->_deleter = deleter;
-        else _p->_deleter = [ p ] { delete p; };
+        _st = st;
+        if( deleter ) _st->_deleter = deleter;
+        else _st->_deleter = [ st ] { delete st; };
     }
     Shared( Shared& other )
     {
-        if( !other._p || !other._p->_copys )
+        if( !other._st || !other._st->_copys )
         {
-            _p = nullptr;
+            _st = nullptr;
         }
         else
         {
-            _p = other._p;
-            ++other._p->_copys;
+            _st = other._st;
+            ++other._st->_copys;
         }
     }
     Shared( Shared&& other )
     {
-        _p = other._p;
-        other._p = nullptr;
+        _st = other._st;
+        other._st = nullptr;
     }
     Shared& operator=( Shared& other )
     {
         clear();
-        if( !other._p || !other._p->_copys )
+        if( !other._st || !other._st->_copys )
         {
-            _p = nullptr;
+            _st = nullptr;
         }
         else
         {
-            _p = other._p;
-            ++other._p->_copys;
+            _st = other._st;
+            ++other._st->_copys;
         }
     }
     Shared& operator=( Shared&& other )
     {
         clear();
-        _p = other._p;
-        other._p = nullptr;
+        _st = other._st;
+        other._st = nullptr;
     }
     ~Shared()
     {
@@ -106,8 +106,8 @@ struct Shared
     }
     T* ptr()
     {
-        if( _p == nullptr || !_p->_copys ) return nullptr;
-        return _p->ptr();
+        if( _st == nullptr || !_st->_copys ) return nullptr;
+        return _st->ptr();
     }
     T* operator->( )
     {
@@ -118,88 +118,88 @@ struct Shared
 template<typename T>
 struct Weak
 {
-    SharedType<T>* _p;
+    SharedType<T>* _st;
     void clear()
     {
-        if( !_p ) return;
-        --_p->_weaks;
-        if( !_p->_copys && !_p->_weaks )
+        if( !_st ) return;
+        --_st->_weaks;
+        if( !_st->_copys && !_st->_weaks )
         {
-            _p->_deleter();
+            _st->_deleter();
         }
-        _p = nullptr;
+        _st = nullptr;
     }
-    Weak& operator=( SharedType<T>* p )
+    Weak& operator=( SharedType<T>* st )
     {
         clear();
-        if( p && p->_copys )
+        if( st && st->_copys )
         {
-            _p = p;
-            ++p->_weaks;
+            _st = st;
+            ++st->_weaks;
         }
         else
         {
-            _p = nullptr;
+            _st = nullptr;
         }
         return *this;
     }
-    Weak& operator=( Shared<T>& p )
+    Weak& operator=( Shared<T>& other )
     {
-        return operator=( p._p );
+        return operator=( other._st );
     }
-    Weak& operator=( Weak<T>& p )
+    Weak& operator=( Weak<T>& other )
     {
-        return operator=( p._p );
+        return operator=( other._st );
     }
     Weak& operator=( Weak<T>&& other )
     {
         clear();
-        _p = other._p;
-        other._p = nullptr;
+        _st = other._st;
+        other._st = nullptr;
     }
     Weak()
-        : _p( nullptr )
+        : _st( nullptr )
     {
     }
     Weak( Shared<T>& other )
     {
-        if( other._p && other._p->_copys )
+        if( other._st && other._st->_copys )
         {
-            _p = other._p;
-            ++other._p->_weaks;
+            _st = other._st;
+            ++other._st->_weaks;
         }
         else
         {
-            _p = nullptr;
+            _st = nullptr;
         }
     }
     Weak( Weak<T>& other )
     {
-        if( other._p && other._p->_copys )
+        if( other._st && other._st->_copys )
         {
-            _p = other._p;
-            ++other._p->_weaks;
+            _st = other._st;
+            ++other._st->_weaks;
         }
         else
         {
-            _p = nullptr;
+            _st = nullptr;
         }
     }
     Weak( Weak<T>&& other )
     {
-        _p = other._p;
-        other._p = nullptr;
+        _st = other._st;
+        other._st = nullptr;
     }
-    Weak( SharedType<T>* p )
+    Weak( SharedType<T>* st )
     {
-        if( p && p->_copys )
+        if( st && st->_copys )
         {
-            _p = p;
-            ++p->_weaks;
+            _st = st;
+            ++st->_weaks;
         }
         else
         {
-            _p = nullptr;
+            _st = nullptr;
         }
     }
     ~Weak()
@@ -208,8 +208,8 @@ struct Weak
     }
     T* ptr()
     {
-        if( _p == nullptr || !_p->_copys ) return nullptr;
-        return _p->ptr();
+        if( _st == nullptr || !_st->_copys ) return nullptr;
+        return _st->ptr();
     }
 };
 
@@ -263,27 +263,27 @@ int main()
         auto f = makeSharedEx<Foo>( &fp );
         f->xxx();
         Cout( fp.size() );
-        Cout( f._p->_copys );
+        Cout( f._st->_copys );
         {
             auto f2 = f;
-            Cout( f._p->_copys );
+            Cout( f._st->_copys );
         }
-        Cout( f._p->_copys );
+        Cout( f._st->_copys );
 
         Weak<Foo> w( f );
-        Cout( w._p->_weaks );
+        Cout( w._st->_weaks );
         {
             auto w2 = w;
-            Cout( w._p->_weaks );
+            Cout( w._st->_weaks );
         }
-        Cout( w._p->_weaks );
+        Cout( w._st->_weaks );
 
         f->parent = w;
         f->parent = w;
         f->parent = w;
-        Cout( w._p->_weaks );
+        Cout( w._st->_weaks );
         f->parent = nullptr;
-        Cout( w._p->_weaks );
+        Cout( w._st->_weaks );
 
         f->childs.push_back( makeSharedEx<Foo>( &fp ) );
         f->childs.push_back( makeSharedEx<Foo>( &fp ) );
