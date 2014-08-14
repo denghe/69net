@@ -34,9 +34,18 @@ struct Shared
     void clear()
     {
         if( !_p ) return;
-        if( --_p->_copys == 0 )
+        if( _p->_copys > 1 )
         {
-            _p->deleter();
+            --_p->_copys;
+        }
+        else
+        {
+            _p->ptr()->~T();
+            if( !_p->_weaks )
+            {
+                _p->_deleter();
+            }
+            _p->_copys = 0;
         }
         _p = nullptr;
     }
@@ -93,21 +102,7 @@ struct Shared
     }
     ~Shared()
     {
-        if( !_p ) return;
-        if( _p->_copys > 1 )
-        {
-            --_p->_copys;
-            return;
-        }
-        else
-        {
-            _p->ptr()->~T();
-            if( !_p->_weaks )
-            {
-                _p->_deleter();
-            }
-            _p = nullptr;
-        }
+        clear();
     }
     T* ptr()
     {
@@ -128,6 +123,10 @@ struct Weak
     {
         if( !_p ) return;
         --_p->_weaks;
+        if( !_p->_copys && !_p->_weaks )
+        {
+            _p->_deleter();
+        }
         _p = nullptr;
     }
     Weak& operator=( SharedType<T>* p )
@@ -205,13 +204,7 @@ struct Weak
     }
     ~Weak()
     {
-        if( !_p ) return;
-        --_p->_weaks;
-        if( !_p->_copys && !_p->_weaks )
-        {
-            _p->_deleter();
-        }
-        _p = nullptr;
+        clear();
     }
     T* ptr()
     {
@@ -258,6 +251,7 @@ struct Foo
     }
 
     Weak<Foo> parent;
+    std::vector<Shared<Foo>> childs;
 };
 
 
@@ -267,25 +261,39 @@ int main()
     Cout( fp.size() );
     {
         auto f = makeSharedEx<Foo>( &fp );
-        //f->xxx();
-        //Cout( fp.size() );
-        //Cout( f._p->_copys );
-        //{
-        //    auto f2 = f;
-        //    Cout( f._p->_copys );
-        //}
-        //Cout( f._p->_copys );
+        f->xxx();
+        Cout( fp.size() );
+        Cout( f._p->_copys );
+        {
+            auto f2 = f;
+            Cout( f._p->_copys );
+        }
+        Cout( f._p->_copys );
 
         Weak<Foo> w( f );
-        //Cout( w._p->_weaks );
-        //{
-        //    auto w2 = w;
-        //    Cout( w._p->_weaks );
-        //}
+        Cout( w._p->_weaks );
+        {
+            auto w2 = w;
+            Cout( w._p->_weaks );
+        }
         Cout( w._p->_weaks );
 
         f->parent = w;
+        f->parent = w;
+        f->parent = w;
         Cout( w._p->_weaks );
+        f->parent = nullptr;
+        Cout( w._p->_weaks );
+
+        f->childs.push_back( makeSharedEx<Foo>( &fp ) );
+        f->childs.push_back( makeSharedEx<Foo>( &fp ) );
+        f->childs.push_back( makeSharedEx<Foo>( &fp ) );
+        f->childs.push_back( makeSharedEx<Foo>( &fp ) );
+
+        f->childs[ 0 ]->parent = f->childs[ 1 ];
+        f->childs[ 1 ]->parent = f->childs[ 0 ];
+        f->childs[ 2 ]->parent = f->childs[ 1 ];
+        Cout( fp.size() );
     }
     Cout( fp.size() );
 
