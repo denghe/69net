@@ -313,6 +313,7 @@ typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
 #include "Cout.h"
 #include "SharedMemory.h"
 #include "SMBuffer.h"
+#include "SharedPtr.h"
 
 // ... more
 

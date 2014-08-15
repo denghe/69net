@@ -28,6 +28,7 @@
     <ClInclude Include="SharedMemory.h" />
     <ClInclude Include="SharedMemory.hpp" />
     <ClInclude Include="SMBuffer.h" />
+    <ClInclude Include="SharedPtr.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
