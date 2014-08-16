@@ -29,6 +29,7 @@
     <ClInclude Include="SharedMemory.hpp" />
     <ClInclude Include="SMBuffer.h" />
     <ClInclude Include="SharedPtr.h" />
+    <ClInclude Include="FastPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
@@ -44,5 +45,6 @@
     <ClCompile Include="ScopeGuard.cpp" />
     <ClCompile Include="SharedMemory.cpp" />
     <ClCompile Include="SMBuffer.cpp" />
+    <ClCompile Include="FastPool.cpp" />
   </ItemGroup>
 </Project>

@@ -47,6 +47,8 @@ void Pool::init( int itemBufLen, int pageBufLen /*= 4096*/, int capacity /*= 128
         _pageBufLen = 4096;
     else
         _pageBufLen = (int)Utils::round2n( pageBufLen );
+    _items.reserve( capacity );
+    _pages.reserve( capacity / ( _pageBufLen / _itemBufLen ) );
     reserve( capacity );
 }
 
@@ -56,18 +58,16 @@ Pool::~Pool()
 }
 
 
-void* Pool::alloc()
+INLINE void* Pool::alloc()
 {
     if( _items.size() == 0 ) reserve();
-    auto rtv = _items.top();
-    _items.pop();
-    return rtv;
+    return _items.top_pop();
 }
 
 
 void Pool::free( void* p )
 {
-    _items.push( p );
+    _items.pushFast( p );
 }
 
 

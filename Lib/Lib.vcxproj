@@ -28,6 +28,7 @@
     <ClInclude Include="Cout.hpp" />
     <ClInclude Include="Dict.h" />
     <ClInclude Include="Dict.hpp" />
+    <ClInclude Include="FastPool.h" />
     <ClInclude Include="FlatBuffer.h" />
     <ClInclude Include="FlatBuffer.hpp" />
     <ClInclude Include="FlatQueue.h" />
@@ -57,6 +58,7 @@
     </ClCompile>
     <ClCompile Include="BufferUtils.cpp" />
     <ClCompile Include="BlockBuffer.cpp" />
+    <ClCompile Include="FastPool.cpp" />
     <ClCompile Include="FlatBuffer.cpp" />
     <ClCompile Include="ftoa.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

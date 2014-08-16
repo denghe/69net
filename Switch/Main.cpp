@@ -1,101 +1,31 @@
 #include "Lib/All.h"
 
-//int main()
-//{
-//    static const int tc = 100;
-//    std::vector<Pool> pools;
-//    for( int i = 1; i < tc / 8 + 2; ++i )
-//    {
-//        pools.emplace_back( i * 8 );
-//    }
-//
-//    std::cout << "Time: ";
-//    Stopwatch sw;
-//
-//    for( int i = 1; i < tc; ++i )
-//    {
-//        void * p = pools[ i / 8 ].alloc();
-//        //pool.free(p);
-//    }
-//    std::cout << sw.elapsedMillseconds() << "ms" << std::endl;
-//    system( "pause" );
-//    return 0;
-//}
-
-struct Foo : EnableSharedFromThis<Foo>
-{
-    Weak<Foo> parent;
-    List<Weak<Foo>> childs;
-
-    void addChild( Shared<Foo>& c )
-    {
-        c->parent = sharedFromThis();
-        childs.push( c );
-    }
-    Foo()
-    {
-        Cout( "Foo()" );
-    }
-    ~Foo()
-    {
-        Cout( "~Foo()" );
-    }
-};
-
-
 int main()
 {
+    static const int tc = 100000000;
+    FastPool pool( 4 );
+    std::cout << "Time: ";
+    Stopwatch sw;
+    for( int i = 0; i < tc; ++i )
     {
-        std::aligned_storage<sizeof( SharedType<Foo> ), std::alignment_of<SharedType<Foo>>::value>::type buf;
-
-        auto f = makeSharedEx<Foo>( &buf, []
-        {
-            std::cout << "deleted" << std::endl;
-        } );
-
-
-
-
-        std::cout << " f._copys = " << f._st->_copys << " f._weaks = " << f._st->_weaks << std::endl;
-
-        f->addChild( f );
-        std::cout << " f._copys = " << f._st->_copys << " f._weaks = " << f._st->_weaks << std::endl;
-
-        f->addChild( f );
-        std::cout << " f._copys = " << f._st->_copys << " f._weaks = " << f._st->_weaks << std::endl;
-
-        f->addChild( f );
-        std::cout << " f._copys = " << f._st->_copys << " f._weaks = " << f._st->_weaks << std::endl;
-
+        void * p1 = pool.alloc();
+        void * p2 = pool.alloc();
+        void * p3 = pool.alloc();
+        void * p4 = pool.alloc();
+        void * p5 = pool.alloc();
+        void * p6 = pool.alloc();
+        void * p7 = pool.alloc();
+        void * p8 = pool.alloc();
+        pool.free( p1 );
+        pool.free( p2 );
+        pool.free( p3 );
+        pool.free( p4 );
+        pool.free( p5 );
+        pool.free( p6 );
+        pool.free( p7 );
+        pool.free( p8 );
     }
-
+    std::cout << sw.elapsedMillseconds() << "s" << std::endl;
+    system( "pause" );
     return 0;
 }
-
-
-//
-//int main()
-//{
-//    Pool pool( 4 );
-//    static const int tc = 10000000;
-//    std::cout << "Time: ";
-//    Stopwatch sw;
-//
-//    for( int i = 0; i < tc; ++i )
-//    {
-//        // void * p = malloc( ( i & 0xfff ) );
-//        //free(p);
-//
-//        // void * p = ::operator new( i & 0xfff );
-//        //delete[] p;
-//
-//        void * p = malloc( 4 );
-//        free(p);
-//
-//        //void * p = pool.alloc();
-//        //pool.free(p);
-//    }
-//    std::cout << sw.elapsedMillseconds() << "s" << std::endl;
-//    system( "pause" );
-//    return 0;
-//}

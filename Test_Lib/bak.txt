@@ -1,3 +1,76 @@
+//struct Foo : EnableSharedFromThis<Foo>
+//{
+//    Weak<Foo> parent;
+//    List<Weak<Foo>> childs;
+//
+//    void addChild( Shared<Foo>& c )
+//    {
+//        c->parent = sharedFromThis();
+//        childs.push( c );
+//    }
+//    Foo()
+//    {
+//        Cout( "Foo()" );
+//    }
+//    ~Foo()
+//    {
+//        Cout( "~Foo()" );
+//    }
+//};
+//
+//
+//int main()
+//{
+//    {
+//        std::aligned_storage<sizeof( SharedType<Foo> ), std::alignment_of<SharedType<Foo>>::value>::type buf;
+//
+//        auto f = makeSharedEx<Foo>( &buf, []
+//        {
+//            std::cout << "deleted" << std::endl;
+//        } );
+//
+//
+//
+//
+//        std::cout << " f._copys = " << f._st->_copys << " f._weaks = " << f._st->_weaks << std::endl;
+//
+//        f->addChild( f );
+//        std::cout << " f._copys = " << f._st->_copys << " f._weaks = " << f._st->_weaks << std::endl;
+//
+//        f->addChild( f );
+//        std::cout << " f._copys = " << f._st->_copys << " f._weaks = " << f._st->_weaks << std::endl;
+//
+//        f->addChild( f );
+//        std::cout << " f._copys = " << f._st->_copys << " f._weaks = " << f._st->_weaks << std::endl;
+//
+//    }
+//
+//    return 0;
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //#include "Lib/All.h"
 //#include "PacketTestPackets.h"
 //using namespace PacketTestPackets;

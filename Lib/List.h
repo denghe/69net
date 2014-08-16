@@ -15,6 +15,8 @@ public:
     List& operator=( List const& other );
     template<typename VT>
     void push( VT&& v );
+    template<typename VT>
+    void pushFast( VT&& v );        // unsafe: do not check space enough
     template<typename ...PTS>
     T& emplace( PTS&& ...ps );
     template<typename ...PTS>
@@ -27,6 +29,8 @@ public:
     void pop();
     T& top();
     T const& top() const;
+    T& top_pop();
+    T const& top_pop() const;
     void clear();
     void reserve( int capacity );
     void resize( int capacity, bool init = true );

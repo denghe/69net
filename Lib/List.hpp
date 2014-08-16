@@ -92,6 +92,13 @@ void List<T>::push( VT&& v )
 }
 
 template<typename T>
+template<typename VT>
+void List<T>::pushFast( VT&& v )
+{
+    new ( _buf + _size++ ) T( std::forward<VT>( v ) );
+}
+
+template<typename T>
 template<typename ...PTS>
 T& List<T>::emplace( PTS&& ...ps )
 {
@@ -118,6 +125,19 @@ T const& List<T>::top() const
 {
     assert( _size > 0 );
     return _buf[ _size - 1 ];
+}
+
+template<typename T>
+T& List<T>::top_pop()
+{
+    assert( _size > 0 );
+    return _buf[ --_size ];
+}
+template<typename T>
+T const& List<T>::top_pop() const
+{
+    assert( _size > 0 );
+    return _buf[ --_size ];
 }
 
 template<typename T>
