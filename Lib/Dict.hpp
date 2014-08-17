@@ -4,8 +4,8 @@
 template <typename TK, typename TV>
 Dict<TK, TV>::Dict( int capacity /*= 64 */ )
 {
-    _pool.init( sizeof( Node ), (int)Utils::round2n( sizeof( Node ) * capacity ), 2 );
-    int prime = Utils::getPrime( _pool.size() );
+    _pool.init( sizeof( Node ), 4096, capacity );
+    int prime = Utils::getPrime( capacity );
     _nodes.reserve( prime );
     _buckets.resize( prime );
 }

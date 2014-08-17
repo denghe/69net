@@ -176,21 +176,16 @@ namespace Utils
 
 
     int getHash_CS( byte const* buf, int len );             // if arm, the buf must be align of 4(32bit)/8(64bit)
-    int getHash_Lua( byte const* buf, int len );            // if len <=4, will be faster than 
+    int getHash_Lua( byte const* buf, int len );            // if len <=4, will be faster than CS
 
-    // todo: 将 getHashCode 改成是 T 的成员函数
+    int getHashCode( std::string const & in );
     template<typename T>
     int getHashCode( T const &in );
-    int getHashCode( String const & in );
-    int getHashCode( std::string const & in );
-    int getHashCode( HashString const & in );
-    int getHashCode( HashString* const & in );
 
 
     // 转指针比较为指针指向的内容比较
     template<typename T1, typename T2>
     bool equalsTo( T1 const& a, T2 const& b );
-    bool equalsTo( HashString* const& a, HashString* const& b );
     bool equalsTo( String* const& a, String* const& b );
 
 

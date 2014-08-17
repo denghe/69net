@@ -9,7 +9,7 @@ String::String( Pool& p, char const ( &s )[ len ] )
     _buf = (char*)p.alloc();
     _bufLen = p.itemBufLen() - sizeof( Pool* );
     _dataLen = len - 1;
-    _disposer = &String::disposePoolBuffer;
+    _disposer = &p;
     memcpy( _buf, s, len );
 }
 

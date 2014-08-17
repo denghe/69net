@@ -168,81 +168,15 @@ private:
     static int getFillMaxLength( TS const & ...vs );
 
 
+    static Pool _emptyPool;     // for do not need delete's buffer
 
-    typedef void ( String::*Disposer )( );
-    void disposePoolBuffer();
-    void disposeNewBuffer();
+    void dispose();
 
     char*       _buf;
     int         _bufLen;
     int         _dataLen;
-    Disposer    _disposer;
+    Pool*       _disposer;
 };
-
-
-
-
-
-
-
-
-
-
-
-// todo
-
-class HashString : Memmoveable
-{
-public:
-    HashString( String const& s )
-    {
-        _s = s;
-        _h = _s.getHashCode();
-    }
-    HashString( String && s )
-    {
-        _s = std::move( s );
-        _h = _s.getHashCode();
-    }
-    HashString( HashString const& other )
-        : _s( other._s )
-        , _h( other._h )
-    {
-    }
-    HashString( HashString && other )
-        : _s( std::move( other._s ) )
-        , _h( other._h )
-    {
-    }
-    inline HashString & operator=( HashString && other )
-    {
-        _s = std::move( other._s );
-        _h = other._h;
-        return *this;
-    }
-    inline HashString & operator=( HashString const & other )
-    {
-        _s = other._s;
-        _h = other._h;
-        return *this;
-    }
-    inline bool operator==( HashString const& other ) const
-    {
-        return _h == other._h && _s == other._s;
-    }
-    //inline operator String const&( )
-    //{
-    //    return _s;
-    //}
-    //private:
-    String _s;
-    int _h;
-};
-
-
-
-
-
 
 
 #endif

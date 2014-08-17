@@ -3,10 +3,16 @@
 
 namespace Utils
 {
-
+    HAS_FUNC( getHashCode_checker, getHashCode, int ( T::* )( ) const );
     template<typename T>
-    int getHashCode( T const &in )
+    typename std::enable_if<getHashCode_checker<T>::value, int>::type getHashCodeCore( T const& v )
     {
+        return v.getHashCode();
+    };
+    template<typename T>
+    typename std::enable_if<!getHashCode_checker<T>::value, int>::type getHashCodeCore( T const& in )
+    {
+        static_assert( std::is_pod<T>::value, "forget impl getHashCode func ?" );
         if( sizeof( T ) == 1 )
             return ( (byte*)&in )[ 0 ];
         if( sizeof( T ) == 2 )
@@ -23,6 +29,14 @@ namespace Utils
         else
             return getHash_Lua( (byte const*)&in, sizeof( T ) );
 #endif
+    };
+
+
+
+    template<typename T>
+    int getHashCode( T const &in )
+    {
+        return getHashCodeCore( in );
     }
 
     template<typename T1, typename T2>

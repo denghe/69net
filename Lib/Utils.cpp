@@ -507,11 +507,11 @@ namespace Utils
         if( mod > 3 )
         {
             n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ *(int*)( buf + i );
-            n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ ( *(int*)( buf + i + 4 ) & ( 0xFFFFFFFF >> (8 - mod) ) );
+            n2 = ( ( ( n2 << 5 ) + n2 ) + ( n2 >> 0x1b ) ) ^ ( *(int*)( buf + i + 4 ) & ( 0xFFFFFFFF >> ((8 - mod)*8) ) );
         }
         else if( mod )
         {
-            n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ ( *(int*)( buf + i ) & ( 0xFFFFFFFF >> (4 - mod) ) );
+            n1 = ( ( ( n1 << 5 ) + n1 ) + ( n1 >> 0x1b ) ) ^ ( *(int*)( buf + i ) & ( 0xFFFFFFFF >> ((4 - mod)*8) ) );
         }
         return n2 + n1 * 0x5d588b65;
     }
@@ -537,18 +537,6 @@ namespace Utils
         return _primes[ calc2n( n ) ];
     }
 
-    int getHashCode( String const & in )
-    {
-#ifdef __IA
-        return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
-#else
-        if( in.size() >= 4 && ( (size_t)in.c_str() % sizeof(size_t) == 0 ) )
-            return getHash_CS( (byte const*)in.c_str(), (int)in.size() );
-        else
-            return getHash_Lua( (byte const*)in.c_str(), (int)in.size() );
-#endif
-    }
-
     int getHashCode( std::string const & in )
     {
 #ifdef __IA
@@ -559,21 +547,6 @@ namespace Utils
         else
             return getHash_Lua( (byte const*)in.c_str(), (int)in.size() );
 #endif
-    }
-
-    int getHashCode( HashString const & in )
-    {
-        return in._h;
-    }
-
-    int getHashCode( HashString* const & in )
-    {
-        return in->_h;
-    }
-
-    bool equalsTo( HashString* const& a, HashString* const& b )
-    {
-        return *a == *b;
     }
 
     bool equalsTo( String* const& a, String* const& b )

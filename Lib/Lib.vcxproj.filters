@@ -8,7 +8,6 @@
     <ClInclude Include="String.hpp" />
     <ClInclude Include="List.h" />
     <ClInclude Include="List.hpp" />
-    <ClInclude Include="Pool.h" />
     <ClInclude Include="Dict.hpp" />
     <ClInclude Include="Dict.h" />
     <ClInclude Include="LRUCache.h" />
@@ -29,7 +28,8 @@
     <ClInclude Include="SharedMemory.hpp" />
     <ClInclude Include="SMBuffer.h" />
     <ClInclude Include="SharedPtr.h" />
-    <ClInclude Include="FastPool.h" />
+    <ClInclude Include="OldPool.h" />
+    <ClInclude Include="Pool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
@@ -38,13 +38,13 @@
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="List.cpp" />
-    <ClCompile Include="Pool.cpp" />
     <ClCompile Include="FlatBuffer.cpp" />
     <ClCompile Include="BufferUtils.cpp" />
     <ClCompile Include="BlockBuffer.cpp" />
     <ClCompile Include="ScopeGuard.cpp" />
     <ClCompile Include="SharedMemory.cpp" />
     <ClCompile Include="SMBuffer.cpp" />
-    <ClCompile Include="FastPool.cpp" />
+    <ClCompile Include="OldPool.cpp" />
+    <ClCompile Include="Pool.cpp" />
   </ItemGroup>
 </Project>

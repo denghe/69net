@@ -49,7 +49,7 @@ protected:
     void resize();
     List<Node*>         _buckets;
     List<Node*>         _nodes;
-    Pool                _pool;
+    Pool            _pool;
 };
 
 #endif

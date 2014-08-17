@@ -28,7 +28,7 @@
     <ClInclude Include="Cout.hpp" />
     <ClInclude Include="Dict.h" />
     <ClInclude Include="Dict.hpp" />
-    <ClInclude Include="FastPool.h" />
+    <ClInclude Include="Pool.h" />
     <ClInclude Include="FlatBuffer.h" />
     <ClInclude Include="FlatBuffer.hpp" />
     <ClInclude Include="FlatQueue.h" />
@@ -37,7 +37,7 @@
     <ClInclude Include="List.hpp" />
     <ClInclude Include="LRUCache.h" />
     <ClInclude Include="LRUCache.hpp" />
-    <ClInclude Include="Pool.h" />
+    <ClInclude Include="OldPool.h" />
     <ClInclude Include="ScopeGuard.h" />
     <ClInclude Include="SharedMemory.h" />
     <ClInclude Include="SharedMemory.hpp" />
@@ -58,7 +58,7 @@
     </ClCompile>
     <ClCompile Include="BufferUtils.cpp" />
     <ClCompile Include="BlockBuffer.cpp" />
-    <ClCompile Include="FastPool.cpp" />
+    <ClCompile Include="Pool.cpp" />
     <ClCompile Include="FlatBuffer.cpp" />
     <ClCompile Include="ftoa.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -68,7 +68,7 @@
     </ClCompile>
     <ClCompile Include="List.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Pool.cpp" />
+    <ClCompile Include="OldPool.cpp" />
     <ClCompile Include="ScopeGuard.cpp" />
     <ClCompile Include="SharedMemory.cpp" />
     <ClCompile Include="SMBuffer.cpp" />

@@ -1,10 +1,12 @@
 #include "All.h"
 
+Pool String::_emptyPool;
+
 String::String( int capacity /*= 64 */ )
 {
     if( capacity < 64 ) _bufLen = 64;
     else _bufLen = (int)Utils::round2n( capacity );
-    _disposer = &String::disposeNewBuffer;
+    _disposer = nullptr;
     _dataLen = 0;
     _buf = new char[ _bufLen ];
     _buf[ 0 ] = '\0';
@@ -16,7 +18,7 @@ String::String( Pool& p )
     _buf = (char*)p.alloc();
     _bufLen = p.itemBufLen() - sizeof( Pool* );
     _dataLen = 0;
-    _disposer = &String::disposePoolBuffer;
+    _disposer = &p;
     _buf[ 0 ] = '\0';
 }
 
@@ -26,7 +28,7 @@ String::String( Pool& p, char const* buf, int dataLen )
     _buf = (char*)p.alloc();
     _bufLen = p.itemBufLen() - sizeof( Pool* );
     _dataLen = dataLen;
-    _disposer = &String::disposePoolBuffer;
+    _disposer = &p;
     memcpy( _buf, buf, dataLen );
     _buf[ dataLen ] = '\0';
 }
@@ -38,13 +40,13 @@ String::String( char const* buf, int bufLen, int dataLen, bool isRef )
     {
         _buf = (char*)buf;
         _bufLen = bufLen;
-        _disposer = nullptr;
+        _disposer = &_emptyPool;
     }
     else
     {
         _bufLen = (int)Utils::round2n( dataLen + 1 );
         _buf = new char[ _bufLen ];
-        _disposer = &String::disposeNewBuffer;
+        _disposer = nullptr;
         memcpy( _buf, buf, dataLen );
         _buf[ _dataLen ] = '\0';
     }
@@ -57,13 +59,13 @@ String::String( char const* s, bool isRef )
     {
         _buf = (char*)s;
         _bufLen = _dataLen + 1;
-        _disposer = nullptr;
+        _disposer = &_emptyPool;
     }
     else
     {
         _bufLen = (int)Utils::round2n( _dataLen + 1 );
         _buf = new char[ _bufLen ];
-        _disposer = &String::disposeNewBuffer;
+        _disposer = nullptr;
         memcpy( _buf, s, _dataLen + 1 );
     }
 }
@@ -88,7 +90,7 @@ String::String( String&& other )
 }
 
 
-String& String::operator=( String const & other )
+String& String::operator=( String const& other )
 {
     if( this == &other ) return *this;
     if( _bufLen > other._dataLen )
@@ -98,9 +100,9 @@ String& String::operator=( String const & other )
     }
     else
     {
-        if( _disposer ) ( this->*_disposer )( );
+        dispose();
         _bufLen = (int)Utils::round2n( other._dataLen + 1 );
-        _disposer = &String::disposeNewBuffer;
+        _disposer = nullptr;
         _buf = new char[ _bufLen ];
         _dataLen = other._dataLen;
         memcpy( _buf, other._buf, other._dataLen + 1 );
@@ -110,7 +112,7 @@ String& String::operator=( String const & other )
 
 String& String::operator=( String && other )
 {
-    if( _disposer ) ( this->*_disposer )( );
+    dispose();
     _buf = other._buf;
     _bufLen = other._bufLen;
     _dataLen = other._dataLen;
@@ -125,15 +127,15 @@ String& String::operator=( String && other )
 
 String::~String()
 {
-    if( _disposer ) ( this->*_disposer )( );
+    dispose();
 }
 
 void String::assign( char const* buf, int bufLen, int dataLen /*= 0*/, bool isRef /*= true */ )
 {
-    assert( _disposer && _buf != buf );
+    assert( _buf != buf );
     if( isRef )
     {
-        if( _disposer ) ( this->*_disposer )( );
+        dispose();
         _buf = (char*)buf;
         _bufLen = bufLen;
         _dataLen = dataLen;
@@ -142,9 +144,9 @@ void String::assign( char const* buf, int bufLen, int dataLen /*= 0*/, bool isRe
     }
     if( _bufLen <= dataLen )
     {
-        if( _disposer ) ( this->*_disposer )( );
+        dispose();
         _bufLen = (int)Utils::round2n( dataLen + 1 );
-        _disposer = &String::disposeNewBuffer;
+        _disposer = nullptr;
         _buf = new char[ _bufLen ];
     }
     _dataLen = dataLen;
@@ -164,8 +166,8 @@ void String::reserve( int capacity )
     _bufLen = (int)Utils::round2n( capacity + 1 );
     auto newBuf = new char[ _bufLen ];
     memcpy( newBuf, _buf, _dataLen + 1 );
-    if( _disposer ) ( this->*_disposer )( );
-    _disposer = &String::disposeNewBuffer;
+    dispose();
+    _disposer = nullptr;
     _buf = newBuf;
 }
 
@@ -237,15 +239,16 @@ int String::size() const
     return _dataLen;
 }
 
-void String::disposePoolBuffer()
+void String::dispose()
 {
-    auto p = *(Pool**)( _buf + _bufLen );
-    p->free( _buf );
-}
-
-void String::disposeNewBuffer()
-{
-    delete[] _buf;
+    if( _disposer )
+    {
+        if( _disposer->itemBufLen() ) _disposer->free( _buf );
+    }
+    else
+    {
+        delete[] _buf;
+    }
 }
 
 
@@ -349,7 +352,14 @@ bool String::operator>=( String const& other ) const
 
 int String::getHashCode() const
 {
-    return Utils::getHashCode( *this );
+#ifdef __IA
+    return Utils::getHash_CS( (byte const*)_buf, _dataLen );
+#else
+    if( _dataLen >= 4 && ( (size_t)_buf % sizeof( size_t ) == 0 ) )
+        return Utils::getHash_CS( (byte const*)_buf, _dataLen );
+    else
+        return Utils::getHash_Lua( (byte const*)_buf, _dataLen );
+#endif
 }
 
 std::string String::std_str()
