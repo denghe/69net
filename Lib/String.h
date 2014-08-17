@@ -167,15 +167,13 @@ private:
     template<typename ...TS>
     static int getFillMaxLength( TS const & ...vs );
 
-
-    static Pool _emptyPool;     // for do not need delete's buffer
-
-    void dispose();
-
     char*       _buf;
     int         _bufLen;
     int         _dataLen;
+
     Pool*       _disposer;
+    static Pool _emptyPool;     // for do not need delete's buffer
+    void dispose();
 };
 
 

@@ -1,43 +1,71 @@
 #include "Lib/All.h"
-#include "vld.h"
+#include "PacketTestPackets.h"
+
 using namespace std;
 int main()
 {
-    int count = 999999;
-    Pool p( 32 );
-    vector<String> ss;
-    vector<string> stdss;
-    // ‘§»»
-    for( int i = 0; i < count; ++i )
-    {
-        ss.emplace_back( p );
-        stdss.emplace_back();
-    }
+    //FlatBuffer fb;
+    //int count = 100000;
 
-    ss.clear();
-    Stopwatch sw;
-    for( int i = 0; i < count; ++i )
-    {
-        ss.emplace_back( "asdfasdfasdfasdfasdf" );
-    }
-    Cout( "List push new String: ", sw.elapsedMillseconds() );
+    //PacketTestPackets::Obj_t3 t3;
+    //// ‘§»»
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    fb.write( t3 );
+    //}
 
-    ss.clear();
+    //fb.clear();
+    //Stopwatch sw;
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    fb.write( t3 );
+    //}
+    //Cout( "write ", count, " t3 to fb, elapsed ", sw.elapsedMillseconds(), "ms" );
+    //Cout( fb.size() );
 
-    sw.reset();
-    for( int i = 0; i < count; ++i )
-    {
-        ss.emplace_back( p, "asdfasdfasdfasdfasdf" );
-    }
-    Cout( "List push pool String: ", sw.elapsedMillseconds() );
+    //sw.reset();
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    fb.read( t3 );
+    //}
+    //Cout( "read ", count, " t3 from fb, elapsed ", sw.elapsedMillseconds(), "ms" );
+    //Cout( fb.offset() );
 
-    stdss.clear();
-    sw.reset();
-    for( int i = 0; i < count; ++i )
-    {
-        stdss.emplace_back( "asdfasdfasdfasdfasdf" );
-    }
-    Cout( "List push empty std::string: ", sw.elapsedMillseconds() );
+    //int count = 999999;
+    //Pool p( 32 );
+    //vector<String> ss;
+    //vector<string> stdss;
+    //// ‘§»»
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    ss.emplace_back( p );
+    //    stdss.emplace_back();
+    //}
+
+    //ss.clear();
+    //Stopwatch sw;
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    ss.emplace_back( "asdfasdfasdfasdfasdf" );
+    //}
+    //Cout( "List push new String: ", sw.elapsedMillseconds() );
+
+    //ss.clear();
+
+    //sw.reset();
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    ss.emplace_back( p, "asdfasdfasdfasdfasdf" );
+    //}
+    //Cout( "List push pool String: ", sw.elapsedMillseconds() );
+
+    //stdss.clear();
+    //sw.reset();
+    //for( int i = 0; i < count; ++i )
+    //{
+    //    stdss.emplace_back( "asdfasdfasdfasdfasdf" );
+    //}
+    //Cout( "List push empty std::string: ", sw.elapsedMillseconds() );
 
 
     //{

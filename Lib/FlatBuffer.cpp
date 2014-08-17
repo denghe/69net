@@ -1,11 +1,12 @@
 #include "All.h"
 
+Pool FlatBuffer::_emptyPool;     // for do not need delete's buffer
 
 FlatBuffer::FlatBuffer( int capacity )
 {
     if( capacity < 1024 ) _bufLen = 1024;
     else _bufLen = (int)Utils::round2n( capacity );
-    _disposer = &FlatBuffer::disposeNewBuffer;
+    _disposer = nullptr;
     _buf = new char[ _bufLen ];
     _dataLen = _offset = 0;
 }
@@ -14,9 +15,9 @@ FlatBuffer::FlatBuffer( Pool& p )
 {
     assert( p.attachThis() && p.itemBufLen() > sizeof( Pool* ) );
     _buf = (char*)p.alloc();
-    _bufLen = p.itemBufLen() - sizeof( Pool* );
+    _bufLen = p.itemBufLen();
     _dataLen = 0;
-    _disposer = &FlatBuffer::disposePoolBuffer;
+    _disposer = &p;
 }
 
 FlatBuffer::FlatBuffer( char* buf, int bufLen, int dataLen /*= 0*/, bool isRef /*= false */ )
@@ -27,14 +28,14 @@ FlatBuffer::FlatBuffer( char* buf, int bufLen, int dataLen /*= 0*/, bool isRef /
     {
         _buf = buf;
         _bufLen = bufLen;
-        _disposer = nullptr;
+        _disposer = &_emptyPool;
     }
     else
     {
         _bufLen = (int)Utils::round2n( dataLen );
         _buf = new char[ _bufLen ];
         memcpy( _buf, buf, dataLen );
-        _disposer = &FlatBuffer::disposeNewBuffer;
+        _disposer = nullptr;
     }
 }
 
@@ -61,7 +62,7 @@ FlatBuffer::FlatBuffer( FlatBuffer&& other )
 
 FlatBuffer::~FlatBuffer()
 {
-    if( _disposer ) ( this->*_disposer )( );
+    dispose();
 }
 
 void FlatBuffer::clear()
@@ -96,33 +97,26 @@ char* FlatBuffer::data()
 
 void FlatBuffer::assign( char const* buf, int bufLen, int dataLen /*= 0*/, bool isRef /*= false */ )
 {
-    assert( _disposer && _buf != buf );
+    assert( _buf != buf );
+    _offset = 0;
     if( isRef )
     {
-        if( _disposer ) ( this->*_disposer )( );
+        dispose();
         _buf = (char*)buf;
         _bufLen = bufLen;
         _dataLen = dataLen;
-        _offset = 0;
-        _disposer = nullptr;
+        _disposer = &_emptyPool;
         return;
     }
-    if( _bufLen >= dataLen )
+    if( _bufLen < dataLen )
     {
-        _dataLen = dataLen;
-        _offset = 0;
-        memcpy( _buf, buf, dataLen );
-    }
-    else
-    {
-        if( _disposer ) ( this->*_disposer )( );
+        dispose();
         _bufLen = (int)Utils::round2n( dataLen );
+        _disposer = nullptr;
         _buf = new char[ _bufLen ];
-        _dataLen = dataLen;
-        _offset = 0;
-        _disposer = &FlatBuffer::disposeNewBuffer;
-        memcpy( _buf, buf, dataLen );
     }
+    _dataLen = dataLen;
+    memcpy( _buf, buf, dataLen );
 }
 
 void FlatBuffer::reserve( int capacity )
@@ -131,8 +125,8 @@ void FlatBuffer::reserve( int capacity )
     _bufLen = (int)Utils::round2n( capacity );
     auto newBuf = new char[ _bufLen ];
     memcpy( newBuf, _buf, _dataLen );
-    if( _disposer ) ( this->*_disposer )( );
-    _disposer = &FlatBuffer::disposeNewBuffer;
+    dispose();
+    _disposer = nullptr;
     _buf = newBuf;
 }
 
@@ -154,28 +148,26 @@ void FlatBuffer::resize( int dataLen )
 FlatBuffer& FlatBuffer::operator=( FlatBuffer const& other )
 {
     if( this == &other ) return *this;
+    _offset = 0;
+    _dataLen = other._dataLen;
     if( _bufLen >= other._dataLen )
     {
-        _dataLen = other._dataLen;
-        _offset = 0;
         memcpy( _buf, other._buf, other._dataLen );
     }
     else
     {
-        if( _disposer ) ( this->*_disposer )( );
+        dispose();
         _bufLen = (int)Utils::round2n( other._dataLen );
-        _disposer = &FlatBuffer::disposeNewBuffer;
+        _disposer = nullptr;
         _buf = new char[ _bufLen ];
-        _dataLen = other._dataLen;
         memcpy( _buf, other._buf, other._dataLen );
-        _offset = 0;
     }
     return *this;
 }
 
 FlatBuffer& FlatBuffer::operator=( FlatBuffer&& other )
 {
-    if( _disposer ) ( this->*_disposer )( );
+    dispose();
     _buf = other._buf;
     _bufLen = other._bufLen;
     _dataLen = other._dataLen;
@@ -221,17 +213,6 @@ int& FlatBuffer::offset()
 int FlatBuffer::offset() const
 {
     return _offset;
-}
-
-void FlatBuffer::disposeNewBuffer()
-{
-    delete[] _buf;
-}
-
-void FlatBuffer::disposePoolBuffer()
-{
-    auto p = *(Pool**)( _buf + _bufLen );
-    p->free( _buf );
 }
 
 String FlatBuffer::dump()
@@ -291,3 +272,14 @@ bool FlatBuffer::read( char* buf, int dataLen )
     return true;
 }
 
+void FlatBuffer::dispose()
+{
+    if( _disposer )
+    {
+        if( _disposer->itemBufLen() ) _disposer->free( _buf );
+    }
+    else
+    {
+        delete[] _buf;
+    }
+}

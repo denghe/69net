@@ -93,9 +93,9 @@ String::String( String&& other )
 String& String::operator=( String const& other )
 {
     if( this == &other ) return *this;
+    _dataLen = other._dataLen;
     if( _bufLen > other._dataLen )
     {
-        _dataLen = other._dataLen;
         memcpy( _buf, other._buf, other._dataLen + 1 );
     }
     else
@@ -104,7 +104,6 @@ String& String::operator=( String const& other )
         _bufLen = (int)Utils::round2n( other._dataLen + 1 );
         _disposer = nullptr;
         _buf = new char[ _bufLen ];
-        _dataLen = other._dataLen;
         memcpy( _buf, other._buf, other._dataLen + 1 );
     }
     return *this;
@@ -139,7 +138,7 @@ void String::assign( char const* buf, int bufLen, int dataLen /*= 0*/, bool isRe
         _buf = (char*)buf;
         _bufLen = bufLen;
         _dataLen = dataLen;
-        _disposer = nullptr;
+        _disposer = &_emptyPool;
         return;
     }
     if( _bufLen <= dataLen )

@@ -12,13 +12,15 @@ namespace PacketTestPackets
 {
     class Obj_t1 : Memmoveable
     {
-        PACKET_CLASS_HEADER_POD( Obj_t1 );
+        PACKET_CLASS_HEADER( Obj_t1 );
 public:
 
         int _i_ = 0;
+        String _s;
 
         static void fill( FlatBuffer& fb
-            , int i_ );
+            , int i_
+            , String s );
 
     };
     class Obj_t2 : Memmoveable

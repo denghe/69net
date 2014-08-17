@@ -1,13 +1,21 @@
 ﻿#pragma warning disable 0169
 using PacketLibrary;
 
-class Foo
+class Obj_t1
 {
-    [Limits( 1, 2, 3 )]
-    int[][][] isss;
+    int i_;
+    string s;
+}
+class Obj_t2
+{
+    [Limit( 12 )]
+    Obj_t1[] tl;
+}
 
-    //[Limits( 3, 5, 1, 16, 0, 100, 8 )]
-    //Dict<string, List<byte[]>>[][] eee;
+class Obj_t3
+{
+    [Limit( 12 )]
+    Obj_t2[] tl;
 }
 
 //class Foo

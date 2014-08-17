@@ -91,10 +91,6 @@ public:
     String dump();
 
 private:
-    typedef void ( FlatBuffer::*Disposer )( );
-    void disposePoolBuffer();
-    void disposeNewBuffer();
-
     template<typename T>
     void writesCore( T const& v );
     template<typename T, typename ...TS>
@@ -110,12 +106,14 @@ private:
     template<typename T, typename ...TS>
     void readsDirectCore( T& v, TS& ...vs );
 
-
     char*       _buf;
     int         _bufLen;
     int         _dataLen;
     int         _offset;
-    Disposer    _disposer;
+
+    Pool*       _disposer;
+    static Pool _emptyPool;     // for do not need delete's buffer
+    void dispose();
 };
 
 
