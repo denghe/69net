@@ -16,7 +16,7 @@ String::String( Pool& p )
 {
     assert( p.attachThis() && p.itemBufLen() > sizeof( Pool* ) );
     _buf = (char*)p.alloc();
-    _bufLen = p.itemBufLen() - sizeof( Pool* );
+    _bufLen = p.itemBufLen();
     _dataLen = 0;
     _disposer = &p;
     _buf[ 0 ] = '\0';
@@ -26,7 +26,7 @@ String::String( Pool& p, char const* buf, int dataLen )
 {
     assert( p.attachThis() && p.itemBufLen() > ( int )sizeof( Pool* ) && p.itemBufLen() - ( int )sizeof( Pool* ) >= dataLen + 1 );
     _buf = (char*)p.alloc();
-    _bufLen = p.itemBufLen() - sizeof( Pool* );
+    _bufLen = p.itemBufLen();
     _dataLen = dataLen;
     _disposer = &p;
     memcpy( _buf, buf, dataLen );

@@ -17,7 +17,7 @@ void Pool::init( int itemBufLen, int pageBufLen /*= 4096*/, int capacity /*= 128
 {
     if( itemBufLen < sizeof( size_t ) ) _itemBufLen = sizeof( size_t );
     else _itemBufLen = (int)Utils::round2n( itemBufLen );
-    if( pageBufLen < _itemBufLen ) pageBufLen = _itemBufLen;
+    if( pageBufLen < _itemBufLen ) _pageBufLen = _itemBufLen;
     else if( pageBufLen < 4096 ) _pageBufLen = 4096;
     else _pageBufLen = (int)Utils::round2n( pageBufLen );
     reserve( _pageBufLen / _itemBufLen );

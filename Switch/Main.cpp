@@ -3,34 +3,71 @@
 using namespace std;
 int main()
 {
+    int count = 999999;
+    Pool p( 32 );
+    vector<String> ss;
+    vector<string> stdss;
+    // ‘§»»
+    for( int i = 0; i < count; ++i )
     {
-        Dict<String, String> d;
-        Stopwatch sw;
-        Pool p( 128 );
-        for( int i = 0; i < 999999; ++i )
-        {
-            d.insert( String::make( p, "asdfqwerasdfqwerasdfqwer", i ), String::make( p, "asdfqwerasdfqwerasdfqwer", i ) );
-        }
-        Cout( sw.elapsedMillseconds() );
-        Cout( d[ "asdfqwerasdfqwerasdfqwer99998" ] );
-        sw.reset();
-        d.clear();
-        Cout( sw.elapsedMillseconds() );
+        ss.emplace_back( p );
+        stdss.emplace_back();
     }
 
+    ss.clear();
+    Stopwatch sw;
+    for( int i = 0; i < count; ++i )
     {
-        unordered_map<string, string> d;
-        Stopwatch sw;
-        for( int i = 0; i < 999999; ++i )
-        {
-            d.insert( make_pair( "asdfqwerasdfqwerasdfqwer" + to_string( i ), "asdfqwerasdfqwerasdfqwer" + to_string( i ) ) );
-        }
-        cout << sw.elapsedMillseconds() << endl;
-        cout << d[ "asdfqwerasdfqwerasdfqwer99998" ] << endl;
-        sw.reset();
-        d.clear();
-        cout << sw.elapsedMillseconds() << endl;
+        ss.emplace_back( "asdfasdfasdfasdfasdf" );
     }
+    Cout( "List push new String: ", sw.elapsedMillseconds() );
+
+    ss.clear();
+
+    sw.reset();
+    for( int i = 0; i < count; ++i )
+    {
+        ss.emplace_back( p, "asdfasdfasdfasdfasdf" );
+    }
+    Cout( "List push pool String: ", sw.elapsedMillseconds() );
+
+    stdss.clear();
+    sw.reset();
+    for( int i = 0; i < count; ++i )
+    {
+        stdss.emplace_back( "asdfasdfasdfasdfasdf" );
+    }
+    Cout( "List push empty std::string: ", sw.elapsedMillseconds() );
+
+
+    //{
+    //    Dict<String, String> d;
+    //    Stopwatch sw;
+    //    Pool p( 128 );
+    //    for( int i = 0; i < 999999; ++i )
+    //    {
+    //        d.insert( String::make( p, "asdfqwerasdfqwerasdfqwer", i ), String::make( p, "asdfqwerasdfqwerasdfqwer", i ) );
+    //    }
+    //    Cout( sw.elapsedMillseconds() );
+    //    Cout( d[ "asdfqwerasdfqwerasdfqwer99998" ] );
+    //    sw.reset();
+    //    d.clear();
+    //    Cout( sw.elapsedMillseconds() );
+    //}
+
+    //{
+    //    unordered_map<string, string> d;
+    //    Stopwatch sw;
+    //    for( int i = 0; i < 999999; ++i )
+    //    {
+    //        d.insert( make_pair( "asdfqwerasdfqwerasdfqwer" + to_string( i ), "asdfqwerasdfqwerasdfqwer" + to_string( i ) ) );
+    //    }
+    //    cout << sw.elapsedMillseconds() << endl;
+    //    cout << d[ "asdfqwerasdfqwerasdfqwer99998" ] << endl;
+    //    sw.reset();
+    //    d.clear();
+    //    cout << sw.elapsedMillseconds() << endl;
+    //}
 
     system( "pause" );
     return 0;
