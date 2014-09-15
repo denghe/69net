@@ -1,6 +1,7 @@
+//#include "vld.h"
 #include "Lib/All.h"
+#include "Platform.h"
 #include <chipmunk.h>
-#include "vld.h"
 
 using namespace std;
 
@@ -144,6 +145,78 @@ int main( void )
 #if __DEBUG
     Cout( spacePool._counter, ", ", shapePool._counter, ", ", circleShapePool._counter, ", ", segmentShapePool._counter, ", ", bodyPool._counter, ", " );
 #endif
+
+
+
+
+
+
+
+    Platform::GLWindow w;
+    w.init( L"test", 256, 256 );
+    w.setVsync( false );
+
+    // 每 0.2 秒输出一次总 counter 及 每秒 count
+    std::chrono::milliseconds refreshDuration( 200 );
+    std::chrono::seconds durationSec1( 1 );
+    std::chrono::time_point<std::chrono::system_clock> lastTime;
+    auto firstTime = std::chrono::system_clock::now();
+    auto cout = [ &]( long long val )
+    {
+        auto now = std::chrono::system_clock::now();
+        if( now - lastTime >= refreshDuration )
+        {
+            auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>( now - firstTime ).count();
+            if( !elapsedSeconds ) elapsedSeconds = 1;
+            printf( "%lld ", val / elapsedSeconds );
+            lastTime = now;
+        }
+    };
+    long long counter = 0;
+
+
+
+    //glClearColor( 0, 0, 0, 0 );
+    //glMatrixMode( GL_PROJECTION );
+    //glLoadIdentity();
+    //glOrtho( 0, 1, 0, 1, -1, 1 );
+
+    float theta = 0;
+
+    w.run( [ &]
+    {
+        //glClear( GL_COLOR_BUFFER_BIT );
+        //glColor3f( 1, 1, 1 );
+        //glBegin( GL_POLYGON );
+        //{
+        //    glVertex3f( 0.25, 0.25, 0.0 );
+        //    glVertex3f( 0.75, 0.25, 0.0 );
+        //    glVertex3f( 0.75, 0.75, 0.0 );
+        //    glVertex3f( 0.25, 0.75, 0.0 );
+        //}
+        //glEnd();
+
+        glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+        glClear( GL_COLOR_BUFFER_BIT );
+
+        glPushMatrix();
+        glRotatef( theta, 0.0f, 0.0f, 1.0f );
+        glBegin( GL_TRIANGLES );
+        glColor3f( 1.0f, 0.0f, 0.0f ); glVertex2f( 0.0f, 1.0f );
+        glColor3f( 0.0f, 1.0f, 0.0f ); glVertex2f( 0.87f, -0.5f );
+        glColor3f( 0.0f, 0.0f, 1.0f ); glVertex2f( -0.87f, -0.5f );
+        glEnd();
+        glPopMatrix();
+
+        theta += 1.0f;
+
+        cout( ++counter );
+        //std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+        //printf( "." );
+    } );
+
+
+
 
     return 0;
 }

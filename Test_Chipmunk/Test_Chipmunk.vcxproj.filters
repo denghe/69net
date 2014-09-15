@@ -27,6 +27,7 @@
     <ClInclude Include="chipmunk\include\chipmunk\cpSpatialIndex.h" />
     <ClInclude Include="chipmunk\include\chipmunk\cpVect.h" />
     <ClInclude Include="chipmunk\src\prime.h" />
+    <ClInclude Include="Platform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chipmunk\src\chipmunk.c" />
@@ -59,5 +60,6 @@
     <ClCompile Include="chipmunk\src\cpSweep1D.c" />
     <ClCompile Include="chipmunk\src\cpVect.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Platform.cpp" />
   </ItemGroup>
 </Project>

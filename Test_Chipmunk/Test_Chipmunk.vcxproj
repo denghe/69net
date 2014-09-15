@@ -177,6 +177,7 @@
     <ClInclude Include="chipmunk\include\chipmunk\cpSpatialIndex.h" />
     <ClInclude Include="chipmunk\include\chipmunk\cpVect.h" />
     <ClInclude Include="chipmunk\src\prime.h" />
+    <ClInclude Include="Platform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chipmunk\src\chipmunk.c">
@@ -354,6 +355,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Platform.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
