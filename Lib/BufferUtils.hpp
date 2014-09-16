@@ -78,7 +78,7 @@ namespace BufferUtils
     }
 
     template<typename ...TS>
-    int BufferUtils::getSizes( TS const & ...vs )
+    int getSizes( TS const & ...vs )
     {
         int len = 0;
         getSizesCore( len, vs... );

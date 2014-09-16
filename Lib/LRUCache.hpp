@@ -99,7 +99,7 @@ LRUCache<KT, VT>::LRUCache( int limit/* = 100*/ )
 
 template<typename KT, typename VT>
 template<typename PKT, typename PVT>
-std::pair<VT*, bool> LRUCache<KT, VT>::insert( PKT && key, PVT && value, bool override = true )
+std::pair<VT*, bool> LRUCache<KT, VT>::insert( PKT && key, PVT && value, bool override )
 {
     std::pair<VT*, bool> result;
     auto r = _data.insert( std::forward<PKT>( key ), IT( key, std::forward<PVT>( value ) ), override );
