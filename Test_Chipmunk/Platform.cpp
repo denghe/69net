@@ -194,7 +194,7 @@ void Platform::GLWindow::swapBuffer()
     SwapBuffers( _dc );
 }
 
-void Platform::GLWindow::run( std::function<void()> updater )
+void Platform::GLWindow::loop( std::function<void()> updater )
 {
     if( _proc == &defaultProc )
     {

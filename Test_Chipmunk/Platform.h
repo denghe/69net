@@ -22,7 +22,7 @@ namespace Platform
         bool setVsync( bool enable = true );
         void setAutoSwapBuffer( bool enable = true );
         void swapBuffer();
-        void run( std::function<void()> updater );
+        void loop( std::function<void()> updater );
     private:
         HINSTANCE _app;
         HWND _wnd;
