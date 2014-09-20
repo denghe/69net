@@ -1,6 +1,8 @@
 #include "Lib/All.h"
 #include "Platform.h"
-#include "Render.h"
+#include "Video.h"
+#include "Input.h"
+#include "Audio.h"
 #include "Logic.h"
 #include "Looper.h"
 
@@ -14,9 +16,11 @@ int main( void )
     w.init( L"test", 256, 256 );
     w.setVsync( false );
 
-    Render render;
-    Logic logic;
-    Looper looper( &logic, &render );
+    Video v;
+    Input i;
+    Audio a;
+    Logic logic( &v, &i, &a );
+    Looper looper( &logic );
 
     auto lastTP = system_clock::now();
     w.loop( [ &]

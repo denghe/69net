@@ -28,9 +28,11 @@
     <ClInclude Include="chipmunk\include\chipmunk\cpVect.h" />
     <ClInclude Include="chipmunk\src\prime.h" />
     <ClInclude Include="Platform.h" />
-    <ClInclude Include="Render.h" />
     <ClInclude Include="Logic.h" />
     <ClInclude Include="Looper.h" />
+    <ClInclude Include="Audio.h" />
+    <ClInclude Include="Video.h" />
+    <ClInclude Include="Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chipmunk\src\chipmunk.c" />
@@ -64,8 +66,10 @@
     <ClCompile Include="chipmunk\src\cpVect.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Platform.cpp" />
-    <ClCompile Include="Render.cpp" />
     <ClCompile Include="Logic.cpp" />
     <ClCompile Include="Looper.cpp" />
+    <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="Video.cpp" />
+    <ClCompile Include="Input.cpp" />
   </ItemGroup>
 </Project>

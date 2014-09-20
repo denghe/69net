@@ -1,8 +1,8 @@
 #include "Lib/All.h"
 #include "Platform.h"
-#include "Render.h"
+#include "Video.h"
 
-Render::Render()
+Video::Video()
 {
     // todo: backup gl state
 
@@ -22,12 +22,12 @@ Render::Render()
     glOrtho( 0, 1, 0, 1, -1, 1 );
 }
 
-Render::~Render()
+Video::~Video()
 {
     // todo: restore gl state
 }
 
-void Render::update( int durationTicks )
+void Video::update( int durationTicks )
 {
 
 }
