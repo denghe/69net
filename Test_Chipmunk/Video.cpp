@@ -38,7 +38,16 @@ Video::Video( GLWindow* w )
     gluOrtho2D( 0, _w->_w, 0, _w->_h );
 
     // 将就在这里输出静态图了
-    glRecti( 5, 5, _w->_w - 5, _w->_h - 5 );
+    //glRects( 5, 5, _w->_w - 5, _w->_h - 5 );
+
+    //glColor3b( 255, 0, 0 );
+    glBegin( GL_TRIANGLES );
+    {
+        glVertex2s( 400, 5 );
+        glVertex2s( 5, 400 );
+        glVertex2s( 795, 400 );
+    }
+    glEnd();
 
     // 输出
     glFlush();
