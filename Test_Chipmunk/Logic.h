@@ -15,7 +15,7 @@ public:
     ~Logic();
 
     void update();
-private:
+//private:
     int _f = 0;
 
     Video* _v;

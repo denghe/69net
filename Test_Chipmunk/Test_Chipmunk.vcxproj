@@ -180,7 +180,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Logic.h" />
     <ClInclude Include="Looper.h" />
-    <ClInclude Include="Platform.h" />
+    <ClInclude Include="GLWindow.h" />
     <ClInclude Include="Video.h" />
     <ClInclude Include="Audio.h" />
   </ItemGroup>
@@ -363,7 +363,7 @@
     <ClCompile Include="Logic.cpp" />
     <ClCompile Include="Looper.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Platform.cpp" />
+    <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="Video.cpp" />
     <ClCompile Include="Audio.cpp" />
   </ItemGroup>

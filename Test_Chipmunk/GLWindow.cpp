@@ -1,4 +1,4 @@
-#include "Platform.h"
+#include "GLWindow.h"
 
 
 
@@ -33,7 +33,7 @@ std::pair<LONG, LONG> getTaskbarOffset()
 
 
 
-LRESULT CALLBACK Platform::defaultProc( HWND hWnd, UINT uiMsg, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK defaultProc( HWND hWnd, UINT uiMsg, WPARAM wParam, LPARAM lParam )
 {
     switch( uiMsg )
     {
@@ -70,18 +70,11 @@ LRESULT CALLBACK Platform::defaultProc( HWND hWnd, UINT uiMsg, WPARAM wParam, LP
     return DefWindowProc( hWnd, uiMsg, wParam, lParam );
 }
 
-Platform::GLWindow::GLWindow()
-    : _app( GetModuleHandle( NULL ) )
-    , _wnd( nullptr )
-    , _cn( nullptr )
-    , _proc( nullptr )
-    , _dc( nullptr )
-    , _rc( nullptr )
-    , _autoSwap( true )
+GLWindow::GLWindow()
 {
 }
 
-Platform::GLWindow::~GLWindow()
+GLWindow::~GLWindow()
 {
     if( _wnd )
     {
@@ -93,16 +86,19 @@ Platform::GLWindow::~GLWindow()
     }
 }
 
-bool Platform::GLWindow::init( wchar_t* n, int w, int h, int x /*= 0*/, int y /*= 0*/, wchar_t* t /*= L""*/, WNDPROC proc /*= &defaultProc*/ )
+bool GLWindow::init( wchar_t* n, int w, int h, int x /*= 0*/, int y /*= 0*/, bool doubleBuffer /*= true*/, wchar_t* t /*= L""*/, WNDPROC proc /*= &defaultProc*/ )
 {
+    assert( !_wnd );    // ∑¿÷ÿ∏¥µ˜”√
+
     _cn = n;
     _proc = proc;
+    _autoSwap = _doubleBuffer = doubleBuffer;
 
     RECT rect;
     rect.left = 0L;
-    rect.right = w;
     rect.top = 0L;
-    rect.bottom = h;
+    rect.right = _w = w;
+    rect.bottom = _h = h;
 
     _wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
     _wc.lpfnWndProc = proc;
@@ -148,7 +144,8 @@ bool Platform::GLWindow::init( wchar_t* n, int w, int h, int x /*= 0*/, int y /*
     memset( &pfd, 0, sizeof( PIXELFORMATDESCRIPTOR ) );
     pfd.nSize = sizeof( PIXELFORMATDESCRIPTOR );
     pfd.nVersion = 1;
-    pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL;
+    pfd.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
+    if( doubleBuffer ) pfd.dwFlags |= PFD_DOUBLEBUFFER;
     pfd.iPixelType = PFD_TYPE_RGBA;
     pfd.cColorBits = (BYTE)GetDeviceCaps( _dc, BITSPIXEL );
 
@@ -176,7 +173,7 @@ bool Platform::GLWindow::init( wchar_t* n, int w, int h, int x /*= 0*/, int y /*
 }
 
 typedef BOOL( APIENTRY *PFNWGLSWAPINTERVALEXTPROC )( int );
-bool Platform::GLWindow::setVsync( bool enable /*= true */ )
+bool GLWindow::setVsync( bool enable /*= true */ )
 {
     if( !_wnd ) return false;
     char* extensions = (char*)glGetString( GL_EXTENSIONS );
@@ -189,12 +186,13 @@ bool Platform::GLWindow::setVsync( bool enable /*= true */ )
     return false;
 }
 
-void Platform::GLWindow::swapBuffer()
+void GLWindow::swapBuffer()
 {
+    assert( _doubleBuffer );
     SwapBuffers( _dc );
 }
 
-void Platform::GLWindow::loop( std::function<void()> updater )
+void GLWindow::loop( std::function<void()> updater )
 {
     if( _proc == &defaultProc )
     {
@@ -234,7 +232,7 @@ void Platform::GLWindow::loop( std::function<void()> updater )
     }
 }
 
-void Platform::GLWindow::setAutoSwapBuffer( bool enable /*= true */ )
+void GLWindow::setAutoSwapBuffer( bool enable /*= true */ )
 {
     _autoSwap = enable;
 }

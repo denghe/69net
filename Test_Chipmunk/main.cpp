@@ -1,5 +1,5 @@
 #include "Lib/All.h"
-#include "Platform.h"
+#include "GLWindow.h"
 #include "Video.h"
 #include "Input.h"
 #include "Audio.h"
@@ -8,15 +8,11 @@
 
 using namespace std;
 using namespace std::chrono;
-using namespace Platform;
 
 int main( void )
 {
     GLWindow w;
-    w.init( L"test", 256, 256 );
-    w.setVsync( false );
-
-    Video v;
+    Video v( &w );
     Input i;
     Audio a;
     Logic logic( &v, &i, &a );
