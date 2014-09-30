@@ -2,18 +2,16 @@
 
 int main( void )
 {
-    GLWindow w;
-    Video v( &w );
-    Input i;
-    Audio a;
-    Logic logic( &v, &i, &a );
-    Looper looper( &logic );
+    GLWindow glwindow;
 
+    Game1 g1;
+
+    Looper looper;
     auto lastTP = system_clock::now();
-    w.loop( [ &]
+    glwindow.Loop( [ &]
     {
         auto currTP = system_clock::now();
-        looper.update( (int)duration_cast<milliseconds>( currTP - lastTP ).count() );
+        looper.Update( (int)duration_cast<milliseconds>( currTP - lastTP ).count() );
         lastTP = currTP;
     } );
 

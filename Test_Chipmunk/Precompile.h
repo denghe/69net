@@ -2,6 +2,8 @@
 #define __PRECOMPILE_H__
 
 #include "Lib/All.h"
+using namespace std;
+using namespace std::chrono;
 
 #include <gl/GL.h>
 #include <gl/GLU.h>
@@ -10,15 +12,14 @@
 #include <chipmunk.h>
 
 #include "GLWindow.h"
-#include "Video.h"
+#include "Node.h"
 #include "Input.h"
 #include "Audio.h"
 #include "Logic.h"
 #include "Looper.h"
-#include "Shape.h"
+#include "G.h"
 
-using namespace std;
-using namespace std::chrono;
+#include "Game1.h"
 
 
 #endif

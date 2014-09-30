@@ -8,22 +8,22 @@ class GLWindow
 public:
     GLWindow();
     ~GLWindow();
-    bool init( wchar_t* n, int w, int h, int x = 0, int y = 0, bool doubleBuffer = true, wchar_t* t = L"", WNDPROC proc = &defaultProc );
-    bool setVsync( bool enable = true );
-    void setAutoSwapBuffer( bool enable = true );
-    void swapBuffer();
-    void loop( std::function<void()> updater );
+    bool Init( wchar_t* className, int width, int height, int x = 0, int y = 0, bool doubleBuffer = true, wchar_t* title = L"", WNDPROC wndProc = &defaultProc );
+    bool SetVsync( bool enable = true );
+    void SetAutoSwapBuffer( bool enable = true );
+    void SwapBuffer();
+    void Loop( std::function<void()> updater );
 //private:
-    HINSTANCE _app = GetModuleHandle( NULL );
-    HWND _wnd = nullptr;
-    WNDCLASS _wc;
-    wchar_t* _cn = nullptr;
-    WNDPROC _proc = nullptr;
-    HDC _dc = nullptr;
-    HGLRC _rc = nullptr;
-    bool _autoSwap = true;
-    bool _doubleBuffer = true;
-    int _w = 0, _h = 0;
+    HINSTANCE app = GetModuleHandle( NULL );
+    HWND wnd = nullptr;
+    WNDCLASS wndClass;
+    wchar_t* className = nullptr;
+    WNDPROC wndProc = nullptr;
+    HDC dc = nullptr;
+    HGLRC rc = nullptr;
+    bool autoSwap = true;
+    bool doubleBuffer = true;
+    int width = 0, height = 0;
 };
 
 #endif

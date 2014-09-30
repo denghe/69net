@@ -177,13 +177,14 @@
     <ClInclude Include="chipmunk\include\chipmunk\cpSpatialIndex.h" />
     <ClInclude Include="chipmunk\include\chipmunk\cpVect.h" />
     <ClInclude Include="chipmunk\src\prime.h" />
+    <ClInclude Include="G.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Logic.h" />
+    <ClInclude Include="Game1.h" />
     <ClInclude Include="Looper.h" />
     <ClInclude Include="GLWindow.h" />
+    <ClInclude Include="Node.h" />
     <ClInclude Include="Precompile.h" />
-    <ClInclude Include="Shape.h" />
-    <ClInclude Include="Video.h" />
     <ClInclude Include="Audio.h" />
   </ItemGroup>
   <ItemGroup>
@@ -477,19 +478,20 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="G.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Logic.cpp" />
+    <ClCompile Include="Game1.cpp" />
     <ClCompile Include="Looper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GLWindow.cpp" />
+    <ClCompile Include="Node.cpp" />
     <ClCompile Include="Precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Shape.cpp" />
-    <ClCompile Include="Video.cpp" />
     <ClCompile Include="Audio.cpp" />
   </ItemGroup>
   <ItemGroup>

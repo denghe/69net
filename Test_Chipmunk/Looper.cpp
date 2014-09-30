@@ -1,29 +1,25 @@
 #include "Precompile.h"
 
-Looper::Looper( Logic* logic )
-    : _logic( logic )
+void Looper::Update( int durationTicks )
 {
-    assert( logic );
-}
-
-Looper::~Looper()
-{
-}
-
-void Looper::update( int durationTicks )
-{
-    int vTicks = 0;
-    if( durationTicks > _logicFrameTicksLimit ) durationTicks = _logicFrameTicksLimit;
+    int drawTicks = 0;
+    if( durationTicks > this->logicFrameTicksLimit )
+    {
+        durationTicks = this->logicFrameTicksLimit;
+    }
     if( !false )
     {
-        _accumulatTicks += durationTicks;
-        vTicks = _accumulatTicks;
-        while( _accumulatTicks >= _logicFrameTicks )
+        this->accumulatTicks += durationTicks;
+        drawTicks = this->accumulatTicks;
+        while( this->accumulatTicks >= this->logicFrameTicks )
         {
-            _logic->update();
-            _accumulatTicks -= _logicFrameTicks;
+            G::logic->Update();
+            this->accumulatTicks -= this->logicFrameTicks;
         }
-        vTicks -= _accumulatTicks;
+        drawTicks -= this->accumulatTicks;
     }
-    if( _logic->_v ) _logic->_v->update( vTicks );
+    if( G::node )
+    {
+        G::node->Draw( drawTicks );
+    }
 }

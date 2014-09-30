@@ -2,14 +2,16 @@
 
 Input::Input()
 {
+    G::input = this;
 }
 
 
 Input::~Input()
 {
+    G::input = nullptr;
 }
 
-void Input::update( int frameCounter )
+void Input::Update( int frameCounter )
 {
 
 }

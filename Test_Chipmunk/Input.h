@@ -7,7 +7,7 @@ public:
     Input();
     ~Input();
 
-    void update( int frameCounter );
+    void Update( int frameCounter );
 };
 
 #endif
