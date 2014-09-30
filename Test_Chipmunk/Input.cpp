@@ -1,5 +1,4 @@
-#include "Input.h"
-
+#include "Precompile.h"
 
 Input::Input()
 {

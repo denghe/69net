@@ -1,7 +1,7 @@
 #ifndef __OUTPUTER_H__
 #define __OUTPUTER_H__
-#include "GLWindow.h"
 
+class Shape;
 class Video
 {
 public:

@@ -1,5 +1,4 @@
-#include "Looper.h"
-using namespace std;
+#include "Precompile.h"
 
 Looper::Looper( Logic* logic )
     : _logic( logic )

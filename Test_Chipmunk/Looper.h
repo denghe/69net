@@ -1,7 +1,5 @@
 #ifndef __LOOPER_H__
 #define __LOOPER_H__
-#include "Lib/All.h"
-#include "Logic.h"
 
 class Looper
 {

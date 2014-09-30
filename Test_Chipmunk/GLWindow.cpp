@@ -1,5 +1,4 @@
-#include "GLWindow.h"
-
+#include "Precompile.h"
 
 
 std::function<void()> defaultTimerProc;

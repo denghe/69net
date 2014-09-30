@@ -1,13 +1,4 @@
-#include "Lib/All.h"
-#include "GLWindow.h"
-#include "Video.h"
-#include "Input.h"
-#include "Audio.h"
-#include "Logic.h"
-#include "Looper.h"
-
-using namespace std;
-using namespace std::chrono;
+#include "Precompile.h"
 
 int main( void )
 {

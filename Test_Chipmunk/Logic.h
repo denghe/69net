@@ -1,10 +1,5 @@
 #ifndef __LOGIC_H__
 #define __LOGIC_H__
-#include "Lib/All.h"
-#include "Video.h"
-#include "Input.h"
-#include "Audio.h"
-#include <chipmunk.h>
 
 class Looper;
 class Logic

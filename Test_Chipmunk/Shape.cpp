@@ -1,11 +1,10 @@
 #include "Precompile.h"
 
-
-Audio::Audio()
+Shape::Shape()
 {
 }
 
 
-Audio::~Audio()
+Shape::~Shape()
 {
 }
