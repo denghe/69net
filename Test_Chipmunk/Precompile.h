@@ -11,7 +11,7 @@ using namespace std::chrono;
 #pragma comment(lib, "glu32.lib")
 #include <chipmunk.h>
 
-#include "GLWindow.h"
+#include "Window.h"
 #include "Node.h"
 #include "Input.h"
 #include "Audio.h"

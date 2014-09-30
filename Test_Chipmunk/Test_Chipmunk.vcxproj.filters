@@ -30,12 +30,12 @@
     <ClInclude Include="Looper.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="Input.h" />
-    <ClInclude Include="GLWindow.h" />
     <ClInclude Include="Precompile.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Logic.h" />
     <ClInclude Include="G.h" />
     <ClInclude Include="Game1.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chipmunk\src\chipmunk.c" />
@@ -71,12 +71,12 @@
     <ClCompile Include="Looper.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="Input.cpp" />
-    <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="Precompile.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="Logic.cpp" />
     <ClCompile Include="G.cpp" />
     <ClCompile Include="Game1.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />

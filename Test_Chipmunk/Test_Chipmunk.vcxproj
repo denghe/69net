@@ -182,7 +182,7 @@
     <ClInclude Include="Logic.h" />
     <ClInclude Include="Game1.h" />
     <ClInclude Include="Looper.h" />
-    <ClInclude Include="GLWindow.h" />
+    <ClInclude Include="Window.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Precompile.h" />
     <ClInclude Include="Audio.h" />
@@ -484,7 +484,7 @@
     <ClCompile Include="Game1.cpp" />
     <ClCompile Include="Looper.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="GLWindow.cpp" />
+    <ClCompile Include="Window.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="Precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

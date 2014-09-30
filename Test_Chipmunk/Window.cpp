@@ -1,8 +1,6 @@
 #include "Precompile.h"
 
 
-std::function<void()> defaultTimerProc;
-
 // x, y
 std::pair<LONG, LONG> getTaskbarOffset()
 {
@@ -39,7 +37,12 @@ LRESULT CALLBACK defaultProc( HWND hWnd, UINT uiMsg, WPARAM wParam, LPARAM lPara
     case WM_ACTIVATE:
     case WM_KEYDOWN:
     case WM_KEYUP:
+        return 0;
     case WM_SIZE:
+        G::window->width = LOWORD( lParam );
+        G::window->height = HIWORD( lParam );
+        if( G::window->resizeCallback ) G::window->resizeCallback();
+        //if( G::glwindow->update ) G::glwindow->update();
         return 0;
 
     case WM_CLOSE:
@@ -47,7 +50,7 @@ LRESULT CALLBACK defaultProc( HWND hWnd, UINT uiMsg, WPARAM wParam, LPARAM lPara
         return 0;
 
     case WM_TIMER:
-        if( defaultTimerProc ) defaultTimerProc();
+        G::window->update();
         return 0;
 
         // 这样效果其实也不大好。鼠标于标题栏按下不动的 0.5 秒左右时长内会定住
@@ -69,12 +72,12 @@ LRESULT CALLBACK defaultProc( HWND hWnd, UINT uiMsg, WPARAM wParam, LPARAM lPara
     return DefWindowProc( hWnd, uiMsg, wParam, lParam );
 }
 
-GLWindow::GLWindow()
+Window::Window()
 {
-    G::glwindow = this;
+    G::window = this;
 }
 
-GLWindow::~GLWindow()
+Window::~Window()
 {
     if( this->wnd )
     {
@@ -84,10 +87,10 @@ GLWindow::~GLWindow()
         DestroyWindow( this->wnd );
         UnregisterClass( this->className, this->app );
     }
-    G::glwindow = nullptr;
+    G::window = nullptr;
 }
 
-bool GLWindow::Init( wchar_t* className, int width, int height, int x /*= 0*/, int y /*= 0*/, bool doubleBuffer /*= true*/, wchar_t* title /*= L""*/, WNDPROC wndProc /*= &defaultProc*/ )
+bool Window::Init( wchar_t* className, int width, int height, int x /*= 0*/, int y /*= 0*/, bool doubleBuffer /*= true*/, wchar_t* title /*= L""*/, WNDPROC wndProc /*= &defaultProc*/ )
 {
     assert( !this->wnd );    // 防重复调用
 
@@ -174,7 +177,7 @@ bool GLWindow::Init( wchar_t* className, int width, int height, int x /*= 0*/, i
 }
 
 typedef BOOL( APIENTRY *PFNWGLSWAPINTERVALEXTPROC )( int );
-bool GLWindow::SetVsync( bool enable /*= true */ )
+bool Window::SetVsync( bool enable /*= true */ )
 {
     if( !this->wnd ) return false;
     char* extensions = (char*)glGetString( GL_EXTENSIONS );
@@ -187,35 +190,36 @@ bool GLWindow::SetVsync( bool enable /*= true */ )
     return false;
 }
 
-void GLWindow::SwapBuffer()
+void Window::SwapBuffer()
 {
     assert( this->doubleBuffer );
     SwapBuffers( this->dc );
 }
 
-void GLWindow::Loop( std::function<void()> updater )
+void Window::Loop( std::function<void()> updater )
 {
     if( this->wndProc == &defaultProc )
     {
         if( this->autoSwap )
         {
-            defaultTimerProc = [=]
+            this->update = [=]
             {
-                this->SwapBuffer();
                 updater();
+                this->SwapBuffer();
             };
         }
         else
         {
-            defaultTimerProc = updater;
+            this->update = updater;
         }
     }
+
+    if( resizeCallback )resizeCallback();
 
     MSG msg;
     bool running = true;
     while( running )
     {
-        /* Do Windows stuff */
         if( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )
         {
             if( msg.message == WM_QUIT )
@@ -228,12 +232,12 @@ void GLWindow::Loop( std::function<void()> updater )
                 DispatchMessage( &msg );
             }
         }
-        updater();
-        if( this->autoSwap ) this->SwapBuffer();
+        this->update();
     }
 }
 
-void GLWindow::SetAutoSwapBuffer( bool enable /*= true */ )
+void Window::SetAutoSwapBuffer( bool enable /*= true */ )
 {
     this->autoSwap = enable;
 }
+

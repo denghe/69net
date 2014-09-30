@@ -1,11 +1,7 @@
 #include "Precompile.h"
 
-Audio* G::audio;
-
-Input* G::input;
-
-Node* G::node;
-
-GLWindow* G::glwindow;
-
-Logic* G::logic;
+Audio* G::audio = nullptr;
+Input* G::input = nullptr;
+Node* G::node = nullptr;
+Window* G::window = nullptr;
+Logic* G::logic = nullptr;

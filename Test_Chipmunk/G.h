@@ -4,7 +4,7 @@
 class G
 {
 public:
-    static GLWindow* glwindow;
+    static Window* window;
     static Input* input;
     static Audio* audio;
     static Node* node;
