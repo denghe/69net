@@ -7,7 +7,7 @@ public:
     void Retain();
     void Release();
     unsigned int refCount = 1;
-    function<void( Ref* p )>* deleter = nullptr;
+    //function<void( Ref* p )>* deleter = nullptr;
 protected:
     Ref();
     virtual ~Ref();

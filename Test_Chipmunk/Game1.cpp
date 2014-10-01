@@ -1,24 +1,68 @@
 #include "Precompile.h"
 
+struct Point
+{
+    float x, y;
+};
+struct Size
+{
+    float width, height;
+};
+struct PositionNode : public Node
+{
+    Point position;
+    Point anchor;
+};
+struct BoxNode : PositionNode
+{
+    Size size;
+};
+
+
+struct Scene1 : public Scene
+{
+    Scene1()
+    {
+        glClearColor( 0, 0, 0, 0 );
+        //glShadeModel( GL_FLAT );
+    }
+    void Draw( int durationTicks ) override
+    {
+        glClear( GL_COLOR_BUFFER_BIT );
+        Node::Draw( durationTicks );
+    }
+};
+
+struct BoxShapeNode : public BoxNode
+{
+    BoxShapeNode()
+    {
+        position.x = position.y = 0;
+        anchor.x = anchor.y = 0.5f;
+        size.width = size.height = 0;
+    }
+    void Draw( int durationTicks ) override
+    {
+        glBegin( GL_LINE_LOOP );
+        glVertex2f( position.x, position.y );
+        glVertex2f( position.x + size.width, position.y );
+        glVertex2f( position.x + size.width, position.y + size.height );
+        glVertex2f( position.x, position.y + size.height );
+        glEnd();
+        Node::Draw( durationTicks );
+    }
+    static BoxShapeNode* create() { return new BoxShapeNode(); }
+};
+
+
 Game1::~Game1()
 {
+    delete G::scene;
 }
 Game1::Game1()
 {
-    // code here
-    /*
-    设计尺寸：    768 * 1024
-    格子划分：    12 * 16
-    每格尺寸：    64 * 64
-    细胞尺寸：    32 * 32 ( 即 1/4 格 )
-    */
-
+    // init G::window
     G::window->Init( L"test", 768, 1024, 0, 0, true );
-    //G::_glwindow->setVsync( false );
-
-    glClearColor( 0.0, 0.0, 0.0, 0.0 );    	// Clear the background set it to black
-    glShadeModel( GL_FLAT );                 	// set the shading model to FLAT
-
     G::window->resizeCallback = []
     {
         glViewport( 0, 0, G::window->width, G::window->height );
@@ -26,42 +70,27 @@ Game1::Game1()
         glLoadIdentity();
         gluOrtho2D( 0, G::window->width, 0, G::window->height );
     };
+    //G::window->setVsync( false );
 
-    G::scene->Add( Node1::create() );
+    // init G::scene
+    new Scene1();
+
+    auto box = BoxShapeNode::create();
+    box->position = { 5, 5 };
+    box->size = { 100, 100 };
+
+    G::scene->Add( box );
 }
 
 void Game1::Update()
 {
-    // todo: code here
+    // todo: loop code here
 }
 
-// 从下往上，从左往右，2进制从高往低位（默认），每4字节填充一排，即 32 像素
-static GLubyte fly[] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x03, 0x80, 0x01, 0xC0, 0x06, 0xC0, 0x03, 0x60,
-    0x04, 0x60, 0x06, 0x20, 0x04, 0x30, 0x0C, 0x20,
-    0x04, 0x18, 0x18, 0x20, 0x04, 0x0C, 0x30, 0x20,
-    0x04, 0x06, 0x60, 0x20, 0x44, 0x03, 0xC0, 0x22,
-    0x44, 0x01, 0x80, 0x22, 0x44, 0x01, 0x80, 0x22,
-    0x44, 0x01, 0x80, 0x22, 0x44, 0x01, 0x80, 0x22,
-    0x44, 0x01, 0x80, 0x22, 0x44, 0x01, 0x80, 0x22,
-    0x66, 0x01, 0x80, 0x66, 0x33, 0x01, 0x80, 0xCC,
-    0x19, 0x81, 0x81, 0x98, 0x0C, 0xC1, 0x83, 0x30,
-    0x07, 0xe1, 0x87, 0xe0, 0x03, 0x3f, 0xfc, 0xc0,
-    0x03, 0x31, 0x8c, 0xc0, 0x03, 0x33, 0xcc, 0xc0,
-    0x06, 0x64, 0x26, 0x60, 0x0c, 0xcc, 0x33, 0x30,
-    0x18, 0xcc, 0x33, 0x18, 0x10, 0xc4, 0x23, 0x08,
-    0x10, 0x63, 0xC6, 0x08, 0x10, 0x30, 0x0c, 0x08,
-    0x10, 0x18, 0x18, 0x08, 0x10, 0x00, 0x00, 0x08
-};
 
-void Node1::Draw( int durationTicks )
-{
-    glClear( GL_COLOR_BUFFER_BIT );
-    glEnable( GL_POLYGON_STIPPLE );
-    glPolygonStipple( fly );
-    glRects( 10, 10, G::window->width - 10, G::window->height - 10 );
-    glDisable( GL_POLYGON_STIPPLE );
-
-    Node::Draw( durationTicks );
-}
+/*
+设计尺寸：    768 * 1024
+格子划分：    12 * 16
+每格尺寸：    64 * 64
+细胞尺寸：    32 * 32 ( 即 1/4 格 )
+*/

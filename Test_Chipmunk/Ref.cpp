@@ -17,13 +17,13 @@ void Ref::Release()
 {
     if( ( --this->refCount ) <= 0 )
     {
-        if( deleter )
-        {
-            deleter->operator()( this );
-        }
-        else
-        {
+        //if( deleter )
+        //{
+        //    deleter->operator()( this );
+        //}
+        //else
+        //{
             delete this;
-        }
+        //}
     }
 }
