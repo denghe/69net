@@ -2,9 +2,11 @@
 
 Logic::Logic()
 {
+    G::logic = this;
 }
 
 Logic::~Logic()
 {
+    G::logic = nullptr;
 }
 

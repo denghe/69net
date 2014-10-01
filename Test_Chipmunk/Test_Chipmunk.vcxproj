@@ -182,6 +182,8 @@
     <ClInclude Include="Logic.h" />
     <ClInclude Include="Game1.h" />
     <ClInclude Include="Looper.h" />
+    <ClInclude Include="Ref.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Precompile.h" />
@@ -484,6 +486,8 @@
     <ClCompile Include="Game1.cpp" />
     <ClCompile Include="Looper.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Ref.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="Precompile.cpp">

@@ -18,8 +18,8 @@ void Looper::Update( int durationTicks )
         }
         drawTicks -= this->accumulatTicks;
     }
-    if( G::node )
+    if( G::scene )
     {
-        G::node->Draw( drawTicks );
+        G::scene->Draw( drawTicks );
     }
 }

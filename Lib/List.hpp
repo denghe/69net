@@ -262,7 +262,7 @@ int List<T>::find( T const& v )
 {
     for( int i = 0; i < _size; ++i )
     {
-        if( _buf[ idx ] == v ) return i;
+        if( _buf[ i ] == v ) return i;
     }
     return -1;
 }

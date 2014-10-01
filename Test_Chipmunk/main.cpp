@@ -7,6 +7,10 @@ int main( void )
     Audio audio;
     Game1 game1;
     Looper looper;
+
+    printf( "%d ", sizeof( Ref ) );
+    printf( "%d ", sizeof( Node ) );
+
     auto lastTP = system_clock::now();
     glwindow.Loop( [ &]
     {

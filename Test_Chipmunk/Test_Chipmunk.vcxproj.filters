@@ -36,6 +36,8 @@
     <ClInclude Include="G.h" />
     <ClInclude Include="Game1.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="Ref.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chipmunk\src\chipmunk.c" />
@@ -77,6 +79,8 @@
     <ClCompile Include="G.cpp" />
     <ClCompile Include="Game1.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Ref.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />

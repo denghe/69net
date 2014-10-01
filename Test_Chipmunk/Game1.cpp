@@ -2,14 +2,9 @@
 
 Game1::~Game1()
 {
-    delete G::node; G::node = nullptr;
-    G::logic = nullptr;
 }
 Game1::Game1()
 {
-    G::logic = this;
-    G::node = new Node();
-
     // code here
     /*
     设计尺寸：    768 * 1024
@@ -18,37 +13,55 @@ Game1::Game1()
     细胞尺寸：    32 * 32 ( 即 1/4 格 )
     */
 
-
     G::window->Init( L"test", 768, 1024, 0, 0, true );
     //G::_glwindow->setVsync( false );
 
+    glClearColor( 0.0, 0.0, 0.0, 0.0 );    	// Clear the background set it to black
+    glShadeModel( GL_FLAT );                 	// set the shading model to FLAT
+
     G::window->resizeCallback = []
     {
-        glViewport( 0, 0, G::window->width, G::window->height );          // 占据整个窗口
+        glViewport( 0, 0, G::window->width, G::window->height );
         glMatrixMode( GL_PROJECTION );
         glLoadIdentity();
         gluOrtho2D( 0, G::window->width, 0, G::window->height );
     };
 
-    G::node->beforeDraw = []( int durationTicks )
-    {
-        glLineWidth( 3 );
-        glEnable( GL_LINE_STIPPLE );
-        glLineStipple( 2, 0x3f07 );
-        glBegin( GL_LINE_LOOP );
-        {
-            glVertex2s( 191, 594 );
-            glVertex2s( 390, 21 );
-            glVertex2s( 594, 577 );
-            glVertex2s( 12, 236 );
-            glVertex2s( 767, 262 );
-        }
-        glEnd();
-    };
+    G::scene->Add( Node1::create() );
 }
 
 void Game1::Update()
 {
     // todo: code here
-    printf( "." );
+}
+
+// 从下往上，从左往右，2进制从高往低位（默认），每4字节填充一排，即 32 像素
+static GLubyte fly[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x03, 0x80, 0x01, 0xC0, 0x06, 0xC0, 0x03, 0x60,
+    0x04, 0x60, 0x06, 0x20, 0x04, 0x30, 0x0C, 0x20,
+    0x04, 0x18, 0x18, 0x20, 0x04, 0x0C, 0x30, 0x20,
+    0x04, 0x06, 0x60, 0x20, 0x44, 0x03, 0xC0, 0x22,
+    0x44, 0x01, 0x80, 0x22, 0x44, 0x01, 0x80, 0x22,
+    0x44, 0x01, 0x80, 0x22, 0x44, 0x01, 0x80, 0x22,
+    0x44, 0x01, 0x80, 0x22, 0x44, 0x01, 0x80, 0x22,
+    0x66, 0x01, 0x80, 0x66, 0x33, 0x01, 0x80, 0xCC,
+    0x19, 0x81, 0x81, 0x98, 0x0C, 0xC1, 0x83, 0x30,
+    0x07, 0xe1, 0x87, 0xe0, 0x03, 0x3f, 0xfc, 0xc0,
+    0x03, 0x31, 0x8c, 0xc0, 0x03, 0x33, 0xcc, 0xc0,
+    0x06, 0x64, 0x26, 0x60, 0x0c, 0xcc, 0x33, 0x30,
+    0x18, 0xcc, 0x33, 0x18, 0x10, 0xc4, 0x23, 0x08,
+    0x10, 0x63, 0xC6, 0x08, 0x10, 0x30, 0x0c, 0x08,
+    0x10, 0x18, 0x18, 0x08, 0x10, 0x00, 0x00, 0x08
+};
+
+void Node1::Draw( int durationTicks )
+{
+    glClear( GL_COLOR_BUFFER_BIT );
+    glEnable( GL_POLYGON_STIPPLE );
+    glPolygonStipple( fly );
+    glRects( 10, 10, G::window->width - 10, G::window->height - 10 );
+    glDisable( GL_POLYGON_STIPPLE );
+
+    Node::Draw( durationTicks );
 }

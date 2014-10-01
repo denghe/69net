@@ -2,6 +2,6 @@
 
 Audio* G::audio = nullptr;
 Input* G::input = nullptr;
-Node* G::node = nullptr;
+Scene* G::scene = nullptr;
 Window* G::window = nullptr;
 Logic* G::logic = nullptr;

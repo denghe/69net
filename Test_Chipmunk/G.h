@@ -7,7 +7,7 @@ public:
     static Window* window;
     static Input* input;
     static Audio* audio;
-    static Node* node;
+    static Scene* scene;
     static Logic* logic;
 };
 

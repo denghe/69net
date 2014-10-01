@@ -11,10 +11,14 @@ using namespace std::chrono;
 #pragma comment(lib, "glu32.lib")
 #include <chipmunk.h>
 
+//#define USE_STL
+
+#include "Ref.h"
 #include "Window.h"
-#include "Node.h"
 #include "Input.h"
 #include "Audio.h"
+#include "Node.h"
+#include "Scene.h"
 #include "Logic.h"
 #include "Looper.h"
 #include "G.h"
