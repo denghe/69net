@@ -1,24 +1,5 @@
 #include "Precompile.h"
 
-struct Point
-{
-    float x, y;
-};
-struct Size
-{
-    float width, height;
-};
-struct PositionNode : public Node
-{
-    Point position;
-    Point anchor;
-};
-struct BoxNode : PositionNode
-{
-    Size size;
-};
-
-
 struct Scene1 : public Scene
 {
     Scene1()
@@ -29,31 +10,9 @@ struct Scene1 : public Scene
     void Draw( int durationTicks ) override
     {
         glClear( GL_COLOR_BUFFER_BIT );
-        Node::Draw( durationTicks );
+        NodeBase::Draw( durationTicks );
     }
 };
-
-struct BoxShapeNode : public BoxNode
-{
-    BoxShapeNode()
-    {
-        position.x = position.y = 0;
-        anchor.x = anchor.y = 0.5f;
-        size.width = size.height = 0;
-    }
-    void Draw( int durationTicks ) override
-    {
-        glBegin( GL_LINE_LOOP );
-        glVertex2f( position.x, position.y );
-        glVertex2f( position.x + size.width, position.y );
-        glVertex2f( position.x + size.width, position.y + size.height );
-        glVertex2f( position.x, position.y + size.height );
-        glEnd();
-        Node::Draw( durationTicks );
-    }
-    static BoxShapeNode* create() { return new BoxShapeNode(); }
-};
-
 
 Game1::~Game1()
 {
@@ -61,7 +20,6 @@ Game1::~Game1()
 }
 Game1::Game1()
 {
-    // init G::window
     G::window->Init( L"test", 768, 1024, 0, 0, true );
     G::window->resizeCallback = []
     {
@@ -72,19 +30,44 @@ Game1::Game1()
     };
     //G::window->setVsync( false );
 
-    // init G::scene
-    new Scene1();
+    auto scene = new Scene1();   // init G::scene
 
-    auto box = BoxShapeNode::create();
-    box->position = { 5, 5 };
-    box->size = { 100, 100 };
 
-    G::scene->Add( box );
+    for( auto i = 0; i < 1024; i += 20 )
+    {
+        auto bn = BoxNode::Create();
+        bn->position = { G::window->width / 2, G::window->height / 2 };
+        bn->size = { i, i };
+        scene->Add( bn );
+    }
+
 }
 
 void Game1::Update()
 {
     // todo: loop code here
+
+#ifdef USE_STL
+    for( auto node : G::scene->childs )
+    {
+#else
+    for( auto i = 0; i < G::scene->childs.size(); ++i )
+    {
+        auto node = G::scene->childs[ i ];
+#endif
+        auto bn = (BoxNode*)node;
+        if( bn->size.width <= 1024 )
+        {
+            bn->size.width += 1;
+            bn->size.height += 1;
+        }
+        else
+        {
+            bn->size.width = 0;
+            bn->size.height = 0;
+        }
+        bn->dirty = true;
+    }
 }
 
 

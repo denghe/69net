@@ -151,6 +151,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="xxx\All.h" />
+    <ClInclude Include="xxx\BoxNode.h" />
     <ClInclude Include="chipmunk\include\chipmunk\chipmunk.h" />
     <ClInclude Include="chipmunk\include\chipmunk\chipmunk_ffi.h" />
     <ClInclude Include="chipmunk\include\chipmunk\chipmunk_private.h" />
@@ -177,19 +179,21 @@
     <ClInclude Include="chipmunk\include\chipmunk\cpSpatialIndex.h" />
     <ClInclude Include="chipmunk\include\chipmunk\cpVect.h" />
     <ClInclude Include="chipmunk\src\prime.h" />
-    <ClInclude Include="G.h" />
-    <ClInclude Include="Input.h" />
-    <ClInclude Include="Logic.h" />
+    <ClInclude Include="xxx\Node.h" />
+    <ClInclude Include="xxx\G.h" />
+    <ClInclude Include="xxx\Input.h" />
+    <ClInclude Include="xxx\Logic.h" />
     <ClInclude Include="Game1.h" />
-    <ClInclude Include="Looper.h" />
-    <ClInclude Include="Ref.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="Window.h" />
-    <ClInclude Include="Node.h" />
+    <ClInclude Include="xxx\Looper.h" />
+    <ClInclude Include="xxx\Ref.h" />
+    <ClInclude Include="xxx\Scene.h" />
+    <ClInclude Include="xxx\Window.h" />
+    <ClInclude Include="xxx\NodeBase.h" />
     <ClInclude Include="Precompile.h" />
-    <ClInclude Include="Audio.h" />
+    <ClInclude Include="xxx\Audio.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="xxx\BoxNode.cpp" />
     <ClCompile Include="chipmunk\src\chipmunk.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
@@ -480,23 +484,24 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="G.cpp" />
-    <ClCompile Include="Input.cpp" />
-    <ClCompile Include="Logic.cpp" />
+    <ClCompile Include="xxx\Node.cpp" />
+    <ClCompile Include="xxx\G.cpp" />
+    <ClCompile Include="xxx\Input.cpp" />
+    <ClCompile Include="xxx\Logic.cpp" />
     <ClCompile Include="Game1.cpp" />
-    <ClCompile Include="Looper.cpp" />
+    <ClCompile Include="xxx\Looper.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Ref.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Window.cpp" />
-    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="xxx\Ref.cpp" />
+    <ClCompile Include="xxx\Scene.cpp" />
+    <ClCompile Include="xxx\Window.cpp" />
+    <ClCompile Include="xxx\NodeBase.cpp" />
     <ClCompile Include="Precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="xxx\Audio.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />

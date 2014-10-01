@@ -13,16 +13,9 @@ using namespace std::chrono;
 
 //#define USE_STL
 
-#include "Ref.h"
-#include "Window.h"
-#include "Input.h"
-#include "Audio.h"
-#include "Node.h"
-#include "Scene.h"
-#include "Logic.h"
-#include "Looper.h"
-#include "G.h"
+#include "xxx/All.h"
 
+using namespace xxx;
 #include "Game1.h"
 
 

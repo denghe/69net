@@ -1,5 +1,5 @@
 #include "Precompile.h"
-
+using namespace xxx;
 int main( void )
 {
     Window glwindow;

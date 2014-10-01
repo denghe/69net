@@ -27,17 +27,20 @@
     <ClInclude Include="chipmunk\include\chipmunk\cpSpatialIndex.h" />
     <ClInclude Include="chipmunk\include\chipmunk\cpVect.h" />
     <ClInclude Include="chipmunk\src\prime.h" />
-    <ClInclude Include="Looper.h" />
-    <ClInclude Include="Audio.h" />
-    <ClInclude Include="Input.h" />
     <ClInclude Include="Precompile.h" />
-    <ClInclude Include="Node.h" />
-    <ClInclude Include="Logic.h" />
-    <ClInclude Include="G.h" />
     <ClInclude Include="Game1.h" />
-    <ClInclude Include="Window.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="Ref.h" />
+    <ClInclude Include="xxx\Audio.h" />
+    <ClInclude Include="xxx\BoxNode.h" />
+    <ClInclude Include="xxx\G.h" />
+    <ClInclude Include="xxx\Input.h" />
+    <ClInclude Include="xxx\Logic.h" />
+    <ClInclude Include="xxx\Looper.h" />
+    <ClInclude Include="xxx\Node.h" />
+    <ClInclude Include="xxx\NodeBase.h" />
+    <ClInclude Include="xxx\Ref.h" />
+    <ClInclude Include="xxx\Scene.h" />
+    <ClInclude Include="xxx\Window.h" />
+    <ClInclude Include="xxx\All.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chipmunk\src\chipmunk.c" />
@@ -70,17 +73,19 @@
     <ClCompile Include="chipmunk\src\cpSweep1D.c" />
     <ClCompile Include="chipmunk\src\cpVect.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Looper.cpp" />
-    <ClCompile Include="Audio.cpp" />
-    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Precompile.cpp" />
-    <ClCompile Include="Node.cpp" />
-    <ClCompile Include="Logic.cpp" />
-    <ClCompile Include="G.cpp" />
     <ClCompile Include="Game1.cpp" />
-    <ClCompile Include="Window.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Ref.cpp" />
+    <ClCompile Include="xxx\Audio.cpp" />
+    <ClCompile Include="xxx\BoxNode.cpp" />
+    <ClCompile Include="xxx\G.cpp" />
+    <ClCompile Include="xxx\Input.cpp" />
+    <ClCompile Include="xxx\Logic.cpp" />
+    <ClCompile Include="xxx\Looper.cpp" />
+    <ClCompile Include="xxx\Node.cpp" />
+    <ClCompile Include="xxx\NodeBase.cpp" />
+    <ClCompile Include="xxx\Ref.cpp" />
+    <ClCompile Include="xxx\Scene.cpp" />
+    <ClCompile Include="xxx\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />
