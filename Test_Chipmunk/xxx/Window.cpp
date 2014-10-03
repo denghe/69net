@@ -81,43 +81,43 @@ namespace xxx
 
     Window::~Window()
     {
-        if( this->wnd )
+        if( wnd )
         {
             wglMakeCurrent( nullptr, nullptr );
-            ReleaseDC( this->wnd, this->dc );
-            wglDeleteContext( this->rc );
-            DestroyWindow( this->wnd );
-            UnregisterClass( this->className, this->app );
+            ReleaseDC( wnd, dc );
+            wglDeleteContext( rc );
+            DestroyWindow( wnd );
+            UnregisterClass( className, app );
         }
         G::window = nullptr;
     }
 
-    bool Window::Init( wchar_t* className, int width, int height, int x /*= 0*/, int y /*= 0*/, bool doubleBuffer /*= true*/, wchar_t* title /*= L""*/, WNDPROC wndProc /*= &defaultProc*/ )
+    bool Window::Init( wchar_t* _className, int _width, int _height, int _x /*= 0*/, int _y /*= 0*/, bool _doubleBuffer /*= true*/, wchar_t* _title /*= L""*/, WNDPROC _wndProc /*= &defaultProc*/ )
     {
-        assert( !this->wnd );    // 防重复调用
+        assert( !wnd );    // 防重复调用
 
-        this->className = className;
-        this->wndProc = wndProc;
-        this->autoSwap = this->doubleBuffer = doubleBuffer;
-        if( !title || !*title ) title = className;
+        className = _className;
+        wndProc = _wndProc;
+        autoSwap = doubleBuffer = _doubleBuffer;
+        if( !_title || !*_title ) _title = _className;
 
         RECT rect;
         rect.left = 0L;
         rect.top = 0L;
-        rect.right = this->width = width;
-        rect.bottom = this->height = height;
+        rect.right = width = _width;
+        rect.bottom = height = _height;
 
-        this->wndClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-        this->wndClass.lpfnWndProc = wndProc;
-        this->wndClass.cbClsExtra = 0;
-        this->wndClass.cbWndExtra = 0;
-        this->wndClass.hInstance = this->app;
-        this->wndClass.hIcon = LoadIcon( NULL, IDI_WINLOGO );
-        this->wndClass.hCursor = LoadCursor( NULL, IDC_ARROW );
-        this->wndClass.hbrBackground = (HBRUSH)GetStockObject( BLACK_BRUSH );  // nullptr
-        this->wndClass.lpszMenuName = nullptr;
-        this->wndClass.lpszClassName = className;
-        if( !RegisterClass( &this->wndClass ) )
+        wndClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+        wndClass.lpfnWndProc = _wndProc;
+        wndClass.cbClsExtra = 0;
+        wndClass.cbWndExtra = 0;
+        wndClass.hInstance = app;
+        wndClass.hIcon = LoadIcon( NULL, IDI_WINLOGO );
+        wndClass.hCursor = LoadCursor( NULL, IDC_ARROW );
+        wndClass.hbrBackground = (HBRUSH)GetStockObject( BLACK_BRUSH );  // nullptr
+        wndClass.lpszMenuName = nullptr;
+        wndClass.lpszClassName = _className;
+        if( !RegisterClass( &wndClass ) )
         {
             printf( "GetLastError() = %d", GetLastError() );
             return false;
@@ -126,35 +126,35 @@ namespace xxx
         AdjustWindowRectEx( &rect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_APPWINDOW | WS_EX_WINDOWEDGE );
         auto offset = getTaskbarOffset();
 
-        this->wnd = CreateWindowEx(
+        wnd = CreateWindowEx(
             WS_EX_APPWINDOW | WS_EX_WINDOWEDGE,
-            className, title,
+            _className, _title,
             WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
-            x + offset.first, y + offset.second,
+            _x + offset.first, _y + offset.second,
             rect.right - rect.left, rect.bottom - rect.top,
             NULL, NULL,
-            this->app,
+            app,
             NULL
             );
 
-        if( !this->wnd )
+        if( !wnd )
         {
             printf( "GetLastError() = %d", GetLastError() );
-            UnregisterClass( this->className, this->app );
+            UnregisterClass( className, app );
             return false;
         }
 
 
-        this->dc = GetDC( this->wnd );
+        dc = GetDC( wnd );
 
         PIXELFORMATDESCRIPTOR pfd;
         memset( &pfd, 0, sizeof( PIXELFORMATDESCRIPTOR ) );
         pfd.nSize = sizeof( PIXELFORMATDESCRIPTOR );
         pfd.nVersion = 1;
         pfd.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
-        if( doubleBuffer ) pfd.dwFlags |= PFD_DOUBLEBUFFER;
+        if( _doubleBuffer ) pfd.dwFlags |= PFD_DOUBLEBUFFER;
         pfd.iPixelType = PFD_TYPE_RGBA;
-        pfd.cColorBits = (BYTE)GetDeviceCaps( this->dc, BITSPIXEL );
+        pfd.cColorBits = (BYTE)GetDeviceCaps( dc, BITSPIXEL );
 
         pfd.cRedBits = 8;
         pfd.cGreenBits = 8;
@@ -166,18 +166,18 @@ namespace xxx
 
         pfd.iLayerType = PFD_MAIN_PLANE;
 
-        int iFormat = ChoosePixelFormat( this->dc, &pfd );
-        SetPixelFormat( this->dc, iFormat, &pfd );
+        int iFormat = ChoosePixelFormat( dc, &pfd );
+        SetPixelFormat( dc, iFormat, &pfd );
 
-        this->rc = wglCreateContext( this->dc );
-        wglMakeCurrent( this->dc, this->rc );
+        rc = wglCreateContext( dc );
+        wglMakeCurrent( dc, rc );
 
-        ShowWindow( this->wnd, SW_SHOW );
-        SetForegroundWindow( this->wnd );
-        SetFocus( this->wnd );
+        ShowWindow( wnd, SW_SHOW );
+        SetForegroundWindow( wnd );
+        SetFocus( wnd );
 
 
-        this->resizeCallback = []
+        resizeCallback = []
         {
             if( G::scene )
             {
@@ -190,14 +190,14 @@ namespace xxx
     }
 
     typedef BOOL( APIENTRY *PFNWGLSWAPINTERVALEXTPROC )( int );
-    bool Window::SetVsync( bool enable /*= true */ )
+    bool Window::SetVsync( bool _enable /*= true */ )
     {
-        if( !this->wnd ) return false;
+        if( !wnd ) return false;
         char* extensions = (char*)glGetString( GL_EXTENSIONS );
         if( strstr( extensions, "WGL_EXT_swap_control" ) )
         {
             auto wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
-            wglSwapIntervalEXT( enable ? 1 : 0 );
+            wglSwapIntervalEXT( _enable ? 1 : 0 );
             return true;
         }
         return false;
@@ -205,25 +205,25 @@ namespace xxx
 
     void Window::SwapBuffer()
     {
-        assert( this->doubleBuffer );
-        SwapBuffers( this->dc );
+        assert( doubleBuffer );
+        SwapBuffers( dc );
     }
 
-    void Window::Loop( std::function<void()> updater )
+    void Window::Loop( std::function<void()> _updater )
     {
-        if( this->wndProc == &defaultProc )
+        if( wndProc == &defaultProc )
         {
-            if( this->autoSwap )
+            if( autoSwap )
             {
-                this->update = [ = ]
+                update = [ = ]
                 {
-                    updater();
-                    this->SwapBuffer();
+                    _updater();
+                    SwapBuffer();
                 };
             }
             else
             {
-                this->update = updater;
+                update = _updater;
             }
         }
 
@@ -245,13 +245,13 @@ namespace xxx
                     DispatchMessage( &msg );
                 }
             }
-            this->update();
+            update();
         }
     }
 
-    void Window::SetAutoSwapBuffer( bool enable /*= true */ )
+    void Window::SetAutoSwapBuffer( bool _enable /*= true */ )
     {
-        this->autoSwap = enable;
+        autoSwap = _enable;
     }
 
 }

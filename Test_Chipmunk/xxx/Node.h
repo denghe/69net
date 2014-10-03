@@ -9,7 +9,7 @@ namespace xxx
     };
     struct Size
     {
-        float width, height;
+        float w, h;
     };
     struct Color3b
     {
@@ -31,7 +31,7 @@ namespace xxx
         // todo: scale, angle  (matrix?) shader? blend?
 
         bool    dirty;              // 脏标记( 默认会影响到子 )
-        Point   position;           // 实际绘制用的全局坐标( draw 时 dirty 填充 )
+        Point   pos;                // 实际绘制用的全局坐标( draw 时 dirty 填充 )
 
 #ifdef USE_STL
         vector<Node*> childs;
@@ -43,18 +43,15 @@ namespace xxx
         // return new Node();
         static Node* Create();
 
-        // override 尾部 call Node::Draw 以处理 childs
-        virtual void Draw( int durationTicks );
+        virtual void Draw( int _durationTicks );    // override 尾部 call Node::Draw 以处理 childs
 
-        virtual void Add( Node* child );
-        virtual void Remove( Node* child );
+        virtual void Add( Node* _child );
+        virtual void Added();       // 被 parent Add 后会调用该函数
+
+        virtual void Remove( Node* _child );
+        virtual void Removed();     // 被 parent Remove 后会调用该函数( 如果还有引用计数的话 )
         void RemoveFromParent();
         virtual void Clear();       // remove all childs
-
-        // 被 parent Add 后会调用该函数
-        virtual void Added();
-        // 被 parent Remove 后会调用该函数( 如果还有引用计数的话 )
-        virtual void Removed();
 
     protected:
         Node();

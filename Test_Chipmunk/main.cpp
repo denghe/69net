@@ -2,16 +2,16 @@
 using namespace xxx;
 int main( void )
 {
-    Window glwindow;
-    Game1 game1;
-    Looper looper;
+    Window w;
+    Game1 g;
+    Looper l;
 
-    auto lastTP = system_clock::now();
-    glwindow.Loop( [ &]
+    auto lastTime = system_clock::now();
+    w.Loop( [ &]
     {
-        auto currTP = system_clock::now();
-        looper.Update( (int)duration_cast<milliseconds>( currTP - lastTP ).count() );
-        lastTP = currTP;
+        auto currTime = system_clock::now();
+        l.Update( (int)duration_cast<milliseconds>( currTime - lastTime ).count() );
+        lastTime = currTime;
     } );
 
     return 0;

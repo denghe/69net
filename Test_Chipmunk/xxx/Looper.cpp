@@ -2,23 +2,23 @@
 
 namespace xxx
 {
-    void Looper::Update( int durationTicks )
+    void Looper::Update( int _durationTicks )
     {
         int drawTicks = 0;
-        if( durationTicks > this->logicFrameTicksLimit )
+        if( _durationTicks > logicFrameTicksLimit )
         {
-            durationTicks = this->logicFrameTicksLimit;
+            _durationTicks = logicFrameTicksLimit;
         }
         if( !false )
         {
-            this->accumulatTicks += durationTicks;
-            drawTicks = this->accumulatTicks;
-            while( this->accumulatTicks >= this->logicFrameTicks )
+            accumulatTicks += _durationTicks;
+            drawTicks = accumulatTicks;
+            while( accumulatTicks >= logicFrameTicks )
             {
                 G::logic->Update();
-                this->accumulatTicks -= this->logicFrameTicks;
+                accumulatTicks -= logicFrameTicks;
             }
-            drawTicks -= this->accumulatTicks;
+            drawTicks -= accumulatTicks;
         }
         if( G::scene )
         {

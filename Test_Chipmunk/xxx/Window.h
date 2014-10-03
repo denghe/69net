@@ -10,11 +10,11 @@ namespace xxx
     public:
         Window();
         ~Window();
-        bool Init( wchar_t* className, int width, int height, int x = 0, int y = 0, bool doubleBuffer = true, wchar_t* title = L"", WNDPROC wndProc = &defaultProc );
-        bool SetVsync( bool enable = true );
-        void SetAutoSwapBuffer( bool enable = true );
+        bool Init( wchar_t* _className, int _width, int _height, int _x = 0, int _y = 0, bool _doubleBuffer = true, wchar_t* _title = L"", WNDPROC _wndProc = &defaultProc );
+        bool SetVsync( bool _enable = true );
+        void SetAutoSwapBuffer( bool _enable = true );
         void SwapBuffer();
-        void Loop( function<void()> updater );
+        void Loop( function<void()> _updater );
         function<void()> resizeCallback;
         //protected:
         HINSTANCE app = GetModuleHandle( NULL );

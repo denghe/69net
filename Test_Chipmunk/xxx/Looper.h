@@ -6,7 +6,7 @@ namespace xxx
     class Looper
     {
     public:
-        void Update( int durationTicks );
+        void Update( int _durationTicks );
     //private:
         int logicFrameTicks = 1000 / 60;                        // 每帧 tick 数( 1 tick = 1 ms )
         int logicFrameTicksLimit = logicFrameTicks * 1;         // 帧间隔时长限定：超过这个时长也只算 1 帧

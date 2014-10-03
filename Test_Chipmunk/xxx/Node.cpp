@@ -10,12 +10,11 @@ namespace xxx
 
     Node::Node()
     {
-        this->size = { 0, 0 };
-        this->dock = { 0, 0 };
-        this->anchor = { 0.5f, 0.5f };
-        this->offset = { 0, 0 };
-        this->color = { 255, 255, 255, 0 };
-        this->dirty = true;
+        size = { 0, 0 };
+        dock = { 0, 0 };
+        anchor = { 0.5f, 0.5f };
+        offset = { 0, 0 };
+        color = { 255, 255, 255, 0 };
     }
 
     Node::~Node()
@@ -23,82 +22,82 @@ namespace xxx
         Node::Clear();
     }
 
-    void Node::Draw( int durationTicks )
+    void Node::Draw( int _durationTicks )
     {
 #ifdef USE_STL
-        for( auto& o : this->childs )
+        for( auto& o : childs )
         {
-            o->Draw( durationTicks );
+            o->Draw( _durationTicks );
         }
 #else
-        for( int i = 0; i < this->childs.size(); ++i )
+        for( int i = 0; i < childs.size(); ++i )
         {
-            this->childs[ i ]->Draw( durationTicks );
+            childs[ i ]->Draw( _durationTicks );
         }
 #endif
     }
 
-    void Node::Add( Node* child )
+    void Node::Add( Node* _child )
     {
-        assert( !child->parent && child != this );
-        child->Retain();
-        child->parent = this;
+        assert( !_child->parent && _child != this );
+        _child->Retain();
+        _child->parent = this;
 #ifdef USE_STL
-        this->childs.push_back( child );
+        childs.push_back( _child );
 #else
-        this->childs.push( child );
+        childs.push( _child );
 #endif
     }
 
-    void Node::Remove( Node* child )
+    void Node::Remove( Node* _child )
     {
-        assert( child != this );
+        assert( _child != this );
 #ifdef USE_STL
-        auto it = find( this->childs.begin(), this->childs.end(), child );
-        assert( it != this->childs.end() );
-        this->childs.erase( it );
+        auto it = find( childs.begin(), childs.end(), _child );
+        assert( it != childs.end() );
+        childs.erase( it );
 #else
-        auto i = this->childs.find( child );
+        auto i = childs.find( _child );
         assert( i >= 0 );
-        this->childs.erase( i );
+        childs.erase( i );
 #endif
-        child->parent = nullptr;
+        _child->parent = nullptr;
 
-        if( child->refCount > 1 )
+        if( _child->refCount > 1 )
         {
-            child->Release();
-            child->Removed();
+            _child->Release();
+            _child->Removed();
         }
         else
         {
-            child->Release();
+            _child->Release();
         }
     }
 
     void Node::RemoveFromParent()
     {
-        assert( this->parent );
-        this->parent->Remove( this );
+        assert( parent );
+        parent->Remove( this );
     }
 
     void Node::Clear()
     {
 #ifdef USE_STL
-        for( auto& o : this->childs )
+        for( auto& o : childs )
         {
-            this->Remove( o );
+            Remove( o );
         }
 #else
-        for( int i = 0; i < this->childs.size(); ++i )
+        for( int i = 0; i < childs.size(); ++i )
         {
-            this->Remove( this->childs[ i ] );
+            Remove( childs[ i ] );
         }
 #endif
     }
 
     void Node::Added()
     {
-        this->dirty = true;
+        dirty = true;
     }
 
     void Node::Removed()

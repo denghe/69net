@@ -10,7 +10,7 @@ namespace xxx
 
         Scene();
         ~Scene();
-        void Draw( int durationTicks ) override;
+        void Draw( int _durationTicks ) override;
     };
 }
 

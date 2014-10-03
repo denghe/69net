@@ -13,7 +13,7 @@ using namespace std::chrono;
 
 //#define USE_STL
 
-#include "xxx/All.h"
+#include "All.h"
 
 using namespace xxx;
 #include "MarginBox.h"

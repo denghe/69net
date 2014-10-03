@@ -3,19 +3,19 @@
 
 MarginBox::MarginBox()
 {
-    this->anchor = { 0, 0 };
+    anchor = { 0, 0 };
 }
 
-void MarginBox::Draw( int durationTicks )
+void MarginBox::Draw( int _durationTicks )
 {
-    if( this->dirty || this->parent->dirty )
+    if( dirty || parent->dirty )
     {
-        this->size =
+        size =
         {
-            this->parent->size.width - this->margin.left - this->margin.right,
-            this->parent->size.height - this->margin.top - this->margin.bottom,
+            parent->size.w - margin.left - margin.right,
+            parent->size.h - margin.top - margin.bottom,
         };
-        this->offset = { this->margin.left, this->margin.bottom };
+        offset = { margin.left, margin.bottom };
     }
-    Box::Draw( durationTicks );
+    Box::Draw( _durationTicks );
 }

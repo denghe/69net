@@ -6,9 +6,9 @@ namespace xxx
     {
         G::scene = this;
 
-        this->color = { 0, 0, 0, 0 };      // bg color
-        this->offset = { 0, 0 };
-        this->position = this->offset;
+        color = { 0, 0, 0, 0 };      // bg color
+        offset = { 0, 0 };
+        pos = offset;
 
         //glClearColor( 0, 0, 0, 0 );
         //glShadeModel( GL_FLAT );
@@ -20,34 +20,34 @@ namespace xxx
         G::scene = nullptr;
     }
 
-    void Scene::Draw( int durationTicks )
+    void Scene::Draw( int _durationTicks )
     {
-        if( this->dirty )
+        if( dirty )
         {
-            glViewport( 0, 0, ( GLsizei )this->size.width, ( GLsizei )this->size.height );
+            glViewport( 0, 0, ( GLsizei )size.w, ( GLsizei )size.h );
             glMatrixMode( GL_PROJECTION );
             glLoadIdentity();
 
             // 等比修正 size( 存实际布局尺寸, 短边撑满: 即短边等于设计尺寸短边，长边变长 )
-            if( this->designSize.width > this->designSize.height )
+            if( designSize.w > designSize.h )
             {
-                this->size.width = this->designSize.height * this->size.width / this->size.height;
-                this->size.height = this->designSize.height;
+                size.w = designSize.h * size.w / size.h;
+                size.h = designSize.h;
             }
             else
             {
-                this->size.height = this->designSize.width * this->size.height / this->size.width;
-                this->size.width = this->designSize.width;
+                size.h = designSize.w * size.h / size.w;
+                size.w = designSize.w;
             }
 
-            gluOrtho2D( 0, this->size.width, 0, this->size.height );
-            glClearColor( this->color.r, this->color.g, this->color.b, this->color.a );
+            gluOrtho2D( 0, size.w, 0, size.h );
+            glClearColor( color.r, color.g, color.b, color.a );
         }
 
         glClear( GL_COLOR_BUFFER_BIT );
 
-        Node::Draw( durationTicks );
+        Node::Draw( _durationTicks );
 
-        this->dirty = false;                // resize 的时候会标脏
+        dirty = false;                // resize 的时候会标脏
     }
 }

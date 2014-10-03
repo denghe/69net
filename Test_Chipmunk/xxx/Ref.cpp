@@ -12,12 +12,12 @@ namespace xxx
 
     void Ref::Retain()
     {
-        ++this->refCount;
+        ++refCount;
     }
 
     void Ref::Release()
     {
-        if( ( --this->refCount ) <= 0 )
+        if( ( --refCount ) <= 0 )
         {
             //if( deleter )
             //{
