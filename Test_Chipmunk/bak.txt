@@ -1,3 +1,28 @@
+
+//auto title = new Box();
+//title->AutoRelease();
+//title->color = { 0, 255, 0, 0 };
+//title->dock = { 0.5, 1 };
+//title->anchor = { 0.5, 1 };
+//title->size = { 300, 30 };
+//title->offset = { 0, -1 };
+//mb->Add( title );
+
+//auto close = Box::Create();
+//close->color = { 255, 0, 0, 0 };
+//close->dock = { 1, 1 };
+//close->anchor = { 1, 1 };
+//close->size = { 30, 30 };
+//close->offset = { -1, -1 };
+//mb->Add( close );
+
+
+
+
+
+
+
+
 #ifdef USE_STL
     for( auto node : G::scene->childs )
     {

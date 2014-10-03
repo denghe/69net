@@ -8,7 +8,7 @@ namespace xxx
     public:
         void Retain();
         void Release();
-        unsigned int refCount = 1;
+        int refCount = 1;
 
         void AutoRelease();
         static void ReleasePool();

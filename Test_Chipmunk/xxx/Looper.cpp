@@ -9,13 +9,13 @@ namespace xxx
         {
             _durationTicks = logicFrameTicksLimit;
         }
-        if( !false )
+        if( !false )    // end game flag ?
         {
             accumulatTicks += _durationTicks;
             drawTicks = accumulatTicks;
             while( accumulatTicks >= logicFrameTicks )
             {
-                G::logic->Update();
+                G::game->Update();
                 Ref::ReleasePool();
                 accumulatTicks -= logicFrameTicks;
             }

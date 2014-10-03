@@ -41,6 +41,7 @@
     <ClInclude Include="xxx\Box.h" />
     <ClInclude Include="MarginBox.h" />
     <ClInclude Include="xxx\Game.h" />
+    <ClInclude Include="Object.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chipmunk\src\chipmunk.c" />
@@ -86,6 +87,7 @@
     <ClCompile Include="xxx\Box.cpp" />
     <ClCompile Include="MarginBox.cpp" />
     <ClCompile Include="xxx\Game.cpp" />
+    <ClCompile Include="Object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />

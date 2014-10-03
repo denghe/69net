@@ -228,6 +228,10 @@ namespace xxx
         }
 
         if( resizeCallback )resizeCallback();
+        if( G::game )
+        {
+            G::game->Loaded();
+        }
 
         MSG msg;
         bool running = true;

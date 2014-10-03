@@ -6,11 +6,14 @@ class Game1 : public Game
 public:
     Game1();
     ~Game1();
+    void Loaded() override;
     void Update() override;
 protected:
     Audio audio;
     Input input;
     Scene scene;
+
+    vector<Object*> objs;
 };
 
 #endif

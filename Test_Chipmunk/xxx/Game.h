@@ -8,6 +8,7 @@ namespace xxx
     public:
         Game();
         virtual ~Game();
+        virtual void Loaded() = 0;
         virtual void Update() = 0;
     };
 }

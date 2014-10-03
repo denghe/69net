@@ -4,11 +4,11 @@ namespace xxx
 {
     Game::Game()
     {
-        G::logic = this;
+        G::game = this;
     }
 
     Game::~Game()
     {
-        G::logic = nullptr;
+        G::game = nullptr;
     }
 }

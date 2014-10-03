@@ -13,40 +13,45 @@ Game1::Game1()
     G::scene->designSize = { (float)dw, (float)dh };
     G::window->Init( L"test", dw, dh );
     //G::window->setVsync( false );
+}
 
+void Game1::Loaded()
+{
     auto mb = new MarginBox();
-    ScopeGuard mbSG = [ &] { mb->Release(); };
+    mb->AutoRelease();
     mb->margin = { 5, 5, 5, 5 };
+    mb->size = { G::scene->size.w - 10, G::scene->size.h - 10 };
     G::scene->Add( mb );
-
-    auto title = new Box();
-    title->AutoRelease();
-    title->color = { 0, 255, 0, 0 };
-    title->dock = { 0.5, 1 };
-    title->anchor = { 0.5, 1 };
-    title->size = { 300, 30 };
-    title->offset = { 0, -1 };
-    mb->Add( title );
-
-    auto close = Box::Create();
-    close->color = { 255, 0, 0, 0 };
-    close->dock = { 1, 1 };
-    close->anchor = { 1, 1 };
-    close->size = { 30, 30 };
-    close->offset = { -1, -1 };
-    mb->Add( close );
-
-    auto box2 = Box::Create();
-    box2->size = { 200, 200 };
-    box2->offset = { 401, 200 };
-    mb->Add( box2 );
+    
+    for( auto i = 0; i < 9999; ++i )
+    {
+        auto o = new Object();
+        objs.push_back( o );
+        o->size = { 32, 32 };
+        o->offset = { 
+            rand() % ( 768 - 5 - 5 - 32 ) + 16, 
+            rand() % ( 1024 - 5 - 5 - 32 ) + 16
+        };
+        o->xyInc = {
+            rand() % 2 == 1 ? 1 : -1, 
+            rand() % 2 == 1 ? 1 : -1
+        };
+        mb->Add( o );
+    }
 }
 
 void Game1::Update()
 {
-    // todo: loop code here
+    for( auto o : objs )
+    {
+        o->Update();
+    }
 }
 
 Game1::~Game1()
 {
+    for( auto o : objs )
+    {
+        o->Release();
+    }
 }

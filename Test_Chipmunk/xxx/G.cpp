@@ -6,5 +6,5 @@ namespace xxx
     Input* G::input = nullptr;
     Scene* G::scene = nullptr;
     Window* G::window = nullptr;
-    Game* G::logic = nullptr;
+    Game* G::game = nullptr;
 }
