@@ -11,7 +11,6 @@ struct MarginBox : public Box
     Margin margin;
     MarginBox();
     void Draw( int _durationTicks ) override;
-    inline static MarginBox* Create() { return new MarginBox(); }
 };
 
 

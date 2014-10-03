@@ -10,11 +10,13 @@ Game1::Game1()
     G::window->Init( L"test", dw, dh );
     //G::window->setVsync( false );
 
-    auto mb = MarginBox::Create();
+    auto mb = new MarginBox();
+    ScopeGuard mbSG = [ & ] { mb->Release(); };
     mb->margin = { 5, 5, 5, 5 };
     G::scene->Add( mb );
 
-    auto title = Box::Create();
+    auto title = new Box();
+    ScopeGuard titleSG = [ & ] { title->Release(); };
     title->color = { 0, 255, 0, 0 };
     title->dock = { 0.5, 1 };
     title->anchor = { 0.5, 1 };
@@ -22,13 +24,21 @@ Game1::Game1()
     title->offset = { 0, -1 };
     mb->Add( title );
 
-    auto close = Box::Create();
+
+    auto close = new Box();
+    ScopeGuard closeSG = [ &] { close->Release(); };
     close->color = { 255, 0, 0, 0 };
     close->dock = { 1, 1 };
     close->anchor = { 1, 1 };
     close->size = { 30, 30 };
     close->offset = { -1, -1 };
     mb->Add( close );
+
+    auto box = new Box();
+    ScopeGuard boxSG = [ &] { box->Release(); };
+    box->size = { 200, 200 };
+    box->offset = { 200, 200 };
+    mb->Add( box );
 }
 
 void Game1::Update()

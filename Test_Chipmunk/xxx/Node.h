@@ -40,9 +40,6 @@ namespace xxx
 #endif
         Node* parent = nullptr;
 
-        // return new Node();
-        static Node* Create();
-
         virtual void Draw( int _durationTicks );    // override 尾部 call Node::Draw 以处理 childs
 
         virtual void Add( Node* _child );

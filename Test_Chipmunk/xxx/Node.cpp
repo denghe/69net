@@ -2,12 +2,6 @@
 
 namespace xxx
 {
-
-    Node* Node::Create()
-    {
-        return new Node();
-    }
-
     Node::Node()
     {
         size = { 0, 0 };
