@@ -5,6 +5,8 @@ namespace xxx
 {
     struct Box : public Node
     {
+        STATIC_CREATE( Box );
+
         void Draw( int _durationTicks ) override;
     };
 

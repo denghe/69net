@@ -16,6 +16,7 @@ namespace xxx
             while( accumulatTicks >= logicFrameTicks )
             {
                 G::logic->Update();
+                Ref::ReleasePool();
                 accumulatTicks -= logicFrameTicks;
             }
             drawTicks -= accumulatTicks;
@@ -23,6 +24,7 @@ namespace xxx
         if( G::scene )
         {
             G::scene->Draw( drawTicks );
+            Ref::ReleasePool();
         }
     }
 }

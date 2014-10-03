@@ -8,9 +8,12 @@ struct Margin
 
 struct MarginBox : public Box
 {
+    STATIC_CREATE( MarginBox );
+
     Margin margin;
     MarginBox();
     void Draw( int _durationTicks ) override;
+
 };
 
 

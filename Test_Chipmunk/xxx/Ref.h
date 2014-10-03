@@ -9,10 +9,18 @@ namespace xxx
         void Retain();
         void Release();
         unsigned int refCount = 1;
-        //function<void( Ref* p )>* deleter = nullptr;
+
+        void AutoRelease();
+        static void ReleasePool();
+#ifdef USE_STL
+        static vector<Ref*> autoReleasePool;
+#else
+        static List<Ref*> autoReleasePool;
+#endif
     protected:
         Ref();
         virtual ~Ref();
+
     };
 }
 
