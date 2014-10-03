@@ -123,6 +123,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>Precompile.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,6 +142,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>Precompile.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="MarginBoxNode.h" />
     <ClInclude Include="xxx\All.h" />
     <ClInclude Include="xxx\BoxNode.h" />
     <ClInclude Include="chipmunk\include\chipmunk\chipmunk.h" />
@@ -188,11 +191,11 @@
     <ClInclude Include="xxx\Ref.h" />
     <ClInclude Include="xxx\Scene.h" />
     <ClInclude Include="xxx\Window.h" />
-    <ClInclude Include="xxx\NodeBase.h" />
     <ClInclude Include="Precompile.h" />
     <ClInclude Include="xxx\Audio.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MarginBoxNode.cpp" />
     <ClCompile Include="xxx\BoxNode.cpp" />
     <ClCompile Include="chipmunk\src\chipmunk.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
@@ -494,7 +497,6 @@
     <ClCompile Include="xxx\Ref.cpp" />
     <ClCompile Include="xxx\Scene.cpp" />
     <ClCompile Include="xxx\Window.cpp" />
-    <ClCompile Include="xxx\NodeBase.cpp" />
     <ClCompile Include="Precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

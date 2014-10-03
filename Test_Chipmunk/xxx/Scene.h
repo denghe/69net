@@ -3,11 +3,14 @@
 
 namespace xxx
 {
-    class Scene : public NodeBase
+    class Scene : public Node
     {
     public:
+        Size designSize;
+
         Scene();
         ~Scene();
+        void Draw( int durationTicks ) override;
     };
 }
 

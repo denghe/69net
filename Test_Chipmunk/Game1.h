@@ -10,6 +10,7 @@ public:
 protected:
     Audio audio;
     Input input;
+    Scene scene;
 };
 
 #endif

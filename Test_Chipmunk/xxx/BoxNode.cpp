@@ -2,37 +2,32 @@
 
 namespace xxx
 {
-    BoxNode::BoxNode()
-    {
-        this->position = { 0, 0 };
-        this->anchor = { 0.5f, 0.5f };
-        this->size = { 0, 0 };
-        this->scale = { 1, 1 };
-        this->color = { 255, 255, 255 };
-        this->dirty = true;
-    }
-
     void BoxNode::Draw( int durationTicks )
     {
         // todo: angle support? cache calc result? render list?
+        if( this->parent->dirty )
+        {
+            this->dirty = true;
+        }
         if( this->dirty )
         {
-            this->currSize =
+            this->position =
             {
-                this->size.width * this->scale.x,
-                this->size.height * this->scale.y
+                this->parent->position.x
+                + this->parent->size.width * this->dock.x
+                + this->offset.x
+                - this->size.width * this->anchor.x,
+                this->parent->position.y
+                + this->parent->size.height * this->dock.y
+                + this->offset.y
+                - this->size.height * this->anchor.y,
             };
-            this->currPosition =
-            {
-                this->position.x - this->size.width * this->anchor.x,
-                this->position.y - this->size.height * this->anchor.y
-            };
-            this->dirty = false;
         }
-        auto x = this->currPosition.x;
-        auto y = this->currPosition.y;
-        auto w = this->currSize.width;
-        auto h = this->currSize.height;
+
+        auto x = this->position.x;
+        auto y = this->position.y;
+        auto w = this->size.width;
+        auto h = this->size.height;
         glColor3ubv( (GLubyte*)&color );
         glBegin( GL_LINE_LOOP );
         glVertex2f( x, y );
@@ -40,6 +35,9 @@ namespace xxx
         glVertex2f( x + w, y + h );
         glVertex2f( x, y + h );
         glEnd();
-        NodeBase::Draw( durationTicks );
+
+        Node::Draw( durationTicks );
+
+        this->dirty = false;
     }
 }

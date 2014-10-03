@@ -1,3 +1,41 @@
+#ifdef USE_STL
+    for( auto node : G::scene->childs )
+    {
+#else
+    for( auto i = 0; i < G::scene->childs.size(); ++i )
+    {
+        auto node = G::scene->childs[ i ];
+#endif
+        auto bn = (BoxNode*)node;
+        if( bn->size.width <= 1024 )
+        {
+            bn->size.width += 1;
+            bn->size.height += 1;
+        }
+        else
+        {
+            bn->size.width = 0;
+            bn->size.height = 0;
+        }
+        bn->dirty = true;
+    }
+
+
+
+    for( auto i = 0; i < 1024; i += 20 )
+    {
+        auto bn = BoxNode::Create();
+        bn->offset = { scene->size.width / 2, scene->size.height / 2 };
+        bn->size = { i, i };
+        scene->Add( bn );
+    }
+
+
+
+
+
+
+
 
 // 从下往上，从左往右，2进制从高往低位（默认），每4字节填充一排，即 32 像素
 static GLubyte fly[] = {
