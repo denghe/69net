@@ -42,6 +42,7 @@
     <ClInclude Include="MarginBox.h" />
     <ClInclude Include="xxx\Game.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="xxx\TouchEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chipmunk\src\chipmunk.c" />
@@ -88,6 +89,7 @@
     <ClCompile Include="MarginBox.cpp" />
     <ClCompile Include="xxx\Game.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="xxx\TouchEvent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />

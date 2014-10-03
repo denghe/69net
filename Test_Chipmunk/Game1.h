@@ -13,7 +13,9 @@ protected:
     Input input;
     Scene scene;
 
-    vector<Object*> objs;
+    MarginBox* mb;
+    set<Object*> objs;
+    void createObj( float x, float y );
 };
 
 #endif

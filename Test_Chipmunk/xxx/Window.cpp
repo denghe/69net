@@ -2,11 +2,10 @@
 
 namespace xxx
 {
-
     // x, y
-    std::pair<LONG, LONG> getTaskbarOffset()
+    pair<LONG, LONG> getTaskbarOffset()
     {
-        auto rtv = std::make_pair( 0, 0 );
+        auto rtv = make_pair( 0, 0 );
         RECT rect;
         HWND taskBar = FindWindow( L"Shell_traywnd", NULL );
         if( taskBar && GetWindowRect( taskBar, &rect ) )
@@ -30,21 +29,60 @@ namespace xxx
         return rtv;
     }
 
+    void UpdateCapture( HWND hWnd, LPARAM lParam )
+    {
+        if( ( lParam & MK_LBUTTON ) || ( lParam & MK_MBUTTON ) || ( lParam & MK_RBUTTON ) )
+            SetCapture( hWnd );
+        else
+            ReleaseCapture();
+    }
 
+    // todo: 反向，转为设计坐标
+    TouchEvent getTouchEvent( TouchEventType t, int x, int y )
+    {
+        auto& s = G::scene->size;
+        return {
+            t,
+            (float)x / G::window->width * s.w,
+            float(G::window->height - y) / G::window->height * s.h
+        };
+    }
 
     LRESULT CALLBACK defaultProc( HWND hWnd, UINT uiMsg, WPARAM wParam, LPARAM lParam )
     {
         switch( uiMsg )
         {
-        case WM_ACTIVATE:
-        case WM_KEYDOWN:
-        case WM_KEYUP:
-            return 0;
+        case WM_LBUTTONDOWN:
+        {
+            UpdateCapture( hWnd, wParam );
+            auto e = getTouchEvent( TouchEventType::Down, LOWORD( lParam ), HIWORD( lParam ) );
+            G::input->touchEvents.push( e );
+            G::input->touching = true;
+            G::input->touchPos = { e.x, e.y };
+        }
+            break;
+        case WM_MOUSEMOVE:
+        {
+            if( !G::input->touching ) break;
+            auto e = getTouchEvent( TouchEventType::Move, LOWORD( lParam ), HIWORD( lParam ) );
+            G::input->touchEvents.push( e );
+            G::input->touchPos = { e.x, e.y };
+        }
+            break;
+        case WM_LBUTTONUP:
+        {
+            UpdateCapture( hWnd, wParam );
+            auto e = getTouchEvent( TouchEventType::Up, LOWORD( lParam ), HIWORD( lParam ) );
+            G::input->touchEvents.push( e );
+            G::input->touching = false;
+            G::input->touchPos = { e.x, e.y };
+        }
+            break;
+
         case WM_SIZE:
             G::window->width = LOWORD( lParam );
             G::window->height = HIWORD( lParam );
             if( G::window->resizeCallback ) G::window->resizeCallback();
-            //if( G::glwindow->update ) G::glwindow->update();
             return 0;
 
         case WM_CLOSE:
@@ -209,7 +247,7 @@ namespace xxx
         SwapBuffers( dc );
     }
 
-    void Window::Loop( std::function<void()> _updater )
+    void Window::Loop( function<void()> _updater )
     {
         if( wndProc == &defaultProc )
         {

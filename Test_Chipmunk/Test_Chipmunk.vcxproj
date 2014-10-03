@@ -191,6 +191,7 @@
     <ClInclude Include="xxx\Looper.h" />
     <ClInclude Include="xxx\Ref.h" />
     <ClInclude Include="xxx\Scene.h" />
+    <ClInclude Include="xxx\TouchEvent.h" />
     <ClInclude Include="xxx\Window.h" />
     <ClInclude Include="Precompile.h" />
     <ClInclude Include="xxx\Audio.h" />
@@ -498,6 +499,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="xxx\Ref.cpp" />
     <ClCompile Include="xxx\Scene.cpp" />
+    <ClCompile Include="xxx\TouchEvent.cpp" />
     <ClCompile Include="xxx\Window.cpp" />
     <ClCompile Include="Precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

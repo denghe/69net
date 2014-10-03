@@ -1,8 +1,14 @@
 #include "Precompile.h"
 
-void Object::Update()
+bool Object::Update()
 {
-    if( xyInc.x == 0 && xyInc.y == 0 ) return;
+    if( xyInc.x == 0 && xyInc.y == 0 ) return false;
+    
+    size.w += 1;
+    size.h += 1;
+
+    if( size.w > 32 ) return false;
+
 
     if( offset.x <= size.w / 2 && xyInc.x < 0 )
     {
@@ -24,4 +30,6 @@ void Object::Update()
     offset.x += xyInc.x;
     offset.y += xyInc.y;
     dirty = true;
+
+    return true;
 }

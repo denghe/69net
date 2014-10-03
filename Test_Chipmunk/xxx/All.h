@@ -11,10 +11,11 @@ inline static T* Create()  \
 
 
 #include "Ref.h"
-#include "Window.h"
-#include "Input.h"
-#include "Audio.h"
 #include "Node.h"
+#include "TouchEvent.h"
+#include "Input.h"
+#include "Window.h"
+#include "Audio.h"
 #include "Box.h"
 #include "Scene.h"
 #include "Game.h"

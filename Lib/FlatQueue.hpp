@@ -130,7 +130,7 @@ void FlatQueue<T>::push( T const& v )
 template <class T>
 void FlatQueue<T>::clear()
 {
-    if( std::is_pod<T>::value )
+    if( !std::is_pod<T>::value )
     {
         if( _head <= _tail )
         {
@@ -143,7 +143,7 @@ void FlatQueue<T>::clear()
         }
     }
     _head = 0;
-    _tail = _maxSize;
+    _tail = 0;
 }
 
 

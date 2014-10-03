@@ -9,7 +9,9 @@ namespace xxx
         Input();
         ~Input();
 
-        void Update( int frameCounter );
+        bool touching = false;
+        Point touchPos;
+        FlatQueue<TouchEvent> touchEvents;
     };
 }
 
