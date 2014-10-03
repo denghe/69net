@@ -5,36 +5,30 @@ Game1::~Game1()
 }
 Game1::Game1()
 {
-    scene.designSize = { 768, 1024 };
-
-    G::window->Init( L"test", (int)scene.designSize.width, (int)scene.designSize.height, 0, 0, true );
-    G::window->resizeCallback = []
-    {
-        G::scene->size = { (float)G::window->width, (float)G::window->height };
-        G::scene->dirty = true;
-    };
+    int dw = 768, dh = 1024;
+    G::scene->designSize = { (float)dw, (float)dh };
+    G::window->Init( L"test", dw, dh );
     //G::window->setVsync( false );
 
+    auto mb = MarginBox::Create();
+    mb->margin = { 5, 5, 5, 5 };
+    G::scene->Add( mb );
 
-    auto uibox = MarginBoxNode::Create();
-    uibox->margin = { 5, 5, 5, 5 };
-    scene.Add( uibox );
-
-    auto title = BoxNode::Create();
+    auto title = Box::Create();
     title->color = { 0, 255, 0, 0 };
     title->dock = { 0.5, 1 };
     title->anchor = { 0.5, 1 };
     title->size = { 300, 30 };
     title->offset = { 0, -1 };
-    uibox->Add( title );
+    mb->Add( title );
 
-    auto close = BoxNode::Create();
+    auto close = Box::Create();
     close->color = { 255, 0, 0, 0 };
     close->dock = { 1, 1 };
     close->anchor = { 1, 1 };
     close->size = { 30, 30 };
     close->offset = { -1, -1 };
-    uibox->Add( close );
+    mb->Add( close );
 }
 
 void Game1::Update()

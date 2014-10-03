@@ -3,11 +3,11 @@
 
 namespace xxx
 {
-    class Logic
+    class Game
     {
     public:
-        Logic();
-        virtual ~Logic();
+        Game();
+        virtual ~Game();
         virtual void Update() = 0;
     };
 }

@@ -10,7 +10,7 @@ namespace xxx
         static Input* input;
         static Audio* audio;
         static Scene* scene;
-        static Logic* logic;
+        static Game* logic;
     };
 }
 

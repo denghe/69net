@@ -153,9 +153,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="MarginBoxNode.h" />
+    <ClInclude Include="MarginBox.h" />
     <ClInclude Include="xxx\All.h" />
-    <ClInclude Include="xxx\BoxNode.h" />
+    <ClInclude Include="xxx\Box.h" />
     <ClInclude Include="chipmunk\include\chipmunk\chipmunk.h" />
     <ClInclude Include="chipmunk\include\chipmunk\chipmunk_ffi.h" />
     <ClInclude Include="chipmunk\include\chipmunk\chipmunk_private.h" />
@@ -185,7 +185,7 @@
     <ClInclude Include="xxx\Node.h" />
     <ClInclude Include="xxx\G.h" />
     <ClInclude Include="xxx\Input.h" />
-    <ClInclude Include="xxx\Logic.h" />
+    <ClInclude Include="xxx\Game.h" />
     <ClInclude Include="Game1.h" />
     <ClInclude Include="xxx\Looper.h" />
     <ClInclude Include="xxx\Ref.h" />
@@ -195,8 +195,8 @@
     <ClInclude Include="xxx\Audio.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MarginBoxNode.cpp" />
-    <ClCompile Include="xxx\BoxNode.cpp" />
+    <ClCompile Include="MarginBox.cpp" />
+    <ClCompile Include="xxx\Box.cpp" />
     <ClCompile Include="chipmunk\src\chipmunk.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
@@ -490,7 +490,7 @@
     <ClCompile Include="xxx\Node.cpp" />
     <ClCompile Include="xxx\G.cpp" />
     <ClCompile Include="xxx\Input.cpp" />
-    <ClCompile Include="xxx\Logic.cpp" />
+    <ClCompile Include="xxx\Game.cpp" />
     <ClCompile Include="Game1.cpp" />
     <ClCompile Include="xxx\Looper.cpp" />
     <ClCompile Include="main.cpp" />

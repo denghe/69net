@@ -99,6 +99,7 @@ namespace xxx
         this->className = className;
         this->wndProc = wndProc;
         this->autoSwap = this->doubleBuffer = doubleBuffer;
+        if( !title || !*title ) title = className;
 
         RECT rect;
         rect.left = 0L;
@@ -174,6 +175,16 @@ namespace xxx
         ShowWindow( this->wnd, SW_SHOW );
         SetForegroundWindow( this->wnd );
         SetFocus( this->wnd );
+
+
+        this->resizeCallback = []
+        {
+            if( G::scene )
+            {
+                G::scene->size = { (float)G::window->width, (float)G::window->height };
+                G::scene->dirty = true;
+            }
+        };
 
         return true;
     }

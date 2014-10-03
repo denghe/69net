@@ -2,12 +2,12 @@
 
 namespace xxx
 {
-    Logic::Logic()
+    Game::Game()
     {
         G::logic = this;
     }
 
-    Logic::~Logic()
+    Game::~Game()
     {
         G::logic = nullptr;
     }

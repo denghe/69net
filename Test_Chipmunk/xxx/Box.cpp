@@ -2,7 +2,7 @@
 
 namespace xxx
 {
-    void BoxNode::Draw( int durationTicks )
+    void Box::Draw( int durationTicks )
     {
         // todo: angle support? cache calc result? render list?
         if( this->parent->dirty )

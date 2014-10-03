@@ -1,12 +1,12 @@
 #include "Precompile.h"
 
 
-MarginBoxNode::MarginBoxNode()
+MarginBox::MarginBox()
 {
     this->anchor = { 0, 0 };
 }
 
-void MarginBoxNode::Draw( int durationTicks )
+void MarginBox::Draw( int durationTicks )
 {
     if( this->dirty || this->parent->dirty )
     {
@@ -17,5 +17,5 @@ void MarginBoxNode::Draw( int durationTicks )
         };
         this->offset = { this->margin.left, this->margin.bottom };
     }
-    BoxNode::Draw( durationTicks );
+    Box::Draw( durationTicks );
 }

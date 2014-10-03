@@ -6,12 +6,12 @@ struct Margin
     float left, top, right, bottom;
 };
 
-struct MarginBoxNode : public BoxNode
+struct MarginBox : public Box
 {
     Margin margin;
-    MarginBoxNode();
+    MarginBox();
     void Draw( int durationTicks ) override;
-    inline static MarginBoxNode* Create() { return new MarginBoxNode(); }
+    inline static MarginBox* Create() { return new MarginBox(); }
 };
 
 

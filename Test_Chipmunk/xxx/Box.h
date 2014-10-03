@@ -3,10 +3,10 @@
 
 namespace xxx
 {
-    struct BoxNode : public Node
+    struct Box : public Node
     {
         void Draw( int durationTicks ) override;
-        static BoxNode* Create() { return new BoxNode(); }
+        static Box* Create() { return new Box(); }
     };
 
 }
