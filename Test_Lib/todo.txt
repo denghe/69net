@@ -1,4 +1,0 @@
-精简 Dict 以实现类似 set 的容器 ?
-
-Pool 也可以加一个总长度计数，于 reserve 时累加, 加个 full() 函数，扫 & 对比总长度 以便查内泄, 加个 empty() 返回 _itemHeader == nullptr;
-或是于 debug 模式 alloc free 时加减计数器
