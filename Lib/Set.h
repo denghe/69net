@@ -29,7 +29,7 @@ struct Set : Memmoveable
     void reserve( int capacity );
     List<Node*> const& data() const;
     int size() const;
-
+    Node* operator[]( int idx );
     
 
     // for FlatBuffer write

@@ -219,7 +219,12 @@ void Set<TK>::resize()
     }
 }
 
-
+template <typename TK>
+typename Set<TK>::Node* Set<TK>::operator[]( int idx )
+{
+    assert( idx < _nodes.size() );
+    return _nodes[ idx ];
+}
 
 
 

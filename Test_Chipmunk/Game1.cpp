@@ -43,7 +43,8 @@ void Game1::Update()
         createObj( input.touchPos.x - mb->offset.x, input.touchPos.y - mb->offset.y );
     }
 
-    List<Object*> dead;
+#ifdef USE_STL
+    vector<Object*> dead;
     for( auto o : objs )
     {
         if( !o->Update() )
@@ -51,21 +52,38 @@ void Game1::Update()
             dead.push( o );
         }
     }
+    for( auto o : vector )
+    {
+        o->RemoveFromParent();
+        o->Release();
+        objs.erase( o );
+    }
+#else
+    List<Set<Object*>::Node*> dead;
+    for( int i = 0; i < objs.size(); ++i )
+    {
+        auto o = objs[ i ];
+        if( !o->key->Update() )
+        {
+            dead.push( o );
+        }
+    }
     for( int i = 0; i < dead.size(); ++i )
     {
         auto& o = dead[ i ];
+        o->key->RemoveFromParent();
+        o->key->Release();
         objs.erase( o );
-        o->RemoveFromParent();
-        o->Release();
     }
+#endif
 }
 
 Game1::~Game1()
 {
-    for( auto o : objs )
-    {
-        o->Release();
-    }
+    //for( auto o : objs )
+    //{
+    //    o->Release();
+    //}
 }
 
 void Game1::createObj( float x, float y )
