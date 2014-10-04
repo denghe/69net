@@ -39,6 +39,8 @@
     <ClInclude Include="LRUCache.hpp" />
     <ClInclude Include="OldPool.h" />
     <ClInclude Include="ScopeGuard.h" />
+    <ClInclude Include="Set.h" />
+    <ClInclude Include="Set.hpp" />
     <ClInclude Include="SharedMemory.h" />
     <ClInclude Include="SharedMemory.hpp" />
     <ClInclude Include="SharedPtr.h" />

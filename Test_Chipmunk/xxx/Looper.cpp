@@ -21,7 +21,7 @@ namespace xxx
             }
             drawTicks -= accumulatTicks;
         }
-        if( G::scene )
+        if( G::scene && drawTicks )
         {
             G::scene->Draw( drawTicks );
             Ref::ReleasePool();
