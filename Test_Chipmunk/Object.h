@@ -3,7 +3,6 @@
 
 struct Object : public Box
 {
-    STATIC_CREATE( Object );
     Point xyInc;            // x, y increase value per frame
     bool Update();
 };
