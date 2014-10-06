@@ -16,6 +16,7 @@ int SharedMemory::dispose( int key )
 // http://blog.csdn.net/paradise_lx/article/details/5939988
 char* SharedMemory::create( int key, int bufLen )
 {
+#if __WIN
     // make names
     auto mtxName = String::make( _prefixName, "m", key );
     auto smName = String::make( _prefixName, "sm", key );
@@ -37,10 +38,14 @@ char* SharedMemory::create( int key, int bufLen )
 
     // map file view
     return (char*)MapViewOfFile( fm, FILE_MAP_ALL_ACCESS, 0, 0, 0 );
+#else
+    return nullptr;
+#endif
 }
 
 char* SharedMemory::get( int key, int bufLen )
 {
+#if __WIN
     // make name
     auto smName = String::make( _prefixName, "sm", key );
 
@@ -50,5 +55,8 @@ char* SharedMemory::get( int key, int bufLen )
 
     // map file view
     return (char*)MapViewOfFile( fm, FILE_MAP_ALL_ACCESS, 0, 0, 0 );
+#else
+    return nullptr;
+#endif
 }
 

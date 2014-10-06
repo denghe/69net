@@ -137,26 +137,40 @@ HAS_FUNC
 #define ALIGN8( x )		        __declspec(align(8)) x
 #define ALIGN16( x )		    __declspec(align(16)) x
 #define ALIGN32( x )		    __declspec(align(32)) x
-#define aligned_alloc( a, s )   _aligned_malloc( s, a )
-#define aligned_free( p )       _aligned_free( p )
 #elif __GCC
 #define ALIGN2( x )             x __attribute__ ((aligned (2)))
 #define ALIGN4( x )             x __attribute__ ((aligned (4)))
 #define ALIGN8( x )             x __attribute__ ((aligned (8)))
 #define ALIGN16( x )            x __attribute__ ((aligned (16)))
 #define ALIGN32( x )            x __attribute__ ((aligned (32)))
-#define aligned_free( p )       free( p )
 #else
 #define ALIGN2( x )	            x
 #define ALIGN4( x )	            x
 #define ALIGN8( x )	            x
 #define ALIGN16( x )            x
 #define ALIGN32( x )            x
-#define aligned_free( p )       free( p )
 #endif
 
 
-
+#if __MSVC
+#define aligned_alloc( a, s )   _aligned_malloc( s, a )
+#define aligned_free( p )       _aligned_free( p )
+#else
+inline void* aligned_alloc( size_t alignment, size_t size )
+{
+    assert( !(alignment & (alignment-1)) );
+    auto offset = sizeof(void*) + (--alignment);
+    auto p = (char*)malloc( offset + size );
+    if( !p ) return nullptr;
+    auto r = (void*)(size_t)( p + offset ) & ( ~alignment );
+    ((void**)r)[ -1 ] = p;
+    return r;
+}
+inline void aligned_free( void* p )
+{
+    free ((void**)r)[ -1 ];
+}
+#endif
 
 
 
@@ -187,17 +201,15 @@ RETURN_TYPE FUNC_NAME( T const& v )
 
 */
 #define HAS_FUNC( CN, FN, FT )   \
-template<typename T>                                                                \
+template<typename CT>                                                               \
 class CN                                                                            \
 {                                                                                   \
     template<typename T, FT> struct FuncMatcher;                                    \
     template<typename T> static char hasFunc( FuncMatcher<T, &T::FN>* );            \
     template<typename T> static int hasFunc( ... );                                 \
 public:                                                                             \
-    static const bool value = sizeof( hasFunc<T>( nullptr ) ) == sizeof(char);      \
+    static const bool value = sizeof( hasFunc<CT>( nullptr ) ) == sizeof(char);     \
 }
-
-
 
 
 #define PACKET_CLASS_HEADER_POD( TN )       \
