@@ -5,9 +5,9 @@
 template<int len>
 String::String( Pool& p, char const ( &s )[ len ] )
 {
-    assert( p.attachThis() && p.itemBufLen() > sizeof( Pool* ) && p.itemBufLen() - sizeof( Pool* ) >= len );
+    assert( p.itemBufLen() - sizeof( Pool* ) >= len );
     _buf = (char*)p.alloc();
-    _bufLen = p.itemBufLen() - sizeof( Pool* );
+    _bufLen = p.itemBufLen();
     _dataLen = len - 1;
     _disposer = &p;
     memcpy( _buf, s, len );
@@ -42,7 +42,7 @@ String String::make( char( &buf )[ bufLen ], TS const & ...vs )
 template<typename ...TS>
 String String::makeFast( TS const & ...vs )
 {
-    static std::atomic<int> bufIdx = 0;
+    static std::atomic<int> bufIdx( 0 );
     static char bufs[ 32 ][ 1024 ];
     String rtv( bufs[ ( bufIdx++ ) % 32 ], 1024, 0 );
     rtv.append( vs... );
@@ -115,7 +115,7 @@ void String::appendFormat( char const* format, TS const & ...vs )
             }
             else
             {
-                while( c = format[ offset ] )
+                while( (c = format[ offset ]) )
                 {
                     if( c == '}' )
                     {
@@ -186,7 +186,7 @@ String String::toString( T const& v )
 template<typename T>
 String const String::toStringFast( T const& v )
 {
-    static std::atomic<int> bufIdx = 0;
+    static std::atomic<int> bufIdx( 0 );
     static char bufs[ 32 ][ 128 ];
     if( getToStringMaxLength( v ) >= 128 ) return make( v );
     String s( bufs[ ( bufIdx++ ) % 32 ], 128, 0 );
@@ -205,7 +205,7 @@ String String::toHexString( T const& v )
 template<typename T>
 String const String::toHexStringFast( T const& v )
 {
-    static std::atomic<int> bufIdx = 0;
+    static std::atomic<int> bufIdx( 0 );
     static char bufs[ 32 ][ 32 ];
     String s( bufs[ ( bufIdx++ ) % 32 ], 32, 0 );
     s.appendHex( v );

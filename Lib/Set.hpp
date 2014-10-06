@@ -263,7 +263,7 @@ template <typename TK>
 void Set<TK>::writeBufferDirect( FlatBuffer& fb ) const
 {
     fb.writeDirect( _nodes.size() );
-    for( int i = 0; i < _size; ++i )
+    for( int i = 0; i < _nodes.size(); ++i )
     {
         fb.writeDirect( _nodes[ i ]->key );
     }

@@ -158,7 +158,7 @@ void Dict<TK, TV>::erase( Node* n )
 
 template <typename TK, typename TV>
 template <typename KT>
-typename TV& Dict<TK, TV>::operator[]( KT&& k )
+TV& Dict<TK, TV>::operator[]( KT&& k )
 {
     uint hashCode = (uint)Utils::getHashCode( k );
     uint mod = hashCode % (uint)_buckets.size();
@@ -185,7 +185,7 @@ typename TV& Dict<TK, TV>::operator[]( KT&& k )
 
 template <typename TK, typename TV>
 template <typename KT>
-typename TV& Dict<TK, TV>::at( KT&& k )
+TV& Dict<TK, TV>::at( KT&& k )
 {
     return operator[]( std::forward<KT>( k ) );
 }
@@ -324,7 +324,7 @@ template <typename TK, typename TV>
 void Dict<TK, TV>::writeBufferDirect( FlatBuffer& fb ) const
 {
     fb.writeDirect( _nodes.size() );
-    for( int i = 0; i < _size; ++i )
+    for( int i = 0; i < _nodes.size(); ++i )
     {
         fb.writeDirect( _nodes[ i ]->key );
         fb.writeDirect( _nodes[ i ]->value );

@@ -219,7 +219,7 @@ int List<T>::byteSize() const
 template<typename T>
 int List<T>::byteMaxSize() const
 {
-    return _maxSize * size( T );
+    return _maxSize * sizeof( T );
 }
 
 template<typename T>

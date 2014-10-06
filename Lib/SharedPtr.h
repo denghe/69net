@@ -73,7 +73,7 @@ struct Shared
         }
         _st = nullptr;
     }
-    void assign( SharedType<T>* st, typename DT deleter = nullptr )
+    void assign( SharedType<T>* st, DT deleter = nullptr )
     {
         assert( st && st->_copys );
         clear();
@@ -82,7 +82,7 @@ struct Shared
         if( deleter ) _st->_deleter = deleter;
         else _st->_deleter = [ st ] { delete st; };
     }
-    Shared( SharedType<T>* st, typename DT deleter = nullptr )
+    Shared( SharedType<T>* st, DT deleter = nullptr )
     {
         _st = st;
         if( deleter ) _st->_deleter = deleter;
