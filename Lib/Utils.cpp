@@ -7,6 +7,9 @@ namespace Utils
     int getToStringMaxLength( uint16  v ) { return 5; }
     int getToStringMaxLength( uint    v ) { return 10; }
     int getToStringMaxLength( uint64  v ) { return 19; }
+#if __LINUX
+    int getToStringMaxLength( size_t  v ) { return 19; }
+#endif
     int getToStringMaxLength( int8    v ) { return 4; }
     int getToStringMaxLength( int16   v ) { return 6; }
     int getToStringMaxLength( int     v ) { return 11; }
@@ -250,6 +253,16 @@ namespace Utils
     int toString( char * dstBuf, uint16  v ) { return toStringCore( v, dstBuf ); }
     int toString( char * dstBuf, uint    v ) { return toStringCore( v, dstBuf ); }
     int toString( char * dstBuf, uint64  v ) { return toStringCore( v, dstBuf ); }
+#if __LINUX
+    int toString( char * dstBuf, size_t  v ) 
+    {
+#if __X64
+        return toStringCore( (uint64)v, dstBuf );
+#else
+        return toStringCore( (uint32)v, dstBuf );
+#endif
+    }
+#endif
     int toString( char * dstBuf, int8    v ) { return toStringCore( v, dstBuf ); }
     int toString( char * dstBuf, int16   v ) { return toStringCore( v, dstBuf ); }
     int toString( char * dstBuf, int     v ) { return toStringCore( v, dstBuf ); }
