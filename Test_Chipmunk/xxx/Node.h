@@ -33,11 +33,7 @@ namespace xxx
         bool    dirty;              // 脏标记( 默认会影响到子 )
         Point   pos;                // 实际绘制用的全局坐标( draw 时 dirty 填充 )
 
-#ifdef USE_STL
-        vector<Node*> childs;
-#else
         List<Node*> childs;
-#endif
         Node* parent = nullptr;
 
         virtual void Draw( int _durationTicks );    // override 尾部 call Node::Draw 以处理 childs

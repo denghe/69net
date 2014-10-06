@@ -1,4 +1,58 @@
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//for( auto i = 0; i < 9999; ++i )
+//{
+//    auto o = new Object();
+//    objs.push_back( o );
+//    o->size = { 32, 32 };
+//    o->offset = { 
+//        rand() % ( 768 - 5 - 5 - 32 ) + 16, 
+//        rand() % ( 1024 - 5 - 5 - 32 ) + 16
+//    };
+//    o->xyInc = {
+//        rand() % 2 == 1 ? 1 : -1, 
+//        rand() % 2 == 1 ? 1 : -1
+//    };
+//    mb->Add( o );
+//}
+
+
+//while( !es.empty() )
+//{
+//    auto& e = es.top();
+//    if( e.type == TouchEventType::Down )
+//    {
+//        createObj( e.x - mb->offset.x, e.y - mb->offset.y );
+//    }
+//    es.pop();
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
 //auto title = new Box();
 //title->AutoRelease();
 //title->color = { 0, 255, 0, 0 };

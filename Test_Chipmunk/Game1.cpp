@@ -43,22 +43,6 @@ void Game1::Update()
         createObj( input.touchPos.x - mb->offset.x, input.touchPos.y - mb->offset.y );
     }
 
-#ifdef USE_STL
-    vector<Object*> dead;
-    for( auto o : objs )
-    {
-        if( !o->Update() )
-        {
-            dead.push( o );
-        }
-    }
-    for( auto o : vector )
-    {
-        o->RemoveFromParent();
-        o->Release();
-        objs.erase( o );
-    }
-#else
     List<Set<Object*>::Node*> dead;
     for( int i = 0; i < objs.size(); ++i )
     {
@@ -70,12 +54,11 @@ void Game1::Update()
     }
     for( int i = 0; i < dead.size(); ++i )
     {
-        auto& o = dead[ i ];
-        o->key->RemoveFromParent();
-        o->key->Release();
-        objs.erase( o );
+        auto& o = dead[ i ]->key;   // ref = 2
+        o->RemoveFromParent();      // ref = 1
+        objs.erase( o );            // ref = 1
+        o->Release();               // ref = 0 ( delete )
     }
-#endif
 }
 
 Game1::~Game1()
@@ -88,37 +71,11 @@ Game1::~Game1()
 
 void Game1::createObj( float x, float y )
 {
-    auto o = new Object();
-    objs.insert( o );
+    auto o = new Object();  // ref = 1
+    objs.insert( o );       // ref = 1
+    mb->Add( o );           // ref = 2
     o->size = { 1, 1 };
     o->offset = { x, y, };
     o->xyInc = angleXyIncs[ rand() % 360 ];
-    mb->Add( o );
 }
 
-//for( auto i = 0; i < 9999; ++i )
-//{
-//    auto o = new Object();
-//    objs.push_back( o );
-//    o->size = { 32, 32 };
-//    o->offset = { 
-//        rand() % ( 768 - 5 - 5 - 32 ) + 16, 
-//        rand() % ( 1024 - 5 - 5 - 32 ) + 16
-//    };
-//    o->xyInc = {
-//        rand() % 2 == 1 ? 1 : -1, 
-//        rand() % 2 == 1 ? 1 : -1
-//    };
-//    mb->Add( o );
-//}
-
-
-//while( !es.empty() )
-//{
-//    auto& e = es.top();
-//    if( e.type == TouchEventType::Down )
-//    {
-//        createObj( e.x - mb->offset.x, e.y - mb->offset.y );
-//    }
-//    es.pop();
-//}

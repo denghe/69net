@@ -1,5 +1,6 @@
 #include "Precompile.h"
 
+using namespace std;
 namespace xxx
 {
     // x, y

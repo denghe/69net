@@ -14,8 +14,8 @@ namespace xxx
         bool SetVsync( bool _enable = true );
         void SetAutoSwapBuffer( bool _enable = true );
         void SwapBuffer();
-        void Loop( function<void()> _updater );
-        function<void()> resizeCallback;
+        void Loop( std::function<void()> _updater );
+        std::function<void()> resizeCallback;
         //protected:
         HINSTANCE app = GetModuleHandle( NULL );
         HWND wnd = nullptr;
@@ -27,7 +27,7 @@ namespace xxx
         bool autoSwap = true;
         bool doubleBuffer = true;
         int width = 0, height = 0;
-        function<void()> update;
+        std::function<void()> update;
     };
 }
 

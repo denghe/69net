@@ -1,15 +1,6 @@
 #ifndef __ALLXXX_H__
 #define __ALLXXX_H__
 
-//#define STATIC_CREATE( T ) \
-//template<typename ...PTS> \
-//inline static T* Create( PTS&& ...ps ) \
-//{ \
-//    auto rtv = new T( std::forward<PTS>( ps )... ); \
-//    rtv->AutoRelease(); \
-//    return rtv; \
-//}
-
 #include "Ref.h"
 #include "Node.h"
 #include "TouchEvent.h"

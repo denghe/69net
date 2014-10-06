@@ -14,11 +14,7 @@ protected:
     Scene scene;
 
     MarginBox* mb;
-#ifdef USE_STL
-    set<Object*> objs;
-#else
     Set<Object*> objs;
-#endif
     void createObj( float x, float y );
 };
 
