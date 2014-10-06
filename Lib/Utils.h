@@ -101,7 +101,11 @@ namespace Utils
 #ifdef __GNUC__
     INLINE int clz( size_t x )
     {
+#ifdef __X64
+        return __builtin_clzl( x );
+#else
         return __builtin_clz( x );
+#endif
     }
 #elif defined(__IA) && defined(_MSC_VER)
 #include <intrin.h>
