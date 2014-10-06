@@ -152,26 +152,6 @@ HAS_FUNC
 #endif
 
 
-#if __MSVC
-#define aligned_alloc( a, s )   _aligned_malloc( s, a )
-#define aligned_free( p )       _aligned_free( p )
-#else
-inline void* aligned_alloc( size_t alignment, size_t size )
-{
-    assert( !(alignment & (alignment-1)) );
-    auto offset = sizeof(void*) + (--alignment);
-    auto p = (char*)malloc( offset + size );
-    if( !p ) return nullptr;
-    auto r = (void*)(size_t)( p + offset ) & ( ~alignment );
-    ((void**)r)[ -1 ] = p;
-    return r;
-}
-inline void aligned_free( void* p )
-{
-    free ((void**)r)[ -1 ];
-}
-#endif
-
 
 
 /*
@@ -304,6 +284,26 @@ typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
 
 
 
+
+#if __MSVC
+#define aligned_alloc( a, s )   _aligned_malloc( s, a )
+#define aligned_free( p )       _aligned_free( p )
+#else
+inline void* aligned_alloc( size_t alignment, size_t size )
+{
+    assert( !( alignment & ( alignment - 1 ) ) );
+    auto offset = sizeof( void* ) + ( --alignment );
+    auto p = (char*)malloc( offset + size );
+    if( !p ) return nullptr;
+    auto r = reinterpret_cast<void*>( reinterpret_cast<size_t>( p + offset ) & ( ~alignment ) );
+    ( (void**)r )[ -1 ] = p;
+    return r;
+}
+inline void aligned_free( void* p )
+{
+    free( static_cast<void**>( p )[ -1 ] );
+}
+#endif
 
 
 
