@@ -16,6 +16,7 @@ using namespace xxx;
 #include "Object.h"
 #include "Game1.h"
 #include "Game2.h"
+#include "Game3.h"
 
 
 #endif

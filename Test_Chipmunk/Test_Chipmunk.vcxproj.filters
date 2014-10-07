@@ -45,6 +45,7 @@
     <ClInclude Include="xxx\TouchEvent.h" />
     <ClInclude Include="xxx\CD.h" />
     <ClInclude Include="Game2.h" />
+    <ClInclude Include="Game3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chipmunk\src\chipmunk.c" />
@@ -94,6 +95,7 @@
     <ClCompile Include="xxx\TouchEvent.cpp" />
     <ClCompile Include="xxx\CD.cpp" />
     <ClCompile Include="Game2.cpp" />
+    <ClCompile Include="Game3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />

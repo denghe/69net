@@ -40,7 +40,7 @@ static CdItem* mouseItem = nullptr;
 void Game2::Loaded()
 {
     cdgrid.Init( { dw, dh }, rowCount, columnCount );
-    for( int i = 0; i < 1000000; ++i )
+    for( int i = 0; i < 100000; ++i )
     {
         int x = 16 + rand() % ( dw - 1 - 16 - 16 );
         int y = 16 + rand() % ( dh - 1 - 16 - 16 );
