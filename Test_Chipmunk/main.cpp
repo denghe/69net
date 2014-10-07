@@ -4,7 +4,7 @@ using namespace xxx;
 int main( void )
 {
     Window w;
-    Game1 g;
+    Game2 g;
     Looper l;
 
     auto lastTime = system_clock::now();

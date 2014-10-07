@@ -4,7 +4,7 @@ Game1::Game1()
 {
     int dw = 768, dh = 1024;
     scene.designSize = { (float)dw, (float)dh };
-    G::window->Init( L"test", dw, dh );
+    G::window->Init( L"Game1", dw, dh );
     //G::window->setVsync( false );
 }
 

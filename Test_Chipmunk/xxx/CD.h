@@ -47,7 +47,7 @@ namespace xxx
         CdSize gridDiameter;
 
         uint autoFlag = 0;  // 自增流水号，用于去重( 进某函数时 +1。当再次等于0时，所有 cell 和 item 的 flag 设成 0, 用 1 )
-        void ResetAllFlag();                                                // 清所有 items, freeItems 的 flag 为 0
+        void IncreaseFlag();                                                // ++autoFlag; 循环后重置所有并跳过 0
 
         ~CdGrid();
 
@@ -60,8 +60,9 @@ namespace xxx
         void Reindex( CdItem* _item, CdPoint const& _pos );                 // 更新位置及索引信息
         int GetNearItems( List<CdItem*> _container, CdItem* _item );        // 填充 _item 所占格子笼罩的 items, 返回个数
         int GetCollisionItems( List<CdItem*> _container, CdItem* _item );   // 填充与 _item 碰撞的 items, 返回个数
-        int GetCellIndex( CdPoint const& _pos );                            // 判断一个坐标位于哪格( 超出返回 -1 )
-        static bool CheckCollision( CdItem* _a, CdItem* _b );               // 
+        int GetItems( List<CdItem*> _container, CdPoint const& _pos );      // 返回覆盖着某坐标的，第1个扫到的 item
+        static bool CheckCollision( CdItem* _a, CdItem* _b );               // 检查两个 item 是否相交
+        static bool CheckCollision( CdItem* _a, CdPoint _pos );             // 检查 pos 是否位于 item 内
         // todo: 找离目标区域 最近的 item ? 得到范围内由近到远排列的 items list?
     };
 }

@@ -144,14 +144,26 @@ namespace xxx
         }
     }
 
-    int CdGrid::GetNearItems( List<CdItem*> _container, CdItem* _item )
+
+    void CdGrid::IncreaseFlag()
     {
         ++autoFlag;
-        if( autoFlag == 0 )
+        if( autoFlag ) return;
+        autoFlag = 1;
+        for( int i = 0; i < items.size(); ++i )
         {
-            autoFlag = 1;
-            ResetAllFlag();
+            items[ i ]->key->flag = 0;
         }
+        for( int i = 0; i < freeItems.size(); ++i )
+        {
+            freeItems[ i ]->flag = 0;
+        }
+    }
+
+
+    int CdGrid::GetNearItems( List<CdItem*> _container, CdItem* _item )
+    {
+        IncreaseFlag();
         _container.clear();
         auto& cs = _item->cells;
         for( int i = 0; i < cs.size(); ++i )
@@ -168,15 +180,27 @@ namespace xxx
         return _container.size();
     }
 
+    bool CdGrid::CheckCollision( CdItem* _a, CdItem* _b )
+    {
+        uint r;
+        r = _a->radius.w + _b->radius.w;
+        if( (uint)( _a->pos.x - _b->pos.x + r ) > r + r ) return false;
+        r = _a->radius.h + _b->radius.h;
+        if( (uint)( _a->pos.y - _b->pos.y + r ) > r + r ) return false;
+        return true;
+    }
+
+    bool CdGrid::CheckCollision( CdItem* _a, CdPoint _pos )
+    {
+        return _a->pos.x - _a->radius.w <= _pos.x
+            && _a->pos.x + _a->radius.w >= _pos.x
+            && _a->pos.y - _a->radius.h <= _pos.y
+            && _a->pos.y + _a->radius.h >= _pos.y;
+    }
 
     int CdGrid::GetCollisionItems( List<CdItem*> _container, CdItem* _item )
     {
-        ++autoFlag;
-        if( autoFlag == 0 )
-        {
-            autoFlag = 1;
-            ResetAllFlag();
-        }
+        IncreaseFlag();
         _container.clear();
         auto& cs = _item->cells;
         for( int i = 0; i < cs.size(); ++i )
@@ -202,26 +226,22 @@ namespace xxx
         return _container.size();
     }
 
-    void CdGrid::ResetAllFlag()
+    int CdGrid::GetItems( List<CdItem*> _container, CdPoint const& _pos )
     {
-        for( int i = 0; i < items.size(); ++i )
+        IncreaseFlag();
+        _container.clear();
+        int ci = _pos.x / cellDiameter.w;
+        int ri = _pos.y / cellDiameter.h;
+        auto c = &cells[ ri * columnCount + ci ];
+        for( int i = 0; i < c->items.size(); ++i )
         {
-            items[ i ]->key->flag = 0;
+            auto& o = c->items[ i ]->key;
+            if( CheckCollision( o, _pos ) )
+            {
+                _container.push( o );
+            }
         }
-        for( int i = 0; i < freeItems.size(); ++i )
-        {
-            freeItems[ i ]->flag = 0;
-        }
-    }
-
-    bool CdGrid::CheckCollision( CdItem* _a, CdItem* _b )
-    {
-        uint r;
-        r = _a->radius.w + _b->radius.w;
-        if( (uint)( _a->pos.x - _b->pos.x + r ) > r + r ) return false;
-        r = _a->radius.h + _b->radius.h;
-        if( (uint)( _a->pos.y - _b->pos.y + r ) > r + r ) return false;
-        return true;
+        return _container.size();
     }
 
 }
