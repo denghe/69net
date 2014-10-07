@@ -1,11 +1,11 @@
-#ifndef __GAME1_H__
-#define __GAME1_H__
+#ifndef __GAME2_H__
+#define __GAME2_H__
 
-class Game1 : public Game
+class Game2 : public Game
 {
 public:
-    Game1();
-    ~Game1();
+    Game2();
+    ~Game2();
     void Loaded() override;
     void Update() override;
 protected:

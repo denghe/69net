@@ -15,6 +15,7 @@ using namespace xxx;
 #include "MarginBox.h"
 #include "Object.h"
 #include "Game1.h"
+#include "Game2.h"
 
 
 #endif

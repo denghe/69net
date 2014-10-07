@@ -2,7 +2,7 @@
 #define _SET_HPP__
 
 template <typename TK>
-Set<TK>::Set( int capacity /*= 64 */ )
+Hash<TK>::Hash( int capacity /*= 64 */ )
 {
     _pool.init( sizeof( Node ), 4096, capacity );
     int prime = Utils::getPrime( capacity );
@@ -11,14 +11,14 @@ Set<TK>::Set( int capacity /*= 64 */ )
 }
 
 template <typename TK>
-Set<TK>::Set( Set const& o )
-    : Set( o.size() )
+Hash<TK>::Hash( Hash const& o )
+    : Hash( o.size() )
 {
     operator=( o );
 }
 
 template <typename TK>
-Set<TK>::Set( Set&& o )
+Hash<TK>::Hash( Hash&& o )
 {
     _buckets = std::move( o._buckets );
     _nodes = std::move( o._nodes );
@@ -26,7 +26,7 @@ Set<TK>::Set( Set&& o )
 }
 
 template <typename TK>
-Set<TK>& Set<TK>::operator=( Set const& o )
+Hash<TK>& Hash<TK>::operator=( Hash const& o )
 {
     if( this == &o ) return *this;
     clear();
@@ -47,7 +47,7 @@ Set<TK>& Set<TK>::operator=( Set const& o )
 }
 
 template <typename TK>
-Set<TK>& Set<TK>::operator=( Set&& o )
+Hash<TK>& Hash<TK>::operator=( Hash&& o )
 {
     _buckets = std::move( o._buckets );
     _nodes = std::move( o._nodes );
@@ -56,7 +56,7 @@ Set<TK>& Set<TK>::operator=( Set&& o )
 }
 
 template <typename TK>
-Set<TK>::~Set()
+Hash<TK>::~Hash()
 {
     for( int i = 0; i < _nodes.size(); ++i )
         dispose( _nodes[ i ] );
@@ -64,9 +64,9 @@ Set<TK>::~Set()
 
 template <typename TK>
 template <typename KT>
-std::pair<typename Set<TK>::Node*, bool> Set<TK>::insert( KT && k )
+std::pair<typename Hash<TK>::Node*, bool> Hash<TK>::insert( KT && k )
 {
-    std::pair<typename Set<TK>::Node*, bool> rtv;
+    std::pair<typename Hash<TK>::Node*, bool> rtv;
     uint hashCode = (uint)Utils::getHashCode( k );
     uint mod = hashCode % (uint)_buckets.size();
     auto node = _buckets[ mod ];
@@ -95,7 +95,7 @@ std::pair<typename Set<TK>::Node*, bool> Set<TK>::insert( KT && k )
 
 
 template <typename TK>
-typename Set<TK>::Node* Set<TK>::find( TK const& k )
+typename Hash<TK>::Node* Hash<TK>::find( TK const& k )
 {
     uint hashCode = (uint)Utils::getHashCode( k );
     uint mod = hashCode % (uint)_buckets.size();
@@ -109,7 +109,7 @@ typename Set<TK>::Node* Set<TK>::find( TK const& k )
 }
 
 template <typename TK>
-void Set<TK>::erase( TK const& k )
+void Hash<TK>::erase( TK const& k )
 {
     auto n = find( k );
     if( !n ) return;
@@ -117,7 +117,7 @@ void Set<TK>::erase( TK const& k )
 }
 
 template <typename TK>
-void Set<TK>::erase( Node* n )
+void Hash<TK>::erase( Node* n )
 {
     auto mod = n->hash % (uint)_buckets.size();
     Node* parent = nullptr;
@@ -147,7 +147,7 @@ void Set<TK>::erase( Node* n )
 }
 
 template <typename TK>
-void Set<TK>::clear()
+void Hash<TK>::clear()
 {
     for( int i = 0; i < _nodes.size(); ++i )
     {
@@ -160,7 +160,7 @@ void Set<TK>::clear()
 
 
 template <typename TK>
-void Set<TK>::reserve( int capacity )
+void Hash<TK>::reserve( int capacity )
 {
     if( capacity <= _buckets.size() ) return;
     int prime = Utils::getPrime( (int)Utils::round2n( capacity ) );
@@ -178,33 +178,33 @@ void Set<TK>::reserve( int capacity )
 
 
 template <typename TK>
-List<typename Set<TK>::Node*> const & Set<TK>::data() const
+List<typename Hash<TK>::Node*> const & Hash<TK>::data() const
 {
     return _nodes;
 }
 
 template <typename TK>
-int Set<TK>::size() const
+int Hash<TK>::size() const
 {
     return _nodes.size();
 }
 
 template <typename TK>
-void Set<TK>::dispose( Node* n )
+void Hash<TK>::dispose( Node* n )
 {
     n->key.~TK();
 }
 
 
 template <typename TK>
-bool Set<TK>::empty()
+bool Hash<TK>::empty()
 {
     return _nodes.size() == 0;
 }
 
 
 template <typename TK>
-void Set<TK>::resize()
+void Hash<TK>::resize()
 {
     int prime = Utils::getPrime( _nodes.size() * 3 );
     _nodes.reserve( prime );
@@ -220,7 +220,7 @@ void Set<TK>::resize()
 }
 
 template <typename TK>
-typename Set<TK>::Node* Set<TK>::operator[]( int idx )
+typename Hash<TK>::Node* Hash<TK>::operator[]( int idx )
 {
     assert( idx < _nodes.size() );
     return _nodes[ idx ];
@@ -234,7 +234,7 @@ typename Set<TK>::Node* Set<TK>::operator[]( int idx )
 
 
 template <typename TK>
-int Set<TK>::getWriteBufferSize() const
+int Hash<TK>::getWriteBufferSize() const
 {
     int siz = sizeof( int );
     if( std::is_pod<TK>::value )
@@ -251,7 +251,7 @@ int Set<TK>::getWriteBufferSize() const
     return siz;
 }
 template <typename TK>
-void Set<TK>::writeBuffer( FlatBuffer& fb ) const
+void Hash<TK>::writeBuffer( FlatBuffer& fb ) const
 {
     fb.write( _nodes.size() );
     for( int i = 0; i < _nodes.size(); ++i )
@@ -260,7 +260,7 @@ void Set<TK>::writeBuffer( FlatBuffer& fb ) const
     }
 }
 template <typename TK>
-void Set<TK>::writeBufferDirect( FlatBuffer& fb ) const
+void Hash<TK>::writeBufferDirect( FlatBuffer& fb ) const
 {
     fb.writeDirect( _nodes.size() );
     for( int i = 0; i < _nodes.size(); ++i )
@@ -270,7 +270,7 @@ void Set<TK>::writeBufferDirect( FlatBuffer& fb ) const
 }
 
 template <typename TK>
-bool Set<TK>::readBuffer( FlatBuffer& fb )
+bool Hash<TK>::readBuffer( FlatBuffer& fb )
 {
     int len;
     if( !fb.read( len ) || len < 0 ) return false;

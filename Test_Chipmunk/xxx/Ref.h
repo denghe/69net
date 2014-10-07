@@ -21,7 +21,7 @@ namespace xxx
     template<typename T, typename ...PTS>
     inline static T* Create( PTS&& ...ps )
     {
-        static_assert( is_base_of<Ref, T>::value, "the T must inherit from Ref." );
+        static_assert( std::is_base_of<Ref, T>::value, "the T must inherit from Ref." );
         auto rtv = new T( std::forward<PTS>( ps )... );
         rtv->AutoRelease();
         return rtv;

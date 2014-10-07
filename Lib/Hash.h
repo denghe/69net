@@ -4,7 +4,7 @@
 // 直接由 Dict 去 value 简化而来
 
 template <typename TK>
-struct Set : Memmoveable
+struct Hash : Memmoveable
 {
     struct Node
     {
@@ -13,12 +13,12 @@ struct Set : Memmoveable
         int             index;                              // _nodes[ index ]
         TK              key;
     };
-    explicit Set( int capacity = 64 );
-    Set( Set&& o );
-    Set( Set const& o );
-    Set& operator=( Set&& o );
-    Set& operator=( Set const& o );
-    ~Set();
+    explicit Hash( int capacity = 64 );
+    Hash( Hash&& o );
+    Hash( Hash const& o );
+    Hash& operator=( Hash&& o );
+    Hash& operator=( Hash const& o );
+    ~Hash();
     template <typename KT>
     std::pair<Node*, bool> insert( KT&& k );      // if exists, return Node* + false. else add and return Node* + true
     Node* find( TK const& k );                                                  // if exists, return Node*. else return nullptr

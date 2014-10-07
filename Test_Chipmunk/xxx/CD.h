@@ -30,13 +30,13 @@ namespace xxx
     struct CdCell
     {
         CdPoint index;                  // x: columnIndex, y: rowIndex
-        Set<CdItem*> items;             // 格内有哪些 item
+        Hash<CdItem*> items;             // 格内有哪些 item
     };
 
     // 格子阵列( 分割显示区域，综控 )
     struct CdGrid
     {
-        Set<CdItem*> items;
+        Hash<CdItem*> items;
         List<CdItem*> freeItems;
         List<CdCell> cells;
 
@@ -46,22 +46,23 @@ namespace xxx
         int columnCount = 0;
         CdSize gridDiameter;
 
-
         uint autoFlag = 0;  // 自增流水号，用于去重( 进某函数时 +1。当再次等于0时，所有 cell 和 item 的 flag 设成 0, 用 1 )
+        void ResetAllFlag();                                                // 清所有 items, freeItems 的 flag 为 0
 
         ~CdGrid();
 
         void Init( CdSize _gridDiameter, int _rowCount, int _columnCount ); // 按一个总尺寸划分格子并 Clear
-        void Reserve( int capacity );                                       // 于 freeItems 中预创建 capacity 个 items
+        void Reserve( int _capacity );                                      // 于 freeItems 中预创建 capacity 个 items
         CdItem* CreateItem();                                               // 申请内存( 优先从 freeItems 拿 )，并返回
         void DestroyItem( CdItem* _item );                                  // 析构 item 并从 items 移动至 freeItems
         void Clear();                                                       // Destroy items, 清 cells 的 items
         void Reindex( CdItem* _item );                                      // 创建索引信息
         void Reindex( CdItem* _item, CdPoint const& _pos );                 // 更新位置及索引信息
-        int GetNearItems( List<CdItem*> container, CdItem* _item );         // 填充 _item 所占格子笼罩的 items, 返回个数
-        int GetCollisionItems( List<CdItem*> container, CdItem* _item );    // 填充与 _item 碰撞的 items, 返回个数
+        int GetNearItems( List<CdItem*> _container, CdItem* _item );        // 填充 _item 所占格子笼罩的 items, 返回个数
+        int GetCollisionItems( List<CdItem*> _container, CdItem* _item );   // 填充与 _item 碰撞的 items, 返回个数
         int GetCellIndex( CdPoint const& _pos );                            // 判断一个坐标位于哪格( 超出返回 -1 )
-        void ResetAllFlag();                                                // 清所有 items, freeItems 的 flag 为 0
+        static bool CheckCollision( CdItem* _a, CdItem* _b );               // 
+        // todo: 找离目标区域 最近的 item ? 得到范围内由近到远排列的 items list?
     };
 }
 

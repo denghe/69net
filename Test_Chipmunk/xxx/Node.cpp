@@ -59,7 +59,7 @@ namespace xxx
 
     void Node::Clear()
     {
-        for( int i = 0; i < childs.size(); ++i )
+        for( int i = childs.size() - 1; i >=0; --i )
         {
             Remove( childs[ i ] );
         }
