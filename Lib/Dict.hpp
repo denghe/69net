@@ -130,21 +130,24 @@ template <typename TK, typename TV>
 void Dict<TK, TV>::erase( Node* n )
 {
     auto mod = n->hash % (uint)_buckets.size();
-    Node* parent = nullptr;
     auto node = _buckets[ mod ];
-    do
+    if( node == n )
     {
-        if( node == n )
+        _buckets[ mod ] = node->next;
+    }
+    else
+    {
+        auto parent = node;
+        while( node = node->next )
         {
-            if( parent )
+            if( node == n )
             {
-                parent->next = n->next;
+                parent->next = node->next;
                 break;
             }
+            parent = node;
         }
-        parent = node;
-        node = node->next;
-    } while( node );
+    }
 
     auto last = _nodes.top();
     _nodes.pop();
@@ -153,7 +156,6 @@ void Dict<TK, TV>::erase( Node* n )
 
     dispose( n );
     _pool.free( n );
-    if( n == _buckets[ mod ] ) _buckets[ mod ] = nullptr;
 }
 
 template <typename TK, typename TV>

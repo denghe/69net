@@ -29,7 +29,7 @@ struct Hash : Memmoveable
     void reserve( int capacity );
     List<Node*> const& data() const;
     int size() const;
-    Node* operator[]( int idx );
+    Node* operator[]( int idx ) const;
     
 
     // for FlatBuffer write

@@ -5,34 +5,69 @@
 格子划分：    12 * 16
 每格尺寸：    64 * 64
 细胞尺寸：    32 * 32 ( 即 1/4 格 )
+
+先实现随机位置 ( 16 ~ 767 - 16, 16 ~ 1023 - 16 ) 显示 N 个方块，鼠标点击消除
 */
+
+static int dw = 1024, dh = 768, rowCount = 12, columnCount = 16;
+//static int dw = 768, dh = 1024, rowCount = 16, columnCount = 12;
 
 Game2::Game2()
 {
-    int dw = 768, dh = 1024;
     scene.designSize = { (float)dw, (float)dh };
     G::window->Init( L"Game2", dw, dh );
     //G::window->setVsync( false );
 }
 
+void Game2::createBox( int _x, int _y )
+{
+    auto box = Create<Box>();
+    box->offset = { _x, _y };
+    box->size = { 32, 32 };
+    scene.Add( box );
+
+    auto item = cd.CreateItem();
+    //box->userData = item;
+    item->userData = box;
+    item->pos = { _x, _y };
+    item->radius = { 16, 16 };
+
+    cd.Index( item );
+}
+
 void Game2::Loaded()
 {
+    cd.Init( { dw, dh }, rowCount, columnCount );
+    for( int i = 0; i < 99999; ++i )
+    {
+        int x = 16 + rand() % ( dw - 1 - 16 - 16 );
+        int y = 16 + rand() % ( dh - 1 - 16 - 16 );
+        createBox( x, y );
+    }
 }
 
 void Game2::Update()
 {
+    while( input.touchEvents.size() )
+    {
+        auto& e = input.touchEvents.top();
+        //if( e.type == TouchEventType::Down )
+        //{
+            Cout( "clicked on ( ", e.x, ", ", e.y, " )" );
+            cd.GetItems( touchedItems, { e.x, e.y } );
+            for( int i = 0; i < touchedItems.size(); ++i )
+            {
+                auto& item = touchedItems[ i ];
+                Cout( item->pos.x, ", ", item->pos.y );
+
+                scene.Remove( (Node*)item->userData );
+                cd.DestroyItem( item );
+            }
+        //}
+        input.touchEvents.pop();
+    }
 }
 
 Game2::~Game2()
 {
-}
-
-void Game2::createObj( float x, float y )
-{
-    //auto o = new Object();          // ref = 1
-    //objs.insert( o );               // ref = 1
-    //mb->Add( o );                   // ref = 2
-    //o->size = { 1, 1 };
-    //o->offset = { x, y, };
-    //o->xyInc = angleXyIncs[ rand() % 360 ];
 }

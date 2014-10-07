@@ -2,6 +2,15 @@
 
 namespace xxx
 {
+    CdGrid::CdGrid()
+    {
+        cellRadius = { 0, 0 };
+        cellDiameter = { 0, 0 };
+        gridDiameter = { 0, 0 };
+        rowCount = 0;
+        columnCount = 0;
+        autoFlag = 0;
+    }
 
     CdGrid::~CdGrid()
     {
@@ -44,11 +53,24 @@ namespace xxx
 
     CdItem* CdGrid::CreateItem()
     {
+        CdItem* rtv;
         if( freeItems.size() )
         {
-            return freeItems.top_pop();
+            rtv = freeItems.top_pop();
+            assert( rtv->cells.size() == 0 );
         }
-        return new CdItem();
+        else
+        {
+            rtv = new CdItem();
+        }
+        rtv->radius = { 0, 0 };
+        rtv->pos = { 0, 0 };
+        rtv->groupId = 0;
+        rtv->layerMask = 0xFFFFFFFF;
+        rtv->flag = 0;
+        rtv->userData = nullptr;
+        items.insert( rtv );
+        return rtv;
     }
 
     void CdGrid::DestroyItem( CdItem* _item )
@@ -79,7 +101,7 @@ namespace xxx
         }
     }
 
-    void CdGrid::Reindex( CdItem* _item )
+    void CdGrid::Index( CdItem* _item )
     {
         auto& cs = _item->cells;
         for( int i = 0; i < cs.size(); ++i )
@@ -88,35 +110,37 @@ namespace xxx
         }
         cs.clear();
 
-        CdPoint bottomLeft = { _item->pos.x - _item->radius.w, _item->pos.y - _item->radius.h };
-        int ci1 = bottomLeft.x / cellDiameter.w;
-        int ri1 = bottomLeft.y / cellDiameter.h;
+        CdPoint p = { _item->pos.x - _item->radius.w, _item->pos.y - _item->radius.h };
+        int ci1 = p.x / cellDiameter.w;
+        int ri1 = p.y / cellDiameter.h;
         assert( ci1 >= 0 && ci1 < columnCount && ri1 >= 0 && ri1 < rowCount );
 
-        CdPoint topRight = { _item->pos.x + _item->radius.w, _item->pos.y + _item->radius.h };
-        int ci2 = bottomLeft.x / cellDiameter.w;
-        int ri2 = bottomLeft.y / cellDiameter.h;
+        p = { _item->pos.x + _item->radius.w, _item->pos.y + _item->radius.h };
+        int ci2 = p.x / cellDiameter.w;
+        int ri2 = p.y / cellDiameter.h;
         assert( ci2 >= 0 && ci2 < columnCount && ri2 >= 0 && ri2 < rowCount );
 
         for( int ri = ri1; ri <= ri2; ++ri )
         {
             for( int ci = ci1; ci <= ci2; ++ci )
             {
-                cs.push( &cells[ ri * columnCount + ci ] );
+                auto c = &cells[ ri * columnCount + ci ];
+                cs.push( c );
+                c->items.insert( _item );
             }
         }
     }
 
-    void CdGrid::Reindex( CdItem* _item, CdPoint const& _pos )
+    void CdGrid::Update( CdItem* _item, CdPoint const& _pos )
     {
-        CdPoint bottomLeft = { _pos.x - _item->radius.w, _pos.y - _item->radius.h };
-        int ci1 = bottomLeft.x / cellDiameter.w;
-        int ri1 = bottomLeft.y / cellDiameter.h;
+        CdPoint p = { _pos.x - _item->radius.w, _pos.y - _item->radius.h };
+        int ci1 = p.x / cellDiameter.w;
+        int ri1 = p.y / cellDiameter.h;
         assert( ci1 >= 0 && ci1 < columnCount && ri1 >= 0 && ri1 < rowCount );
 
-        CdPoint topRight = { _pos.x + _item->radius.w, _pos.y + _item->radius.h };
-        int ci2 = bottomLeft.x / cellDiameter.w;
-        int ri2 = bottomLeft.y / cellDiameter.h;
+        p = { _pos.x + _item->radius.w, _pos.y + _item->radius.h };
+        int ci2 = p.x / cellDiameter.w;
+        int ri2 = p.y / cellDiameter.h;
         assert( ci2 >= 0 && ci2 < columnCount && ri2 >= 0 && ri2 < rowCount );
 
         auto& cs = _item->cells;
@@ -161,7 +185,7 @@ namespace xxx
     }
 
 
-    int CdGrid::GetNearItems( List<CdItem*> _container, CdItem* _item )
+    int CdGrid::GetNearItems( List<CdItem*>& _container, CdItem* _item )
     {
         IncreaseFlag();
         _container.clear();
@@ -198,7 +222,7 @@ namespace xxx
             && _a->pos.y + _a->radius.h >= _pos.y;
     }
 
-    int CdGrid::GetCollisionItems( List<CdItem*> _container, CdItem* _item )
+    int CdGrid::GetCollisionItems( List<CdItem*>& _container, CdItem* _item )
     {
         IncreaseFlag();
         _container.clear();
@@ -226,9 +250,8 @@ namespace xxx
         return _container.size();
     }
 
-    int CdGrid::GetItems( List<CdItem*> _container, CdPoint const& _pos )
+    int CdGrid::GetItems( List<CdItem*>& _container, CdPoint const& _pos )
     {
-        IncreaseFlag();
         _container.clear();
         int ci = _pos.x / cellDiameter.w;
         int ri = _pos.y / cellDiameter.h;
@@ -242,6 +265,22 @@ namespace xxx
             }
         }
         return _container.size();
+    }
+
+    CdItem* CdGrid::GetItem( CdPoint const& _pos )
+    {
+        int ci = _pos.x / cellDiameter.w;
+        int ri = _pos.y / cellDiameter.h;
+        auto c = &cells[ ri * columnCount + ci ];
+        for( int i = 0; i < c->items.size(); ++i )
+        {
+            auto& o = c->items[ i ]->key;
+            if( CheckCollision( o, _pos ) )
+            {
+                return o;
+            }
+        }
+        return nullptr;
     }
 
 }

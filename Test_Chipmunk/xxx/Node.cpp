@@ -9,6 +9,9 @@ namespace xxx
         anchor = { 0.5f, 0.5f };
         offset = { 0, 0 };
         color = { 255, 255, 255, 0 };
+        userData = nullptr;
+        dirty = true;
+        parent = nullptr;
     }
 
     Node::~Node()

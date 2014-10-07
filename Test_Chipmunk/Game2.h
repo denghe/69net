@@ -13,9 +13,9 @@ protected:
     Input input;
     Scene scene;
 
-    MarginBox* mb;
-    Hash<Object*> objs;
-    void createObj( float x, float y );
+    void createBox( int _x, int _y );
+    CdGrid cd;
+    List<CdItem*> touchedItems;
 };
 
 #endif

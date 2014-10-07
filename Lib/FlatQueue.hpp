@@ -176,3 +176,13 @@ T& FlatQueue<T>::at( int idx )
     else
         return _buf[ _head + idx ];
 }
+
+
+template <class T>
+bool FlatQueue<T>::pop( T& outVal )
+{
+    if( _head == _tail ) return false;
+    outVal = _buf[ _head ];
+    pop();
+    return true;
+}

@@ -28,6 +28,7 @@ public:
     void pop();
     T& top();
     T const& top() const;
+    bool pop( T& outVal );
 
 private:
     T* _buf;

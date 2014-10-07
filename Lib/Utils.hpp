@@ -21,6 +21,11 @@ namespace Utils
             return ( (byte*)&in )[ 0 ] || ( ( (byte*)&in )[ 1 ] << 8 ) || ( ( (byte*)&in )[ 2 ] << 16 );
         if( sizeof( T ) == 4 )
             return *(int*)&in;
+        if( sizeof( T ) == 8 )
+        {
+            uint* p = (uint*)&in;
+            return (int)( p[ 0 ] + p[ 1 ] );
+        }
 #if __IA
         return getHash_CS( (byte const*)&in, sizeof( T ) );
 #else
@@ -36,7 +41,9 @@ namespace Utils
     template<typename T>
     int getHashCode( T const &in )
     {
-        return getHashCodeCore( in );
+        auto rtv = getHashCodeCore( in );
+        return rtv;
+        //return getHashCodeCore( in );
     }
 
     template<typename T1, typename T2>

@@ -4,8 +4,8 @@ bool Object::Update()
 {
     if( xyInc.x == 0 && xyInc.y == 0 ) return false;
     
-    size.w += 1;
-    size.h += 1;
+    size.w += 0.1f;
+    size.h += 0.1f;
 
     if( size.w > 32 ) return false;
 
