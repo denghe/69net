@@ -14,7 +14,7 @@ protected:
     Scene scene;
 
     void createBox( int _x, int _y );
-    CdGrid cd;
+    CdGrid cdgrid;
     List<CdItem*> touchedItems;
 };
 

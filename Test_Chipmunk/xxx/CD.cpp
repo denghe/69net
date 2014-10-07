@@ -226,6 +226,7 @@ namespace xxx
     {
         IncreaseFlag();
         _container.clear();
+        _item->flag = autoFlag;     // 防止目标 item 被加入集合
         auto& cs = _item->cells;
         for( int i = 0; i < cs.size(); ++i )
         {
