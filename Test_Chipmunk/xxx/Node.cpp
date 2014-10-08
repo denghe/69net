@@ -21,10 +21,37 @@ namespace xxx
 
     void Node::Draw( int _durationTicks )
     {
+        if( parent->dirty )
+        {
+            dirty = true;
+        }
+        if( dirty )
+        {
+            pos =
+            {
+                parent->pos.x
+                + parent->size.w * dock.x
+                + offset.x
+                - size.w * anchor.x,
+
+                parent->pos.y
+                + parent->size.h * dock.y
+                + offset.y
+                - size.h * anchor.y,
+            };
+        }
+
+        Drawing( _durationTicks );
+
         for( int i = 0; i < childs.size(); ++i )
         {
             childs[ i ]->Draw( _durationTicks );
         }
+        dirty = false;
+    }
+
+    void Node::Drawing( int _durationTicks )
+    {
     }
 
     void Node::Add( Node* _child )

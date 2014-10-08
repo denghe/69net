@@ -13,6 +13,7 @@ protected:
     Input input;
     Scene scene;
 
+    Node* plane;
 };
 
 #endif

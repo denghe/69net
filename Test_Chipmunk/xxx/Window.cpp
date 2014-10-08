@@ -38,15 +38,32 @@ namespace xxx
             ReleaseCapture();
     }
 
-    // todo: 反向，转为设计坐标
-    TouchEvent getTouchEvent( TouchEventType t, int x, int y )
+    // 反向，转为设计坐标
+    TouchEvent getTouchEvent( TouchEventType t, short x, short y )
     {
         auto& s = G::scene->size;
+        if( x < 0 )
+        {
+            x = 0;
+        }
+        else if( x > G::window->width - 1 )
+        {
+            x = G::window->width - 1;
+        }
+        if( y < 0 )
+        {
+            y = 0;
+        }
+        else if( y > G::window->height - 1 )
+        {
+            y = G::window->height - 1;
+        }
+        y = G::window->height - y;              // 上下翻转为 gl 坐标
         return
         {
             t,
             (float)x / G::window->width * s.w,
-            float( abs( G::window->height - y ) ) / G::window->height * s.h
+            (float)y / G::window->height * s.h
         };
     }
 
@@ -221,6 +238,7 @@ namespace xxx
         {
             if( G::scene )
             {
+                Cout( G::window->width, ", ", G::window->height );
                 G::scene->size = { (float)G::window->width, (float)G::window->height };
                 G::scene->dirty = true;
             }
@@ -267,7 +285,10 @@ namespace xxx
             }
         }
 
-        if( resizeCallback )resizeCallback();
+        if( resizeCallback )
+        {
+            resizeCallback();
+        }
         if( G::game )
         {
             G::game->Loaded();

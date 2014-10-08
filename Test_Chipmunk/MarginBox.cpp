@@ -6,7 +6,7 @@ MarginBox::MarginBox()
     anchor = { 0, 0 };
 }
 
-void MarginBox::Draw( int _durationTicks )
+void MarginBox::Drawing( int _durationTicks )
 {
     if( dirty || parent->dirty )
     {
@@ -17,5 +17,4 @@ void MarginBox::Draw( int _durationTicks )
         };
         offset = { margin.left, margin.bottom };
     }
-    Box::Draw( _durationTicks );
 }

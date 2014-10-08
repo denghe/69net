@@ -37,7 +37,8 @@ namespace xxx
         Node*   parent;
         List<Node*> childs;
 
-        virtual void Draw( int _durationTicks );    // override 尾部 call Node::Draw 以处理 childs
+        virtual void Draw( int _durationTicks );
+        virtual void Drawing( int _durationTicks );    // Draw 的过程中会调用( 算完坐标啥的之后, 遍历子之前 )
 
         virtual void Add( Node* _child );
         virtual void Added();           // 被 parent Add 后会调用该函数
@@ -47,7 +48,6 @@ namespace xxx
         void RemoveFromParent();
         virtual void Clear();           // remove all childs
 
-    protected:
         Node();
         ~Node();
     };

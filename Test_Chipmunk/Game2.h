@@ -13,6 +13,8 @@ protected:
     Input input;
     Scene scene;
 
+    MarginBox* mb;
+    Hash<Object*> objs;
     void createBox( int _x, int _y );
     CdGrid cdgrid;
     List<CdItem*> touchedItems;

@@ -46,8 +46,10 @@ namespace xxx
 
         glClear( GL_COLOR_BUFFER_BIT );
 
-        Node::Draw( _durationTicks );
-
+        for( int i = 0; i < childs.size(); ++i )
+        {
+            childs[ i ]->Draw( _durationTicks );
+        }
         dirty = false;                // resize 的时候会标脏
     }
 }

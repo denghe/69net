@@ -10,7 +10,7 @@ struct MarginBox : public Box
 {
     Margin margin;
     MarginBox();
-    void Draw( int _durationTicks ) override;
+    void Drawing( int _durationTicks ) override;
 
 };
 
