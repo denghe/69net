@@ -42,10 +42,11 @@ namespace xxx
     TouchEvent getTouchEvent( TouchEventType t, int x, int y )
     {
         auto& s = G::scene->size;
-        return {
+        return
+        {
             t,
             (float)x / G::window->width * s.w,
-            float(G::window->height - y) / G::window->height * s.h
+            float( abs( G::window->height - y ) ) / G::window->height * s.h
         };
     }
 

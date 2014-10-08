@@ -46,7 +46,8 @@ namespace xxx
             for( int ci = 0; ci < _columnCount; ++ci )
             {
                 auto &c = cells[ ri*_columnCount + ci ];
-                c.index = { ci, ri };
+                c.ci = ci;
+                c.ri = ri;
             }
         }
     }
@@ -139,6 +140,8 @@ namespace xxx
 
     void CdGrid::Update( CdItem* _item, CdPoint const& _pos )
     {
+        _item->pos = _pos;
+
         CdPoint p = { _pos.x - _item->radius.w, _pos.y - _item->radius.h };
         int ci1 = p.x / cellDiameter.w;
         int ri1 = p.y / cellDiameter.h;
@@ -154,11 +157,16 @@ namespace xxx
             && _item->ri1 == ri1
             && _item->ri2 == ri2 ) return;
 
+        _item->ci1 = ci1;
+        _item->ci2 = ci2;
+        _item->ri1 = ri1;
+        _item->ri2 = ri2;
+
         auto& cs = _item->cells;
-        for( int i = cs.size() + 1; i >= 0; --i )
+        for( int i = cs.size() - 1; i >= 0; --i )
         {
-            auto& idx = cs[ i ]->index;
-            if( idx.y < ri1 || idx.y > ri2 || idx.x < ci1 || idx.x > ci2 )
+            auto& c = *cs[ i ];
+            if( c.ri < ri1 || c.ri > ri2 || c.ci < ci1 || c.ci > ci2 )
             {
                 cs[ i ]->items.erase( _item );
                 cs.erase( i );
@@ -170,11 +178,9 @@ namespace xxx
             for( int ci = ci1; ci <= ci2; ++ci )
             {
                 auto c = &cells[ ri * columnCount + ci ];
-                if( cs.find( c ) < 0 )
-                {
-                    cs.push( c );
-                    c->items.insert( _item );
-                }
+                if( cs.find( c ) >= 0 ) continue;
+                cs.push( c );
+                c->items.insert( _item );
             }
         }
     }

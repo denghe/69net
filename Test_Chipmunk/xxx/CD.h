@@ -30,7 +30,7 @@ namespace xxx
 
     struct CdCell
     {
-        CdPoint index;                  // x: columnIndex, y: rowIndex
+        int ci, ri;
         Hash<CdItem*> items;            // 格内有哪些 item
     };
 

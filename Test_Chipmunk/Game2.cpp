@@ -40,7 +40,7 @@ static CdItem* mouseItem = nullptr;
 void Game2::Loaded()
 {
     cdgrid.Init( { dw, dh }, rowCount, columnCount );
-    for( int i = 0; i < 100000; ++i )
+    for( int i = 0; i < 1000; ++i )
     {
         int x = 16 + rand() % ( dw - 1 - 16 - 16 );
         int y = 16 + rand() % ( dh - 1 - 16 - 16 );
@@ -50,6 +50,7 @@ void Game2::Loaded()
     mouseItem = cdgrid.CreateItem();
     mouseItem->pos = { 16, 16 };
     mouseItem->radius = { 16, 16 };
+    cdgrid.Index( mouseItem );
 }
 
 void Game2::Update()
@@ -59,11 +60,17 @@ void Game2::Update()
         input.touchEvents.clear();
         if( input.touching )
         {
-            //cdgrid.GetItems( touchedItems, { input.touchPos.x, input.touchPos.y } );
-            mouseItem->pos = { input.touchPos.x, input.touchPos.y };
-            cdgrid.Index( mouseItem );
-            cdgrid.GetCollisionItems( touchedItems, mouseItem );
+            auto x = input.touchPos.x;
+            auto y = input.touchPos.y;
 
+            if( x < 16 ) x = 16;
+            if( x > dw - 1 - 16 ) x = dw - 1 - 16;
+
+            if( y < 16 ) y = 16;
+            if( y > dh - 1 - 16 ) y = dh - 1 - 16;
+
+            cdgrid.Update( mouseItem, { x, y } );
+            cdgrid.GetCollisionItems( touchedItems, mouseItem );
             for( int i = 0; i < touchedItems.size(); ++i )
             {
                 auto& item = touchedItems[ i ];
