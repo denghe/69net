@@ -251,6 +251,32 @@ namespace xxx
         return _container.size();
     }
 
+    // 从上面的函数精简而来
+    CdItem* CdGrid::GetCollisionItem( CdItem* _item )
+    {
+        auto& cs = _item->cells;
+        for( int i = 0; i < cs.size(); ++i )
+        {
+            auto& cis = cs[ i ]->items;
+            for( int j = 0; j < cis.size(); ++j )
+            {
+                auto& item = cis[ j ]->key;
+                if( item == _item ) continue;
+
+                if( ( _item->groupId & item->groupId ) != 0 )
+                {
+                    if( _item->groupId == item->groupId ) continue;
+                }
+                if( ( _item->layerMask & item->layerMask ) == 0 ) continue;
+
+                if( !CheckCollision( _item, item ) ) continue;
+
+                return item;
+            }
+        }
+        return nullptr;
+    }
+
     int CdGrid::GetItems( List<CdItem*>& _container, CdPoint const& _pos )
     {
         _container.clear();

@@ -18,8 +18,8 @@ namespace xxx
     struct CdCell;
     struct CdItem
     {
-        CdSize radius;                  // 宽高
-        CdPoint pos;                    // 坐标（锚点位于左下角）
+        CdSize radius;                  // 半径
+        CdPoint pos;                    // 中心点坐标
         int groupId;                    // 0 组号将和其他组号发生碰撞，相同组号不发生
         uint layerMask;                 // maskA & maskB 不为 0 的发生碰撞
         uint flag;                      // 自增流水号，用于去重
@@ -40,9 +40,9 @@ namespace xxx
         List<CdItem*> freeItems;
         List<CdCell> cells;
 
+        CdSize gridDiameter;
         CdSize cellRadius;
         CdSize cellDiameter;
-        CdSize gridDiameter;
         int rowCount;
         int columnCount;
 
@@ -61,6 +61,7 @@ namespace xxx
         void Update( CdItem* _item, CdPoint const& _pos );                  // 更新位置及索引信息
         int GetNearItems( List<CdItem*>& _container, CdItem* _item );       // 填充 _item 所占格子笼罩的 items, 返回个数
         int GetCollisionItems( List<CdItem*>& _container, CdItem* _item );  // 填充与 _item 碰撞的 items, 返回个数
+        CdItem* GetCollisionItem( CdItem* _item );                          // 返回首个检测到的 与 _item 碰撞的 item
         int GetItems( List<CdItem*>& _container, CdPoint const& _pos );     // 填充覆盖着某坐标的 items，返回个数
         CdItem* GetItem( CdPoint const& _pos );                             // 返回覆盖着某坐标的，第1个扫到的 item
         static bool CheckCollision( CdItem* _a, CdItem* _b );               // 检查两个 item 是否相交
