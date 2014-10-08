@@ -23,6 +23,7 @@ namespace xxx
         int groupId;                    // 0 组号将和其他组号发生碰撞，相同组号不发生
         uint layerMask;                 // maskA & maskB 不为 0 的发生碰撞
         uint flag;                      // 自增流水号，用于去重
+        int ci1, ri1, ci2, ri2;         // 缓存 Index 操作结果之 左下 右上 位于的 cell（Update 的时候如果算出来没变化，后面的事情就不用做了）
         void* userData;
         List<CdCell*> cells;            // 占据了哪些格子
     };

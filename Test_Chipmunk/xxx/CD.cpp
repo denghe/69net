@@ -68,6 +68,7 @@ namespace xxx
         rtv->groupId = 0;
         rtv->layerMask = 0xFFFFFFFF;
         rtv->flag = 0;
+        rtv->ci1 = rtv->ci2 = rtv->ri1 = rtv->ri2 = 0;
         rtv->userData = nullptr;
         items.insert( rtv );
         return rtv;
@@ -129,6 +130,11 @@ namespace xxx
                 c->items.insert( _item );
             }
         }
+
+        _item->ci1 = ci1;
+        _item->ci2 = ci2;
+        _item->ri1 = ri1;
+        _item->ri2 = ri2;
     }
 
     void CdGrid::Update( CdItem* _item, CdPoint const& _pos )
@@ -142,6 +148,11 @@ namespace xxx
         int ci2 = p.x / cellDiameter.w;
         int ri2 = p.y / cellDiameter.h;
         assert( ci2 >= 0 && ci2 < columnCount && ri2 >= 0 && ri2 < rowCount );
+
+        if( _item->ci1 == ci1
+            && _item->ci2 == ci2
+            && _item->ri1 == ri1
+            && _item->ri2 == ri2 ) return;
 
         auto& cs = _item->cells;
         for( int i = cs.size() + 1; i >= 0; --i )
