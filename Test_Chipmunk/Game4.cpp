@@ -188,7 +188,7 @@ void Game4::Update()
     if( input.touching )
     {
         // ฒ๚ษ๚นึ
-        for( int i = 0; i < 1; ++i )
+        for( int i = 0; i < 1000; ++i )
         {
             auto monster = Monster4::Create( &scene, &cdgrid, input.touchPos );
         }

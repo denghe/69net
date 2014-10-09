@@ -14,7 +14,7 @@ Game3::Game3()
 {
     scene.designSize = { (float)dw, (float)dh };
     G::window->Init( L"Game3", dw, dh );
-    //G::window->setVsync( false );
+    //G::window->SetVsync( false );
 
     cdgrid = new CdGrid();
     cdgrid->Init( { dw * 3, dh * 3 }, rowCount * 3, columnCount * 3 );  // 3*3 区块，正中间为屏幕映射
@@ -70,13 +70,13 @@ void Game3::Update()
     }
 
     // 发射子弹
-    for( int i = 0; i < 50; ++i )
+    for( int i = 0; i < 100; ++i )
     {
         auto bullet = Bullet::Create( &scene, cdgrid, { plane->pos.x, plane->pos.y + 16 * 2 } );
     }
 
     // 产生怪
-    for( int i = 0; i < 20; ++i )
+    for( int i = 0; i < 40; ++i )
     {
         auto monster = Monster::Create( &scene, cdgrid, { rand() % dw, dh } );
     }

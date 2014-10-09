@@ -290,6 +290,12 @@ void List<T>::eraseFast( int idx )
 {
     assert( idx >= 0 && idx < _size );
     --_size;
+    if( !_size ) return;
+    if( _size == idx )
+    {
+        _buf[ idx ].~T();
+        return;
+    }
     if( std::is_pod<T>::value
         || std::is_base_of<Memmoveable, T>::value )
     {

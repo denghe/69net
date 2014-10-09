@@ -9,8 +9,7 @@ struct Bullet
     Size size;
 
     // display
-    Node* nodeContainer = nullptr;
-    Box* node = nullptr;
+    Box node;
 
     // collision
     CdGrid* cditemContainer = nullptr;

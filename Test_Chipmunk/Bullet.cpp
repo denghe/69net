@@ -7,17 +7,15 @@ Bullet::Bullet()
 
 void Bullet::Init( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos )
 {
-    assert( !node );
+    assert( !cditem );
 
     pos = _pos;
     xyInc = { ( rand() % 100 ) / 20.0f - 2.5f, 10 };
 
-    nodeContainer = _nodeContainer;
-    node = ::Create<Box>();
-    node->size = size;
-    node->pos = _pos;
-    node->color = { 111, 255, 111, 0 };
-    nodeContainer->Add( node );
+    node.size = size;
+    node.pos = _pos;
+    node.color = { 111, 255, 111, 0 };
+    _nodeContainer->Add( &node );
 
     cditemContainer = _cditemContainer;
     cditem = _cditemContainer->CreateItem();
@@ -33,15 +31,9 @@ bool Bullet::Update()
     pos.x += xyInc.x;
     pos.y += xyInc.y;
 
-    if( node )
-    {
-        node->pos = pos;
-        node->dirty = true;
-    }
-    if( cditem )
-    {
-        cditem->Update( { G::scene->size.w + pos.x, G::scene->size.h + pos.y } );
-    }
+    node.pos = pos;
+    node.dirty = true;
+    cditem->Update( { G::scene->size.w + pos.x, G::scene->size.h + pos.y } );
 
     // 如果有碰到任意怪
     if( auto tar = cditem->GetCollisionItem() )
@@ -56,8 +48,7 @@ bool Bullet::Update()
 
 void Bullet::Destroy()
 {
-    node->RemoveFromParent();
-    node = nullptr;
+    node.RemoveFromParent();
     cditem->Destroy();
     cditem = nullptr;
 
@@ -82,7 +73,9 @@ void Bullet::FreeObjs()
 {
     for( int i = objs.size() - 1; i >= 0; --i )
     {
-        delete objs[ i ]->key;
+        auto o = objs[ i ]->key;
+        o->node.RemoveFromParent();
+        delete o;
     }
     for( int i = objPool.size() - 1; i >= 0; --i )
     {

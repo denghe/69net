@@ -12,6 +12,9 @@ namespace xxx
         userData = nullptr;
         dirty = true;
         parent = nullptr;
+        
+        idx = 0;
+        prev = next = first = last = nullptr;
     }
 
     Node::~Node()
@@ -43,9 +46,11 @@ namespace xxx
 
         Drawing( _durationTicks );
 
-        for( int i = 0; i < childs.size(); ++i )
+        Node* o = first;
+        while( o )
         {
-            childs[ i ]->Draw( _durationTicks );
+            o->Draw( _durationTicks );
+            o = o->next;
         }
         dirty = false;
     }
@@ -59,26 +64,57 @@ namespace xxx
         assert( !_child->parent && _child != this );
         _child->Retain();
         _child->parent = this;
+        _child->idx = childs.size();
+
+        if( !childs.size() )            // 第 1 个被加进集合的
+        {
+            first = last = _child;
+            _child->prev = _child->next = nullptr;
+        }
+        else
+        {
+            last->next = _child;
+            _child->prev = last;
+            _child->next = nullptr;
+            last = _child;
+        }
+
         childs.push( _child );
     }
 
     void Node::Remove( Node* _child )
     {
         assert( _child != this );
-        auto i = childs.find( _child );
-        assert( i >= 0 );
-        childs.erase( i );
-        _child->parent = nullptr;
-
-        if( _child->refCount > 1 )
+        if( first == last )
         {
-            _child->Release();
-            _child->Removed();
+            first = last = nullptr;
+            childs.erase( 0 );
         }
         else
         {
-            _child->Release();
+            if( first == _child )
+            {
+                _child->next->prev = nullptr;
+                first = _child->next;
+            }
+            else if( last == _child )
+            {
+                _child->prev->next = nullptr;
+                last = _child->prev;
+            }
+            else
+            {
+                _child->prev->next = _child->next;
+                _child->next->prev = _child->prev;
+            }
+
+            childs.eraseFast( _child->idx );    // 将最后个元素移到当前要 erase 的位置, --size
+            childs[ idx ]->idx = _child->idx;   // 修正索引
         }
+
+        _child->parent = nullptr;
+        _child->Removed();
+        _child->Release();
     }
 
     void Node::RemoveFromParent()

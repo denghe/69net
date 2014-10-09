@@ -1,6 +1,5 @@
 #include "Precompile.h"
 
-
 Monster::Monster()
 {
     size = { 16 * 2, 16 * 1 };
@@ -8,17 +7,15 @@ Monster::Monster()
 
 void Monster::Init( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos )
 {
-    assert( !node );
+    assert( !cditem );
 
     pos = _pos;
     xyInc = { ( rand() % 100 ) / 50.0f - 1, -1 };
 
-    nodeContainer = _nodeContainer;
-    node = ::Create<Box>();
-    node->size = size;
-    node->pos = _pos;
-    node->color = { 255, 0, 0, 0 };
-    nodeContainer->Add( node );
+    node.size = size;
+    node.pos = _pos;
+    node.color = { 255, 0, 0, 0 };
+    _nodeContainer->Add( &node );
 
     cditemContainer = _cditemContainer;
     cditem = _cditemContainer->CreateItem();
@@ -34,25 +31,16 @@ bool Monster::Update()
     pos.x += xyInc.x;
     pos.y += xyInc.y;
 
-    if( node )
-    {
-        node->pos = pos;
-        node->dirty = true;
-    }
-    if( cditem )
-    {
-        cditem->Update( { G::scene->size.w + pos.x, G::scene->size.h + pos.y } );
-    }
-
-    // todo: more cd check ai code here
+    node.pos = pos;
+    node.dirty = true;
+    cditem->Update( { G::scene->size.w + pos.x, G::scene->size.h + pos.y } );
 
     return true;
 }
 
 void Monster::Destroy()
 {
-    node->RemoveFromParent();
-    node = nullptr;
+    node.RemoveFromParent();
     cditem->Destroy();
     cditem = nullptr;
 
@@ -77,7 +65,9 @@ void Monster::FreeObjs()
 {
     for( int i = objs.size() - 1; i >= 0; --i )
     {
-        delete objs[ i ]->key;
+        auto o = objs[ i ]->key;
+        o->node.RemoveFromParent();
+        delete o;
     }
     for( int i = objPool.size() - 1; i >= 0; --i )
     {
