@@ -22,11 +22,6 @@ Game3::Game3()
     cdgrid->Init( { dw * 3, dh * 3 }, rowCount * 3, columnCount * 3 );  // 3*3 区块，正中间为屏幕映射
 }
 
-Game3::~Game3()
-{
-    delete cdgrid;
-}
-
 Node* createPlane()
 {
     auto b = Create<Node>();
@@ -118,15 +113,15 @@ struct Monster
         cditem = nullptr;
 
         objs.erase( idx );
-        freeObjs.push( this );
+        objPool.push( this );
     }
 
     static Monster* Create( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos )
     {
         Monster* rtv;
-        if( freeObjs.size() )
+        if( objPool.size() )
         {
-            rtv = freeObjs.top_pop();
+            rtv = objPool.top_pop();
         }
         else rtv = new Monster();
         rtv->Init( _nodeContainer, _cditemContainer, _pos );
@@ -136,10 +131,22 @@ struct Monster
 
     Hash<Monster*>::Node* idx = nullptr;
     static Hash<Monster*> objs;
-    static List<Monster*> freeObjs;
+    static List<Monster*> objPool;
+
+    static void FreeObjs()
+    {
+        for( int i = objs.size() - 1; i >= 0; --i )
+        {
+            delete objs[ i ]->key;
+        }
+        for( int i = objPool.size() - 1; i >= 0; --i )
+        {
+            delete objPool[ i ];
+        }
+    }
 };
 Hash<Monster*> Monster::objs;
-List<Monster*> Monster::freeObjs;
+List<Monster*> Monster::objPool;
 
 
 struct Bullet
@@ -219,15 +226,15 @@ struct Bullet
         cditem = nullptr;
 
         objs.erase( idx );
-        freeObjs.push( this );
+        objPool.push( this );
     }
 
     static Bullet* Create( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos )
     {
         Bullet* rtv;
-        if( freeObjs.size() )
+        if( objPool.size() )
         {
-            rtv = freeObjs.top_pop();
+            rtv = objPool.top_pop();
         }
         else rtv = new Bullet();
         rtv->Init( _nodeContainer, _cditemContainer, _pos );
@@ -237,10 +244,22 @@ struct Bullet
 
     Hash<Bullet*>::Node* idx = nullptr;
     static Hash<Bullet*> objs;
-    static List<Bullet*> freeObjs;
+    static List<Bullet*> objPool;
+
+    static void FreeObjs()
+    {
+        for( int i = objs.size() - 1; i >= 0; --i )
+        {
+            delete objs[ i ]->key;
+        }
+        for( int i = objPool.size() - 1; i >= 0; --i )
+        {
+            delete objPool[ i ];
+        }
+    }
 };
 Hash<Bullet*> Bullet::objs;
-List<Bullet*> Bullet::freeObjs;
+List<Bullet*> Bullet::objPool;
 
 
 
@@ -359,7 +378,12 @@ void Game3::Update()
     }
 }
 
-
+Game3::~Game3()
+{
+    delete cdgrid;
+    Monster::FreeObjs();
+    Bullet::FreeObjs();
+}
 
 
 
