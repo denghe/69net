@@ -26,13 +26,13 @@ namespace xxx
         Size    size;                   // 长宽( 逻辑概念，派生类具体杂用要看情况 )
         Point   dock;                   // 悬靠点( 0 ~ 1 百分比，相对于 parent size )
         Point   anchor;                 // 锚点( 0 ~ 1 百分比, 相对于 size )
-        Point   offset;                 // 相对于悬靠点的锚点偏移坐标
+        Point   pos;                    // 相对于悬靠点的锚点偏移坐标
         Color4b color;
         // todo: scale, angle  (matrix?) shader? blend?
         void*   userData;
 
         bool    dirty;                  // 脏标记( 默认会影响到子 )
-        Point   pos;                    // 实际绘制用的全局坐标( draw 时 dirty 填充 )
+        Point   worldPos;               // 实际绘制用的全局坐标( draw 时 dirty 填充 )
 
         Node*   parent;
         List<Node*> childs;

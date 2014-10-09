@@ -23,7 +23,7 @@ Game2::Game2()
 void Game2::createBox( int _x, int _y )
 {
     auto box = Create<Box>();
-    box->offset = { _x, _y };
+    box->pos = { _x, _y };
     box->size = { 32, 32 };
     scene.Add( box );
 
@@ -32,8 +32,7 @@ void Game2::createBox( int _x, int _y )
     item->userData = box;
     item->pos = { _x, _y };
     item->radius = { 16, 16 };
-
-    cdgrid.Index( item );
+    item->Index();
 }
 
 static CdItem* mouseItem = nullptr;
@@ -50,7 +49,7 @@ void Game2::Loaded()
     mouseItem = cdgrid.CreateItem();
     mouseItem->pos = { 16, 16 };
     mouseItem->radius = { 16, 16 };
-    cdgrid.Index( mouseItem );
+    mouseItem->Index();
 }
 
 void Game2::Update()
@@ -69,13 +68,13 @@ void Game2::Update()
             if( y < 16 ) y = 16;
             if( y > dh - 1 - 16 ) y = dh - 1 - 16;
 
-            cdgrid.Update( mouseItem, { x, y } );
-            cdgrid.GetCollisionItems( touchedItems, mouseItem );
+            mouseItem->Update( { x, y } );
+            mouseItem->GetCollisionItems( touchedItems );
             for( int i = 0; i < touchedItems.size(); ++i )
             {
                 auto& item = touchedItems[ i ];
                 scene.Remove( (Node*)item->userData );
-                cdgrid.DestroyItem( item );
+                item->Destroy();
             }
         }
     }

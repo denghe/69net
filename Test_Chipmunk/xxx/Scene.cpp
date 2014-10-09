@@ -7,8 +7,8 @@ namespace xxx
         G::scene = this;
 
         color = { 0, 0, 0, 0 };      // bg color
-        offset = { 0, 0 };
-        pos = offset;
+        pos = { 0, 0 };
+        worldPos = pos;
 
         //glClearColor( 0, 0, 0, 0 );
         //glShadeModel( GL_FLAT );

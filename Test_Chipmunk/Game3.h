@@ -14,6 +14,7 @@ protected:
     Scene scene;
 
     Node* plane;
+    CdGrid* cdgrid;
 };
 
 #endif

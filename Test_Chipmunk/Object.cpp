@@ -10,25 +10,25 @@ bool Object::Update()
     if( size.w > 32 ) return false;
 
 
-    if( offset.x <= size.w / 2 && xyInc.x < 0 )
+    if( pos.x <= size.w / 2 && xyInc.x < 0 )
     {
         xyInc.x = abs( xyInc.x );
     }
-    else if( offset.x >= parent->size.w - size.w / 2 && xyInc.x > 0 )
+    else if( pos.x >= parent->size.w - size.w / 2 && xyInc.x > 0 )
     {
         xyInc.x = -abs( xyInc.x );
     }
-    if( offset.y <= size.h / 2 && xyInc.y < 0 )
+    if( pos.y <= size.h / 2 && xyInc.y < 0 )
     {
         xyInc.y = abs( xyInc.y );
     }
-    else if( offset.y >= parent->size.h - size.h / 2 && xyInc.y > 0 )
+    else if( pos.y >= parent->size.h - size.h / 2 && xyInc.y > 0 )
     {
         xyInc.y = -abs( xyInc.y );
     }
 
-    offset.x += xyInc.x;
-    offset.y += xyInc.y;
+    pos.x += xyInc.x;
+    pos.y += xyInc.y;
     dirty = true;
 
     return true;

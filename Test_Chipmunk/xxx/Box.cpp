@@ -6,10 +6,10 @@ namespace xxx
     {
         glColor3ubv( (GLubyte*)&color );
         glBegin( GL_LINE_LOOP );
-        glVertex2f( pos.x, pos.y );
-        glVertex2f( pos.x + size.w, pos.y );
-        glVertex2f( pos.x + size.w, pos.y + size.h );
-        glVertex2f( pos.x, pos.y + size.h );
+        glVertex2f( worldPos.x, worldPos.y );
+        glVertex2f( worldPos.x + size.w, worldPos.y );
+        glVertex2f( worldPos.x + size.w, worldPos.y + size.h );
+        glVertex2f( worldPos.x, worldPos.y + size.h );
         glEnd();
     }
 }

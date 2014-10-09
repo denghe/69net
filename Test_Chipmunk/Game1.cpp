@@ -29,7 +29,7 @@ void Game1::Update()
     input.touchEvents.clear();      // 这里先无视鼠标事件，只关注状态
     if( input.touching )
     {
-        createObj( input.touchPos.x - mb->offset.x, input.touchPos.y - mb->offset.y );
+        createObj( input.touchPos.x - mb->pos.x, input.touchPos.y - mb->pos.y );
     }
 
     for( int i = objs.size() - 1; i >= 0; --i )
@@ -60,6 +60,6 @@ void Game1::createObj( float x, float y )
     objs.insert( o );                   // ref = 1
     mb->Add( o );                       // ref = 2
     o->size = { 1, 1 };
-    o->offset = { x, y, };
+    o->pos = { x, y, };
     o->xyInc = angleXyIncs[ rand() % 360 ];
 }

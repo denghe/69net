@@ -15,6 +15,6 @@ void MarginBox::Drawing( int _durationTicks )
             parent->size.w - margin.left - margin.right,
             parent->size.h - margin.top - margin.bottom,
         };
-        offset = { margin.left, margin.bottom };
+        pos = { margin.left, margin.bottom };
     }
 }

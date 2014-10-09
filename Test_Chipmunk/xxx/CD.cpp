@@ -64,28 +64,9 @@ namespace xxx
         {
             rtv = new CdItem();
         }
-        rtv->radius = { 0, 0 };
-        rtv->pos = { 0, 0 };
-        rtv->groupId = 0;
-        rtv->layerMask = 0xFFFFFFFF;
-        rtv->flag = 0;
-        rtv->ci1 = rtv->ci2 = rtv->ri1 = rtv->ri2 = 0;
-        rtv->userData = nullptr;
+        rtv->parent = this;
         items.insert( rtv );
         return rtv;
-    }
-
-    void CdGrid::DestroyItem( CdItem* _item )
-    {
-        assert( items.find( _item ) );
-        auto& cs = _item->cells;
-        for( int i = 0; i < cs.size(); ++i )
-        {
-            cs[ i ]->items.erase( _item );
-        }
-        cs.clear();
-        items.erase( _item );
-        freeItems.push( _item );
     }
 
     void CdGrid::Clear()
@@ -94,94 +75,13 @@ namespace xxx
         {
             auto& p = items[ i ]->key;
             p->cells.clear();
+            p->parent = nullptr;
             freeItems.push( p );
         }
         items.clear();
         for( int i = 0; i < cells.size(); ++i )
         {
             cells[ i ].items.clear();
-        }
-    }
-
-    void CdGrid::Index( CdItem* _item )
-    {
-        auto& cs = _item->cells;
-        for( int i = 0; i < cs.size(); ++i )
-        {
-            cs[ i ]->items.erase( _item );
-        }
-        cs.clear();
-
-        CdPoint p = { _item->pos.x - _item->radius.w, _item->pos.y - _item->radius.h };
-        int ci1 = p.x / cellDiameter.w;
-        int ri1 = p.y / cellDiameter.h;
-        assert( ci1 >= 0 && ci1 < columnCount && ri1 >= 0 && ri1 < rowCount );
-
-        p = { _item->pos.x + _item->radius.w, _item->pos.y + _item->radius.h };
-        int ci2 = p.x / cellDiameter.w;
-        int ri2 = p.y / cellDiameter.h;
-        assert( ci2 >= 0 && ci2 < columnCount && ri2 >= 0 && ri2 < rowCount );
-
-        for( int ri = ri1; ri <= ri2; ++ri )
-        {
-            for( int ci = ci1; ci <= ci2; ++ci )
-            {
-                auto c = &cells[ ri * columnCount + ci ];
-                cs.push( c );
-                c->items.insert( _item );
-            }
-        }
-
-        _item->ci1 = ci1;
-        _item->ci2 = ci2;
-        _item->ri1 = ri1;
-        _item->ri2 = ri2;
-    }
-
-    void CdGrid::Update( CdItem* _item, CdPoint const& _pos )
-    {
-        _item->pos = _pos;
-
-        CdPoint p = { _pos.x - _item->radius.w, _pos.y - _item->radius.h };
-        int ci1 = p.x / cellDiameter.w;
-        int ri1 = p.y / cellDiameter.h;
-        assert( ci1 >= 0 && ci1 < columnCount && ri1 >= 0 && ri1 < rowCount );
-
-        p = { _pos.x + _item->radius.w, _pos.y + _item->radius.h };
-        int ci2 = p.x / cellDiameter.w;
-        int ri2 = p.y / cellDiameter.h;
-        assert( ci2 >= 0 && ci2 < columnCount && ri2 >= 0 && ri2 < rowCount );
-
-        if( _item->ci1 == ci1
-            && _item->ci2 == ci2
-            && _item->ri1 == ri1
-            && _item->ri2 == ri2 ) return;
-
-        _item->ci1 = ci1;
-        _item->ci2 = ci2;
-        _item->ri1 = ri1;
-        _item->ri2 = ri2;
-
-        auto& cs = _item->cells;
-        for( int i = cs.size() - 1; i >= 0; --i )
-        {
-            auto& c = *cs[ i ];
-            if( c.ri < ri1 || c.ri > ri2 || c.ci < ci1 || c.ci > ci2 )
-            {
-                cs[ i ]->items.erase( _item );
-                cs.erase( i );
-            }
-        }
-
-        for( int ri = ri1; ri <= ri2; ++ri )
-        {
-            for( int ci = ci1; ci <= ci2; ++ci )
-            {
-                auto c = &cells[ ri * columnCount + ci ];
-                if( cs.find( c ) >= 0 ) continue;
-                cs.push( c );
-                c->items.insert( _item );
-            }
         }
     }
 
@@ -202,24 +102,7 @@ namespace xxx
     }
 
 
-    int CdGrid::GetNearItems( List<CdItem*>& _container, CdItem* _item )
-    {
-        IncreaseFlag();
-        _container.clear();
-        auto& cs = _item->cells;
-        for( int i = 0; i < cs.size(); ++i )
-        {
-            auto& cis = cs[ i ]->items;
-            for( int j = 0; j < cis.size(); ++j )
-            {
-                auto& item = cis[ j ]->key;
-                if( item->flag == autoFlag ) continue;
-                item->flag = autoFlag;
-                _container.push( item );
-            }
-        }
-        return _container.size();
-    }
+
 
     bool CdGrid::CheckCollision( CdItem* _a, CdItem* _b )
     {
@@ -237,61 +120,6 @@ namespace xxx
             && _a->pos.x + _a->radius.w >= _pos.x
             && _a->pos.y - _a->radius.h <= _pos.y
             && _a->pos.y + _a->radius.h >= _pos.y;
-    }
-
-    int CdGrid::GetCollisionItems( List<CdItem*>& _container, CdItem* _item )
-    {
-        IncreaseFlag();
-        _container.clear();
-        _item->flag = autoFlag;     // 防止目标 item 被加入集合
-        auto& cs = _item->cells;
-        for( int i = 0; i < cs.size(); ++i )
-        {
-            auto& cis = cs[ i ]->items;
-            for( int j = 0; j < cis.size(); ++j )
-            {
-                auto& item = cis[ j ]->key;
-                if( item->flag == autoFlag ) continue;
-
-                if( ( _item->groupId & item->groupId ) != 0 )
-                {
-                    if( _item->groupId == item->groupId ) continue;
-                }
-                if( ( _item->layerMask & item->layerMask ) == 0 ) continue;
-
-                if( !CheckCollision( _item, item ) ) continue;
-
-                item->flag = autoFlag;
-                _container.push( item );
-            }
-        }
-        return _container.size();
-    }
-
-    // 从上面的函数精简而来
-    CdItem* CdGrid::GetCollisionItem( CdItem* _item )
-    {
-        auto& cs = _item->cells;
-        for( int i = 0; i < cs.size(); ++i )
-        {
-            auto& cis = cs[ i ]->items;
-            for( int j = 0; j < cis.size(); ++j )
-            {
-                auto& item = cis[ j ]->key;
-                if( item == _item ) continue;
-
-                if( ( _item->groupId & item->groupId ) != 0 )
-                {
-                    if( _item->groupId == item->groupId ) continue;
-                }
-                if( ( _item->layerMask & item->layerMask ) == 0 ) continue;
-
-                if( !CheckCollision( _item, item ) ) continue;
-
-                return item;
-            }
-        }
-        return nullptr;
     }
 
     int CdGrid::GetItems( List<CdItem*>& _container, CdPoint const& _pos )
@@ -322,6 +150,197 @@ namespace xxx
             if( CheckCollision( o, _pos ) )
             {
                 return o;
+            }
+        }
+        return nullptr;
+    }
+
+
+
+
+
+
+    CdItem::CdItem()
+    {
+        parent = nullptr;
+        flag = 0;
+    }
+
+    CdItem::~CdItem()
+    {
+    }
+
+    void CdItem::Init( CdSize const& _radius, CdPoint const& _pos, int _groupId /*= 0*/, uint _layerMask /*= 0xFFFFFFFFu*/, void* _userData /*= nullptr */ )
+    {
+        assert( parent );
+        radius = _radius;
+        pos = _pos;
+        groupId = _groupId;
+        layerMask = _layerMask;
+        userData = _userData;
+        ci1 = ci2 = ri1 = ri2 = 0;
+    }
+
+    void CdItem::Destroy()
+    {
+        assert( parent );
+        assert( parent->items.find( this ) );
+        for( int i = 0; i < cells.size(); ++i )
+        {
+            cells[ i ]->items.erase( this );
+        }
+        cells.clear();
+        parent->items.erase( this );
+        parent->freeItems.push( this );
+        parent = nullptr;
+    }
+
+    void CdItem::Index()
+    {
+        for( int i = 0; i < cells.size(); ++i )
+        {
+            cells[ i ]->items.erase( this );
+        }
+        cells.clear();
+
+        CdPoint _p = { pos.x - radius.w, pos.y - radius.h };
+        int _ci1 = _p.x / parent->cellDiameter.w;
+        int _ri1 = _p.y / parent->cellDiameter.h;
+        assert( _ci1 >= 0 && _ci1 < parent->columnCount && _ri1 >= 0 && _ri1 < parent->rowCount );
+
+        _p = { pos.x + radius.w, pos.y + radius.h };
+        int _ci2 = _p.x / parent->cellDiameter.w;
+        int _ri2 = _p.y / parent->cellDiameter.h;
+        assert( _ci2 >= 0 && _ci2 < parent->columnCount && _ri2 >= 0 && _ri2 < parent->rowCount );
+
+        for( int ri = _ri1; ri <= _ri2; ++ri )
+        {
+            for( int ci = _ci1; ci <= _ci2; ++ci )
+            {
+                auto c = &parent->cells[ ri * parent->columnCount + ci ];
+                cells.push( c );
+                c->items.insert( this );
+            }
+        }
+
+        ci1 = _ci1;
+        ci2 = _ci2;
+        ri1 = _ri1;
+        ri2 = _ri2;
+    }
+
+    void CdItem::Update( CdPoint const& _pos )
+    {
+        pos = _pos;
+
+        CdPoint p = { _pos.x - radius.w, _pos.y - radius.h };
+        int _ci1 = p.x / parent->cellDiameter.w;
+        int _ri1 = p.y / parent->cellDiameter.h;
+        assert( _ci1 >= 0 && _ci1 < parent->columnCount && _ri1 >= 0 && _ri1 < parent->rowCount );
+
+        p = { _pos.x + radius.w, _pos.y + radius.h };
+        int _ci2 = p.x / parent->cellDiameter.w;
+        int _ri2 = p.y / parent->cellDiameter.h;
+        assert( _ci2 >= 0 && _ci2 < parent->columnCount && _ri2 >= 0 && _ri2 < parent->rowCount );
+
+        if( ci1 == _ci1
+            && ci2 == _ci2
+            && ri1 == _ri1
+            && ri2 == _ri2 ) return;
+
+        ci1 = _ci1;
+        ci2 = _ci2;
+        ri1 = _ri1;
+        ri2 = _ri2;
+
+        for( int i = cells.size() - 1; i >= 0; --i )
+        {
+            auto& c = *cells[ i ];
+            if( c.ri < _ri1 || c.ri > _ri2 || c.ci < _ci1 || c.ci > _ci2 )
+            {
+                cells[ i ]->items.erase( this );
+                cells.erase( i );
+            }
+        }
+
+        for( int ri = _ri1; ri <= _ri2; ++ri )
+        {
+            for( int ci = _ci1; ci <= _ci2; ++ci )
+            {
+                auto c = &parent->cells[ ri * parent->columnCount + ci ];
+                if( cells.find( c ) >= 0 ) continue;
+                cells.push( c );
+                c->items.insert( this );
+            }
+        }
+    }
+
+    int CdItem::GetNearItems( List<CdItem*>& _container )
+    {
+        parent->IncreaseFlag();
+        _container.clear();
+        flag = parent->autoFlag;     // 防止目标 item 被加入集合
+        for( int i = 0; i < cells.size(); ++i )
+        {
+            auto& cis = cells[ i ]->items;
+            for( int j = 0; j < cis.size(); ++j )
+            {
+                auto& item = cis[ j ]->key;
+                if( item->flag == flag ) continue;
+                item->flag = flag;
+                _container.push( item );
+            }
+        }
+        return _container.size();
+    }
+    int CdItem::GetCollisionItems( List<CdItem*>& _container )
+    {
+        parent->IncreaseFlag();
+        _container.clear();
+        flag = parent->autoFlag;     // 防止目标 item 被加入集合
+        for( int i = 0; i < cells.size(); ++i )
+        {
+            auto& cis = cells[ i ]->items;
+            for( int j = 0; j < cis.size(); ++j )
+            {
+                auto& item = cis[ j ]->key;
+                if( item->flag == flag ) continue;
+
+                if( ( groupId & item->groupId ) != 0 )
+                {
+                    if( groupId == item->groupId ) continue;
+                }
+                if( ( layerMask & item->layerMask ) == 0 ) continue;
+
+                if( !CdGrid::CheckCollision( this, item ) ) continue;
+
+                item->flag = flag;
+                _container.push( item );
+            }
+        }
+        return _container.size();
+    }
+
+    // 从上面的函数精简而来
+    CdItem* CdItem::GetCollisionItem()
+    {
+        for( int i = 0; i < cells.size(); ++i )
+        {
+            auto& cis = cells[ i ]->items;
+            for( int j = 0; j < cis.size(); ++j )
+            {
+                auto& item = cis[ j ]->key;
+                if( item == this ) continue;
+
+                if( ( groupId & item->groupId ) != 0 )
+                {
+                    if( groupId == item->groupId ) continue;
+                }
+                if( ( layerMask & item->layerMask ) == 0 ) continue;
+
+                if( !CdGrid::CheckCollision( this, item ) ) continue;
+
+                return item;
             }
         }
         return nullptr;

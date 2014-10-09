@@ -7,7 +7,7 @@ namespace xxx
         size = { 0, 0 };
         dock = { 0, 0 };
         anchor = { 0.5f, 0.5f };
-        offset = { 0, 0 };
+        pos = { 0, 0 };
         color = { 255, 255, 255, 0 };
         userData = nullptr;
         dirty = true;
@@ -27,16 +27,16 @@ namespace xxx
         }
         if( dirty )
         {
-            pos =
+            worldPos =
             {
-                parent->pos.x
+                parent->worldPos.x
                 + parent->size.w * dock.x
-                + offset.x
+                + pos.x
                 - size.w * anchor.x,
 
-                parent->pos.y
+                parent->worldPos.y
                 + parent->size.h * dock.y
-                + offset.y
+                + pos.y
                 - size.h * anchor.y,
             };
         }
