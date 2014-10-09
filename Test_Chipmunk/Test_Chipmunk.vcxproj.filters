@@ -46,6 +46,10 @@
     <ClInclude Include="xxx\CD.h" />
     <ClInclude Include="Game2.h" />
     <ClInclude Include="Game3.h" />
+    <ClInclude Include="Game4.h" />
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Monster.h" />
+    <ClInclude Include="Xya.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chipmunk\src\chipmunk.c" />
@@ -96,6 +100,10 @@
     <ClCompile Include="xxx\CD.cpp" />
     <ClCompile Include="Game2.cpp" />
     <ClCompile Include="Game3.cpp" />
+    <ClCompile Include="Game4.cpp" />
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="Xya.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />

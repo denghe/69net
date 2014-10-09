@@ -16,7 +16,14 @@ using namespace xxx;
 #include "Object.h"
 #include "Game1.h"
 #include "Game2.h"
+
+#include "Xya.h"
+#include "Monster.h"
+#include "Bullet.h"
 #include "Game3.h"
+
+
+#include "Game4.h"
 
 
 #endif

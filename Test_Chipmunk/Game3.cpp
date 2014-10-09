@@ -2,15 +2,13 @@
 
 /*
 设计尺寸：    768 * 1024
-格子划分：    12 * 16
-每格尺寸：    64 * 64
-细胞尺寸：    32 * 32 ( 即 1/4 格 )
-
-// 实现一个跟随鼠标匀速移动的机体
+格子划分：    24 * 32
+每格尺寸：    32 * 32
+细胞尺寸：    16 * 16
 
 */
 
-static const int dw = 768, dh = 1024, rowCount = 16, columnCount = 12;
+static const int dw = 768, dh = 1024, rowCount = 32, columnCount = 24;
 
 Game3::Game3()
 {
@@ -22,7 +20,7 @@ Game3::Game3()
     cdgrid->Init( { dw * 3, dh * 3 }, rowCount * 3, columnCount * 3 );  // 3*3 区块，正中间为屏幕映射
 }
 
-Node* createPlane()
+static Node* createPlane()
 {
     auto b = Create<Node>();
     auto b1 = Create<Box>();    // -
@@ -40,272 +38,6 @@ Node* createPlane()
 
     b1->color = b2->color = b3->color = { 111, 111, 255, 0 };
     return b;
-}
-
-struct Monster
-{
-    // logic
-    Point pos;
-    Point xyInc;
-    Size size;
-
-    // display
-    Node* nodeContainer = nullptr;
-    Box* node = nullptr;
-
-    // collision
-    CdGrid* cditemContainer = nullptr;
-    CdItem* cditem = nullptr;
-
-    Monster()
-    {
-        size = { 16 * 2, 16 * 1 };
-    }
-
-    void Init( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos )
-    {
-        assert( !node );
-
-        pos = _pos;
-        xyInc = { ( rand() % 100 ) / 50.0f - 1, -1 };
-
-        nodeContainer = _nodeContainer;
-        node = ::Create<Box>();
-        node->size = size;
-        node->pos = _pos;
-        node->color = { 255, 0, 0, 0 };
-        nodeContainer->Add( node );
-
-        cditemContainer = _cditemContainer;
-        cditem = _cditemContainer->CreateItem();
-        cditem->Init( { size.w, size.h }, { dw, dh }, 1, 0xFFFFFFFFu, this );
-        cditem->Index();
-    }
-
-    bool Update()
-    {
-        if( pos.x < -size.w || pos.x > dw + size.w
-            || pos.y < -size.h || pos.y > dh + size.h ) return false;
-
-        pos.x += xyInc.x;
-        pos.y += xyInc.y;
-
-        if( node )
-        {
-            node->pos = pos;
-            node->dirty = true;
-        }
-        if( cditem )
-        {
-            cditem->Update( { dw + pos.x, dh + pos.y } );
-        }
-
-        // todo: more cd check ai code here
-
-        return true;
-    }
-
-    void Destroy()
-    {
-        node->RemoveFromParent();
-        node = nullptr;
-        cditem->Destroy();
-        cditem = nullptr;
-
-        objs.erase( idx );
-        objPool.push( this );
-    }
-
-    static Monster* Create( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos )
-    {
-        Monster* rtv;
-        if( objPool.size() )
-        {
-            rtv = objPool.top_pop();
-        }
-        else rtv = new Monster();
-        rtv->Init( _nodeContainer, _cditemContainer, _pos );
-        rtv->idx = objs.insert( rtv ).first;
-        return rtv;
-    }
-
-    Hash<Monster*>::Node* idx = nullptr;
-    static Hash<Monster*> objs;
-    static List<Monster*> objPool;
-
-    static void FreeObjs()
-    {
-        for( int i = objs.size() - 1; i >= 0; --i )
-        {
-            delete objs[ i ]->key;
-        }
-        for( int i = objPool.size() - 1; i >= 0; --i )
-        {
-            delete objPool[ i ];
-        }
-    }
-};
-Hash<Monster*> Monster::objs;
-List<Monster*> Monster::objPool;
-
-
-struct Bullet
-{
-    // logic
-    Point pos;
-    Point xyInc;
-    Size size;
-
-    // display
-    Node* nodeContainer = nullptr;
-    Box* node = nullptr;
-
-    // collision
-    CdGrid* cditemContainer = nullptr;
-    CdItem* cditem = nullptr;
-
-    Bullet()
-    {
-        size = { 16 * 1, 16 * 2 };
-    }
-
-    void Init( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos )
-    {
-        assert( !node );
-
-        pos = _pos;
-        xyInc = { ( rand() % 100 ) / 10.0f - 5, 10 };
-
-        nodeContainer = _nodeContainer;
-        node = ::Create<Box>();
-        node->size = size;
-        node->pos = _pos;
-        node->color = { 111, 255, 111, 0 };
-        nodeContainer->Add( node );
-
-        cditemContainer = _cditemContainer;
-        cditem = _cditemContainer->CreateItem();
-        cditem->Init( { size.w, size.h }, { dw, dh }, 2, 0xFFFFFFFFu, this );
-        cditem->Index();
-    }
-
-    bool Update()
-    {
-        if( pos.x < -size.w || pos.x > dw + size.w
-            || pos.y < -size.h || pos.y > dh + size.h ) return false;
-
-        pos.x += xyInc.x;
-        pos.y += xyInc.y;
-
-        if( node )
-        {
-            node->pos = pos;
-            node->dirty = true;
-        }
-        if( cditem )
-        {
-            cditem->Update( { dw + pos.x, dh + pos.y } );
-        }
-
-        // 如果有碰到任意怪
-        if( auto tar = cditem->GetCollisionItem() )
-        {
-            auto m = (Monster*)tar->userData;
-            m->Destroy();
-            return false;
-        }
-
-        return true;
-    }
-
-    void Destroy()
-    {
-        node->RemoveFromParent();
-        node = nullptr;
-        cditem->Destroy();
-        cditem = nullptr;
-
-        objs.erase( idx );
-        objPool.push( this );
-    }
-
-    static Bullet* Create( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos )
-    {
-        Bullet* rtv;
-        if( objPool.size() )
-        {
-            rtv = objPool.top_pop();
-        }
-        else rtv = new Bullet();
-        rtv->Init( _nodeContainer, _cditemContainer, _pos );
-        rtv->idx = objs.insert( rtv ).first;
-        return rtv;
-    }
-
-    Hash<Bullet*>::Node* idx = nullptr;
-    static Hash<Bullet*> objs;
-    static List<Bullet*> objPool;
-
-    static void FreeObjs()
-    {
-        for( int i = objs.size() - 1; i >= 0; --i )
-        {
-            delete objs[ i ]->key;
-        }
-        for( int i = objPool.size() - 1; i >= 0; --i )
-        {
-            delete objPool[ i ];
-        }
-    }
-};
-Hash<Bullet*> Bullet::objs;
-List<Bullet*> Bullet::objPool;
-
-
-
-// 填充查表用结构
-struct Xya
-{
-    signed char x;
-    signed char y;
-    signed char a;
-};
-static Xya _xyas[ dw * 2 ][ dh * 2 ];
-static float _xyam = 127;
-void fillxya()
-{
-    float PI = 3.14159265359;
-    float PI_2 = PI / 2;
-    float PI2 = PI * 2;
-    for( int x = 0; x < _countof( _xyas ); ++x )
-    {
-        for( int y = 0; y < _countof( _xyas[ x ] ); ++y )
-        {
-            auto& xya = _xyas[ x ][ y ];
-
-            auto X = x - dw;
-            auto Y = y - dh;
-
-            if( X == 0 && Y == 0 )
-            {
-                xya.x = xya.y = 1;
-                xya.a = 0;
-            }
-            else
-            {
-                auto D = sqrt( X*X + Y*Y );
-                xya.x = X / D * _xyam;
-                xya.y = Y / D * _xyam;
-                xya.a = -atan2( Y, X ) / PI2 * _xyam;
-            }
-        }
-    }
-}
-Xya* getxya( Point const& a, Point const& b )
-{
-    return &_xyas[ (int)( b.x - a.x + dw ) ][ (int)( b.y - a.y + dh ) ];
-    // xya.x / _xyam * speed, xya.y / _xyam * speed
-    // xya.a / _xyam * 360 + 90
 }
 
 void Game3::Loaded()
@@ -338,13 +70,13 @@ void Game3::Update()
     }
 
     // 发射子弹
-    for( int i = 0; i < 5; ++i )
+    for( int i = 0; i < 50; ++i )
     {
         auto bullet = Bullet::Create( &scene, cdgrid, { plane->pos.x, plane->pos.y + 16 * 2 } );
     }
 
     // 产生怪
-    for( int i = 0; i < 10; ++i )
+    for( int i = 0; i < 20; ++i )
     {
         auto monster = Monster::Create( &scene, cdgrid, { rand() % dw, dh } );
     }
@@ -374,7 +106,7 @@ void Game3::Update()
     if( ++counter >= 60 )
     {
         counter = 0;
-        Cout( "total bullets:", Bullet::objs.size(), "\ntotal bullets:", Monster::objs.size() );
+        Cout( "total bullets:", Bullet::objs.size(), "\ntotal monsters:", Monster::objs.size() );
     }
 }
 
