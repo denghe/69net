@@ -108,8 +108,8 @@ namespace xxx
                 _child->next->prev = _child->prev;
             }
 
+            childs.top()->idx = _child->idx;    // 修正索引
             childs.eraseFast( _child->idx );    // 将最后个元素移到当前要 erase 的位置, --size
-            childs[ idx ]->idx = _child->idx;   // 修正索引
         }
 
         _child->parent = nullptr;

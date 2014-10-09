@@ -46,9 +46,11 @@ namespace xxx
 
         glClear( GL_COLOR_BUFFER_BIT );
 
-        for( int i = 0; i < childs.size(); ++i )
+        Node* o = first;
+        while( o )
         {
-            childs[ i ]->Draw( _durationTicks );
+            o->Draw( _durationTicks );
+            o = o->next;
         }
         dirty = false;                // resize 的时候会标脏
     }
