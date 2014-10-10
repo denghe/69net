@@ -1,5 +1,5 @@
-#ifndef _FASTPOOL_H__
-#define _FASTPOOL_H__
+#ifndef _POOL_H__
+#define _POOL_H__
 
 class Pool : Memmoveable
 {
