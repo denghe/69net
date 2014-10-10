@@ -52,7 +52,8 @@ void Bullet::Destroy()
     cditem->Destroy();
     cditem = nullptr;
 
-    objs.erase( idx );
+    objs.top()->idx = idx;
+    objs.eraseFast( idx );
     objPool.push( this );
 }
 
@@ -65,7 +66,8 @@ Bullet* Bullet::Create( Node* _nodeContainer, CdGrid* _cditemContainer, Point co
     }
     else rtv = new Bullet();
     rtv->Init( _nodeContainer, _cditemContainer, _pos );
-    rtv->idx = objs.insert( rtv ).first;
+    rtv->idx = objs.size();
+    objs.push( rtv );
     return rtv;
 }
 
@@ -73,7 +75,7 @@ void Bullet::FreeObjs()
 {
     for( int i = objs.size() - 1; i >= 0; --i )
     {
-        auto o = objs[ i ]->key;
+        auto& o = objs[ i ];
         o->node.RemoveFromParent();
         delete o;
     }
@@ -82,5 +84,5 @@ void Bullet::FreeObjs()
         delete objPool[ i ];
     }
 }
-Hash<Bullet*> Bullet::objs;
+List<Bullet*> Bullet::objs;
 List<Bullet*> Bullet::objPool;

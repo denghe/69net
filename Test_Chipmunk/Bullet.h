@@ -25,8 +25,8 @@ struct Bullet
 
     static Bullet* Create( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos );
 
-    Hash<Bullet*>::Node* idx = nullptr;
-    static Hash<Bullet*> objs;
+    int idx = 0;
+    static List<Bullet*> objs;
     static List<Bullet*> objPool;
 
     static void FreeObjs();

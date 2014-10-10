@@ -84,7 +84,7 @@ void Game3::Update()
     // 怪前进
     for( int i = Monster::objs.size() - 1; i >= 0; --i )
     {
-        auto o = Monster::objs[ i ]->key;
+        auto& o = Monster::objs[ i ];
         if( !o->Update() )
         {
             o->Destroy();
@@ -94,7 +94,7 @@ void Game3::Update()
     // 子弹前进
     for( int i = Bullet::objs.size() - 1; i >= 0; --i )
     {
-        auto o = Bullet::objs[ i ]->key;
+        auto& o = Bullet::objs[ i ];
         if( !o->Update() )
         {
             o->Destroy();

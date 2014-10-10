@@ -36,8 +36,8 @@ struct Monster4
 
     static Monster4* Create( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos );
 
-    Hash<Monster4*>::Node* idx = nullptr;
-    static Hash<Monster4*> objs;
+    int idx = 0;
+    static List<Monster4*> objs;
     static List<Monster4*> objPool;
 
     static void FreeObjs();
@@ -73,13 +73,20 @@ bool Monster4::Update()
     if( pos.x < -size.w || pos.x > G::scene->size.w + size.w
         || pos.y < -size.h || pos.y > G::scene->size.h + size.h ) return false;
 
-    // xyInc =  todo: 找附近的怪，远离它( 甚至可以降低找的次数 )
+    // 找附近的怪，远离它
     if( auto o = cditem->GetCollisionItem() )
     {
         auto other = (Monster4*)o->userData;
         auto xya = getxya( { pos.x, pos.y }, { other->pos.x, other->pos.y } );
         xyInc.x = -xya->x / _xyam;
         xyInc.y = -xya->y / _xyam;
+
+        if( other->xyInc.x > 0 && xyInc.x > 0
+            || other->xyInc.x < 0 && xyInc.x < 0
+            ) xyInc.x += other->xyInc.x;
+        if( other->xyInc.y > 0 && xyInc.y > 0
+            || other->xyInc.y < 0 && xyInc.y < 0
+            ) xyInc.y += other->xyInc.y;
     }
     else
     {
@@ -111,7 +118,8 @@ void Monster4::Destroy()
     cditem->Destroy();
     cditem = nullptr;
 
-    objs.erase( idx );
+    objs.top()->idx = idx;
+    objs.eraseFast( idx );
     objPool.push( this );
 }
 
@@ -124,7 +132,8 @@ Monster4* Monster4::Create( Node* _nodeContainer, CdGrid* _cditemContainer, Poin
     }
     else rtv = new Monster4();
     rtv->Init( _nodeContainer, _cditemContainer, _pos );
-    rtv->idx = objs.insert( rtv ).first;
+    rtv->idx = objs.size();
+    objs.push( rtv );
     return rtv;
 }
 
@@ -132,7 +141,7 @@ void Monster4::FreeObjs()
 {
     for( int i = objs.size() - 1; i >= 0; --i )
     {
-        delete objs[ i ]->key;
+        delete objs[ i ];
     }
     for( int i = objPool.size() - 1; i >= 0; --i )
     {
@@ -140,7 +149,7 @@ void Monster4::FreeObjs()
     }
 }
 
-Hash<Monster4*> Monster4::objs;
+List<Monster4*> Monster4::objs;
 List<Monster4*> Monster4::objPool;
 
 
@@ -197,7 +206,7 @@ void Game4::Update()
     // 怪移动
     for( int i = Monster4::objs.size() - 1; i >= 0; --i )
     {
-        auto o = Monster4::objs[ i ]->key;
+        auto& o = Monster4::objs[ i ];
         if( !o->Update() )
         {
             o->Destroy();

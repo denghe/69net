@@ -19,14 +19,14 @@ struct Monster
 
     void Init( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos );
 
-    bool Update();
+    virtual bool Update();
 
     void Destroy();
 
     static Monster* Create( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos );
 
-    Hash<Monster*>::Node* idx = nullptr;
-    static Hash<Monster*> objs;
+    int idx = 0;
+    static List<Monster*> objs;
     static List<Monster*> objPool;
 
     static void FreeObjs();
