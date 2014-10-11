@@ -28,6 +28,8 @@
     <ClInclude Include="Cout.hpp" />
     <ClInclude Include="Dict.h" />
     <ClInclude Include="Dict.hpp" />
+    <ClInclude Include="Links.h" />
+    <ClInclude Include="Links.hpp" />
     <ClInclude Include="Pool.h" />
     <ClInclude Include="FlatBuffer.h" />
     <ClInclude Include="FlatBuffer.hpp" />

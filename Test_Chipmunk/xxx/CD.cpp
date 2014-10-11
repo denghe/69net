@@ -16,7 +16,7 @@ namespace xxx
     {
         for( int i = 0; i < items.size(); ++i )
         {
-            delete items[ i ]->key;
+            delete items[ i ];
         }
         for( int i = 0; i < freeItems.size(); ++i )
         {
@@ -65,7 +65,8 @@ namespace xxx
             rtv = new CdItem();
         }
         rtv->parent = this;
-        items.insert( rtv );
+        rtv->idx = items.size();
+        items.push( rtv );
         return rtv;
     }
 
@@ -73,7 +74,7 @@ namespace xxx
     {
         for( int i = 0; i < items.size(); ++i )
         {
-            auto& p = items[ i ]->key;
+            auto& p = items[ i ];
             p->cells.clear();
             p->parent = nullptr;
             freeItems.push( p );
@@ -93,7 +94,7 @@ namespace xxx
         autoFlag = 1;
         for( int i = 0; i < items.size(); ++i )
         {
-            items[ i ]->key->flag = 0;
+            items[ i ]->flag = 0;
         }
         for( int i = 0; i < freeItems.size(); ++i )
         {
@@ -130,7 +131,7 @@ namespace xxx
         auto c = &cells[ ri * columnCount + ci ];
         for( int i = 0; i < c->items.size(); ++i )
         {
-            auto& o = c->items[ i ]->key;
+            auto& o = c->items[ i ]->value;
             if( CheckCollision( o, _pos ) )
             {
                 _container.push( o );
@@ -146,7 +147,7 @@ namespace xxx
         auto c = &cells[ ri * columnCount + ci ];
         for( int i = 0; i < c->items.size(); ++i )
         {
-            auto& o = c->items[ i ]->key;
+            auto& o = c->items[ i ]->value;
             if( CheckCollision( o, _pos ) )
             {
                 return o;
@@ -178,28 +179,33 @@ namespace xxx
         groupId = _groupId;
         layerMask = _layerMask;
         userData = _userData;
-        ci1 = ci2 = ri1 = ri2 = 0;
+        ci1 = ci2 = ri1 = ri2 = -1;
     }
 
     void CdItem::Destroy()
     {
         assert( parent );
-        assert( parent->items.find( this ) );
+        assert( parent->items.find( this ) >= 0 );
         for( int i = 0; i < cells.size(); ++i )
         {
-            cells[ i ]->items.erase( this );
+            auto& pair = cells[ i ];
+            pair.first->items.erase( pair.second );
         }
         cells.clear();
-        parent->items.erase( this );
+        parent->items.top()->idx = idx;
+        parent->items.eraseFast( idx );
         parent->freeItems.push( this );
         parent = nullptr;
     }
 
     void CdItem::Index()
     {
+        assert( parent && ci1 == -1 );  // ensure Inited
+
         for( int i = 0; i < cells.size(); ++i )
         {
-            cells[ i ]->items.erase( this );
+            auto& pair = cells[ i ];
+            pair.first->items.erase( pair.second );
         }
         cells.clear();
 
@@ -218,8 +224,7 @@ namespace xxx
             for( int ci = _ci1; ci <= _ci2; ++ci )
             {
                 auto c = &parent->cells[ ri * parent->columnCount + ci ];
-                cells.push( c );
-                c->items.insert( this );
+                cells.push( std::make_pair( c, c->items.insert( this ) ) );
             }
         }
 
@@ -255,10 +260,11 @@ namespace xxx
 
         for( int i = cells.size() - 1; i >= 0; --i )
         {
-            auto& c = *cells[ i ];
+            auto& c = *cells[ i ].first;
+            auto& node = cells[ i ].second;
             if( c.ri < _ri1 || c.ri > _ri2 || c.ci < _ci1 || c.ci > _ci2 )
             {
-                cells[ i ]->items.erase( this );
+                c.items.erase( node );
                 cells.erase( i );
             }
         }
@@ -268,9 +274,17 @@ namespace xxx
             for( int ci = _ci1; ci <= _ci2; ++ci )
             {
                 auto c = &parent->cells[ ri * parent->columnCount + ci ];
-                if( cells.find( c ) >= 0 ) continue;
-                cells.push( c );
-                c->items.insert( this );
+                bool found = false;
+                for( int i = 0; i < cells.size(); ++i )
+                {
+                    if( cells[ i ].first == c )
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if( found ) continue;
+                cells.push( std::make_pair( c, c->items.insert( this ) ) );
             }
         }
     }
@@ -282,10 +296,10 @@ namespace xxx
         flag = parent->autoFlag;     // 防止目标 item 被加入集合
         for( int i = 0; i < cells.size(); ++i )
         {
-            auto& cis = cells[ i ]->items;
+            auto& cis = cells[ i ].first->items;
             for( int j = 0; j < cis.size(); ++j )
             {
-                auto& item = cis[ j ]->key;
+                auto& item = cis[ j ]->value;
                 if( item->flag == flag ) continue;
                 item->flag = flag;
                 _container.push( item );
@@ -300,10 +314,10 @@ namespace xxx
         flag = parent->autoFlag;     // 防止目标 item 被加入集合
         for( int i = 0; i < cells.size(); ++i )
         {
-            auto& cis = cells[ i ]->items;
+            auto& cis = cells[ i ].first->items;
             for( int j = 0; j < cis.size(); ++j )
             {
-                auto& item = cis[ j ]->key;
+                auto& item = cis[ j ]->value;
                 if( item->flag == flag ) continue;
 
                 if( ( groupId & item->groupId ) != 0 )
@@ -326,10 +340,10 @@ namespace xxx
     {
         for( int i = 0; i < cells.size(); ++i )
         {
-            auto& cis = cells[ i ]->items;
+            auto& cis = cells[ i ].first->items;
             for( int j = 0; j < cis.size(); ++j )
             {
-                auto& item = cis[ j ]->key;
+                auto& item = cis[ j ]->value;
                 if( item == this ) continue;
 
                 if( ( groupId & item->groupId ) != 0 )

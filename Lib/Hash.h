@@ -1,5 +1,5 @@
-﻿#ifndef _SET_H_
-#define _SET_H_
+﻿#ifndef _HASH_H_
+#define _HASH_H_
 
 // 直接由 Dict 去 value 简化而来
 
@@ -21,6 +21,7 @@ struct Hash : Memmoveable
     ~Hash();
     template <typename KT>
     std::pair<Node*, bool> insert( KT&& k );      // if exists, return Node* + false. else add and return Node* + true
+    // todo: insert fast: 直接插 bucket 并返回. 不扫子
     Node* find( TK const& k );                                                  // if exists, return Node*. else return nullptr
     void erase( TK const& k );
     void erase( Node* n );

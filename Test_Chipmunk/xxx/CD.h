@@ -25,9 +25,10 @@ namespace xxx
         uint layerMask;                                                     // maskA & maskB 不为 0 的发生碰撞
         uint flag;                                                          // 自增流水号，用于去重
         int ci1, ri1, ci2, ri2;                                             // 缓存 Index 操作结果之 左下 右上 位于的 cell 以加速 Update
+        int idx;                                                            // 位于 CdGrid.items 的索引 for 快速 erase
         void* userData;
         CdGrid* parent;                                                     // 所在 CdGrid 父容器( 同时也是 Init, Destroy 的识别 flag )
-        List<CdCell*> cells;                                                // 占据了哪些格子
+        List<std::pair<CdCell*, Links<CdItem*>::Node*>> cells;              // 占据了哪些格子以及位于这些格子中的节点
 
         CdItem();
         ~CdItem();
@@ -45,13 +46,13 @@ namespace xxx
     struct CdCell
     {
         int ci, ri;
-        Hash<CdItem*> items;                                                // 格内有哪些 item
+        Links<CdItem*> items;                                               // 格内有哪些 item
     };
 
     // 格子阵列( 分割显示区域，综控 )
     struct CdGrid
     {
-        Hash<CdItem*> items;
+        List<CdItem*> items;
         List<CdItem*> freeItems;
         List<CdCell> cells;
 

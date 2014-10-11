@@ -1,5 +1,5 @@
-﻿#ifndef _SET_HPP__
-#define _SET_HPP__
+﻿#ifndef _HASH_HPP__
+#define _HASH_HPP__
 
 template <typename TK>
 Hash<TK>::Hash( int capacity /*= 64 */ )

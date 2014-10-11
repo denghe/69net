@@ -32,6 +32,8 @@
     <ClInclude Include="Pool.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="Hash.hpp" />
+    <ClInclude Include="Links.h" />
+    <ClInclude Include="Links.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
