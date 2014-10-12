@@ -68,7 +68,7 @@ typename Links<T>::Node* Links<T>::find( T const& v )
     {
         if( Utils::equalsTo( _nodes[ i ]->value, v ) )
         {
-            return node;
+            return _nodes[ i ];
         }
     }
     return nullptr;

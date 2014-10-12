@@ -38,7 +38,6 @@ struct Links : Memmoveable
     bool readBuffer( FlatBuffer& fb );
 protected:
     void dispose( Node* n );
-    void resize();
     List<Node*>         _nodes;
     Pool                _pool;
 };

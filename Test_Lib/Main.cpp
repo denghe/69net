@@ -4,138 +4,208 @@
 #include <array>
 #include <memory>
 #include <cassert>
+#include <list>
 #include "Lib/All.h"
 using namespace std;
 
+struct StdFoo
+{
+    list<StdFoo*>::iterator it;
+};
+
+struct MyFoo
+{
+    Links<MyFoo*>::Node* it;
+};
+
 int main()
 {
-    std::vector<int64> vv =
-    {
-        //159180960928,
-        //159253828640,
-        //159253828976,
-        //159253829312,
-        //159253829648,
-        //159253829984,
-        //159253830320,
-        //159253830656,
-        //159253830992,
-        //159253831328,
-        //159253831680,
-        //159253832016,
-        //159253832352,
-        //159253832688,
-        //159253833024,
-        //159253833360,
-        //159253833696,
-        //159253834032,
-        //159253834368,
-        //159253834704,
-        //159253835040,
-        //159253835376,
-        //159253835712,
-        //159253836048,
-        //159253836384,
-        //159253836720,
-        //159253837056,
-        //159253837392,
-        //159253837728,
-        //159253838064,
-        //159253838400,
-        //159253838736,
-        //159253839072,
-        //159253839408,
-        //159253839744,
-        //159253840080,
-        //159253840416,
-        //159253840752,
-        //159253841088,
-        //159253841424,
-        //159253841760,
-        //159253842096,
-        //159253842432,
-        //159253842768,
-        //159253843104,
-        //159253843440,
-        //159253843776,
-        //159253844112,
-        //159253844448,
-        //159253844784,
-        //159253845120,
-        //159253845456,
-        //159253845792,
-        //159253846128,
-        159253846464,
-        159253846800,
-        159253847136,
-        159253847472,
-        159253847808,
-        159253848144,
-        159253848480,
-        159253851088,
-        159253851424,
-        159253851760,
-        159180959680,
-        159180960016,
-        159180960352,
-        159180960688,
-        159253852272,
-        159253852608,
-        159253852944,
-        159253853280,
-        159253853616,
-        159253853952,
-        159253854288,
-        159253854624,
-        159253854960,
-        159253855296,
-        159253855632,
-        159253855968,
-        159253856304,
-        159253856640,
-        159253856976,
-        159253857312,
-        159253857648,
-        159253857984,
-        159253858320,
-        159253858656,
-        159253858992,
-        159253859328,
-        159253859664,
-        159253860000,
-        159253860352,
-        159253860688,
-        159253861024,
-        159253861360,
-        159253861696,
-        159253862032,
-        159253862368,
-    };
+    vector<StdFoo*> stdfoos;
+    stdfoos.reserve( 9999999 );
+    vector<MyFoo*> myfoos;
+    myfoos.reserve( 9999999 );
 
-    std::vector<int64> vv2 = 
+    for( int x = 0; x < 10; ++x )
     {
-        159253853280,
-        159253852272,
-        159253852944,
-        159253852608,
-        159180960688,
-    };
 
-    Hash<int64> hh;
-    for( auto i : vv )
-    {
-        Cout( "insert ", i );
-        hh.insert( i );
+        {
+            int count = 0;
+            list<StdFoo*> c;
+            Stopwatch sw;
+            for( int i = 0; i < 9999999; ++i )
+            {
+                auto foo = new StdFoo();
+                stdfoos.push_back( foo );
+                c.push_back( foo );
+                foo->it = --c.end();
+            }
+            Cout( "std::list pus_back ms: ", sw.elapsedMillseconds() );
+            Cout( c.size() );
+
+            sw.reset();
+            for( int i = 0; i < 9999999; ++i )
+            {
+                c.erase( stdfoos[ i ]->it );
+                delete stdfoos[ i ];
+            }
+            Cout( "std::list erase ms: ", sw.elapsedMillseconds() );
+
+            stdfoos.clear();
+        }
+
+        {
+            int count = 0;
+            set<StdFoo*> c;
+            Stopwatch sw;
+            for( int i = 0; i < 9999999; ++i )
+            {
+                auto foo = new StdFoo();
+                stdfoos.push_back( foo );
+                c.insert( foo );
+            }
+            Cout( "std::set insert ms: ", sw.elapsedMillseconds() );
+            Cout( c.size() );
+
+            sw.reset();
+            for( int i = 0; i < 9999999; ++i )
+            {
+                c.erase( stdfoos[ i ] );
+                delete stdfoos[ i ];
+            }
+            Cout( "std::set erase ms: ", sw.elapsedMillseconds() );
+
+            stdfoos.clear();
+        }
+
+        {
+            int count = 0;
+            Links<MyFoo*> c;
+            Stopwatch sw;
+            for( int i = 0; i < 9999999; ++i )
+            {
+                auto foo = new MyFoo();
+                myfoos.push_back( foo );
+                foo->it = c.insert( foo );
+            }
+            Cout( "Links pus_back ms: ", sw.elapsedMillseconds() );
+            Cout( c.size() );
+
+            sw.reset();
+            for( int i = 0; i < 9999999; ++i )
+            {
+                c.erase( myfoos[ i ]->it );
+                delete myfoos[ i ];
+            }
+            Cout( "Links erase ms: ", sw.elapsedMillseconds() );
+
+            myfoos.clear();
+        }
+
+        {
+            int count = 0;
+            Hash<MyFoo*> c;
+            Stopwatch sw;
+            for( int i = 0; i < 9999999; ++i )
+            {
+                auto foo = new MyFoo();
+                myfoos.push_back( foo );
+                c.insert( foo );
+            }
+            Cout( "Hash pus_back ms: ", sw.elapsedMillseconds() );
+            Cout( c.size() );
+
+            sw.reset();
+            for( int i = 0; i < 9999999; ++i )
+            {
+                c.erase( myfoos[ i ] );
+                delete myfoos[ i ];
+            }
+            Cout( "Hash erase ms: ", sw.elapsedMillseconds() );
+
+            myfoos.clear();
+        }
+
+        Cout( "\n\n" );
     }
 
-    for( auto i : vv )
-    {
-        Cout( "find ", i );
-        assert( hh.find( i ) );
-        hh.erase( i );
-    }
+    //int count;
+    //for( int x = 0; x < 10; ++x )
+    //{
+    //    {
+    //        list<int> c;
+    //        Stopwatch sw;
+    //        for( int i = 0; i < 9999999; ++i )
+    //        {
+    //            c.push_back( i );
+    //        }
+    //        Cout( "std::list pus_back ms: ", sw.elapsedMillseconds() );
+    //        Cout( c.size() );
 
-    Cout( hh.size() );
+    //        count = 0;
+    //        sw.reset();
+    //        for( auto i : c ) count += i;
+    //        Cout( "std::list foreach ms: ", sw.elapsedMillseconds() );
+    //        Cout( count );
+
+    //        count = 0;
+    //        sw.reset();
+    //        for( int i = 0; i < 99999; ++i )
+    //        {
+    //            auto it = find( c.begin(), c.end(), i );
+    //            if( it != c.end() )
+    //            {
+    //                count += ( *it );
+    //            }
+    //        }
+    //        Cout( "std::list find ms: ", sw.elapsedMillseconds() );
+    //        Cout( count );
+
+    //        vector<decltype( c.begin() )> its;
+    //        for( auto it = c.begin(); it != c.end(); ++it ) its.push_back( it );
+    //        sw.reset();
+    //        for( auto it : its ) c.erase( it );
+    //        Cout( "std::list erase ms: ", sw.elapsedMillseconds() );
+    //        Cout( count );
+    //    }
+
+    //    count = 0;
+    //    {
+    //        Links<int> c;
+    //        Stopwatch sw;
+    //        for( int i = 0; i < 9999999; ++i )
+    //        {
+    //            c.insert( i );
+    //        }
+    //        Cout( "Links insert ms: ", sw.elapsedMillseconds() );
+    //        Cout( c.size() );
+
+    //        count = 0;
+    //        sw.reset();
+    //        for( int i = 0; i < 9999999; ++i ) count += c[ i ]->value;
+    //        Cout( "Links foreach ms: ", sw.elapsedMillseconds() );
+    //        Cout( count );
+
+    //        count = 0;
+    //        sw.reset();
+    //        for( int i = 0; i < 99999; ++i )
+    //        {
+    //            auto it = c.find( i );
+    //            if( it ) count += it->value;
+    //        }
+    //        Cout( "Links find ms: ", sw.elapsedMillseconds() );
+    //        Cout( count );
+
+    //        vector<decltype( c.insert( 0 ) )> its;
+    //        for( int i = 0; i < 9999999; ++i ) its.push_back( c[ i ] );
+    //        sw.reset();
+    //        for( auto it : its ) c.erase( it );
+    //        Cout( "Links erase ms: ", sw.elapsedMillseconds() );
+    //        Cout( count );
+    //    }
+
+    //    Cout( "\n\n" );
+    //}
+
     system( "pause" );
     return 0;
 }
