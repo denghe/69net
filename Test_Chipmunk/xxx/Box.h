@@ -5,6 +5,8 @@ namespace xxx
 {
     struct Box : public Node
     {
+        //float vertexs[ 8 ];
+
         void Drawing( int _durationTicks ) override;
     };
 

@@ -12,6 +12,8 @@ namespace xxx
 
         //glClearColor( 0, 0, 0, 0 );
         //glShadeModel( GL_FLAT );
+
+        glEnableClientState( GL_VERTEX_ARRAY );
     }
 
     Scene::~Scene()
