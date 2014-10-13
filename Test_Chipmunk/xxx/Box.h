@@ -5,7 +5,8 @@ namespace xxx
 {
     struct Box : public Node
     {
-        //float vertexs[ 8 ];
+        float vertexs[ 8 ];
+        //GLubyte vertexs_indexs[ 4 ];
 
         void Drawing( int _durationTicks ) override;
     };
