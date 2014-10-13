@@ -1,9 +1,9 @@
 #include "Lib/All.h"
 using namespace std;
 
-#define COR_BEGIN switch( labNum ) { case 0:
-#define COR_YIELD_RETURN labNum = __LINE__; return true; case __LINE__:
-#define COR_END } return false;
+#define COR_BEGIN           switch( labNum ) { case 0:
+#define COR_YIELD_RETURN    labNum = __LINE__; return true; case __LINE__:
+#define COR_END             } return false;
 
 struct Foo
 {
