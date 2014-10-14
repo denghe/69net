@@ -34,6 +34,7 @@
     <ClInclude Include="Hash.hpp" />
     <ClInclude Include="Links.h" />
     <ClInclude Include="Links.hpp" />
+    <ClInclude Include="Cor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />

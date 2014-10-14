@@ -24,6 +24,7 @@
     <ClInclude Include="BufferUtils.hpp" />
     <ClInclude Include="BlockBuffer.h" />
     <ClInclude Include="ClassAttributes.h" />
+    <ClInclude Include="Cor.h" />
     <ClInclude Include="Cout.h" />
     <ClInclude Include="Cout.hpp" />
     <ClInclude Include="Dict.h" />

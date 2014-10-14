@@ -329,6 +329,7 @@ inline void aligned_free( void* p )
 #include "SharedMemory.h"
 #include "SMBuffer.h"
 #include "SharedPtr.h"
+#include "Cor.h"
 
 // ... more
 
