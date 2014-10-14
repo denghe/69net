@@ -137,7 +137,7 @@ const AutoID<Cor> CorBase<T>::typeId;
 
 
 
-#define REF_DECL( T, N ) T* N; int N##Id
+#define REF_DECL( T, N ) T* N = nullptr; int N##Id = 0
 #define REF_SET( N, P )  N = P; N##Id = P->id
 #define REF_ENSURE( N )  if( N && N->id != N##Id ) N = nullptr
 #define REF_CLEAR( N )   N = nullptr
