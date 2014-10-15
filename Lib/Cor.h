@@ -41,7 +41,6 @@ struct CorManager
     template<typename T, typename ...PTS>
     T* CreateItem( PTS ..._parms )
     {
-        static_assert( std::is_base_of<T, T>::value, "T must be inherit from FooBase*" );
         T* rtv;
         auto& objs = pool[ T::typeId.value ];
         if( objs.size() )
