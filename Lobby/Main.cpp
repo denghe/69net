@@ -42,6 +42,7 @@ public:
 
 
 using namespace std;
+using namespace xxx;
 int main()
 {
     char buf[ 512 * 64 + 4 * 64 + 8 ];
@@ -60,7 +61,7 @@ int main()
         smp.free( p3 );
         //Cout( "size = ", smp.size() );
     }
-    Cout( sw.elapsedMillseconds() );
+    Cout( sw.ElapsedMillseconds() );
     system( "pause" );
     return 0;
 }

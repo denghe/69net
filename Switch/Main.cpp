@@ -1,5 +1,4 @@
 #include "Lib/All.h"
-#include "PacketTestPackets.h"
 
 inline void w7( char * buf, int & offset, uint32 v )
 {
@@ -69,6 +68,7 @@ inline void w72( char * buf, int & offset, uint32 v )
 }
 
 using namespace std;
+using namespace xxx;
 int main()
 {
     FlatBuffer fb;
@@ -86,7 +86,7 @@ int main()
         //offset = 0;
         //r7( forRead, buf, offset );
     }
-    Cout( sw.elapsedMillseconds(), "ms" );
+    Cout( sw.ElapsedMillseconds(), "ms" );
     offset = 0;
     r7( forRead, buf, offset );
     Cout( forRead );

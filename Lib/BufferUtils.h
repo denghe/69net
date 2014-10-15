@@ -1,50 +1,54 @@
 #ifndef _BUFFERUTILS_H__
 #define _BUFFERUTILS_H__
 
-namespace BufferUtils
+namespace xxx
 {
 
-    template<typename T>
-    int getSize( T const& v );
+    namespace BufferUtils
+    {
 
-    template<int len>
-    int getSize( char const( &v )[ len ] );
+        template<typename T>
+        int GetSize( T const& v );
 
-    template<typename T, int len>
-    int getSize( T const( &v )[ len ] );
+        template<int len>
+        int GetSize( char const( &v )[ len ] );
 
-
-    template<typename T>
-    void getSizesCore( int& len, T const& v );
-
-    template<typename T, typename ...TS>
-    void getSizesCore( int& len, T const & v, TS const & ...vs );
-
-    template<typename ...TS>
-    int getSizes( TS const & ...vs );
+        template<typename T, int len>
+        int GetSize( T const( &v )[ len ] );
 
 
+        template<typename T>
+        void GetSizesCore( int& len, T const& v );
 
+        template<typename T, typename ...TS>
+        void GetSizesCore( int& len, T const & v, TS const & ...vs );
 
-    template<typename T>
-    void write( char* dest, T const& src );
-
-    template<typename T, int len>
-    void write( char* dest, T const( &src )[ len ] );
-
-    template<typename T>
-    void read( T& dest, char const* src );
-
-    template<typename T, int len>
-    void read( T ( &dest )[ len ], char const* src );
+        template<typename ...TS>
+        int GetSizes( TS const & ...vs );
 
 
 
-    void dumpCore( String & s, char const * buf, int len );
 
-    void dump( String & s, char const * buf, int len );
+        template<typename T>
+        void Write( char* dest, T const& src );
+
+        template<typename T, int len>
+        void Write( char* dest, T const( &src )[ len ] );
+
+        template<typename T>
+        void Read( T& dest, char const* src );
+
+        template<typename T, int len>
+        void Read( T( &dest )[ len ], char const* src );
+
+
+
+        void DumpCore( String & s, char const * buf, int len );
+
+        void Dump( String & s, char const * buf, int len );
+
+    }
 
 }
-
 
 #endif

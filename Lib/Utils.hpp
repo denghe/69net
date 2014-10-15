@@ -1,18 +1,18 @@
 #ifndef __UTILS_HPP__
 #define __UTILS_HPP__
 
-namespace Utils
+namespace xxx
 {
-    HAS_FUNC( getHashCode_checker, getHashCode, int ( T::* )( ) const );
+    HAS_FUNC( GetHashCode_checker, GetHashCode, int ( T::* )( ) const );
     template<typename T>
-    typename std::enable_if<getHashCode_checker<T>::value, int>::type getHashCodeCore( T const& v )
+    typename std::enable_if<GetHashCode_checker<T>::value, int>::type GetHashCodeCore( T const& v )
     {
-        return v.getHashCode();
+        return v.GetHashCode();
     };
     template<typename T>
-    typename std::enable_if<!getHashCode_checker<T>::value, int>::type getHashCodeCore( T const& in )
+    typename std::enable_if<!GetHashCode_checker<T>::value, int>::type GetHashCodeCore( T const& in )
     {
-        static_assert( std::is_pod<T>::value, "forget impl getHashCode func ?" );
+        static_assert( std::is_pod<T>::value, "forGet impl GetHashCode func ?" );
         if( sizeof( T ) == 1 )
             return ( (byte*)&in )[ 0 ];
         if( sizeof( T ) == 2 )
@@ -26,21 +26,21 @@ namespace Utils
             uint* p = (uint*)&in;
             return (int)( p[ 0 ] + p[ 1 ] );
         }
-        return getHash_CS( (byte const*)&in, sizeof( T ) );
+        return GetHash_CS( (byte const*)&in, sizeof( T ) );
     };
 
 
 
     template<typename T>
-    int getHashCode( T const &in )
+    int GetHashCode( T const &in )
     {
-        auto rtv = getHashCodeCore( in );
+        auto rtv = GetHashCodeCore( in );
         return rtv;
-        //return getHashCodeCore( in );
+        //return GetHashCodeCore( in );
     }
 
     template<typename T1, typename T2>
-    bool equalsTo( T1 const& a, T2 const& b )
+    bool EqualsTo( T1 const& a, T2 const& b )
     {
         return a == b;
     }

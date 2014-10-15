@@ -44,34 +44,34 @@ void Monster::Destroy()
     cditem->Destroy();
     cditem = nullptr;
 
-    objs.top()->idx = idx;
-    objs.eraseFast( idx );
-    objPool.push( this );
+    objs.Top()->idx = idx;
+    objs.EraseFast( idx );
+    objPool.Push( this );
 }
 
 Monster* Monster::Create( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos )
 {
     Monster* rtv;
-    if( objPool.size() )
+    if( objPool.Size() )
     {
-        rtv = objPool.top_pop();
+        rtv = objPool.TopPop();
     }
     else rtv = new Monster();
     rtv->Init( _nodeContainer, _cditemContainer, _pos );
-    rtv->idx = objs.size();
-    objs.push( rtv );
+    rtv->idx = objs.Size();
+    objs.Push( rtv );
     return rtv;
 }
 
 void Monster::FreeObjs()
 {
-    for( int i = objs.size() - 1; i >= 0; --i )
+    for( int i = objs.Size() - 1; i >= 0; --i )
     {
         auto& o = objs[ i ];
         o->node.RemoveFromParent();
         delete o;
     }
-    for( int i = objPool.size() - 1; i >= 0; --i )
+    for( int i = objPool.Size() - 1; i >= 0; --i )
     {
         delete objPool[ i ];
     }

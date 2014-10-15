@@ -26,13 +26,13 @@ void Game1::Loaded()
 
 void Game1::Update()
 {
-    input.touchEvents.clear();      // 这里先无视鼠标事件，只关注状态
+    input.touchEvents.Clear();      // 这里先无视鼠标事件，只关注状态
     if( input.touching )
     {
         createObj( input.touchPos.x - mb->pos.x, input.touchPos.y - mb->pos.y );
     }
 
-    for( int i = objs.size() - 1; i >= 0; --i )
+    for( int i = objs.Size() - 1; i >= 0; --i )
     {
         auto n = objs[ i ];
         auto& o = n->key;
@@ -40,14 +40,14 @@ void Game1::Update()
         {
             o->RemoveFromParent();      // ref = 1
             o->Release();               // ref = 0 ( delete )
-            objs.erase( n );
+            objs.Erase( n );
         }
     }
 }
 
 Game1::~Game1()
 {
-    for( int i = 0; i < objs.size(); ++i )
+    for( int i = 0; i < objs.Size(); ++i )
     {
         auto& o = objs[ i ]->key;       // ref = 2
         o->Release();                   // ref = 1 ( scene.childs 会杀 )
@@ -57,7 +57,7 @@ Game1::~Game1()
 void Game1::createObj( float x, float y )
 {
     auto o = new Object();              // ref = 1
-    objs.insert( o );                   // ref = 1
+    objs.Insert( o );                   // ref = 1
     mb->Add( o );                       // ref = 2
     o->size = { 1, 1 };
     o->pos = { x, y, };

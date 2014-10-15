@@ -1,28 +1,34 @@
 #include "All.h"
 
-ScopeGuard::~ScopeGuard()
+namespace xxx
 {
-    if( _f ) _f();
-}
 
-void ScopeGuard::runAndCancel()
-{
-    if( _f )
+
+    ScopeGuard::~ScopeGuard()
     {
-        _f();
+        if( _f ) _f();
+    }
+
+    void ScopeGuard::RunAndCancel()
+    {
+        if( _f )
+        {
+            _f();
+            _f = nullptr;
+        }
+    }
+
+    void ScopeGuard::Run()
+    {
+        if( _f )
+        {
+            _f();
+        }
+    }
+
+    void ScopeGuard::Cancel()
+    {
         _f = nullptr;
     }
-}
 
-void ScopeGuard::run()
-{
-    if( _f )
-    {
-        _f();
-    }
-}
-
-void ScopeGuard::cancel()
-{
-    _f = nullptr;
 }

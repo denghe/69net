@@ -14,11 +14,11 @@ namespace xxx
 
     CdGrid::~CdGrid()
     {
-        for( int i = 0; i < items.size(); ++i )
+        for( int i = 0; i < items.Size(); ++i )
         {
             delete items[ i ];
         }
-        for( int i = 0; i < freeItems.size(); ++i )
+        for( int i = 0; i < freeItems.Size(); ++i )
         {
             delete freeItems[ i ];
         }
@@ -28,7 +28,7 @@ namespace xxx
     {
         for( int i = 0; i < _capacity; ++i )
         {
-            freeItems.push( new CdItem() );
+            freeItems.Push( new CdItem() );
         }
     }
 
@@ -40,7 +40,7 @@ namespace xxx
         columnCount = _columnCount;
         cellDiameter = { _gridDiameter.w / _columnCount, _gridDiameter.h / _rowCount };
         cellRadius = { cellDiameter.w / 2, cellDiameter.h / 2 };
-        cells.resize( _rowCount * _columnCount );
+        cells.Resize( _rowCount * _columnCount );
         for( int ri = 0; ri < _rowCount; ++ri )
         {
             for( int ci = 0; ci < _columnCount; ++ci )
@@ -55,34 +55,34 @@ namespace xxx
     CdItem* CdGrid::CreateItem()
     {
         CdItem* rtv;
-        if( freeItems.size() )
+        if( freeItems.Size() )
         {
-            rtv = freeItems.top_pop();
-            assert( rtv->cells.size() == 0 );
+            rtv = freeItems.TopPop();
+            assert( rtv->cells.Size() == 0 );
         }
         else
         {
             rtv = new CdItem();
         }
         rtv->parent = this;
-        rtv->idx = items.size();
-        items.push( rtv );
+        rtv->idx = items.Size();
+        items.Push( rtv );
         return rtv;
     }
 
     void CdGrid::Clear()
     {
-        for( int i = 0; i < items.size(); ++i )
+        for( int i = 0; i < items.Size(); ++i )
         {
             auto& p = items[ i ];
-            p->cells.clear();
+            p->cells.Clear();
             p->parent = nullptr;
-            freeItems.push( p );
+            freeItems.Push( p );
         }
-        items.clear();
-        for( int i = 0; i < cells.size(); ++i )
+        items.Clear();
+        for( int i = 0; i < cells.Size(); ++i )
         {
-            cells[ i ].items.clear();
+            cells[ i ].items.Clear();
         }
     }
 
@@ -92,11 +92,11 @@ namespace xxx
         ++autoFlag;
         if( autoFlag ) return;
         autoFlag = 1;
-        for( int i = 0; i < items.size(); ++i )
+        for( int i = 0; i < items.Size(); ++i )
         {
             items[ i ]->flag = 0;
         }
-        for( int i = 0; i < freeItems.size(); ++i )
+        for( int i = 0; i < freeItems.Size(); ++i )
         {
             freeItems[ i ]->flag = 0;
         }
@@ -125,19 +125,19 @@ namespace xxx
 
     int CdGrid::GetItems( List<CdItem*>& _container, CdPoint const& _pos )
     {
-        _container.clear();
+        _container.Clear();
         int ci = _pos.x / cellDiameter.w;
         int ri = _pos.y / cellDiameter.h;
         auto c = &cells[ ri * columnCount + ci ];
-        for( int i = 0; i < c->items.size(); ++i )
+        for( int i = 0; i < c->items.Size(); ++i )
         {
             auto& o = c->items[ i ]->value;
             if( CheckCollision( o, _pos ) )
             {
-                _container.push( o );
+                _container.Push( o );
             }
         }
-        return _container.size();
+        return _container.Size();
     }
 
     CdItem* CdGrid::GetItem( CdPoint const& _pos )
@@ -145,7 +145,7 @@ namespace xxx
         int ci = _pos.x / cellDiameter.w;
         int ri = _pos.y / cellDiameter.h;
         auto c = &cells[ ri * columnCount + ci ];
-        for( int i = 0; i < c->items.size(); ++i )
+        for( int i = 0; i < c->items.Size(); ++i )
         {
             auto& o = c->items[ i ]->value;
             if( CheckCollision( o, _pos ) )
@@ -185,16 +185,16 @@ namespace xxx
     void CdItem::Destroy()
     {
         assert( parent );
-        assert( parent->items.find( this ) >= 0 );
-        for( int i = 0; i < cells.size(); ++i )
+        assert( parent->items.Find( this ) >= 0 );
+        for( int i = 0; i < cells.Size(); ++i )
         {
             auto& pair = cells[ i ];
-            pair.first->items.erase( pair.second );
+            pair.first->items.Erase( pair.second );
         }
-        cells.clear();
-        parent->items.top()->idx = idx;
-        parent->items.eraseFast( idx );
-        parent->freeItems.push( this );
+        cells.Clear();
+        parent->items.Top()->idx = idx;
+        parent->items.EraseFast( idx );
+        parent->freeItems.Push( this );
         parent = nullptr;
     }
 
@@ -202,12 +202,12 @@ namespace xxx
     {
         assert( parent && ci1 == -1 );  // ensure Inited
 
-        for( int i = 0; i < cells.size(); ++i )
+        for( int i = 0; i < cells.Size(); ++i )
         {
             auto& pair = cells[ i ];
-            pair.first->items.erase( pair.second );
+            pair.first->items.Erase( pair.second );
         }
-        cells.clear();
+        cells.Clear();
 
         CdPoint _p = { pos.x - radius.w, pos.y - radius.h };
         int _ci1 = _p.x / parent->cellDiameter.w;
@@ -224,7 +224,7 @@ namespace xxx
             for( int ci = _ci1; ci <= _ci2; ++ci )
             {
                 auto c = &parent->cells[ ri * parent->columnCount + ci ];
-                cells.push( std::make_pair( c, c->items.insert( this ) ) );
+                cells.Push( std::make_pair( c, c->items.Insert( this ) ) );
             }
         }
 
@@ -258,14 +258,14 @@ namespace xxx
         ri1 = _ri1;
         ri2 = _ri2;
 
-        for( int i = cells.size() - 1; i >= 0; --i )
+        for( int i = cells.Size() - 1; i >= 0; --i )
         {
             auto& c = *cells[ i ].first;
             auto& node = cells[ i ].second;
             if( c.ri < _ri1 || c.ri > _ri2 || c.ci < _ci1 || c.ci > _ci2 )
             {
-                c.items.erase( node );
-                cells.erase( i );
+                c.items.Erase( node );
+                cells.Erase( i );
             }
         }
 
@@ -275,7 +275,7 @@ namespace xxx
             {
                 auto c = &parent->cells[ ri * parent->columnCount + ci ];
                 bool found = false;
-                for( int i = 0; i < cells.size(); ++i )
+                for( int i = 0; i < cells.Size(); ++i )
                 {
                     if( cells[ i ].first == c )
                     {
@@ -284,7 +284,7 @@ namespace xxx
                     }
                 }
                 if( found ) continue;
-                cells.push( std::make_pair( c, c->items.insert( this ) ) );
+                cells.Push( std::make_pair( c, c->items.Insert( this ) ) );
             }
         }
     }
@@ -292,30 +292,30 @@ namespace xxx
     int CdItem::GetNearItems( List<CdItem*>& _container )
     {
         parent->IncreaseFlag();
-        _container.clear();
+        _container.Clear();
         flag = parent->autoFlag;     // 防止目标 item 被加入集合
-        for( int i = 0; i < cells.size(); ++i )
+        for( int i = 0; i < cells.Size(); ++i )
         {
             auto& cis = cells[ i ].first->items;
-            for( int j = 0; j < cis.size(); ++j )
+            for( int j = 0; j < cis.Size(); ++j )
             {
                 auto& item = cis[ j ]->value;
                 if( item->flag == flag ) continue;
                 item->flag = flag;
-                _container.push( item );
+                _container.Push( item );
             }
         }
-        return _container.size();
+        return _container.Size();
     }
     int CdItem::GetCollisionItems( List<CdItem*>& _container )
     {
         parent->IncreaseFlag();
-        _container.clear();
+        _container.Clear();
         flag = parent->autoFlag;     // 防止目标 item 被加入集合
-        for( int i = 0; i < cells.size(); ++i )
+        for( int i = 0; i < cells.Size(); ++i )
         {
             auto& cis = cells[ i ].first->items;
-            for( int j = 0; j < cis.size(); ++j )
+            for( int j = 0; j < cis.Size(); ++j )
             {
                 auto& item = cis[ j ]->value;
                 if( item->flag == flag ) continue;
@@ -329,19 +329,19 @@ namespace xxx
                 if( !CdGrid::CheckCollision( this, item ) ) continue;
 
                 item->flag = flag;
-                _container.push( item );
+                _container.Push( item );
             }
         }
-        return _container.size();
+        return _container.Size();
     }
 
     // 从上面的函数精简而来
     CdItem* CdItem::GetCollisionItem()
     {
-        for( int i = 0; i < cells.size(); ++i )
+        for( int i = 0; i < cells.Size(); ++i )
         {
             auto& cis = cells[ i ].first->items;
-            for( int j = 0; j < cis.size(); ++j )
+            for( int j = 0; j < cis.Size(); ++j )
             {
                 auto& item = cis[ j ]->value;
                 if( item == this ) continue;

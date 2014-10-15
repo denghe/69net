@@ -1,27 +1,5 @@
 #include "Lib/All.h"
-template<typename ...TS>
-void cout( TS const& ...parms )
-{
-    String s;
-    s.append( parms... );
-    puts( s.c_str() );
-}
-template<typename ...TS>
-void coutn( TS const& ...parms )
-{
-    cout( parms..., '\n' );
-}
-#include <windows.h>
-template<typename ...TS>
-void coutPos( short x, short y, TS const& ...parms )
-{
-    static auto h = GetStdHandle( STD_OUTPUT_HANDLE );
-    static COORD pos;
-    pos.X = x;
-    pos.Y = y;
-    SetConsoleCursorPosition( h, pos );
-    cout( parms... );
-}
+using namespace xxx;
 
 #include <enet/enet.h>
 int test()
@@ -101,7 +79,7 @@ int test()
         {
             auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>( now - firstTime ).count();
             if( !elapsedSeconds ) elapsedSeconds = 1;
-            coutPos( 0, 0, counter, ", ", counter / (int64)elapsedSeconds );
+            CoutPos( 0, 0, counter, ", ", counter / (int64)elapsedSeconds );
             lastTime = now;
         }
 
@@ -114,7 +92,7 @@ int main()
 {
     if( auto rtv = test() )
     {
-        cout( rtv );
+        Cout( rtv );
     }
 
     system( "pause" );

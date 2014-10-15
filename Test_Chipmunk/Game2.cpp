@@ -54,9 +54,9 @@ void Game2::Loaded()
 
 void Game2::Update()
 {
-    while( input.touchEvents.size() )
+    while( input.touchEvents.Size() )
     {
-        input.touchEvents.clear();
+        input.touchEvents.Clear();
         if( input.touching )
         {
             auto x = input.touchPos.x;
@@ -70,7 +70,7 @@ void Game2::Update()
 
             mouseItem->Update( { x, y } );
             mouseItem->GetCollisionItems( touchedItems );
-            for( int i = 0; i < touchedItems.size(); ++i )
+            for( int i = 0; i < touchedItems.Size(); ++i )
             {
                 auto& item = touchedItems[ i ];
                 scene.Remove( (Node*)item->userData );

@@ -1,13 +1,6 @@
 #include "Lib/All.h"
 #include <enet/enet.h>
-template<typename ...TS>
-void cout( TS const& ...parms )
-{
-    String s;
-    s.append( parms... );
-    std::cout << s.c_str() << std::endl;
-}
-
+using namespace xxx;
 int test()
 {
     if( auto rtv = enet_initialize() ) return rtv;
@@ -26,7 +19,7 @@ int test()
 
     int sendLen = 1024;
     FlatBuffer buf( sendLen );
-    buf.resize( sendLen );
+    buf.Resize( sendLen );
     for( int i = 0; i < sendLen; ++i )
     {
         buf[ i ] = (byte)i;
@@ -58,7 +51,7 @@ int test()
                 // todo: check
                 enet_packet_destroy( event.packet );
 
-                auto packet = enet_packet_create( buf.data(), buf.size(), ENET_PACKET_FLAG_RELIABLE );
+                auto packet = enet_packet_create( buf.Data(), buf.Size(), ENET_PACKET_FLAG_RELIABLE );
                 enet_peer_send( peer, 0, packet );
                 break;
             }
@@ -131,7 +124,7 @@ int main()
 {
     if( auto rtv = test() )
     {
-        cout( rtv );
+        Cout( rtv );
     }
 
     system( "pause" );

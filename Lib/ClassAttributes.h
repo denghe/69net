@@ -1,6 +1,9 @@
 #ifndef __CLASSATTRIBUTES_H__
 #define __CLASSATTRIBUTES_H__
 
-class Memmoveable {};
+namespace xxx
+{
+    class Memmoveable {};
+}
 
 #endif

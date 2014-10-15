@@ -1,120 +1,124 @@
 #ifndef _FLATBUFFER_H__
 #define _FLATBUFFER_H__
 
-
-class FlatBuffer : Memmoveable
+namespace xxx
 {
-public:
-    explicit FlatBuffer( int capacity = 1024 );                                 // prepare
-    FlatBuffer( Pool& p );                                                      // prepare with pool buffer
-    FlatBuffer( char* buf, int bufLen, int dataLen = 0, bool isRef = false );   // copy or ref
-    FlatBuffer( FlatBuffer const& other );                                      // copy
-    FlatBuffer( FlatBuffer&& other );                                           // move
-    FlatBuffer& operator=( FlatBuffer const& other );                           // copy
-    FlatBuffer& operator=( FlatBuffer&& other );                                // move
-    ~FlatBuffer();
-    void assign( char const* buf, int bufLen, int dataLen = 0, bool isRef = false );  // copy or ref
-    void reserve( int capacity );
-    void resize( int widx );
-    void clear();                                                               // _dataLen = _offset = 0
-    int size() const;                                                           // _dataLen
-    int& size();                                                                // _dataLen
-    int offset() const;                                                         // _offset
-    int& offset();                                                              // _offset
-    bool empty() const;                                                         // _dataLen == 0
-    bool eof() const;                                                           // _dataLen == _offset
-    char const* data() const;                                                   // _buf
-    char* data();                                                               // _buf
-    char operator[] ( int idx ) const;                                          // _buf[ idx ]
-    char& operator[] ( int idx );                                               // _buf[ idx ]
-    char at( int idx ) const;                                                   // _buf[ idx ]
-    char& at( int idx );                                                        // _buf[ idx ]
+
+
+    class FlatBuffer : Memmoveable
+    {
+    public:
+        explicit FlatBuffer( int capacity = 1024 );                                 // prepare
+        FlatBuffer( Pool& p );                                                      // prepare with pool buffer
+        FlatBuffer( char* buf, int bufLen, int dataLen = 0, bool isRef = false );   // Copy or ref
+        FlatBuffer( FlatBuffer const& other );                                      // Copy
+        FlatBuffer( FlatBuffer&& other );                                           // move
+        FlatBuffer& operator=( FlatBuffer const& other );                           // Copy
+        FlatBuffer& operator=( FlatBuffer&& other );                                // move
+        ~FlatBuffer();
+        void Assign( char const* buf, int bufLen, int dataLen = 0, bool isRef = false );  // Copy or ref
+        void Reserve( int capacity );
+        void Resize( int widx );
+        void Clear();                                                               // _dataLen = _offset = 0
+        int Size() const;                                                           // _dataLen
+        int& Size();                                                                // _dataLen
+        int Offset() const;                                                         // _offset
+        int& Offset();                                                              // _offset
+        bool Empty() const;                                                         // _dataLen == 0
+        bool Full() const;                                                          // _dataLen == _offset
+        char const* Data() const;                                                   // _buf
+        char* Data();                                                               // _buf
+        char operator[] ( int idx ) const;                                          // _buf[ idx ]
+        char& operator[] ( int idx );                                               // _buf[ idx ]
+        char At( int idx ) const;                                                   // _buf[ idx ]
+        char& At( int idx );                                                        // _buf[ idx ]
 
 
 
-    // for FlatBuffer write
-    int getWriteBufferSize();
-    void writeBuffer( FlatBuffer& fb );
-    void writeBufferDirect( FlatBuffer& fb );
-    bool readBuffer( FlatBuffer& fb );
-
-
-
-
-    // do not reserve
-    void writeDirect( char const* buf, int dataLen );                           // do not write dataLen
-    template<int len>
-    void writeDirect( char const( &s )[ len ] );                                // same as String( len + buf )
-    template<typename T, int len>
-    void writeDirect( T const( &a )[ len ] );
-    template<typename T>
-    void writeDirect( T const& v );
-
-    template<typename ...TS>
-    void writesDirect( TS const& ...vs );
-
-    // reserve
-    void write( char const* buf, int dataLen );
-    template<int len>
-    void write( char const( &s )[ len ] );
-    template<typename T, int len>
-    void write( T const( &a )[ len ] );
-    template<typename T>
-    void write( T const& v );
-
-    // reserve once
-    template<typename ...TS>
-    void writes( TS const& ...vs );
-
-
-
-    // return true: success
-    template<typename T>
-    bool read( T& v );
-    bool read( char* buf, int dataLen );
-    template<typename T, int len>
-    bool read( T( &a )[ len ] );
-    template<typename ...TS>
-    bool reads( TS& ...vs );
-
-
-    template<typename T>
-    void readDirect( T& v );
-    template<typename ...TS>
-    void readsDirect( TS& ...vs );
+        // for FlatBuffer Write
+        int GetWriteBufferSize();
+        void WriteBuffer( FlatBuffer& fb );
+        void WriteBufferDirect( FlatBuffer& fb );
+        bool ReadBuffer( FlatBuffer& fb );
 
 
 
 
-    // todo: writeVar  readVar support
+        // do not Reserve
+        void WriteDirect( char const* buf, int dataLen );                           // do not Write dataLen
+        template<int len>
+        void WriteDirect( char const( &s )[ len ] );                                // same as String( len + buf )
+        template<typename T, int len>
+        void WriteDirect( T const( &a )[ len ] );
+        template<typename T>
+        void WriteDirect( T const& v );
 
-    String dump();
+        template<typename ...TS>
+        void WritesDirect( TS const& ...vs );
 
-private:
-    template<typename T>
-    void writesCore( T const& v );
-    template<typename T, typename ...TS>
-    void writesCore( T const& v, TS const& ...vs );
+        // Reserve
+        void Write( char const* buf, int dataLen );
+        template<int len>
+        void Write( char const( &s )[ len ] );
+        template<typename T, int len>
+        void Write( T const( &a )[ len ] );
+        template<typename T>
+        void Write( T const& v );
 
-    template<typename T>
-    bool readsCore( T& v );
-    template<typename T, typename ...TS>
-    bool readsCore( T& v, TS& ...vs );
+        // Reserve once
+        template<typename ...TS>
+        void Writes( TS const& ...vs );
 
-    template<typename T>
-    void readsDirectCore( T& v );
-    template<typename T, typename ...TS>
-    void readsDirectCore( T& v, TS& ...vs );
 
-    char*       _buf;
-    int         _bufLen;
-    int         _dataLen;
-    int         _offset;
 
-    Pool*       _disposer;
-    static Pool _emptyPool;     // for do not need delete's buffer
-    void dispose();
-};
+        // return true: success
+        template<typename T>
+        bool Read( T& v );
+        bool Read( char* buf, int dataLen );
+        template<typename T, int len>
+        bool Read( T( &a )[ len ] );
+        template<typename ...TS>
+        bool Reads( TS& ...vs );
 
+
+        template<typename T>
+        void ReadDirect( T& v );
+        template<typename ...TS>
+        void ReadsDirect( TS& ...vs );
+
+
+
+
+        // todo: writeVar  ReadVar support
+
+        String Dump();
+
+    private:
+        template<typename T>
+        void WritesCore( T const& v );
+        template<typename T, typename ...TS>
+        void WritesCore( T const& v, TS const& ...vs );
+
+        template<typename T>
+        bool ReadsCore( T& v );
+        template<typename T, typename ...TS>
+        bool ReadsCore( T& v, TS& ...vs );
+
+        template<typename T>
+        void ReadsDirectCore( T& v );
+        template<typename T, typename ...TS>
+        void ReadsDirectCore( T& v, TS& ...vs );
+
+        char*       _buf;
+        int         _bufLen;
+        int         _dataLen;
+        int         _offset;
+
+        Pool*       _disposer;
+        static Pool _emptyPool;     // for do not need delete's buffer
+        void Dispose();
+    };
+
+}
 
 #endif

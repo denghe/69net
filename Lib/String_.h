@@ -1,133 +1,135 @@
 #ifndef _STRING_H__
 #define _STRING_H__
 
-
-class FlatBuffer;
-
-class String : Memmoveable
+namespace xxx
 {
-public:
-    explicit String( int capacity = 64 );                       // prepare
-    String( Pool& p );                                          // prepare with pool buffer
-    template<int len>
-    String( Pool& p, char const ( &s )[ len ] );                // get buf from pool and copy s into
-    String( Pool& p, char const* buf, int dataLen );            // get buf from pool and copy s into
-    String( char const* buf, int bufLen, int dataLen, bool isRef = true );    // ref or copy
-    String( char const* s, bool isRef = false );                // copy or ref
-    String( String const& other );                              // copy
-    String( String&& other );                                   // move
-    String& operator=( String const& other );                   // copy
-    String& operator=( String&& other );                        // move
-    ~String();                                                  // dispose buf
-    void assign( char const* buf, int bufLen, int dataLen, bool isRef = true );     // ref or copy
-    void assign( char const* s, bool isRef = false );           // copy or ref
-    void reserve( int capacity );                               // prepare memory
-    void resize( int len, bool fillZero = true );               // cut( maybe damage utf8 ) or grow up
-    void clear();                                               // set _dataLen to 0
-    int size() const;                                           // return _dataLen;
-    char const* c_str() const;                                  // return _buf
-    char* data() const;                                         // return _buf
-    char operator[] ( int idx ) const;                          // return _buf[ idx ]
-    char& operator[] ( int idx );                               // return _buf[ idx ]
-    char at( int idx ) const;
-    char& at( int idx );
-    void push( char c );
-    void pop();
-    char& top();
-    char const& top() const;
 
-    // todo: more util funcs like  find, trim, split, replace, ....
-    // todo: Formatter with appendTo( String& s ) interface
-    // sample: auto f = Formatter().setScale( 2 ).setWidth( 10, '0' );  s.append( ...... f( 1.2345 ) ...... ) will be append  0000001.23
-    // 
+    class FlatBuffer;
 
-    bool operator==( String const& other ) const;
-    bool operator!=( String const& other ) const;
-    bool operator<( String const& other ) const;
-    bool operator>( String const& other ) const;
-    bool operator<=( String const& other ) const;
-    bool operator>=( String const& other ) const;
+    class String : Memmoveable
+    {
+    public:
+        explicit String( int capacity = 64 );                       // prepare
+        String( Pool& p );                                          // prepare with pool buffer
+        template<int len>
+        String( Pool& p, char const ( &s )[ len ] );                // Get buf from pool and Copy s into
+        String( Pool& p, char const* buf, int dataLen );            // Get buf from pool and Copy s into
+        String( char const* buf, int bufLen, int dataLen, bool isRef = true );    // ref or Copy
+        String( char const* s, bool isRef = false );                // Copy or ref
+        String( String const& other );                              // Copy
+        String( String&& other );                                   // move
+        String& operator=( String const& other );                   // Copy
+        String& operator=( String&& other );                        // move
+        ~String();                                                  // Dispose buf
+        void Assign( char const* buf, int bufLen, int dataLen, bool isRef = true );     // ref or Copy
+        void Assign( char const* s, bool isRef = false );           // Copy or ref
+        void Reserve( int capacity );                               // prepare memory
+        void Resize( int len, bool FillZero = true );               // cut( maybe damage utf8 ) or grow up
+        void Clear();                                               // Set _dataLen to 0
+        int Size() const;                                           // return _dataLen;
+        char const* C_str() const;                                  // return _buf
+        char* Data() const;                                         // return _buf
+        char operator[] ( int idx ) const;                          // return _buf[ idx ]
+        char& operator[] ( int idx );                               // return _buf[ idx ]
+        char At( int idx ) const;
+        char& At( int idx );
+        void Push( char c );
+        void Pop();
+        char& Top();
+        char const& Top() const;
 
+        // todo: more util funcs like  Find, trim, split, replace, ....
+        // todo: Formatter with AppendTo( String& s ) interface
+        // sample: auto f = Formatter().setScale( 2 ).setWidth( 10, '0' );  s.Append( ...... f( 1.2345 ) ...... ) will be Append  0000001.23
+        // 
 
-    void toLower();
-    void toUpper();
-    void toLowerUnsafe();                                       // 2x faster than toLower(). bad chars£º   @[\]^_` 
-
-    int getHashCode() const;
+        bool operator==( String const& other ) const;
+        bool operator!=( String const& other ) const;
+        bool operator<( String const& other ) const;
+        bool operator>( String const& other ) const;
+        bool operator<=( String const& other ) const;
+        bool operator>=( String const& other ) const;
 
 
-    template<typename ...TS>
-    void append( TS const & ...vs );
+        void ToLower();
+        void ToUpper();
+        void ToLowerUnsafe();                                       // 2x faster than ToLower(). bad chars£º   @[\]^_` 
 
-    template<typename ...TS>
-    void appendFormat( char const* format, TS const & ...vs );
-
-    template<typename T>
-    void appendHex( T const& v );
-
-    template<typename T>
-    String& operator<<( T const& v );
+        int GetHashCode() const;
 
 
-    // like append, return strlen.
-    // dangerous: buffer overflow
-    template<typename ...TS>
-    static int fill( char * buf, TS const & ...vs );
+        template<typename ...TS>
+        void Append( TS const & ...vs );
 
-    template<typename ...TS>
-    static int fillHex( char * buf, TS const & ...vs );
+        template<typename ...TS>
+        void AppendFormat( char const* format, TS const & ...vs );
+
+        template<typename T>
+        void AppendHex( T const& v );
+
+        template<typename T>
+        String& operator<<( T const& v );
 
 
+        // like Append, return strlen.
+        // dangerous: buffer overflow
+        template<typename ...TS>
+        static int Fill( char * buf, TS const & ...vs );
 
-    template<typename ...TS>
-    static String make( TS const & ...vs );
-
-    template<typename ...TS>
-    static String makeFormat( char const* format, TS const & ...vs );
-
-    template<typename ...TS>
-    static String make( Pool& p, TS const & ...vs );
-
-    template<typename ...TS>
-    static String makeFormat( Pool& p, char const* format, TS const & ...vs );
-
-    template<typename ...TS, int bufLen>
-    static String make( char( &buf )[ bufLen ], TS const & ...vs );
-
-    template<typename T>
-    static String toString( T const& v );
-
-    template<typename T>
-    static String toHexString( T const& v );
+        template<typename ...TS>
+        static int FillHex( char * buf, TS const & ...vs );
 
 
 
+        template<typename ...TS>
+        static String Make( TS const & ...vs );
 
-    // dangerous: get first buffer from static circle pool char[ 32 ][ 1024 ]
-    template<typename ...TS>
-    static String makeFast( TS const & ...vs );
+        template<typename ...TS>
+        static String MakeFormat( char const* format, TS const & ...vs );
 
-    // dangerous: get first buffer from static circle pool char[ 32 ][ 128 ]
-    template<typename T>
-    static String const toStringFast( T const& v );
+        template<typename ...TS>
+        static String Make( Pool& p, TS const & ...vs );
 
-    // dangerous: get first buffer from static circle pool char[ 32 ][ 32 ]
-    template<typename T>
-    static String const toHexStringFast( T const& v );
+        template<typename ...TS>
+        static String MakeFormat( Pool& p, char const* format, TS const & ...vs );
+
+        template<typename ...TS, int bufLen>
+        static String Make( char( &buf )[ bufLen ], TS const & ...vs );
+
+        template<typename T>
+        static String ToString( T const& v );
+
+        template<typename T>
+        static String ToHexString( T const& v );
 
 
 
 
-    std::string std_str();
+        // dangerous: Get first buffer from static circle pool char[ 32 ][ 1024 ]
+        template<typename ...TS>
+        static String MakeFast( TS const & ...vs );
+
+        // dangerous: Get first buffer from static circle pool char[ 32 ][ 128 ]
+        template<typename T>
+        static String const ToStringFast( T const& v );
+
+        // dangerous: Get first buffer from static circle pool char[ 32 ][ 32 ]
+        template<typename T>
+        static String const ToHexStringFast( T const& v );
 
 
 
 
-    // for FlatBuffer
-    int getWriteBufferSize() const;
-    void writeBuffer( FlatBuffer& fb ) const;
-    void writeBufferDirect( FlatBuffer& fb ) const;
-    bool readBuffer( FlatBuffer& fb );
+        std::string Std_str();
+
+
+
+
+        // for FlatBuffer
+        int GetWriteBufferSize() const;
+        void WriteBuffer( FlatBuffer& fb ) const;
+        void WriteBufferDirect( FlatBuffer& fb ) const;
+        bool ReadBuffer( FlatBuffer& fb );
 
 
 
@@ -138,43 +140,44 @@ public:
 
 
 
-private:
+    private:
 
-    template<typename T>
-    void appendFormatCore( String& s, int& n, T const & v );
+        template<typename T>
+        void AppendFormatCore( String& s, int& n, T const & v );
 
-    template<typename T, typename ...TS>
-    void appendFormatCore( String& s, int& n, T const & v, TS const & ...vs );
+        template<typename T, typename ...TS>
+        void AppendFormatCore( String& s, int& n, T const & v, TS const & ...vs );
 
-    template<typename T>
-    static void fillCore( char * & buf, int & offset, T const & v );
+        template<typename T>
+        static void FillCore( char * & buf, int & offset, T const & v );
 
-    template<typename T, typename ...TS>
-    static void fillCore( char * & buf, int & offset, T const & v, TS const & ...vs );
+        template<typename T, typename ...TS>
+        static void FillCore( char * & buf, int & offset, T const & v, TS const & ...vs );
 
-    template<typename T>
-    static void fillHexCore( char * & buf, int & offset, T const & v );
+        template<typename T>
+        static void FillHexCore( char * & buf, int & offset, T const & v );
 
-    template<typename T, typename ...TS>
-    static void fillHexCore( char * & buf, int & offset, T const & v, TS const & ...vs );
+        template<typename T, typename ...TS>
+        static void FillHexCore( char * & buf, int & offset, T const & v, TS const & ...vs );
 
-    template<typename T>
-    static void getFillMaxLengthCore( int & len, T const & v );
+        template<typename T>
+        static void GetFillMaxLengthCore( int & len, T const & v );
 
-    template<typename T, typename ...TS>
-    static void getFillMaxLengthCore( int & len, T const & v, TS const & ...vs );
+        template<typename T, typename ...TS>
+        static void GetFillMaxLengthCore( int & len, T const & v, TS const & ...vs );
 
-    template<typename ...TS>
-    static int getFillMaxLength( TS const & ...vs );
+        template<typename ...TS>
+        static int GetFillMaxLength( TS const & ...vs );
 
-    char*       _buf;
-    int         _bufLen;
-    int         _dataLen;
+        char*       _buf;
+        int         _bufLen;
+        int         _dataLen;
 
-    Pool*       _disposer;
-    static Pool _emptyPool;     // for do not need delete's buffer
-    void dispose();
-};
+        Pool*       _disposer;
+        static Pool _emptyPool;     // for do not need delete's buffer
+        void Dispose();
+    };
 
+}
 
 #endif

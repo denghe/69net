@@ -1,223 +1,226 @@
 #ifndef _FLATBUFFER_HPP__
 #define _FLATBUFFER_HPP__
 
-HAS_FUNC( writeBufferDirect_checker, writeBufferDirect, void ( T::* )( FlatBuffer& ) const );
-template<typename T>
-typename std::enable_if<writeBufferDirect_checker<T>::value, void>::type writeBufferDirect_switch( FlatBuffer& fb, T const& v )
+namespace xxx
 {
-    v.writeBufferDirect( fb );
-};
-template<typename T>
-typename std::enable_if<!writeBufferDirect_checker<T>::value, void>::type writeBufferDirect_switch( FlatBuffer& fb, T const& v )
-{
-    //static_assert( std::is_pod<T>::value, "forget impl writeBufferDirect func ?" );
-    BufferUtils::write( fb.data() + fb.size(), v );
-    fb.size() += BufferUtils::getSize( v );
-};
-template<typename T>
-void FlatBuffer::writeDirect( T const& v )
-{
-    writeBufferDirect_switch( *this, v );
-}
 
-
-HAS_FUNC( writeBuffer_checker, writeBuffer, void ( T::* )( FlatBuffer& ) const );
-template<typename T>
-typename std::enable_if<writeBuffer_checker<T>::value, void>::type writeBuffer_switch( FlatBuffer& fb, T const& v )
-{
-    v.writeBuffer( fb );
-};
-template<typename T>
-typename std::enable_if<!writeBuffer_checker<T>::value, void>::type writeBuffer_switch( FlatBuffer& fb, T const& v )
-{
-    //static_assert( std::is_pod<T>::value, "forget impl writeBuffer func ?" );
-    int siz = BufferUtils::getSize( v );
-    fb.reserve( fb.size() + siz );
-    BufferUtils::write( fb.data() + fb.size(), v );
-    fb.size() += siz;
-};
-template<typename T>
-void FlatBuffer::write( T const& v )
-{
-    writeBuffer_switch( *this, v );
-}
-
-
-template<int len>
-void FlatBuffer::writeDirect( char const( &s )[ len ] )
-{
-    writeDirect( len - 1 );
-    writeDirect( s, len - 1 );
-}
-template<int len>
-void FlatBuffer::write( char const( &s )[ len ] )
-{
-    reserve( _dataLen + sizeof( int ) + len - 1 );
-    writeDirect( s );
-}
-
-
-template<typename T, int len>
-void FlatBuffer::writeDirect( T const( &a )[ len ] )
-{
-    if( std::is_pod<T>::value )
+    HAS_FUNC( writeBufferDirect_checker, WriteBufferDirect, void ( T::* )( FlatBuffer& ) const );
+    template<typename T>
+    typename std::enable_if<writeBufferDirect_checker<T>::value, void>::type writeBufferDirect_switch( FlatBuffer& fb, T const& v )
     {
-        writeDirect( (char*)a, len * sizeof( T ) );
+        v.WriteBufferDirect( fb );
+    };
+    template<typename T>
+    typename std::enable_if<!writeBufferDirect_checker<T>::value, void>::type writeBufferDirect_switch( FlatBuffer& fb, T const& v )
+    {
+        //static_assert( std::is_pod<T>::value, "forGet impl WriteBufferDirect func ?" );
+        BufferUtils::Write( fb.Data() + fb.Size(), v );
+        fb.Size() += BufferUtils::GetSize( v );
+    };
+    template<typename T>
+    void FlatBuffer::WriteDirect( T const& v )
+    {
+        writeBufferDirect_switch( *this, v );
     }
-    else
+
+
+    HAS_FUNC( writeBuffer_checker, WriteBuffer, void ( T::* )( FlatBuffer& ) const );
+    template<typename T>
+    typename std::enable_if<writeBuffer_checker<T>::value, void>::type writeBuffer_switch( FlatBuffer& fb, T const& v )
     {
-        for( int i = 0; i < len; ++i )
+        v.WriteBuffer( fb );
+    };
+    template<typename T>
+    typename std::enable_if<!writeBuffer_checker<T>::value, void>::type writeBuffer_switch( FlatBuffer& fb, T const& v )
+    {
+        //static_assert( std::is_pod<T>::value, "forGet impl WriteBuffer func ?" );
+        int siz = BufferUtils::GetSize( v );
+        fb.Reserve( fb.Size() + siz );
+        BufferUtils::Write( fb.Data() + fb.Size(), v );
+        fb.Size() += siz;
+    };
+    template<typename T>
+    void FlatBuffer::Write( T const& v )
+    {
+        writeBuffer_switch( *this, v );
+    }
+
+
+    template<int len>
+    void FlatBuffer::WriteDirect( char const( &s )[ len ] )
+    {
+        WriteDirect( len - 1 );
+        WriteDirect( s, len - 1 );
+    }
+    template<int len>
+    void FlatBuffer::Write( char const( &s )[ len ] )
+    {
+        Reserve( _dataLen + sizeof( int ) + len - 1 );
+        WriteDirect( s );
+    }
+
+
+    template<typename T, int len>
+    void FlatBuffer::WriteDirect( T const( &a )[ len ] )
+    {
+        if( std::is_pod<T>::value )
         {
-            writeBufferDirect_switch( *this, a[ i ] );
+            WriteDirect( (char*)a, len * sizeof( T ) );
+        }
+        else
+        {
+            for( int i = 0; i < len; ++i )
+            {
+                writeBufferDirect_switch( *this, a[ i ] );
+            }
         }
     }
-}
-template<typename T, int len>
-void FlatBuffer::write( T const( &a )[ len ] )
-{
-    if( std::is_pod<T>::value )
+    template<typename T, int len>
+    void FlatBuffer::Write( T const( &a )[ len ] )
     {
-        auto siz = len * ( int )sizeof( T );
-        reserve( _dataLen + siz );
-        writeDirect( (char*)a, len * sizeof( T ) );
-    }
-    else
-    {
-        for( int i = 0; i < len; ++i )
+        if( std::is_pod<T>::value )
         {
-            writeBuffer_switch( *this, a[ i ] );
+            auto siz = len * ( int )sizeof( T );
+            Reserve( _dataLen + siz );
+            WriteDirect( (char*)a, len * sizeof( T ) );
+        }
+        else
+        {
+            for( int i = 0; i < len; ++i )
+            {
+                writeBuffer_switch( *this, a[ i ] );
+            }
         }
     }
-}
 
 
 
 
 
-template<typename T>
-void FlatBuffer::writesCore( T const& v )
-{
-    writeDirect( v );
-}
-
-template<typename T, typename ...TS>
-void FlatBuffer::writesCore( T const& v, TS const& ...vs )
-{
-    writeDirect( v );
-    writesCore( vs... );
-}
-
-template<typename ...TS>
-void FlatBuffer::writes( TS const& ...vs )
-{
-    reserve( _dataLen + BufferUtils::getSizes( vs... ) );
-    writesCore( vs... );
-}
-
-template<typename ...TS>
-void FlatBuffer::writesDirect( TS const& ...vs )
-{
-    writesCore( vs... );
-}
-
-
-
-HAS_FUNC( readBuffer_checker, readBuffer, bool ( T::* )( FlatBuffer& ) );
-template<typename T>
-typename std::enable_if<readBuffer_checker<T>::value, bool>::type readBuffer_switch( FlatBuffer& fb, T& v )
-{
-    return v.readBuffer( fb );
-};
-template<typename T>
-typename std::enable_if<!readBuffer_checker<T>::value, bool>::type readBuffer_switch( FlatBuffer& fb, T& v )
-{
-    assert( std::is_pod<T>::value );
-    auto siz = BufferUtils::getSize( v );
-    if( fb.offset() + siz > fb.size() ) return false;
-    BufferUtils::read( v, fb.data() + fb.offset() );
-    fb.offset() += siz;
-    return true;
-};
-template<typename T>
-bool FlatBuffer::read( T& v )
-{
-    return readBuffer_switch( *this, v );
-}
-
-
-template<typename T, int len>
-bool FlatBuffer::read( T( &a )[ len ] )
-{
-    if( std::is_pod<T>::value )
+    template<typename T>
+    void FlatBuffer::WritesCore( T const& v )
     {
-        int siz = len * ( int )sizeof( T );
-        if( _offset + siz > _dataLen ) return false;
-        memcpy( &a, _buf + _offset, siz );
-        _offset += siz;
+        WriteDirect( v );
+    }
+
+    template<typename T, typename ...TS>
+    void FlatBuffer::WritesCore( T const& v, TS const& ...vs )
+    {
+        WriteDirect( v );
+        WritesCore( vs... );
+    }
+
+    template<typename ...TS>
+    void FlatBuffer::Writes( TS const& ...vs )
+    {
+        Reserve( _dataLen + BufferUtils::GetSizes( vs... ) );
+        WritesCore( vs... );
+    }
+
+    template<typename ...TS>
+    void FlatBuffer::WritesDirect( TS const& ...vs )
+    {
+        WritesCore( vs... );
+    }
+
+
+
+    HAS_FUNC( ReadBuffer_checker, ReadBuffer, bool ( T::* )( FlatBuffer& ) );
+    template<typename T>
+    typename std::enable_if<ReadBuffer_checker<T>::value, bool>::type ReadBuffer_switch( FlatBuffer& fb, T& v )
+    {
+        return v.ReadBuffer( fb );
+    };
+    template<typename T>
+    typename std::enable_if<!ReadBuffer_checker<T>::value, bool>::type ReadBuffer_switch( FlatBuffer& fb, T& v )
+    {
+        assert( std::is_pod<T>::value );
+        auto siz = BufferUtils::GetSize( v );
+        if( fb.Offset() + siz > fb.Size() ) return false;
+        BufferUtils::Read( v, fb.Data() + fb.Offset() );
+        fb.Offset() += siz;
+        return true;
+    };
+    template<typename T>
+    bool FlatBuffer::Read( T& v )
+    {
+        return ReadBuffer_switch( *this, v );
+    }
+
+
+    template<typename T, int len>
+    bool FlatBuffer::Read( T( &a )[ len ] )
+    {
+        if( std::is_pod<T>::value )
+        {
+            int siz = len * ( int )sizeof( T );
+            if( _offset + siz > _dataLen ) return false;
+            memcpy( &a, _buf + _offset, siz );
+            _offset += siz;
+            return true;
+        }
+        for( int i = 0; i < len; ++i )
+        {
+            if( !ReadBuffer_switch( *this, a[ i ] ) ) return false;
+        }
         return true;
     }
-    for( int i = 0; i < len; ++i )
+
+
+
+    template<typename T>
+    bool FlatBuffer::ReadsCore( T& v )
     {
-        if( !readBuffer_switch( *this, a[ i ] ) ) return false;
+        return Read( v );
     }
-    return true;
+
+    template<typename T, typename ...TS>
+    bool FlatBuffer::ReadsCore( T& v, TS& ...vs )
+    {
+        if( !Read( v ) ) return false;
+        return ReadsCore( vs... );
+    }
+
+    template<typename ...TS>
+    bool FlatBuffer::Reads( TS& ...vs )
+    {
+        return ReadsCore( vs... );
+    }
+
+
+
+
+
+
+    template<typename T>
+    void FlatBuffer::ReadDirect( T& v )
+    {
+        assert( std::is_pod<T>::value );
+        BufferUtils::Read( v, _buf + _offset );
+        _offset += BufferUtils::GetSize( v );
+    }
+    template<typename T>
+    void FlatBuffer::ReadsDirectCore( T& v )
+    {
+        ReadDirect( v );
+    }
+
+    template<typename T, typename ...TS>
+    void FlatBuffer::ReadsDirectCore( T& v, TS& ...vs )
+    {
+        ReadDirect( v );
+        ReadsDirectCore( vs... );
+    }
+
+    template<typename ...TS>
+    void FlatBuffer::ReadsDirect( TS& ...vs )
+    {
+        ReadsDirectCore( vs... );
+    }
+
+
+
 }
-
-
-
-template<typename T>
-bool FlatBuffer::readsCore( T& v )
-{
-    return read( v );
-}
-
-template<typename T, typename ...TS>
-bool FlatBuffer::readsCore( T& v, TS& ...vs )
-{
-    if( !read( v ) ) return false;
-    return readsCore( vs... );
-}
-
-template<typename ...TS>
-bool FlatBuffer::reads( TS& ...vs )
-{
-    return readsCore( vs... );
-}
-
-
-
-
-
-
-template<typename T>
-void FlatBuffer::readDirect( T& v )
-{
-    assert( std::is_pod<T>::value );
-    BufferUtils::read( v, _buf + _offset );
-    _offset += BufferUtils::getSize( v );
-}
-template<typename T>
-void FlatBuffer::readsDirectCore( T& v )
-{
-    readDirect( v );
-}
-
-template<typename T, typename ...TS>
-void FlatBuffer::readsDirectCore( T& v, TS& ...vs )
-{
-    readDirect( v );
-    readsDirectCore( vs... );
-}
-
-template<typename ...TS>
-void FlatBuffer::readsDirect( TS& ...vs )
-{
-    readsDirectCore( vs... );
-}
-
-
-
-
 
 
 #endif

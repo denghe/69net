@@ -81,7 +81,7 @@
     for( auto node : G::scene->childs )
     {
 #else
-    for( auto i = 0; i < G::scene->childs.size(); ++i )
+    for( auto i = 0; i < G::scene->childs.Size(); ++i )
     {
         auto node = G::scene->childs[ i ];
 #endif

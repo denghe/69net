@@ -4,7 +4,6 @@
     <ClInclude Include="All.h" />
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="Utils.h" />
-    <ClInclude Include="String.h" />
     <ClInclude Include="String.hpp" />
     <ClInclude Include="List.h" />
     <ClInclude Include="List.hpp" />
@@ -35,6 +34,7 @@
     <ClInclude Include="Links.h" />
     <ClInclude Include="Links.hpp" />
     <ClInclude Include="Cor.h" />
+    <ClInclude Include="String_.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />

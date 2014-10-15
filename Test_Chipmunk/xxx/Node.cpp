@@ -64,9 +64,9 @@ namespace xxx
         assert( !_child->parent && _child != this );
         _child->Retain();
         _child->parent = this;
-        _child->idx = childs.size();
+        _child->idx = childs.Size();
 
-        if( !childs.size() )            // 第 1 个被加进集合的
+        if( !childs.Size() )            // 第 1 个被加进集合的
         {
             first = last = _child;
             _child->prev = _child->next = nullptr;
@@ -79,7 +79,7 @@ namespace xxx
             last = _child;
         }
 
-        childs.push( _child );
+        childs.Push( _child );
     }
 
     void Node::Remove( Node* _child )
@@ -88,7 +88,7 @@ namespace xxx
         if( first == last )
         {
             first = last = nullptr;
-            childs.erase( 0 );
+            childs.Erase( 0 );
         }
         else
         {
@@ -108,8 +108,8 @@ namespace xxx
                 _child->next->prev = _child->prev;
             }
 
-            childs.top()->idx = _child->idx;    // 修正索引
-            childs.eraseFast( _child->idx );    // 将最后个元素移到当前要 erase 的位置, --size
+            childs.Top()->idx = _child->idx;    // 修正索引
+            childs.EraseFast( _child->idx );    // 将最后个元素移到当前要 erase 的位置, --size
         }
 
         _child->parent = nullptr;
@@ -125,7 +125,7 @@ namespace xxx
 
     void Node::Clear()
     {
-        for( int i = childs.size() - 1; i >=0; --i )
+        for( int i = childs.Size() - 1; i >=0; --i )
         {
             Remove( childs[ i ] );
         }

@@ -1,5 +1,12 @@
-template<typename T>
-void SharedMemory::setPrefixName( T&& s )
+namespace xxx
 {
-    _prefixName = std::forward<T>( s );
+
+
+    template<typename T>
+    void SharedMemory::SetPrefixName( T&& s )
+    {
+        _prefixName = std::forward<T>( s );
+    }
+
+
 }

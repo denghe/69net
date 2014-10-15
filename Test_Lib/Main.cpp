@@ -1,5 +1,7 @@
 #include "Lib/All.h"
 using namespace std;
+using namespace xxx;
+
 
 struct Bar : public CorBase<Bar>
 {

@@ -1,5 +1,5 @@
 #include "Lib/All.h"
-
+using namespace xxx;
 int main()
 {
     // 每 0.2 秒输出一次总 counter 及 每秒 count
@@ -21,17 +21,17 @@ int main()
 
 
     int bufLen = 1024 * 500;
-    SharedMemory::setPrefixName( "69" );
-    auto& smb = *(SMBuffer*)SharedMemory::create( 123, bufLen );
-    smb.init( bufLen );
+    SharedMemory::SetPrefixName( "69" );
+    auto& smb = *(SMBuffer*)SharedMemory::Create( 123, bufLen );
+    smb.Init( bufLen );
 
     int64 counter = 0;
     while( true )
     {
-        if( smb.space() )
+        if( smb.Space() )
         {
             ++counter;
-            smb.write( (char*)&counter, sizeof( counter ) );
+            smb.Write( (char*)&counter, sizeof( counter ) );
             cout( counter );
         }
         else std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );

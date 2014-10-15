@@ -23,50 +23,56 @@ using std::chrono::milliseconds;
 using std::chrono::microseconds;
 using std::chrono::nanoseconds;
 
-class Stopwatch
+namespace xxx
 {
-public:
-    Stopwatch() : _begin( high_resolution_clock::now() ) {}
-    void reset() { _begin = high_resolution_clock::now(); }
 
-    //ƒ¨»œ ‰≥ˆ∫¡√Î
-    inline int64_t elapsedMillseconds() const
+    class Stopwatch
     {
-        return duration_cast<milliseconds>( high_resolution_clock::now() - _begin ).count();
-    }
+    public:
+        Stopwatch()
+            : beginTime( high_resolution_clock::now() )
+        {
+        }
 
-    //Œ¢√Î
-    inline int64_t elapsedMicroseconds() const
-    {
-        return duration_cast<microseconds>( high_resolution_clock::now() - _begin ).count();
-    }
+        inline void reset()
+        {
+            beginTime = high_resolution_clock::now();
+        }
 
-    //ƒ…√Î
-    inline int64_t elapsedNanoseconds() const
-    {
-        return duration_cast<nanoseconds>( high_resolution_clock::now() - _begin ).count();
-    }
+        inline int64_t ElapsedMillseconds() const
+        {
+            return duration_cast<milliseconds>( high_resolution_clock::now() - beginTime ).count();
+        }
 
-    //√Î
-    inline int64_t elapsedSeconds() const
-    {
-        return duration_cast<seconds>( high_resolution_clock::now() - _begin ).count();
-    }
+        inline int64_t ElapsedMicroseconds() const
+        {
+            return duration_cast<microseconds>( high_resolution_clock::now() - beginTime ).count();
+        }
 
-    //∑÷
-    inline int64_t elapsedMinutes() const
-    {
-        return duration_cast<minutes>( high_resolution_clock::now() - _begin ).count();
-    }
+        inline int64_t ElapsedNanoseconds() const
+        {
+            return duration_cast<nanoseconds>( high_resolution_clock::now() - beginTime ).count();
+        }
 
-    // ±
-    inline int64_t elapsedHours() const
-    {
-        return duration_cast<hours>( high_resolution_clock::now() - _begin ).count();
-    }
+        inline int64_t ElapsedSeconds() const
+        {
+            return duration_cast<seconds>( high_resolution_clock::now() - beginTime ).count();
+        }
 
-private:
-    time_point<high_resolution_clock> _begin;
-};
+        inline int64_t ElapsedMinutes() const
+        {
+            return duration_cast<minutes>( high_resolution_clock::now() - beginTime ).count();
+        }
+
+        inline int64_t ElapsedHours() const
+        {
+            return duration_cast<hours>( high_resolution_clock::now() - beginTime ).count();
+        }
+
+    private:
+        time_point<high_resolution_clock> beginTime;
+    };
+
+}
 
 #endif

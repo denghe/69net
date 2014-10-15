@@ -25,16 +25,16 @@ namespace xxx
 
     void Ref::AutoRelease()
     {
-        autoReleasePool.push( this );
+        autoReleasePool.Push( this );
     }
 
     void Ref::ReleasePool()
     {
-        for( int i = 0; i < autoReleasePool.size(); ++i )
+        for( int i = 0; i < autoReleasePool.Size(); ++i )
         {
             autoReleasePool[ i ]->Release();
         }
-        autoReleasePool.clear();
+        autoReleasePool.Clear();
     }
 
     List<Ref*> Ref::autoReleasePool;

@@ -118,32 +118,32 @@ void Monster4::Destroy()
     cditem->Destroy();
     cditem = nullptr;
 
-    objs.top()->idx = idx;
-    objs.eraseFast( idx );
-    objPool.push( this );
+    objs.Top()->idx = idx;
+    objs.EraseFast( idx );
+    objPool.Push( this );
 }
 
 Monster4* Monster4::Create( Node* _nodeContainer, CdGrid* _cditemContainer, Point const& _pos )
 {
     Monster4* rtv;
-    if( objPool.size() )
+    if( objPool.Size() )
     {
-        rtv = objPool.top_pop();
+        rtv = objPool.TopPop();
     }
     else rtv = new Monster4();
     rtv->Init( _nodeContainer, _cditemContainer, _pos );
-    rtv->idx = objs.size();
-    objs.push( rtv );
+    rtv->idx = objs.Size();
+    objs.Push( rtv );
     return rtv;
 }
 
 void Monster4::FreeObjs()
 {
-    for( int i = objs.size() - 1; i >= 0; --i )
+    for( int i = objs.Size() - 1; i >= 0; --i )
     {
         delete objs[ i ];
     }
-    for( int i = objPool.size() - 1; i >= 0; --i )
+    for( int i = objPool.Size() - 1; i >= 0; --i )
     {
         delete objPool[ i ];
     }
@@ -193,7 +193,7 @@ void Game4::Loaded()
 
 void Game4::Update()
 {
-    input.touchEvents.clear();
+    input.touchEvents.Clear();
     if( input.touching )
     {
         // ²úÉú¹Ö
@@ -204,7 +204,7 @@ void Game4::Update()
     }
 
     // ¹ÖÒÆ¶¯
-    for( int i = Monster4::objs.size() - 1; i >= 0; --i )
+    for( int i = Monster4::objs.Size() - 1; i >= 0; --i )
     {
         auto& o = Monster4::objs[ i ];
         if( !o->Update() )
@@ -218,7 +218,7 @@ void Game4::Update()
     if( ++counter >= 60 )
     {
         counter = 0;
-        Cout( "total monsters:", Monster4::objs.size() );
+        Cout( "total monsters:", Monster4::objs.Size() );
     }
 }
 

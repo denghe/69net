@@ -185,20 +185,20 @@ template<typename CT>                                                           
 class CN                                                                            \
 {                                                                                   \
     template<typename T, FT> struct FuncMatcher;                                    \
-    template<typename T> static char hasFunc( FuncMatcher<T, &T::FN>* );            \
-    template<typename T> static int hasFunc( ... );                                 \
+    template<typename T> static char HasFunc( FuncMatcher<T, &T::FN>* );            \
+    template<typename T> static int HasFunc( ... );                                 \
 public:                                                                             \
-    static const bool value = sizeof( hasFunc<CT>( nullptr ) ) == sizeof(char);     \
+    static const bool value = sizeof( HasFunc<CT>( nullptr ) ) == sizeof(char);     \
 }
 
 
 #define PACKET_CLASS_HEADER_POD( TN )       \
 public:                                     \
-static ushort getTypeID();                  \
-void writeBuffer( FlatBuffer& fb ) const;   \
-bool readBuffer( FlatBuffer& fb );          \
-int getWriteBufferSize() const;             \
-void writeBufferDirect( FlatBuffer& fb ) const;
+static ushort GetTypeID();                  \
+void WriteBuffer( FlatBuffer& fb ) const;   \
+bool ReadBuffer( FlatBuffer& fb );          \
+int GetWriteBufferSize() const;             \
+void WriteBufferDirect( FlatBuffer& fb ) const;
 
 
 #define PACKET_CLASS_HEADER( TN )           \
@@ -244,7 +244,7 @@ TN& operator=( TN&& other );
 #include <deque>
 #include <queue>
 #include <map>
-#include <set>
+#include <Set>
 #include <stack>
 #include <unordered_set>
 #include <unordered_map>
@@ -257,7 +257,7 @@ TN& operator=( TN&& other );
 
 #include <type_traits>
 #include <array>
-#include <thread>
+#include <thRead>
 #include <condition_variable>
 #include <mutex>
 #include <atomic>
@@ -301,7 +301,7 @@ inline void* aligned_alloc( size_t alignment, size_t size )
 }
 inline void aligned_free( void* p )
 {
-    free( static_cast<void**>( p )[ -1 ] );
+    Free( static_cast<void**>( p )[ -1 ] );
 }
 #endif
 

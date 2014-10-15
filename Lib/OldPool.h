@@ -1,34 +1,41 @@
 #ifndef _OLDPOOL_H__
 #define _OLDPOOL_H__
 
-class OldPool : Memmoveable
+namespace xxx
 {
-public:
-    OldPool();     // need init
-    void init( int itemBufLen, int pageBufLen = 4096, int capacity = 128, bool attachThis = false );
-    OldPool( int itemBufLen, int pageBufLen = 4096, int capacity = 128, bool attachThis = false );
-    ~OldPool();
-    OldPool( OldPool&& other );
-    OldPool& operator=( OldPool&& other );
-    OldPool( OldPool const& other ) = delete;
-    OldPool& operator=( OldPool const& other ) = delete;
-    void* alloc();
-    void free( void* p );
-    void clear();
-    void compress();    // free all no use page & item
-    void reserve();     // new 1 page
-    void reserve( int capacity );
-    int size() const;
-    int pageCount() const;
-    int pageBufLen() const;
-    int itemBufLen() const;
-    bool attachThis() const;
-private:
-    List<void*> _items;
-    List<void*> _pages;
-    int _itemBufLen;
-    int _pageBufLen;
-    bool _attachThis;
-};
+
+
+    class OldPool : Memmoveable
+    {
+    public:
+        OldPool();     // need Init
+        void Init( int ItemBufLen, int pageBufLen = 4096, int capacity = 128, bool AttachThis = false );
+        OldPool( int ItemBufLen, int pageBufLen = 4096, int capacity = 128, bool AttachThis = false );
+        ~OldPool();
+        OldPool( OldPool&& other );
+        OldPool& operator=( OldPool&& other );
+        OldPool( OldPool const& other ) = delete;
+        OldPool& operator=( OldPool const& other ) = delete;
+        void* Alloc();
+        void Free( void* p );
+        void Clear();
+        void Compress();    // free all no use page & item
+        void Reserve();     // new 1 page
+        void Reserve( int capacity );
+        int Size() const;
+        int pageCount() const;
+        int pageBufLen() const;
+        int ItemBufLen() const;
+        bool AttachThis() const;
+    private:
+        List<void*> _items;
+        List<void*> _pages;
+        int _itemBufLen;
+        int _pageBufLen;
+        bool _attachThis;
+    };
+
+
+}
 
 #endif

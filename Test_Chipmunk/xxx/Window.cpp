@@ -75,7 +75,7 @@ namespace xxx
         {
             UpdateCapture( hWnd, wParam );
             auto e = getTouchEvent( TouchEventType::Down, LOWORD( lParam ), HIWORD( lParam ) );
-            G::input->touchEvents.push( e );
+            G::input->touchEvents.Push( e );
             G::input->touching = true;
             G::input->touchPos = { e.x, e.y };
         }
@@ -84,7 +84,7 @@ namespace xxx
         {
             if( !G::input->touching ) break;
             auto e = getTouchEvent( TouchEventType::Move, LOWORD( lParam ), HIWORD( lParam ) );
-            G::input->touchEvents.push( e );
+            G::input->touchEvents.Push( e );
             G::input->touchPos = { e.x, e.y };
         }
             break;
@@ -92,7 +92,7 @@ namespace xxx
         {
             UpdateCapture( hWnd, wParam );
             auto e = getTouchEvent( TouchEventType::Up, LOWORD( lParam ), HIWORD( lParam ) );
-            G::input->touchEvents.push( e );
+            G::input->touchEvents.Push( e );
             G::input->touching = false;
             G::input->touchPos = { e.x, e.y };
         }

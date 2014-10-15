@@ -1,57 +1,62 @@
 #include "All.h"
 
-namespace BufferUtils
+namespace xxx
 {
 
-    void dumpCore( String & s, char const * buf, int len )
+    namespace BufferUtils
     {
-        for( int i = 0; i < len; ++i )
-        {
-            uint8 c = buf[ i ];
-            if( c < 32 || c > 126 ) s.append( '.' );
-            else s.append( (char)c );
-        }
-    }
 
-    void dump( String & s, char const * buf, int len )
-    {
-        if( len == 0 ) return;
-        s.append( "\n--------  0  1  2  3 | 4  5  6  7 | 8  9  A  B | C  D  E  F" );
-        int i = 0;
-        for( ; i < len; ++i )
+        void DumpCore( String & s, char const * buf, int len )
         {
-            if( ( i % 16 ) == 0 )
+            for( int i = 0; i < len; ++i )
             {
-                if( i )
-                {           // output ascii to the end of the line
-                    s.append( "  " );
-                    dumpCore( s, buf + i - 16, 16 );
-                }
-                s.append( '\n' );
-                s.appendHex( i );
-                s.append( "  " );
+                uint8 c = buf[ i ];
+                if( c < 32 || c > 126 ) s.Append( '.' );
+                else s.Append( (char)c );
             }
-            else if( i && ( i % 4 == 0 ) )
-            {
-                s.append( "  " );
-            }
-            else s.append( ' ' );
-            s.appendHex( (uint8)buf[ i ] );
         }
-        int left = i % 16;
-        if( left )
+
+        void Dump( String & s, char const * buf, int len )
         {
-            len = len + 16 - left;
+            if( len == 0 ) return;
+            s.Append( "\n--------  0  1  2  3 | 4  5  6  7 | 8  9  A  B | C  D  E  F" );
+            int i = 0;
             for( ; i < len; ++i )
             {
-                if( i && ( i % 4 == 0 ) )
-                    s.append( "  " );
-                else s.append( ' ' );
-                s.append( "  " );
+                if( ( i % 16 ) == 0 )
+                {
+                    if( i )
+                    {           // output ascii to the end of the line
+                        s.Append( "  " );
+                        DumpCore( s, buf + i - 16, 16 );
+                    }
+                    s.Append( '\n' );
+                    s.AppendHex( i );
+                    s.Append( "  " );
+                }
+                else if( i && ( i % 4 == 0 ) )
+                {
+                    s.Append( "  " );
+                }
+                else s.Append( ' ' );
+                s.AppendHex( (uint8)buf[ i ] );
             }
-            s.append( "  " );
-            dumpCore( s, buf + i - 16, left );
+            int left = i % 16;
+            if( left )
+            {
+                len = len + 16 - left;
+                for( ; i < len; ++i )
+                {
+                    if( i && ( i % 4 == 0 ) )
+                        s.Append( "  " );
+                    else s.Append( ' ' );
+                    s.Append( "  " );
+                }
+                s.Append( "  " );
+                DumpCore( s, buf + i - 16, left );
+            }
         }
+
     }
 
 }

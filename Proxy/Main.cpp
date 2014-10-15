@@ -1,5 +1,5 @@
 #include "Lib/All.h"
-
+using namespace xxx;
 int main()
 {
     // wait sm keeper( Agent project ) create sm
@@ -19,15 +19,15 @@ int main()
     };
 
     int bufLen = 1024 * 500;
-    SharedMemory::setPrefixName( "69" );
-    auto& smb = *(SMBuffer*)SharedMemory::get( 123, bufLen );
+    SharedMemory::SetPrefixName( "69" );
+    auto& smb = *(SMBuffer*)SharedMemory::Get( 123, bufLen );
 
     int64 counter;
     while( true )
     {
-        if( smb.size() >= sizeof( counter ) )
+        if( smb.Size() >= sizeof( counter ) )
         {
-            smb.read( (char*)&counter, sizeof( counter ) );
+            smb.Read( (char*)&counter, sizeof( counter ) );
             cout( counter );
         }
         else std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );

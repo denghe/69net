@@ -51,7 +51,7 @@ void Game3::Loaded()
 
 void Game3::Update()
 {
-    input.touchEvents.clear();
+    input.touchEvents.Clear();
     if( input.touching )
     {
         // 跟鼠标移
@@ -82,7 +82,7 @@ void Game3::Update()
     }
 
     // 怪前进
-    for( int i = Monster::objs.size() - 1; i >= 0; --i )
+    for( int i = Monster::objs.Size() - 1; i >= 0; --i )
     {
         auto& o = Monster::objs[ i ];
         if( !o->Update() )
@@ -92,7 +92,7 @@ void Game3::Update()
     }
 
     // 子弹前进
-    for( int i = Bullet::objs.size() - 1; i >= 0; --i )
+    for( int i = Bullet::objs.Size() - 1; i >= 0; --i )
     {
         auto& o = Bullet::objs[ i ];
         if( !o->Update() )
@@ -106,7 +106,7 @@ void Game3::Update()
     if( ++counter >= 60 )
     {
         counter = 0;
-        Cout( "total bullets:", Bullet::objs.size(), "\ntotal monsters:", Monster::objs.size() );
+        Cout( "total bullets:", Bullet::objs.Size(), "\ntotal monsters:", Monster::objs.Size() );
     }
 }
 
