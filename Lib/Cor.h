@@ -39,7 +39,7 @@ struct CorManager
 
     int aiid = 0;
     template<typename T, typename ...PTS>
-    T* CreateItem( PTS ...parms )
+    T* CreateItem( PTS ..._parms )
     {
         static_assert( std::is_base_of<T, T>::value, "T must be inherit from FooBase*" );
         T* rtv;
@@ -54,7 +54,7 @@ struct CorManager
             rtv->manager = this;
         }
         rtv->id = ++aiid;
-        rtv->Init( std::forward<PTS>( parms )... );
+        rtv->Init( std::forward<PTS>( _parms )... );
         rtv->idx = items.size();
         rtv->ln = 0;
         rtv->sleeps = 0;
@@ -62,22 +62,22 @@ struct CorManager
         return rtv;
     }
 
-    void DestroyItem( T* foo )
+    void DestroyItem( T* _o )
     {
-        items.top()->idx = foo->idx;
-        items.eraseFast( foo->idx );
-        foo->Destroy();
-        foo->id = 0;
-        pool[ foo->GetTypeId() ].push( foo );
+        items.top()->idx = _o->idx;
+        items.eraseFast( _o->idx );
+        _o->Destroy();
+        _o->id = 0;
+        pool[ _o->GetTypeId() ].push( _o );
     }
 
-    bool Process( int ticks = 0 )
+    bool Process( int _ticks = 0 )
     {
         if( !items.size() ) return false;
         for( int i = items.size() - 1; i >= 0; --i )
         {
-            auto& foo = items[ i ];
-            if( !foo->Process( ticks ) ) DestroyItem( foo );
+            auto& o = items[ i ];
+            if( !o->Process( _ticks ) ) DestroyItem( o );
         }
         return true;
     }
