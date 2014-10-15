@@ -315,7 +315,7 @@ inline void aligned_free( void* p )
 #include "List.h"
 #include "Pool.h"
 #include "OldPool.h"
-#include "String.h"
+#include "String_.h"
 #include "Dict.h"
 #include "Hash.h"
 #include "Links.h"

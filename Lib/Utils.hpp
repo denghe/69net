@@ -26,14 +26,7 @@ namespace Utils
             uint* p = (uint*)&in;
             return (int)( p[ 0 ] + p[ 1 ] );
         }
-#if __IA
         return getHash_CS( (byte const*)&in, sizeof( T ) );
-#else
-        if( in.size() >= 4 && ( (size_t)in.c_str() % sizeof( size_t ) == 0 ) )
-            return getHash_CS( (byte const*)&in, sizeof( T ) );
-        else
-            return getHash_Lua( (byte const*)&in, sizeof( T ) );
-#endif
     };
 
 
