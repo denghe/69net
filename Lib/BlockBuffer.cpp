@@ -3,15 +3,15 @@
 namespace xxx
 {
 
-    BlockBuffer::BlockBuffer( Pool& p )
-        : _wp( nullptr )
-        , _rp( nullptr )
-        , _wpLen( 0 )
-        , _rpLen( 0 )
-        , _size( 0 )
-        , _pool( &p )
+    BlockBuffer::BlockBuffer( Pool& _p )
+        : wp( nullptr )
+        , rp( nullptr )
+        , wpLen( 0 )
+        , rpLen( 0 )
+        , size( 0 )
+        , pool( &_p )
     {
-        assert( p.ItemBufLen() - sizeof( Page* ) > 0 );
+        assert( _p.ItemBufLen() - sizeof( Page* ) > 0 );
     }
 
     BlockBuffer::~BlockBuffer()
@@ -21,96 +21,96 @@ namespace xxx
 
     void BlockBuffer::Clear()
     {
-        Page* p = _rp;
-        _wp->next = nullptr;
-        while( p )
+        Page* _p = rp;
+        wp->next = nullptr;
+        while( _p )
         {
-            _pool->Free( p );
-            p = p->next;
+            pool->Free( _p );
+            _p = _p->next;
         }
-        _wp = _rp = nullptr;
-        _wpLen = _rpLen = _size = 0;
+        wp = rp = nullptr;
+        wpLen = rpLen = size = 0;
     }
 
     bool BlockBuffer::Empty() const
     {
-        return _size == 0;
+        return size == 0;
     }
 
     int BlockBuffer::Size() const
     {
-        return _size;
+        return size;
     }
 
-    void BlockBuffer::Write( char const* buf, int len )
+    void BlockBuffer::Write( char const* _buf, int _len )
     {
-        assert( buf );
-        if( !len ) return;
-        auto bak = len;
+        assert( _buf );
+        if( !_len ) return;
+        auto _bak = _len;
 
-        int ps = _pool->ItemBufLen() - sizeof( Page* );
-        if( !_wp ) _rp = _wp = (Page*)_pool->Alloc();
+        int _ps = pool->ItemBufLen() - sizeof( Page* );
+        if( !wp ) rp = wp = (Page*)pool->Alloc();
 Begin:
-        auto space = ps - _wpLen;
-        if( len <= space )
+        auto _space = _ps - wpLen;
+        if( _len <= _space )
         {
-            memcpy( _wp->data + _wpLen, buf, len );
-            _wpLen += len;
-            _size += bak;
+            memcpy( wp->data + wpLen, _buf, _len );
+            wpLen += _len;
+            size += _bak;
             return;
         }
-        memcpy( _wp->data + _wpLen, buf, space );
-        buf += space;
-        len -= space;
-        _wp->next = (Page*)_pool->Alloc();
-        _wp = _wp->next;
-        _wpLen = 0;
+        memcpy( wp->data + wpLen, _buf, _space );
+        _buf += _space;
+        _len -= _space;
+        wp->next = (Page*)pool->Alloc();
+        wp = wp->next;
+        wpLen = 0;
         goto Begin;
     }
 
-    void BlockBuffer::Copy( char* buf, int len )
+    void BlockBuffer::Copy( char* _buf, int _len )
     {
-        assert( len <= _size );
-        int ps = _pool->ItemBufLen() - sizeof( Page* );
-        auto rp = _rp;
-        int rpLen = _rpLen;
+        assert( _len <= size );
+        int _ps = pool->ItemBufLen() - sizeof( Page* );
+        auto _rp = rp;
+        int _rpLen = rpLen;
 Begin:
-        auto space = ps - _rpLen;
-        if( len <= space )
+        auto _space = _ps - rpLen;
+        if( _len <= _space )
         {
-            memcpy( buf, rp->data + rpLen, len );
+            memcpy( _buf, _rp->data + _rpLen, _len );
             return;
         }
-        memcpy( buf, rp->data + rpLen, space );
-        buf += space;
-        len -= space;
-        rp = rp->next;
-        rpLen = 0;
-        goto Begin;
-    }
-
-    int BlockBuffer::Read( char* buf, int len )
-    {
-        if( !_size ) return 0;
-        int ps = _pool->ItemBufLen() - sizeof( Page* );
-        if( len > _size ) len = _size;
-        _size -= len;
-        int bak = len;
-Begin:
-        auto space = ps - _rpLen;
-        if( len <= space )
-        {
-            memcpy( buf, _rp->data + _rpLen, len );
-            _rpLen += len;
-            return bak;
-        }
-        memcpy( buf, _rp->data + _rpLen, space );
-        buf += space;
-        len -= space;
-        auto next = _rp->next;
-        _pool->Free( _rp );
-        _rp = next;
+        memcpy( _buf, _rp->data + _rpLen, _space );
+        _buf += _space;
+        _len -= _space;
+        _rp = _rp->next;
         _rpLen = 0;
+        goto Begin;
+    }
+
+    int BlockBuffer::Read( char* _buf, int _len )
+    {
+        if( !size ) return 0;
+        int _ps = pool->ItemBufLen() - sizeof( Page* );
+        if( _len > size ) _len = size;
+        size -= _len;
+        int _bak = _len;
+Begin:
+        auto _space = _ps - rpLen;
+        if( _len <= _space )
+        {
+            memcpy( _buf, rp->data + rpLen, _len );
+            rpLen += _len;
+            return _bak;
+        }
+        memcpy( _buf, rp->data + rpLen, _space );
+        _buf += _space;
+        _len -= _space;
+        auto _next = rp->next;
+        pool->Free( rp );
+        rp = _next;
+        rpLen = 0;
         goto Begin;
     }
 
