@@ -20,24 +20,24 @@ namespace xxx
     template<typename T>
     struct SharedType
     {
-        //typename std::aligned_storage<sizeof( T ), std::alignment_of<T>::value>::type _data;
-        char _data[ sizeof( T ) ];
-        int _copys;
-        int _weaks;
+        //typename std::aligned_storage<sizeof( T ), std::alignment_of<T>::value>::type data;
+        char data[ sizeof( T ) ];
+        int copys;
+        int weaks;
         typedef std::function<void()> DT;
-        DT _deleter;
+        DT deleter;
 
         template<typename... PTS>
         SharedType( PTS&&... ps )
-            : _copys( 1 )
-            , _weaks( 0 )
+            : copys( 1 )
+            , weaks( 0 )
         {
-            auto p = new ( (void *)&_data ) T( std::forward<PTS>( ps )... );
+            auto p = new ( (void *)&data ) T( std::forward<PTS>( ps )... );
             SaveWeak( p );
         }
         T* Ptr()
         {
-            return (T*)&_data;
+            return (T*)&data;
         }
 
         template<typename OT>
@@ -45,7 +45,7 @@ namespace xxx
         template<typename OT>
         typename std::enable_if<std::is_base_of<EnableSharedFromThis<OT>, OT>::value, void>::type SaveWeak( OT* o )
         {
-            o->_weak = this;
+            o->weak = this;
         }
     };
 
@@ -54,83 +54,83 @@ namespace xxx
     {
         typedef Shared<T> MT;
         typedef typename SharedType<T>::DT DT;
-        SharedType<T>* _st;
+        SharedType<T>* st;
         Shared()
-            :_st( nullptr )
+            :st( nullptr )
         {
         }
         void Clear()
         {
-            if( !_st ) return;
-            if( _st->_copys > 1 )
+            if( !st ) return;
+            if( st->copys > 1 )
             {
-                --_st->_copys;
+                --st->copys;
             }
-            else // _copys <= 1
+            else // copys <= 1
             {
-                _st->Ptr()->~T();
-                _st->_copys = 0;
-                if( !_st->_weaks )
+                st->Ptr()->~T();
+                st->copys = 0;
+                if( !st->weaks )
                 {
-                    _st->_deleter();
+                    st->deleter();
                 }
             }
-            _st = nullptr;
+            st = nullptr;
         }
-        void Assign( SharedType<T>* st, DT deleter = nullptr )
+        void Assign( SharedType<T>* _st, DT _deleter = nullptr )
         {
-            assert( st && st->_copys );
+            assert( _st && _st->copys );
             Clear();
-            ++st->_copys;
-            _st = st;
-            if( deleter ) _st->_deleter = deleter;
-            else _st->_deleter = [ st ] { delete st; };
+            ++_st->copys;
+            st = _st;
+            if( _deleter ) st->deleter = _deleter;
+            else st->deleter = [ _st ] { delete _st; };
         }
-        Shared( SharedType<T>* st, DT deleter = nullptr )
+        Shared( SharedType<T>* _st, DT _deleter = nullptr )
         {
-            _st = st;
-            if( deleter ) _st->_deleter = deleter;
-            else _st->_deleter = [ st ] { delete st; };
+            st = _st;
+            if( _deleter ) st->deleter = _deleter;
+            else st->deleter = [ _st ] { delete _st; };
         }
-        Shared( MT const& other )
+        Shared( MT const& o )
         {
-            if( !other._st || !other._st->_copys )
+            if( !o.st || !o.st->copys )
             {
-                _st = nullptr;
+                st = nullptr;
             }
             else
             {
-                _st = other._st;
-                ++other._st->_copys;
+                st = o.st;
+                ++o.st->copys;
             }
         }
-        Shared( MT&& other )
+        Shared( MT&& o )
         {
-            _st = other._st;
-            other._st = nullptr;
+            st = o.st;
+            o.st = nullptr;
         }
-        Shared& operator=( SharedType<T>* st )
+        Shared& operator=( SharedType<T>* _st )
         {
             Clear();
-            if( !st || !st->_copys )
+            if( !_st || !_st->copys )
             {
-                _st = nullptr;
+                st = nullptr;
             }
             else
             {
-                _st = st;
-                ++st->_copys;
+                st = _st;
+                ++_st->copys;
             }
         }
-        Shared& operator=( MT const& other )
+        Shared& operator=( MT const& o )
         {
-            return operator=( other._st );
+            return operator=( o.st );
         }
-        Shared& operator=( MT&& other )
+        Shared& operator=( MT&& o )
         {
             Clear();
-            _st = other._st;
-            other._st = nullptr;
+            st = o.st;
+            o.st = nullptr;
         }
 
         ~Shared()
@@ -139,8 +139,8 @@ namespace xxx
         }
         T* Ptr()
         {
-            if( _st == nullptr || !_st->_copys ) return nullptr;
-            return _st->Ptr();
+            if( st == nullptr || !st->copys ) return nullptr;
+            return st->Ptr();
         }
         T* operator->( )
         {
@@ -152,88 +152,88 @@ namespace xxx
     struct Weak
     {
         typedef Weak<T> MT;
-        SharedType<T>* _st;
+        SharedType<T>* st;
         void Clear()
         {
-            if( !_st ) return;
-            --_st->_weaks;
-            if( !_st->_copys && !_st->_weaks )
+            if( !st ) return;
+            --st->weaks;
+            if( !st->copys && !st->weaks )
             {
-                _st->_deleter();
+                st->deleter();
             }
-            _st = nullptr;
+            st = nullptr;
         }
-        Weak& operator=( SharedType<T>* st )
+        Weak& operator=( SharedType<T>* _st )
         {
             Clear();
-            if( st && st->_copys )
+            if( _st && _st->copys )
             {
-                _st = st;
-                ++st->_weaks;
+                st = _st;
+                ++_st->weaks;
             }
             else
             {
-                _st = nullptr;
+                st = nullptr;
             }
             return *this;
         }
-        Weak& operator=( Shared<T> const& other )
+        Weak& operator=( Shared<T> const& o )
         {
-            return operator=( other._st );
+            return operator=( o.st );
         }
-        Weak& operator=( MT const& other )
+        Weak& operator=( MT const& o )
         {
-            return operator=( other._st );
+            return operator=( o.st );
         }
-        Weak& operator=( MT&& other )
+        Weak& operator=( MT&& o )
         {
             Clear();
-            _st = other._st;
-            other._st = nullptr;
+            st = o.st;
+            o.st = nullptr;
         }
         Weak()
-            : _st( nullptr )
+            : st( nullptr )
         {
         }
-        Weak( Shared<T> const& other )
+        Weak( Shared<T> const& o )
         {
-            if( other._st && other._st->_copys )
+            if( o.st && o.st->copys )
             {
-                _st = other._st;
-                ++other._st->_weaks;
+                st = o.st;
+                ++o.st->weaks;
             }
             else
             {
-                _st = nullptr;
+                st = nullptr;
             }
         }
-        Weak( MT const& other )
+        Weak( MT const& o )
         {
-            if( other._st && other._st->_copys )
+            if( o.st && o.st->copys )
             {
-                _st = other._st;
-                ++other._st->_weaks;
+                st = o.st;
+                ++o.st->weaks;
             }
             else
             {
-                _st = nullptr;
+                st = nullptr;
             }
         }
-        Weak( MT&& other )
+        Weak( MT&& o )
         {
-            _st = other._st;
-            other._st = nullptr;
+            st = o.st;
+            o.st = nullptr;
         }
-        Weak( SharedType<T>* st )
+        Weak( SharedType<T>* _st )
         {
-            if( st && st->_copys )
+            if( _st && _st->copys )
             {
-                _st = st;
-                ++st->_weaks;
+                st = _st;
+                ++_st->weaks;
             }
             else
             {
-                _st = nullptr;
+                st = nullptr;
             }
         }
         ~Weak()
@@ -242,15 +242,15 @@ namespace xxx
         }
         T* Ptr()
         {
-            if( _st == nullptr || !_st->_copys ) return nullptr;
-            return _st->Ptr();
+            if( st == nullptr || !st->copys ) return nullptr;
+            return st->Ptr();
         }
         Shared<T> Share()
         {
             Shared<T> rtv;
-            if( !_st ) return rtv;
-            rtv._st = _st;
-            ++_st->_copys;
+            if( !st ) return rtv;
+            rtv.st = st;
+            ++st->copys;
             return rtv;
         }
     };
@@ -259,10 +259,10 @@ namespace xxx
     template<typename T>
     struct EnableSharedFromThis
     {
-        Weak<T> _weak;
+        Weak<T> weak;
         Shared<T> sharedFromThis()
         {
-            return _weak.Share();
+            return weak.Share();
         }
         friend SharedType < T > ;
     };
@@ -274,10 +274,10 @@ namespace xxx
     }
 
     template<typename T, typename... PTS>
-    Shared<T> MakeSharedEx( void* addr, typename SharedType<T>::DT deleter, PTS&&... ps )
+    Shared<T> MakeSharedEx( void* addr, typename SharedType<T>::DT _deleter, PTS&&... ps )
     {
-        auto st = new (addr)SharedType<T>( std::forward<PTS>( ps )... );
-        return Shared<T>( st, deleter );
+        auto _st = new (addr)SharedType<T>( std::forward<PTS>( ps )... );
+        return Shared<T>( _st, _deleter );
     }
 
     template<typename T, typename... PTS>
@@ -285,8 +285,8 @@ namespace xxx
     {
         assert( pool->ItemBufLen() >= sizeof( SharedType<T> ) );
         auto addr = pool->Alloc();
-        auto st = new (addr)SharedType<T>( std::forward<PTS>( ps )... );
-        return Shared<T>( st, [ pool, addr ] { pool->Free( addr ); } );
+        auto _st = new (addr)SharedType<T>( std::forward<PTS>( ps )... );
+        return Shared<T>( _st, [ pool, addr ] { pool->Free( addr ); } );
     }
 
 }

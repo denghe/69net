@@ -4,63 +4,63 @@ namespace xxx
 {
 
 
-    Pool FlatBuffer::_emptyPool;     // for do not need delete's buffer
+    Pool FlatBuffer::emptyPool;     // for do not need delete's buffer
 
     FlatBuffer::FlatBuffer( int capacity )
     {
-        if( capacity < 1024 ) _bufLen = 1024;
-        else _bufLen = (int)Round2n( capacity );
-        _disposer = nullptr;
-        _buf = new char[ _bufLen ];
-        _dataLen = _offset = 0;
+        if( capacity < 1024 ) bufLen = 1024;
+        else bufLen = (int)Round2n( capacity );
+        disposer = nullptr;
+        buf = new char[ bufLen ];
+        dataLen = offset = 0;
     }
 
     FlatBuffer::FlatBuffer( Pool& p )
     {
-        _buf = (char*)p.Alloc();
-        _bufLen = p.ItemBufLen();
-        _dataLen = 0;
-        _disposer = &p;
+        buf = (char*)p.Alloc();
+        bufLen = p.ItemBufLen();
+        dataLen = 0;
+        disposer = &p;
     }
 
-    FlatBuffer::FlatBuffer( char* buf, int bufLen, int dataLen /*= 0*/, bool isRef /*= false */ )
+    FlatBuffer::FlatBuffer( char* _buf, int _bufLen, int _dataLen /*= 0*/, bool isRef /*= false */ )
     {
-        _dataLen = dataLen;
-        _offset = 0;
+        dataLen = _dataLen;
+        offset = 0;
         if( isRef )
         {
-            _buf = buf;
-            _bufLen = bufLen;
-            _disposer = &_emptyPool;
+            buf = _buf;
+            bufLen = _bufLen;
+            disposer = &emptyPool;
         }
         else
         {
-            _bufLen = (int)Round2n( dataLen );
-            _buf = new char[ _bufLen ];
-            memcpy( _buf, buf, dataLen );
-            _disposer = nullptr;
+            bufLen = (int)Round2n( _dataLen );
+            buf = new char[ bufLen ];
+            memcpy( buf, _buf, _dataLen );
+            disposer = nullptr;
         }
     }
 
     FlatBuffer::FlatBuffer( FlatBuffer const & other )
-        : FlatBuffer( other._dataLen + 1 )
+        : FlatBuffer( other.dataLen + 1 )
     {
-        memcpy( _buf, other._buf, other._dataLen + 1 );
-        _dataLen = other._dataLen;
+        memcpy( buf, other.buf, other.dataLen + 1 );
+        dataLen = other.dataLen;
     }
 
     FlatBuffer::FlatBuffer( FlatBuffer&& other )
-        : _buf( other._buf )
-        , _bufLen( other._bufLen )
-        , _dataLen( other._dataLen )
-        , _offset( other._offset )
-        , _disposer( other._disposer )
+        : buf( other.buf )
+        , bufLen( other.bufLen )
+        , dataLen( other.dataLen )
+        , offset( other.offset )
+        , disposer( other.disposer )
     {
-        other._buf = nullptr;
-        other._bufLen = 0;
-        other._dataLen = 0;
-        other._offset = 0;
-        other._disposer = nullptr;
+        other.buf = nullptr;
+        other.bufLen = 0;
+        other.dataLen = 0;
+        other.offset = 0;
+        other.disposer = nullptr;
     }
 
     FlatBuffer::~FlatBuffer()
@@ -70,105 +70,105 @@ namespace xxx
 
     void FlatBuffer::Clear()
     {
-        _dataLen = _offset = 0;
+        dataLen = offset = 0;
     }
 
     bool FlatBuffer::Empty() const
     {
-        return _dataLen == 0;
+        return dataLen == 0;
     }
 
     bool FlatBuffer::Full() const
     {
-        return _dataLen == _offset;
+        return dataLen == offset;
     }
 
     int FlatBuffer::Size() const
     {
-        return _dataLen;
+        return dataLen;
     }
 
     int& FlatBuffer::Size()
     {
-        return _dataLen;
+        return dataLen;
     }
 
     char const* FlatBuffer::Data() const
     {
-        return _buf;
+        return buf;
     }
 
     char* FlatBuffer::Data()
     {
-        return _buf;
+        return buf;
     }
 
-    void FlatBuffer::Assign( char const* buf, int bufLen, int dataLen /*= 0*/, bool isRef /*= false */ )
+    void FlatBuffer::Assign( char const* _buf, int _bufLen, int _dataLen /*= 0*/, bool isRef /*= false */ )
     {
-        assert( _buf != buf );
-        _offset = 0;
+        assert( buf != _buf );
+        offset = 0;
         if( isRef )
         {
             Dispose();
-            _buf = (char*)buf;
-            _bufLen = bufLen;
-            _dataLen = dataLen;
-            _disposer = &_emptyPool;
+            buf = (char*)_buf;
+            bufLen = _bufLen;
+            dataLen = _dataLen;
+            disposer = &emptyPool;
             return;
         }
-        if( _bufLen < dataLen )
+        if( bufLen < _dataLen )
         {
             Dispose();
-            _bufLen = (int)Round2n( dataLen );
-            _disposer = nullptr;
-            _buf = new char[ _bufLen ];
+            bufLen = (int)Round2n( _dataLen );
+            disposer = nullptr;
+            buf = new char[ bufLen ];
         }
-        _dataLen = dataLen;
-        memcpy( _buf, buf, dataLen );
+        dataLen = _dataLen;
+        memcpy( buf, _buf, _dataLen );
     }
 
     void FlatBuffer::Reserve( int capacity )
     {
-        if( capacity <= _bufLen ) return;
-        _bufLen = (int)Round2n( capacity );
-        auto newBuf = new char[ _bufLen ];
-        memcpy( newBuf, _buf, _dataLen );
+        if( capacity <= bufLen ) return;
+        bufLen = (int)Round2n( capacity );
+        auto newBuf = new char[ bufLen ];
+        memcpy( newBuf, buf, dataLen );
         Dispose();
-        _disposer = nullptr;
-        _buf = newBuf;
+        disposer = nullptr;
+        buf = newBuf;
     }
 
-    void FlatBuffer::Resize( int dataLen )
+    void FlatBuffer::Resize( int _dataLen )
     {
-        if( dataLen == _dataLen ) return;
-        else if( dataLen < _dataLen )
+        if( _dataLen == dataLen ) return;
+        else if( _dataLen < dataLen )
         {
-            _dataLen = dataLen;
-            if( _dataLen > _offset ) _offset = _dataLen;
+            dataLen = _dataLen;
+            if( dataLen > offset ) offset = dataLen;
         }
         else
         {
-            Reserve( dataLen );
-            _dataLen = dataLen;
+            Reserve( _dataLen );
+            dataLen = _dataLen;
         }
     }
 
     FlatBuffer& FlatBuffer::operator=( FlatBuffer const& other )
     {
         if( this == &other ) return *this;
-        _offset = 0;
-        _dataLen = other._dataLen;
-        if( _bufLen >= other._dataLen )
+        offset = 0;
+        dataLen = other.dataLen;
+        if( bufLen >= other.dataLen )
         {
-            memcpy( _buf, other._buf, other._dataLen );
+            memcpy( buf, other.buf, other.dataLen );
         }
         else
         {
             Dispose();
-            _bufLen = (int)Round2n( other._dataLen );
-            _disposer = nullptr;
-            _buf = new char[ _bufLen ];
-            memcpy( _buf, other._buf, other._dataLen );
+            bufLen = (int)Round2n( other.dataLen );
+            disposer = nullptr;
+            buf = new char[ bufLen ];
+            memcpy( buf, other.buf, other.dataLen );
         }
         return *this;
     }
@@ -176,57 +176,57 @@ namespace xxx
     FlatBuffer& FlatBuffer::operator=( FlatBuffer&& other )
     {
         Dispose();
-        _buf = other._buf;
-        _bufLen = other._bufLen;
-        _dataLen = other._dataLen;
-        _offset = 0;
-        _disposer = other._disposer;
-        other._buf = nullptr;
-        other._bufLen = 0;
-        other._dataLen = 0;
-        other._offset = 0;
-        other._disposer = nullptr;
+        buf = other.buf;
+        bufLen = other.bufLen;
+        dataLen = other.dataLen;
+        offset = 0;
+        disposer = other.disposer;
+        other.buf = nullptr;
+        other.bufLen = 0;
+        other.dataLen = 0;
+        other.offset = 0;
+        other.disposer = nullptr;
         return *this;
     }
 
     char FlatBuffer::operator[]( int idx ) const
     {
-        assert( idx >= 0 && idx < _dataLen );
-        return _buf[ idx ];
+        assert( idx >= 0 && idx < dataLen );
+        return buf[ idx ];
     }
 
     char& FlatBuffer::operator[]( int idx )
     {
-        assert( idx >= 0 && idx < _dataLen );
-        return _buf[ idx ];
+        assert( idx >= 0 && idx < dataLen );
+        return buf[ idx ];
     }
 
     char FlatBuffer::At( int idx ) const
     {
-        assert( idx >= 0 && idx < _dataLen );
-        return _buf[ idx ];
+        assert( idx >= 0 && idx < dataLen );
+        return buf[ idx ];
     }
 
     char& FlatBuffer::At( int idx )
     {
-        assert( idx >= 0 && idx < _dataLen );
-        return _buf[ idx ];
+        assert( idx >= 0 && idx < dataLen );
+        return buf[ idx ];
     }
 
     int& FlatBuffer::Offset()
     {
-        return _offset;
+        return offset;
     }
 
     int FlatBuffer::Offset() const
     {
-        return _offset;
+        return offset;
     }
 
     String FlatBuffer::Dump()
     {
         String rtv;
-        BufferUtils::Dump( rtv, _buf, _dataLen );
+        BufferUtils::Dump( rtv, buf, dataLen );
         return rtv;
     }
 
@@ -238,13 +238,13 @@ namespace xxx
     }
     void FlatBuffer::WriteBuffer( FlatBuffer& fb )
     {
-        fb.Write( _dataLen );
-        fb.Write( _buf, _dataLen );
+        fb.Write( dataLen );
+        fb.Write( buf, dataLen );
     }
     void FlatBuffer::WriteBufferDirect( FlatBuffer& fb )
     {
-        fb.WriteDirect( _dataLen );
-        fb.WriteDirect( _buf, _dataLen );
+        fb.WriteDirect( dataLen );
+        fb.WriteDirect( buf, dataLen );
     }
     bool FlatBuffer::ReadBuffer( FlatBuffer& fb )
     {
@@ -253,42 +253,42 @@ namespace xxx
             || fb.Offset() + len > fb.Size() ) return false;
         Clear();
         Reserve( len );
-        _dataLen = len;
-        memcpy( _buf, fb.Data() + fb.Offset(), len );
+        dataLen = len;
+        memcpy( buf, fb.Data() + fb.Offset(), len );
         fb.Offset() += len;
         return true;
     }
 
 
 
-    void FlatBuffer::WriteDirect( char const* buf, int dataLen )
+    void FlatBuffer::WriteDirect( char const* _buf, int _dataLen )
     {
-        memcpy( _buf + _dataLen, buf, dataLen );
-        _dataLen += dataLen;
+        memcpy( buf + dataLen, _buf, _dataLen );
+        dataLen += _dataLen;
     }
-    void FlatBuffer::Write( char const* buf, int dataLen )
+    void FlatBuffer::Write( char const* _buf, int _dataLen )
     {
-        Reserve( _dataLen + dataLen );
-        WriteDirect( buf, dataLen );
+        Reserve( dataLen + _dataLen );
+        WriteDirect( _buf, _dataLen );
     }
 
-    bool FlatBuffer::Read( char* buf, int dataLen )
+    bool FlatBuffer::Read( char* _buf, int _dataLen )
     {
-        if( _offset + dataLen > _dataLen ) return false;
-        memcpy( buf, _buf + _offset, dataLen );
-        _offset += dataLen;
+        if( offset + _dataLen > dataLen ) return false;
+        memcpy( _buf, buf + offset, _dataLen );
+        offset += _dataLen;
         return true;
     }
 
     void FlatBuffer::Dispose()
     {
-        if( _disposer )
+        if( disposer )
         {
-            if( _disposer->ItemBufLen() ) _disposer->Free( _buf );
+            if( disposer->ItemBufLen() ) disposer->Free( buf );
         }
         else
         {
-            delete[] _buf;
+            delete[] buf;
         }
     }
 

@@ -6,7 +6,7 @@ namespace xxx
 {
 
 
-    String SharedMemory::_prefixName;
+    String SharedMemory::prefixName;
 
     int SharedMemory::Dispose( int key )
     {
@@ -22,8 +22,8 @@ namespace xxx
     {
 #if __WIN
         // Make names
-        auto mtxName = String::Make( _prefixName, "m", key );
-        auto smName = String::Make( _prefixName, "sm", key );
+        auto mtxName = String::Make( prefixName, "m", key );
+        auto smName = String::Make( prefixName, "sm", key );
 
         // security
         SECURITY_DESCRIPTOR	sd = { 0 };
@@ -51,7 +51,7 @@ namespace xxx
     {
 #if __WIN
         // Make name
-        auto smName = String::Make( _prefixName, "sm", key );
+        auto smName = String::Make( prefixName, "sm", key );
 
         // open file mapping
         auto fm = OpenFileMappingA( FILE_MAP_ALL_ACCESS, false, smName.C_str() );

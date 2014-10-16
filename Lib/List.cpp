@@ -10,109 +10,109 @@ namespace xxx
         auto len = int( capacity / 8 );
         if( len < 64 ) len = 64;
         else len = (int)Round2n( len );
-        _size = 0;
-        _buf = new char[ len ];
-        _maxSize = len * 8;
+        size = 0;
+        buf = new char[ len ];
+        maxSize = len * 8;
     }
 
     List<bool>::~List()
     {
-        if( _buf )
+        if( buf )
         {
             Clear();
-            delete[] _buf;
+            delete[] buf;
         }
     }
 
-    List<bool>::List( List<bool> && other )
-        : _buf( other._buf )
-        , _size( other._size )
-        , _maxSize( other._maxSize )
+    List<bool>::List( List<bool> && o )
+        : buf( o.buf )
+        , size( o.size )
+        , maxSize( o.maxSize )
     {
-        other._buf = nullptr;
+        o.buf = nullptr;
     }
 
-    List<bool>::List( List<bool> const & other )
-        : List<bool>( other._size )
+    List<bool>::List( List<bool> const & o )
+        : List<bool>( o.size )
     {
-        memcpy( _buf, other._buf, other.ByteSize() );
+        memcpy( buf, o.buf, o.ByteSize() );
     }
 
-    List<bool>& List<bool>::operator=( List<bool> && other )
+    List<bool>& List<bool>::operator=( List<bool> && o )
     {
-        delete[] _buf;
-        _buf = other._buf;
-        _size = other._size;
-        _maxSize = other._maxSize;
-        other._buf = nullptr;
+        delete[] buf;
+        buf = o.buf;
+        size = o.size;
+        maxSize = o.maxSize;
+        o.buf = nullptr;
         return *this;
     }
 
-    List<bool>& List<bool>::operator=( List<bool> const & other )
+    List<bool>& List<bool>::operator=( List<bool> const & o )
     {
-        if( this == &other ) return *this;
-        _size = other._size;
-        if( _maxSize < other._size )
+        if( this == &o ) return *this;
+        size = o.size;
+        if( maxSize < o.size )
         {
-            auto len = int( other._size / 8 );
+            auto len = int( o.size / 8 );
             if( len < 64 ) len = 64;
             else len = (int)Round2n( len );
-            _maxSize = len * 8;
-            delete[] _buf;
-            _buf = new char[ len ];
+            maxSize = len * 8;
+            delete[] buf;
+            buf = new char[ len ];
         }
-        memcpy( _buf, other._buf, other.ByteSize() );
+        memcpy( buf, o.buf, o.ByteSize() );
         return *this;
     }
 
     void List<bool>::Push( bool v )
     {
-        if( _size == _maxSize ) Reserve( _size + 1 );
-        Set( _size++, v );
+        if( size == maxSize ) Reserve( size + 1 );
+        Set( size++, v );
     }
 
     void List<bool>::Pop()
     {
-        assert( _size > 0 );
-        --_size;
+        assert( size > 0 );
+        --size;
     }
 
     bool List<bool>::Top() const
     {
-        assert( _size > 0 );
-        return operator[]( _size - 1 );
+        assert( size > 0 );
+        return operator[]( size - 1 );
     }
 
     void List<bool>::Clear()
     {
-        _size = 0;
+        size = 0;
     }
 
     void List<bool>::Reserve( int capacity )
     {
         assert( capacity > 0 );
-        if( capacity <= _maxSize ) return;
+        if( capacity <= maxSize ) return;
         auto len = (int)Round2n( ( capacity - 1 ) / 8 + 1 );
-        _maxSize = len * 8;
+        maxSize = len * 8;
         auto newBuf = new char[ len ];
-        memcpy( newBuf, _buf, ByteSize() );
-        delete[] _buf;
-        _buf = newBuf;
+        memcpy( newBuf, buf, ByteSize() );
+        delete[] buf;
+        buf = newBuf;
     }
 
     char* List<bool>::Data() const
     {
-        return _buf;
+        return buf;
     }
 
     int List<bool>::Size() const
     {
-        return _size;
+        return size;
     }
 
     int List<bool>::ByteSize() const
     {
-        if( _size ) return ( _size - 1 ) / 8 + 1;
+        if( size ) return ( size - 1 ) / 8 + 1;
         return 0;
     }
 
@@ -123,18 +123,18 @@ namespace xxx
 
     bool List<bool>::At( int idx ) const
     {
-        return ( ( (size_t*)_buf )[ idx / ( sizeof( size_t ) * 8 ) ] &
+        return ( ( (size_t*)buf )[ idx / ( sizeof( size_t ) * 8 ) ] &
                  ( size_t( 1 ) << ( idx % ( sizeof( size_t ) * 8 ) ) ) ) > 0;
     }
 
     void List<bool>::Set( int idx, bool v )
     {
-        assert( idx >= 0 && idx < _size );
+        assert( idx >= 0 && idx < size );
         if( v )
-            ( (size_t*)_buf )[ idx / ( sizeof( size_t ) * 8 ) ] |=
+            ( (size_t*)buf )[ idx / ( sizeof( size_t ) * 8 ) ] |=
             ( size_t( 1 ) << ( idx % ( sizeof( size_t ) * 8 ) ) );
         else
-            ( (size_t*)_buf )[ idx / ( sizeof( size_t ) * 8 ) ] &=
+            ( (size_t*)buf )[ idx / ( sizeof( size_t ) * 8 ) ] &=
             ~( size_t( 1 ) << ( idx % ( sizeof( size_t ) * 8 ) ) );
     }
 

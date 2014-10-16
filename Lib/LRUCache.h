@@ -12,23 +12,23 @@ namespace xxx
     {
     public:
         template<typename PKT, typename PVT>
-        LRUCacheItem( PKT&& key, PVT&& value );
-        LRUCacheItem( LRUCacheItem const& other );
-        LRUCacheItem( LRUCacheItem&& other );
-        LRUCacheItem& operator=( LRUCacheItem const& other );
-        LRUCacheItem& operator=( LRUCacheItem&& other );
+        LRUCacheItem( PKT&& k, PVT&& v );
+        LRUCacheItem( LRUCacheItem const& o );
+        LRUCacheItem( LRUCacheItem&& o );
+        LRUCacheItem& operator=( LRUCacheItem const& o );
+        LRUCacheItem& operator=( LRUCacheItem&& o );
 
         friend LRUCache < KT, VT > ;
     private:
-        LRUCacheItem( LRUCacheItem* next, LRUCacheItem* prev );
-        void Link( LRUCacheItem& head );
+        LRUCacheItem( LRUCacheItem* _next, LRUCacheItem* _prev );
+        void Link( LRUCacheItem& _head );
         void Unlink();
-        void MoveTo( LRUCacheItem& head );
+        void MoveTo( LRUCacheItem& _head );
 
-        LRUCacheItem*   _next;
-        LRUCacheItem*   _prev;
-        KT              _key;
-        VT              _value;
+        LRUCacheItem*   next;
+        LRUCacheItem*   prev;
+        KT              key;
+        VT              value;
     };
 
 
@@ -37,19 +37,19 @@ namespace xxx
     {
     public:
         typedef LRUCacheItem<KT, VT> IT;
-        LRUCache( int limit = 100 );                                                        // limit 为长度限定. 超限将移除
+        LRUCache( int _limit = 100 );                                                        // _limit 为长度限定. 超限将移除
         template<typename PKT, typename PVT>
-        std::pair<VT*, bool> Insert( PKT&& key, PVT&& value, bool override = true );        // 返回指向 _data 中存储 value 的地址 和  true( add成功 ), false( 已存在 )
-        VT* Find( KT const& key );                                                          // 相当于 Dict Find, 顺便提升排名, 防移除
+        std::pair<VT*, bool> Insert( PKT&& k, PVT&& v, bool override = true );        // 返回指向 data 中存储 value 的地址 和  true( add成功 ), false( 已存在 )
+        VT* Find( KT const& k );                                                          // 相当于 Dict Find, 顺便提升排名, 防移除
         void Clear();
         void Dump();
 
     private:
         void Evict();                                                                       // 移除最后一个
 
-        int                     _limit;
-        IT                      _head;
-        Dict<KT, IT>            _data;
+        int                     limit;
+        IT                      head;
+        Dict<KT, IT>            data;
     };
 
 }

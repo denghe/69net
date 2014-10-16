@@ -14,7 +14,7 @@ namespace xxx
         struct Node
         {
             T               value;
-            int             index;                              // _nodes[ index ]
+            int             index;                              // nodes[ index ]
         };
         explicit Links( int capacity = 64 );
         Links( Links&& o );
@@ -42,8 +42,8 @@ namespace xxx
         bool ReadBuffer( FlatBuffer& fb );
     protected:
         void Dispose( Node* n );
-        List<Node*>         _nodes;
-        Pool                _pool;
+        List<Node*>         nodes;
+        Pool                pool;
     };
 
 }

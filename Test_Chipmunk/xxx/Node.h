@@ -13,11 +13,11 @@ namespace xxx
     };
     struct Color3b
     {
-        GLubyte r, g, b;
+        byte r, g, b;
     };
     struct Color4b
     {
-        GLubyte r, g, b, a;
+        byte r, g, b, a;
     };
 
 

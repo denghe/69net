@@ -12,25 +12,25 @@ namespace xxx
         explicit String( int capacity = 64 );                       // prepare
         String( Pool& p );                                          // prepare with pool buffer
         template<int len>
-        String( Pool& p, char const ( &s )[ len ] );                // Get buf from pool and Copy s into
-        String( Pool& p, char const* buf, int dataLen );            // Get buf from pool and Copy s into
-        String( char const* buf, int bufLen, int dataLen, bool isRef = true );    // ref or Copy
+        String( Pool& p, char const ( &s )[ len ] );                // Get _buf from pool and Copy s into
+        String( Pool& p, char const* _buf, int _dataLen );            // Get _buf from pool and Copy s into
+        String( char const* _buf, int _bufLen, int _dataLen, bool isRef = true );    // ref or Copy
         String( char const* s, bool isRef = false );                // Copy or ref
-        String( String const& other );                              // Copy
-        String( String&& other );                                   // move
-        String& operator=( String const& other );                   // Copy
-        String& operator=( String&& other );                        // move
-        ~String();                                                  // Dispose buf
-        void Assign( char const* buf, int bufLen, int dataLen, bool isRef = true );     // ref or Copy
+        String( String const& o );                              // Copy
+        String( String&& o );                                   // move
+        String& operator=( String const& o );                   // Copy
+        String& operator=( String&& o );                        // move
+        ~String();                                                  // Dispose _buf
+        void Assign( char const* _buf, int _bufLen, int _dataLen, bool isRef = true );     // ref or Copy
         void Assign( char const* s, bool isRef = false );           // Copy or ref
         void Reserve( int capacity );                               // prepare memory
-        void Resize( int len, bool FillZero = true );               // cut( maybe damage utf8 ) or grow up
-        void Clear();                                               // Set _dataLen to 0
-        int Size() const;                                           // return _dataLen;
-        char const* C_str() const;                                  // return _buf
-        char* Data() const;                                         // return _buf
-        char operator[] ( int idx ) const;                          // return _buf[ idx ]
-        char& operator[] ( int idx );                               // return _buf[ idx ]
+        void Resize( int len, bool fillZero = true );               // cut( maybe damage utf8 ) or grow up
+        void Clear();                                               // Set dataLen to 0
+        int Size() const;                                           // return dataLen;
+        char const* C_str() const;                                  // return buf
+        char* Data() const;                                         // return buf
+        char operator[] ( int idx ) const;                          // return buf[ idx ]
+        char& operator[] ( int idx );                               // return buf[ idx ]
         char At( int idx ) const;
         char& At( int idx );
         void Push( char c );
@@ -43,12 +43,12 @@ namespace xxx
         // sample: auto f = Formatter().setScale( 2 ).setWidth( 10, '0' );  s.Append( ...... f( 1.2345 ) ...... ) will be Append  0000001.23
         // 
 
-        bool operator==( String const& other ) const;
-        bool operator!=( String const& other ) const;
-        bool operator<( String const& other ) const;
-        bool operator>( String const& other ) const;
-        bool operator<=( String const& other ) const;
-        bool operator>=( String const& other ) const;
+        bool operator==( String const& o ) const;
+        bool operator!=( String const& o ) const;
+        bool operator<( String const& o ) const;
+        bool operator>( String const& o ) const;
+        bool operator<=( String const& o ) const;
+        bool operator>=( String const& o ) const;
 
 
         void ToLower();
@@ -74,10 +74,10 @@ namespace xxx
         // like Append, return strlen.
         // dangerous: buffer overflow
         template<typename ...TS>
-        static int Fill( char * buf, TS const & ...vs );
+        static int Fill( char * _buf, TS const & ...vs );
 
         template<typename ...TS>
-        static int FillHex( char * buf, TS const & ...vs );
+        static int FillHex( char * _buf, TS const & ...vs );
 
 
 
@@ -93,8 +93,8 @@ namespace xxx
         template<typename ...TS>
         static String MakeFormat( Pool& p, char const* format, TS const & ...vs );
 
-        template<typename ...TS, int bufLen>
-        static String Make( char( &buf )[ bufLen ], TS const & ...vs );
+        template<typename ...TS, int _bufLen>
+        static String Make( char( &_buf )[ _bufLen ], TS const & ...vs );
 
         template<typename T>
         static String ToString( T const& v );
@@ -149,16 +149,16 @@ namespace xxx
         void AppendFormatCore( String& s, int& n, T const & v, TS const & ...vs );
 
         template<typename T>
-        static void FillCore( char * & buf, int & offset, T const & v );
+        static void FillCore( char * & _buf, int & offset, T const & v );
 
         template<typename T, typename ...TS>
-        static void FillCore( char * & buf, int & offset, T const & v, TS const & ...vs );
+        static void FillCore( char * & _buf, int & offset, T const & v, TS const & ...vs );
 
         template<typename T>
-        static void FillHexCore( char * & buf, int & offset, T const & v );
+        static void FillHexCore( char * & _buf, int & offset, T const & v );
 
         template<typename T, typename ...TS>
-        static void FillHexCore( char * & buf, int & offset, T const & v, TS const & ...vs );
+        static void FillHexCore( char * & _buf, int & offset, T const & v, TS const & ...vs );
 
         template<typename T>
         static void GetFillMaxLengthCore( int & len, T const & v );
@@ -169,12 +169,12 @@ namespace xxx
         template<typename ...TS>
         static int GetFillMaxLength( TS const & ...vs );
 
-        char*       _buf;
-        int         _bufLen;
-        int         _dataLen;
+        char*       buf;
+        int         bufLen;
+        int         dataLen;
 
-        Pool*       _disposer;
-        static Pool _emptyPool;     // for do not need delete's buffer
+        Pool*       disposer;
+        static Pool emptyPool;     // for do not need delete's buffer
         void Dispose();
     };
 

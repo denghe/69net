@@ -4,128 +4,128 @@ namespace xxx
 {
 
 
-    void SMBuffer::Init( int bufLen )
+    void SMBuffer::Init( int _bufLen )
     {
-        _bufLen = bufLen - sizeof( int ) * 4;   // - sizeof( _bufLen, _wo, _ro, _size );
+        bufLen = _bufLen - sizeof( int ) * 4;   // - sizeof( bufLen, wo, ro, size );
         Clear();
     }
 
     int SMBuffer::Size() const
     {
-        return _size;
+        return size;
     }
 
     int SMBuffer::Space() const
     {
-        return _bufLen - _size;
+        return bufLen - size;
     }
 
     bool SMBuffer::Empty() const
     {
-        return _size == 0;
+        return size == 0;
     }
 
     void SMBuffer::Clear()
     {
-        _size = 0;
-        _ro = 0;
-        _wo = 0;
+        size = 0;
+        ro = 0;
+        wo = 0;
     }
 
-    int SMBuffer::Write( char const* buf, int len )
+    int SMBuffer::Write( char const* _buf, int len )
     {
-        int size = _size;
-        int free = _bufLen - size;
+        int _size = size;
+        int free = bufLen - _size;
         if( len == 0 || free == 0 ) return 0;
         else if( len > free ) len = free;
 
-        auto rightSpace = _bufLen - _wo;
-        if( _wo <= size || rightSpace >= len )
+        auto rightSpace = bufLen - wo;
+        if( wo <= _size || rightSpace >= len )
         {
-            memcpy( _buf + _wo, buf, len );
-            if( _wo + len == _bufLen ) _wo = 0;
-            else _wo += len;
+            memcpy( buf + wo, _buf, len );
+            if( wo + len == bufLen ) wo = 0;
+            else wo += len;
         }
         else
         {
-            memcpy( _buf + _wo, buf, rightSpace );
-            memcpy( _buf, buf + rightSpace, len - rightSpace );
-            _wo = len - rightSpace;
+            memcpy( buf + wo, _buf, rightSpace );
+            memcpy( buf, _buf + rightSpace, len - rightSpace );
+            wo = len - rightSpace;
         }
 
-        _size += len;
+        size += len;
         return len;
     }
 
     int SMBuffer::Read( char* dest, int len )
     {
-        int size = _size;
-        if( len == 0 || size == 0 ) return 0;
-        else if( len > size ) len = size;
+        int _size = size;
+        if( len == 0 || _size == 0 ) return 0;
+        else if( len > _size ) len = _size;
 
-        auto rightLen = _bufLen - _ro;
-        if( _ro + size <= _bufLen || rightLen >= len )
+        auto rightLen = bufLen - ro;
+        if( ro + _size <= bufLen || rightLen >= len )
         {
-            memcpy( dest, _buf + _ro, len );
-            if( _ro + len == _bufLen ) _ro = 0;
-            else _ro += len;
+            memcpy( dest, buf + ro, len );
+            if( ro + len == bufLen ) ro = 0;
+            else ro += len;
         }
         else
         {
-            memcpy( dest, _buf + _ro, rightLen );
-            memcpy( dest + rightLen, _buf, len - rightLen );
-            _ro = len - rightLen;
+            memcpy( dest, buf + ro, rightLen );
+            memcpy( dest + rightLen, buf, len - rightLen );
+            ro = len - rightLen;
         }
 
-        _size -= len;
+        size -= len;
         return len;
     }
 
     int SMBuffer::Copy( char* dest, int len )
     {
-        int size = _size;
-        if( len == 0 || size == 0 ) return 0;
-        else if( len > size ) len = size;
+        int _size = size;
+        if( len == 0 || _size == 0 ) return 0;
+        else if( len > _size ) len = _size;
 
-        auto rightLen = _bufLen - _ro;
-        if( _ro + size <= _bufLen || rightLen >= len )
+        auto rightLen = bufLen - ro;
+        if( ro + _size <= bufLen || rightLen >= len )
         {
-            memcpy( dest, _buf + _ro, len );
-            //if( _ro + len == _bufLen ) _ro = 0;
-            //else _ro += len;
+            memcpy( dest, buf + ro, len );
+            //if( ro + len == bufLen ) ro = 0;
+            //else ro += len;
         }
         else
         {
-            memcpy( dest, _buf + _ro, rightLen );
-            memcpy( dest + rightLen, _buf, len - rightLen );
-            //_ro = len - rightLen;
+            memcpy( dest, buf + ro, rightLen );
+            memcpy( dest + rightLen, buf, len - rightLen );
+            //ro = len - rightLen;
         }
 
-        //_size -= len;
+        //size -= len;
         return len;
     }
 
     int SMBuffer::Skip( int len )
     {
-        int size = _size;
-        if( len == 0 || size == 0 ) return 0;
-        else if( len > size ) len = size;
+        int _size = size;
+        if( len == 0 || _size == 0 ) return 0;
+        else if( len > _size ) len = _size;
 
-        auto rightLen = _bufLen - _ro;
-        if( _ro + size <= _bufLen || rightLen >= len )
+        auto rightLen = bufLen - ro;
+        if( ro + _size <= bufLen || rightLen >= len )
         {
-            //memcpy( dest, _buf + _ro, len );
-            if( _ro + len == _bufLen ) _ro = 0;
-            else _ro += len;
+            //memcpy( dest, buf + ro, len );
+            if( ro + len == bufLen ) ro = 0;
+            else ro += len;
         }
         else
         {
-            //memcpy( dest, _buf + _ro, rightLen );
-            //memcpy( dest + rightLen, _buf, len - rightLen );
-            _ro = len - rightLen;
+            //memcpy( dest, buf + ro, rightLen );
+            //memcpy( dest + rightLen, buf, len - rightLen );
+            ro = len - rightLen;
         }
 
-        _size -= len;
+        size -= len;
         return len;
     }
 

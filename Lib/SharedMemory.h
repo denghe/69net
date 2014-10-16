@@ -16,7 +16,7 @@ namespace xxx
         template<typename T>
         static void SetPrefixName( T&& s );
     private:
-        static String _prefixName;
+        static String prefixName;
     };
 
 

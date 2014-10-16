@@ -8,8 +8,8 @@ namespace xxx
     template <typename T>
     Links<T>::Links( int capacity /*= 64 */ )
     {
-        _pool.Init( sizeof( Node ), 4096, capacity );
-        _nodes.Reserve( capacity );
+        pool.Init( sizeof( Node ), 4096, capacity );
+        nodes.Reserve( capacity );
     }
 
     template <typename T>
@@ -41,26 +41,26 @@ namespace xxx
     template <typename T>
     Links<T>& Links<T>::operator=( Links&& o )
     {
-        _nodes = std::move( o._nodes );
-        _pool = std::move( o._pool );
+        nodes = std::move( o.nodes );
+        pool = std::move( o.pool );
         return *this;
     }
 
     template <typename T>
     Links<T>::~Links()
     {
-        for( int i = 0; i < _nodes.Size(); ++i )
-            Dispose( _nodes[ i ] );
+        for( int i = 0; i < nodes.Size(); ++i )
+            Dispose( nodes[ i ] );
     }
 
     template <typename T>
     template <typename VT>
     typename Links<T>::Node* Links<T>::Insert( VT && v )
     {
-        auto n = (Node*)_pool.Alloc();
+        auto n = (Node*)pool.Alloc();
         new ( &n->value ) T( std::forward<VT>( v ) );
-        n->index = _nodes.Size();
-        _nodes.Push( n );
+        n->index = nodes.Size();
+        nodes.Push( n );
         return n;
     }
 
@@ -68,11 +68,11 @@ namespace xxx
     template <typename T>
     typename Links<T>::Node* Links<T>::Find( T const& v )
     {
-        for( int i = 0; i < _nodes.Size(); ++i )
+        for( int i = 0; i < nodes.Size(); ++i )
         {
-            if( EqualsTo( _nodes[ i ]->value, v ) )
+            if( EqualsTo( nodes[ i ]->value, v ) )
             {
-                return _nodes[ i ];
+                return nodes[ i ];
             }
         }
         return nullptr;
@@ -89,31 +89,31 @@ namespace xxx
     template <typename T>
     void Links<T>::Erase( Node* n )
     {
-        auto last = _nodes.Top();
-        _nodes.Pop();
-        _nodes[ n->index ] = last;
+        auto last = nodes.Top();
+        nodes.Pop();
+        nodes[ n->index ] = last;
         last->index = n->index;
 
         Dispose( n );
-        _pool.Free( n );
+        pool.Free( n );
     }
 
     template <typename T>
     void Links<T>::Clear()
     {
-        for( int i = 0; i < _nodes.Size(); ++i )
+        for( int i = 0; i < nodes.Size(); ++i )
         {
-            Dispose( _nodes[ i ] );
-            _pool.Free( _nodes[ i ] );
+            Dispose( nodes[ i ] );
+            pool.Free( nodes[ i ] );
         }
-        _nodes.Clear();
+        nodes.Clear();
     }
 
 
     template <typename T>
     void Links<T>::Reserve( int capacity )
     {
-        _nodes.Reserve( capacity );
+        nodes.Reserve( capacity );
         // todo: pool Reserve ?
     }
 
@@ -121,13 +121,13 @@ namespace xxx
     template <typename T>
     List<typename Links<T>::Node*> const & Links<T>::Data() const
     {
-        return _nodes;
+        return nodes;
     }
 
     template <typename T>
     int Links<T>::Size() const
     {
-        return _nodes.Size();
+        return nodes.Size();
     }
 
     template <typename T>
@@ -140,15 +140,15 @@ namespace xxx
     template <typename T>
     bool Links<T>::Empty()
     {
-        return _nodes.Size() == 0;
+        return nodes.Size() == 0;
     }
 
 
     template <typename T>
     typename Links<T>::Node* Links<T>::operator[]( int idx ) const
     {
-        assert( idx < _nodes.Size() );
-        return _nodes[ idx ];
+        assert( idx < nodes.Size() );
+        return nodes[ idx ];
     }
 
 
@@ -164,13 +164,13 @@ namespace xxx
         int siz = sizeof( int );
         if( std::is_pod<T>::value )
         {
-            siz += sizeof( T ) * _nodes.Size();
+            siz += sizeof( T ) * nodes.Size();
         }
         else
         {
-            for( int i = 0; i < _nodes.Size(); ++i )
+            for( int i = 0; i < nodes.Size(); ++i )
             {
-                siz += _nodes[ i ]->value.GetWriteBufferSize();
+                siz += nodes[ i ]->value.GetWriteBufferSize();
             }
         }
         return siz;
@@ -178,19 +178,19 @@ namespace xxx
     template <typename T>
     void Links<T>::WriteBuffer( FlatBuffer& fb ) const
     {
-        fb.Write( _nodes.Size() );
-        for( int i = 0; i < _nodes.Size(); ++i )
+        fb.Write( nodes.Size() );
+        for( int i = 0; i < nodes.Size(); ++i )
         {
-            fb.Write( _nodes[ i ]->value );
+            fb.Write( nodes[ i ]->value );
         }
     }
     template <typename T>
     void Links<T>::WriteBufferDirect( FlatBuffer& fb ) const
     {
-        fb.WriteDirect( _nodes.Size() );
-        for( int i = 0; i < _nodes.Size(); ++i )
+        fb.WriteDirect( nodes.Size() );
+        for( int i = 0; i < nodes.Size(); ++i )
         {
-            fb.WriteDirect( _nodes[ i ]->value );
+            fb.WriteDirect( nodes[ i ]->value );
         }
     }
 
@@ -203,16 +203,16 @@ namespace xxx
         Reserve( len );
         for( int i = 0; i < len; ++i )
         {
-            auto n = (Node*)_pool.Alloc();                              // malloc
+            auto n = (Node*)pool.Alloc();                              // malloc
             if( !std::is_pod<T>::value ) new ( &n->value ) T();          // new data
             if( !fb.Read( n->value ) )
             {
                 if( !std::is_pod<T>::value ) n->value.~T();              // delete data
-                _pool.Free( n );                                        // free
+                pool.Free( n );                                        // free
                 return false;
             }
-            n->index = i;//_nodes.Size();
-            _nodes.Push( n );
+            n->index = i;//nodes.Size();
+            nodes.Push( n );
         }
         return true;
     }

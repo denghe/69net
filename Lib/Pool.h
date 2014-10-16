@@ -9,13 +9,13 @@ namespace xxx
     {
     public:
         Pool();     // need Init
-        void Init( int ItemBufLen, int pageBufLen = 4096, int capacity = 128 );
-        Pool( int ItemBufLen, int pageBufLen = 4096, int capacity = 128 );
+        void Init( int _itemBufLen, int _pageBufLen = 4096, int capacity = 128 );
+        Pool( int _itemBufLen, int _pageBufLen = 4096, int capacity = 128 );
         ~Pool();
-        Pool( Pool&& other );
-        Pool& operator=( Pool&& other );
-        Pool( Pool const& other ) = delete;
-        Pool& operator=( Pool const& other ) = delete;
+        Pool( Pool&& o );
+        Pool& operator=( Pool&& o );
+        Pool( Pool const& o ) = delete;
+        Pool& operator=( Pool const& o ) = delete;
         void Clear();
         void Reserve();     // new 1 page
         void Reserve( int capacity );
@@ -23,10 +23,10 @@ namespace xxx
         void Free( void* p );
         int ItemBufLen() const;
     private:
-        List<void*> _pages;
-        void* _itemHeader;
-        int _itemBufLen;
-        int _pageBufLen;
+        List<void*> pages;
+        void* itemHeader;
+        int itemBufLen;
+        int pageBufLen;
     };
 
 }

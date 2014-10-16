@@ -8,11 +8,11 @@ namespace xxx
     String::String( Pool& p, char const ( &s )[ len ] )
     {
         assert( p.ItemBufLen() - sizeof( Pool* ) >= len );
-        _buf = (char*)p.Alloc();
-        _bufLen = p.ItemBufLen();
-        _dataLen = len - 1;
-        _disposer = &p;
-        memcpy( _buf, s, len );
+        buf = (char*)p.Alloc();
+        bufLen = p.ItemBufLen();
+        dataLen = len - 1;
+        disposer = &p;
+        memcpy( buf, s, len );
     }
 
 
@@ -20,9 +20,9 @@ namespace xxx
     void String::Append( TS const & ...vs )
     {
         int maxLen = GetFillMaxLength( vs... ) + 1;
-        if( _dataLen + maxLen > _bufLen )
-            Reserve( _dataLen + maxLen );
-        _dataLen += Fill( _buf + _dataLen, vs... );
+        if( dataLen + maxLen > bufLen )
+            Reserve( dataLen + maxLen );
+        dataLen += Fill( buf + dataLen, vs... );
     }
 
     template<typename ...TS>
@@ -33,10 +33,10 @@ namespace xxx
         return rtv;
     }
 
-    template<typename ...TS, int bufLen>
-    String String::Make( char( &buf )[ bufLen ], TS const & ...vs )
+    template<typename ...TS, int _bufLen>
+    String String::Make( char( &_buf )[ _bufLen ], TS const & ...vs )
     {
-        String rtv( buf, bufLen, 0 );
+        String rtv( _buf, _bufLen, 0 );
         rtv.Append( vs... );
         return rtv;
     }
@@ -129,17 +129,17 @@ namespace xxx
                             }
                             if( flags[ i ].len )
                             {
-                                Reserve( _dataLen + flags[ i ].len );
-                                memcpy( _buf + _dataLen, _buf + flags[ i ].idx, flags[ i ].len );
-                                _dataLen += flags[ i ].len;
-                                _buf[ _dataLen ] = '\0';
+                                Reserve( dataLen + flags[ i ].len );
+                                memcpy( buf + dataLen, buf + flags[ i ].idx, flags[ i ].len );
+                                dataLen += flags[ i ].len;
+                                buf[ dataLen ] = '\0';
                             }
                             else
                             {
-                                flags[ i ].idx = _dataLen;
+                                flags[ i ].idx = dataLen;
                                 n = i;
                                 AppendFormatCore( *this, n, vs... );
-                                flags[ i ].len = _dataLen - flags[ i ].idx;
+                                flags[ i ].len = dataLen - flags[ i ].idx;
                             }
 
                             break;
@@ -165,9 +165,9 @@ namespace xxx
     template<typename T>
     void String::AppendHex( T const& v )
     {
-        Reserve( _dataLen + 17 );
-        _dataLen += ::xxx::ToHexString( _buf + _dataLen, v );
-        _buf[ _dataLen ] = '\0';
+        Reserve( dataLen + 17 );
+        dataLen += ::xxx::ToHexString( buf + dataLen, v );
+        buf[ dataLen ] = '\0';
     }
 
 
@@ -237,46 +237,46 @@ namespace xxx
     }
 
     template<typename T>
-    void String::FillCore( char * & buf, int & offset, T const & v )
+    void String::FillCore( char * & _buf, int & offset, T const & v )
     {
-        offset += ::xxx::ToString( buf + offset, v );
+        offset += ::xxx::ToString( _buf + offset, v );
     }
 
     template<typename T, typename ...TS>
-    void String::FillCore( char * & buf, int & offset, T const & v, TS const & ...vs )
+    void String::FillCore( char * & _buf, int & offset, T const & v, TS const & ...vs )
     {
-        FillCore( buf, offset, v );
-        FillCore( buf, offset, vs... );
+        FillCore( _buf, offset, v );
+        FillCore( _buf, offset, vs... );
     }
 
     template<typename ...TS>
-    int String::Fill( char * buf, TS const & ...vs )
+    int String::Fill( char * _buf, TS const & ...vs )
     {
         int offset = 0;
-        FillCore( buf, offset, vs... );
-        buf[ offset ] = '\0';
+        FillCore( _buf, offset, vs... );
+        _buf[ offset ] = '\0';
         return offset;
     }
 
     template<typename T>
-    void String::FillHexCore( char * & buf, int & offset, T const & v )
+    void String::FillHexCore( char * & _buf, int & offset, T const & v )
     {
-        offset += ::xxx::ToHexString( buf + offset, v );
+        offset += ::xxx::ToHexString( _buf + offset, v );
     }
 
     template<typename T, typename ...TS>
-    void String::FillHexCore( char * & buf, int & offset, T const & v, TS const & ...vs )
+    void String::FillHexCore( char * & _buf, int & offset, T const & v, TS const & ...vs )
     {
-        FillHexCore( buf, offset, v );
-        FillHexCore( buf, offset, vs... );
+        FillHexCore( _buf, offset, v );
+        FillHexCore( _buf, offset, vs... );
     }
 
     template<typename ...TS>
-    int String::FillHex( char * buf, TS const & ...vs )
+    int String::FillHex( char * _buf, TS const & ...vs )
     {
         int offset = 0;
-        FillHexCore( buf, offset, vs... );
-        buf[ offset ] = '\0';
+        FillHexCore( _buf, offset, vs... );
+        _buf[ offset ] = '\0';
         return offset;
     }
 

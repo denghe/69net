@@ -12,7 +12,7 @@ namespace xxx
         {
             Node*           next;
             uint            hash;                               // key's hashCode
-            int             index;                              // _nodes[ index ]
+            int             index;                              // nodes[ index ]
             TK              key;
         };
         explicit Hash( int capacity = 64 );
@@ -42,9 +42,9 @@ namespace xxx
     protected:
         void Dispose( Node* n );
         void Resize();
-        List<Node*>         _buckets;
-        List<Node*>         _nodes;
-        Pool                _pool;
+        List<Node*>         buckets;
+        List<Node*>         nodes;
+        Pool                pool;
     };
 
 }

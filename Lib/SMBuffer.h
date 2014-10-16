@@ -12,11 +12,11 @@ namespace xxx
     class SMBuffer
     {
     public:
-        void Init( int bufLen );
-        int Write( char const* buf, int len );  // 返回实际写入长度
-        int Read( char* buf, int len );         // 返回实际读取长度
-        int Copy( char* buf, int len );         // 返回实际复制长度
-        int Skip( int len );                    // 返回实际跳过长度
+        void Init( int _bufLen );
+        int Write( char const* _buf, int len );     // 返回实际写入长度
+        int Read( char* _buf, int len );            // 返回实际读取长度
+        int Copy( char* _buf, int len );            // 返回实际复制长度
+        int Skip( int len );                        // 返回实际跳过长度
         void Clear();
         bool Empty() const;
         int Size() const;
@@ -24,12 +24,12 @@ namespace xxx
 
     private:
         SMBuffer() = delete;
-        SMBuffer( SMBuffer const& other ) = delete;
-        SMBuffer& operator=( SMBuffer const& other ) = delete;
+        SMBuffer( SMBuffer const& o ) = delete;
+        SMBuffer& operator=( SMBuffer const& o ) = delete;
 
-        std::atomic<int> _size;
-        int _bufLen, _ro, _wo;
-        char _buf[ 1 ];     // point to buffer space
+        std::atomic<int> size;
+        int bufLen, ro, wo;
+        char buf[ 1 ];                              // point to buffer space
     };
 
 

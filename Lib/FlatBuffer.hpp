@@ -55,7 +55,7 @@ namespace xxx
     template<int len>
     void FlatBuffer::Write( char const( &s )[ len ] )
     {
-        Reserve( _dataLen + sizeof( int ) + len - 1 );
+        Reserve( dataLen + sizeof( int ) + len - 1 );
         WriteDirect( s );
     }
 
@@ -81,7 +81,7 @@ namespace xxx
         if( std::is_pod<T>::value )
         {
             auto siz = len * ( int )sizeof( T );
-            Reserve( _dataLen + siz );
+            Reserve( dataLen + siz );
             WriteDirect( (char*)a, len * sizeof( T ) );
         }
         else
@@ -113,7 +113,7 @@ namespace xxx
     template<typename ...TS>
     void FlatBuffer::Writes( TS const& ...vs )
     {
-        Reserve( _dataLen + BufferUtils::GetSizes( vs... ) );
+        Reserve( dataLen + BufferUtils::GetSizes( vs... ) );
         WritesCore( vs... );
     }
 
@@ -154,9 +154,9 @@ namespace xxx
         if( std::is_pod<T>::value )
         {
             int siz = len * ( int )sizeof( T );
-            if( _offset + siz > _dataLen ) return false;
-            memcpy( &a, _buf + _offset, siz );
-            _offset += siz;
+            if( offset + siz > dataLen ) return false;
+            memcpy( &a, buf + offset, siz );
+            offset += siz;
             return true;
         }
         for( int i = 0; i < len; ++i )
@@ -196,8 +196,8 @@ namespace xxx
     void FlatBuffer::ReadDirect( T& v )
     {
         assert( std::is_pod<T>::value );
-        BufferUtils::Read( v, _buf + _offset );
-        _offset += BufferUtils::GetSize( v );
+        BufferUtils::Read( v, buf + offset );
+        offset += BufferUtils::GetSize( v );
     }
     template<typename T>
     void FlatBuffer::ReadsDirectCore( T& v )

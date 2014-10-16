@@ -6,29 +6,29 @@ namespace xxx
 
     ScopeGuard::~ScopeGuard()
     {
-        if( _f ) _f();
+        if( func ) func();
     }
 
     void ScopeGuard::RunAndCancel()
     {
-        if( _f )
+        if( func )
         {
-            _f();
-            _f = nullptr;
+            func();
+            func = nullptr;
         }
     }
 
     void ScopeGuard::Run()
     {
-        if( _f )
+        if( func )
         {
-            _f();
+            func();
         }
     }
 
     void ScopeGuard::Cancel()
     {
-        _f = nullptr;
+        func = nullptr;
     }
 
 }

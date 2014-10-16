@@ -10,10 +10,10 @@ namespace xxx
     public:
         FlatQueue( int capacity = 8 );
         ~FlatQueue();
-        FlatQueue( FlatQueue const& other );
-        FlatQueue( FlatQueue&& other );
-        FlatQueue& operator=( FlatQueue const& other );
-        FlatQueue& operator=( FlatQueue&& other );
+        FlatQueue( FlatQueue const& o );
+        FlatQueue( FlatQueue&& o );
+        FlatQueue& operator=( FlatQueue const& o );
+        FlatQueue& operator=( FlatQueue&& o );
 
         T const& operator[]( int idx ) const;
         T& operator[]( int idx );
@@ -34,8 +34,8 @@ namespace xxx
         bool Pop( T& outVal );
 
     private:
-        T* _buf;
-        int _maxSize, _head, _tail;
+        T* buf;
+        int maxSize, head, tail;
     };
 
 

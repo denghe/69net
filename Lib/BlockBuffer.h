@@ -8,17 +8,17 @@ namespace xxx
     class BlockBuffer : Memmoveable
     {
     public:
-        explicit BlockBuffer( Pool& _p );
+        explicit BlockBuffer( Pool& p );
         ~BlockBuffer();
-        void Write( char const* _buf, int _len );
-        int Read( char* _buf, int _len );           // 试复制指定长度到 buf 并移动读指针. 返回实际复制的长度
-        void Copy( char* _buf, int _len );          // 复制指定长度到 buf, 如果 size 不足会出错
+        void Write( char const* buf, int len );
+        int Read( char* buf, int len );             // 试复制指定长度到 buf 并移动读指针. 返回实际复制的长度
+        void Copy( char* buf, int len );            // 复制指定长度到 buf, 如果 size 不足会出错
         void Clear();
         bool Empty() const;
         int Size() const;                           // 未读之数据长
     private:
-        BlockBuffer( BlockBuffer const& _other ) = delete;
-        BlockBuffer& operator=( BlockBuffer const& _other ) = delete;
+        BlockBuffer( BlockBuffer const& o ) = delete;
+        BlockBuffer& operator=( BlockBuffer const& o ) = delete;
         struct Page
         {
             Page*   next;

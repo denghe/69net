@@ -9,13 +9,13 @@ namespace xxx
     {
     public:
         OldPool();     // need Init
-        void Init( int ItemBufLen, int pageBufLen = 4096, int capacity = 128, bool AttachThis = false );
-        OldPool( int ItemBufLen, int pageBufLen = 4096, int capacity = 128, bool AttachThis = false );
+        void Init( int _itemBufLen, int _pageBufLen = 4096, int capacity = 128, bool _attachThis = false );
+        OldPool( int _itemBufLen, int _pageBufLen = 4096, int capacity = 128, bool _attachThis = false );
         ~OldPool();
-        OldPool( OldPool&& other );
-        OldPool& operator=( OldPool&& other );
-        OldPool( OldPool const& other ) = delete;
-        OldPool& operator=( OldPool const& other ) = delete;
+        OldPool( OldPool&& o );
+        OldPool& operator=( OldPool&& o );
+        OldPool( OldPool const& o ) = delete;
+        OldPool& operator=( OldPool const& o ) = delete;
         void* Alloc();
         void Free( void* p );
         void Clear();
@@ -23,16 +23,16 @@ namespace xxx
         void Reserve();     // new 1 page
         void Reserve( int capacity );
         int Size() const;
-        int pageCount() const;
-        int pageBufLen() const;
+        int PageCount() const;
+        int PageBufLen() const;
         int ItemBufLen() const;
         bool AttachThis() const;
     private:
-        List<void*> _items;
-        List<void*> _pages;
-        int _itemBufLen;
-        int _pageBufLen;
-        bool _attachThis;
+        List<void*> items;
+        List<void*> pages;
+        int itemBufLen;
+        int pageBufLen;
+        bool attachThis;
     };
 
 

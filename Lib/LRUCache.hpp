@@ -7,84 +7,84 @@ namespace xxx
 
     template<typename KT, typename VT>
     template<typename PKT, typename PVT>
-    LRUCacheItem<KT, VT>::LRUCacheItem( PKT && key, PVT && value )
-        : _next( nullptr )
-        , _prev( nullptr )
-        , _key( std::forward<PKT>( key ) )
-        , _value( std::forward<PVT>( value ) )
+    LRUCacheItem<KT, VT>::LRUCacheItem( PKT &&k, PVT &&v )
+        : next( nullptr )
+        , prev( nullptr )
+        , key( std::forward<PKT>( k ) )
+        , value( std::forward<PVT>( v ) )
     {
     }
 
     template<typename KT, typename VT>
-    LRUCacheItem<KT, VT>::LRUCacheItem( LRUCacheItem const & other )
-        : _next( nullptr )
-        , _prev( nullptr )
-        , _key( other._key )
-        , _value( other._value )
+    LRUCacheItem<KT, VT>::LRUCacheItem( LRUCacheItem const &o )
+        : next( nullptr )
+        , prev( nullptr )
+        , key( o.key )
+        , value( o.value )
     {
     }
 
     template<typename KT, typename VT>
-    LRUCacheItem<KT, VT>::LRUCacheItem( LRUCacheItem && other )
-        : _next( nullptr )
-        , _prev( nullptr )
-        , _key( std::move( other._key ) )
-        , _value( std::move( other._value ) )
+    LRUCacheItem<KT, VT>::LRUCacheItem( LRUCacheItem &&o )
+        : next( nullptr )
+        , prev( nullptr )
+        , key( std::move( o.key ) )
+        , value( std::move( o.value ) )
     {
     }
 
     template<typename KT, typename VT>
-    LRUCacheItem<KT, VT>& LRUCacheItem<KT, VT>::operator=( LRUCacheItem const & other )
+    LRUCacheItem<KT, VT>& LRUCacheItem<KT, VT>::operator=( LRUCacheItem const &o )
     {
-        _next = nullptr;
-        _prev = nullptr;
-        _key = other._key;
-        _value = other._value;
+        next = nullptr;
+        prev = nullptr;
+        key = o.key;
+        value = o.value;
         return *this;
     }
 
     template<typename KT, typename VT>
-    LRUCacheItem<KT, VT>& LRUCacheItem<KT, VT>::operator=( LRUCacheItem && other )
+    LRUCacheItem<KT, VT>& LRUCacheItem<KT, VT>::operator=( LRUCacheItem &&o )
     {
-        _next = nullptr;
-        _prev = nullptr;
-        _key = std::move( other._key );
-        _value = std::move( other._value );
+        next = nullptr;
+        prev = nullptr;
+        key = std::move( o.key );
+        value = std::move( o.value );
         return *this;
     }
 
 
     template<typename KT, typename VT>
-    LRUCacheItem<KT, VT>::LRUCacheItem( LRUCacheItem * next, LRUCacheItem * prev )
-        : _next( next )
-        , _prev( prev )
+    LRUCacheItem<KT, VT>::LRUCacheItem( LRUCacheItem *_next, LRUCacheItem *_prev )
+        : next( _next )
+        , prev( _prev )
     {
     }
 
     template<typename KT, typename VT>
-    void LRUCacheItem<KT, VT>::Link( LRUCacheItem & head )
+    void LRUCacheItem<KT, VT>::Link( LRUCacheItem &_head )
     {
-        _next = &head;
-        _prev = head._prev;
-        head._prev->_next = this;
-        head._prev = this;
+        next = &_head;
+        prev = _head.prev;
+        _head.prev->next = this;
+        _head.prev = this;
     }
 
     template<typename KT, typename VT>
     void LRUCacheItem<KT, VT>::Unlink()
     {
-        _prev->_next = _next;
-        _next->_prev = _prev;
+        prev->next = next;
+        next->prev = prev;
     }
 
     template<typename KT, typename VT>
-    void LRUCacheItem<KT, VT>::MoveTo( LRUCacheItem & head )
+    void LRUCacheItem<KT, VT>::MoveTo( LRUCacheItem &_head )
     {
         Unlink();
-        this->_next = &head;
-        this->_prev = head._prev;
-        head._prev->_next = this;
-        head._prev = this;
+        this->next = &_head;
+        this->prev = _head.prev;
+        _head.prev->next = this;
+        _head.prev = this;
     }
 
 
@@ -94,53 +94,53 @@ namespace xxx
 
 
     template<typename KT, typename VT>
-    LRUCache<KT, VT>::LRUCache( int limit/* = 100*/ )
-        : _limit( limit )
-        , _head( &_head, &_head )
+    LRUCache<KT, VT>::LRUCache( int _limit/* = 100*/ )
+        : limit( _limit )
+        , head( &head, &head )
     {
-        _data.Reserve( limit + 1 );
+        data.Reserve( _limit + 1 );
     }
 
     template<typename KT, typename VT>
     template<typename PKT, typename PVT>
-    std::pair<VT*, bool> LRUCache<KT, VT>::Insert( PKT && key, PVT && value, bool override )
+    std::pair<VT*, bool> LRUCache<KT, VT>::Insert( PKT &&k, PVT &&v, bool override )
     {
         std::pair<VT*, bool> result;
-        auto r = _data.Insert( std::forward<PKT>( key ), IT( key, std::forward<PVT>( value ) ), override );
+        auto r = data.Insert( std::forward<PKT>( k ), IT( k, std::forward<PVT>( v ) ), override );
         if( r.second )
         {
-            r.first->value.Link( _head );
-            if( (int)_data.Size() > _limit )
+            r.first->value.Link( head );
+            if( (int)data.Size() > limit )
             {
                 Evict();
             }
         }
-        result.first = &r.first->value._value;
+        result.first = &r.first->value.value;
         result.second = r.second;
         return result;
     }
 
     template<typename KT, typename VT>
-    VT* LRUCache<KT, VT>::Find( KT const & key )
+    VT* LRUCache<KT, VT>::Find( KT const& k )
     {
-        auto p = _data.Find( key );
+        auto p = data.Find( k );
         if( !p ) return nullptr;
-        p->value.MoveTo( _head );
-        return &p->value._value;
+        p->value.MoveTo( head );
+        return &p->value.value;
     }
 
     template<typename KT, typename VT>
     void LRUCache<KT, VT>::Clear()
     {
-        _data.Clear();
+        data.Clear();
     }
 
     template<typename KT, typename VT>
     void LRUCache<KT, VT>::Dump()
     {
-        for( int i = 0; i < _data.Size(); ++i )
+        for( int i = 0; i < data.Size(); ++i )
         {
-            std::cout << _data.Data()[ i ]->key << std::endl;
+            std::cout << data.Data()[ i ]->key << std::endl;
         }
         std::cout << std::endl;
     }
@@ -148,9 +148,9 @@ namespace xxx
     template<typename KT, typename VT>
     void LRUCache<KT, VT>::Evict()
     {
-        auto lastItem = _head._next;
+        auto lastItem = head.next;
         lastItem->Unlink();
-        _data.Erase( lastItem->_key );
+        data.Erase( lastItem->key );
     }
 
 

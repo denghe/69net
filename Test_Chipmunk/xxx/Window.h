@@ -1,6 +1,11 @@
 #ifndef __GLWINDOW_H__
 #define __GLWINDOW_H__
 
+#include <gl/GL.h>
+#include <gl/GLU.h>
+#pragma comment(lib, "OpenGl32.lib")
+#pragma comment(lib, "glu32.lib")
+
 namespace xxx
 {
     LRESULT CALLBACK defaultProc( HWND hWnd, UINT uiMsg, WPARAM wParam, LPARAM lParam );

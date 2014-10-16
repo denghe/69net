@@ -13,10 +13,10 @@ namespace xxx
     public:
         List( int capacity = 8 );
         ~List();
-        List( List&& other );
-        List( List const& other );
-        List& operator=( List&& other );
-        List& operator=( List const& other );
+        List( List&& o );
+        List( List const& o );
+        List& operator=( List&& o );
+        List& operator=( List const& o );
         template<typename VT>
         void Push( VT&& v );
         template<typename VT>
@@ -58,9 +58,9 @@ namespace xxx
 
 
     private:
-        T*          _buf;
-        int         _size;
-        int         _maxSize;
+        T*          buf;
+        int         size;
+        int         maxSize;
     };
 
 
@@ -72,10 +72,10 @@ namespace xxx
     public:
         List( int capacity = 512 );
         ~List();
-        List( List<bool>&& other );
-        List( List<bool> const& other );
-        List& operator=( List<bool>&& other );
-        List& operator=( List<bool> const& other );
+        List( List<bool>&& o );
+        List( List<bool> const& o );
+        List& operator=( List<bool>&& o );
+        List& operator=( List<bool> const& o );
         void Push( bool v );
         void Pop();
         bool Top() const;
@@ -89,9 +89,9 @@ namespace xxx
         void Set( int idx, bool v );
         // todo: more functions
     private:
-        char*       _buf;
-        int         _size;
-        int         _maxSize;
+        char*       buf;
+        int         size;
+        int         maxSize;
     };
 
 
