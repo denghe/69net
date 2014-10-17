@@ -2,60 +2,89 @@
 using namespace std;
 using namespace xxx;
 
-
-struct Bar : public CorBase<Bar>
+template<typename T>
+struct State : public CorBase < State<T> >
 {
-    String txt;
-    void Init( String _txt )
-    {
-        txt = _txt;
-    }
-    bool Process( int _ticks ) override
-    {
-        COR_BEGIN;
-        Cout( txt, " say: i'm living..." );
-        COR_SLEEP( 5 );
-        Cout( txt, " say: i'm dieing..." );
-        COR_END;
-    }
+    T* owner = nullptr;
+    //void Init( T* _owner ) { owner = _owner; };
 };
 
-struct Foo : public CorBase<Foo>
+struct Foo : public CorBase < Foo >
 {
-    REF_DECL( Bar, bar );
-
-    void Init( Bar* _bar )
+    State<Foo> *currState = nullptr;
+    std::function<void()> changeState;
+    template<typename T, typename ...PTS>
+    void CreateState( PTS... ps )
     {
-        REF_SET( bar, _bar );
+        currState = manager->CreateItem<T>( this, std::forward<PTS>( ps )... );
     }
-    void EnsureRefs() override
+    struct DieState : public State < Foo >
     {
-        REF_ENSURE( bar );
+        void Init( Foo* _owner ) { owner = _owner; };
+        bool Process( int _ticks ) override
+        {
+            COR_BEGIN;
+            COR_SLEEP( 3 );
+            auto _owner = this->owner;
+            owner->changeState = [ _owner ] { _owner->currState = nullptr; };
+            COR_END;
+        }
+        void Destroy() override { owner = nullptr; }
+    };
+    struct LiveState : public State < Foo >
+    {
+        void Init( Foo* _owner ) { owner = _owner; };
+        bool Process( int _ticks ) override
+        {
+            COR_BEGIN;
+            COR_SLEEP( 2 );
+            auto _owner = this->owner;
+            owner->changeState = [ _owner ] { _owner->CreateState<DieState>(); };
+            COR_END;
+        }
+        void Destroy() override { owner = nullptr; }
+    };
+    struct BornState : public State < Foo >
+    {
+        void Init( Foo* _owner ) { owner = _owner; };
+        bool Process( int _ticks ) override
+        {
+            COR_BEGIN;
+            COR_SLEEP( 1 );
+            auto _owner = this->owner;
+            owner->changeState = [ _owner ] { _owner->CreateState<LiveState>(); };
+            COR_END;
+        }
+        void Destroy() override { owner = nullptr; }
+    };
+    void Init()
+    {
+        CreateState<BornState>();
     }
-
-    int i;
     bool Process( int _ticks ) override
     {
-        EnsureRefs();
-        COR_BEGIN;
-        for( i = 0; i < 9; ++i )
+        do
         {
-            Cout( "Foo's i = ", i );
-            if( bar )
+            if( currState )
             {
-                Cout( "Foo's Bar alive!" );
+                if( currState->Process( _ticks ) ) return true;
+                else manager->DestroyItem( currState );
             }
-            COR_YIELD;
-        }
-        COR_END;
+            if( changeState ) changeState();
+        } while( currState );
+        return false;
     }
 };
 
 int main()
 {
-    CorManager<Cor> fbm;
-    fbm.CreateItem<Foo>( fbm.CreateItem<Bar>( "Bar" ) );
-    while( fbm.Process() );
+    CorManager<Cor> cm;
+    cm.CreateItem<Foo>();
+    int i = 0;
+    do
+    {
+        Cout( "step: ", ++i );
+    } while( cm.Process( i ) );
 
     system( "pause" );
     return 0;

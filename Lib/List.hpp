@@ -293,7 +293,6 @@ namespace xxx
     {
         assert( idx >= 0 && idx < size );
         --size;
-        if( !size ) return;
         if( size == idx )
         {
             buf[ idx ].~T();
