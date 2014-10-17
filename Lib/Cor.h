@@ -41,25 +41,25 @@ namespace xxx
         }
 
         int aiid = 0;
-        template<typename T, typename ...PTS>
-        T* CreateItem( PTS ..._parms )
+        template<typename CT, typename ...PTS>
+        CT* CreateItem( PTS ..._parms )
         {
-            T* rtv;
-            auto& objs = pool[ T::typeId.value ];
+            CT* rtv;
+            auto& objs = pool[ CT::typeId.value ];
             if( objs.Size() )
             {
-                rtv = (T*)objs.TopPop();
+                rtv = (CT*)objs.TopPop();
             }
             else
             {
-                rtv = new T();
+                rtv = new CT();
                 rtv->manager = this;
             }
-            rtv->id = ++aiid;
+            rtv->T::id = ++aiid;
             rtv->Init( std::forward<PTS>( _parms )... );
-            rtv->idx = items.Size();
-            rtv->ln = 0;
-            rtv->sleeps = 0;
+            rtv->T::idx = items.Size();
+            rtv->T::ln = 0;
+            rtv->T::sleeps = 0;
             items.Push( rtv );
             return rtv;
         }
