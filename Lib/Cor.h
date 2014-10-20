@@ -4,16 +4,16 @@
 namespace xxx
 {
 
-#define COR_BEGIN           if( sleeps ) { return Sleeping(); }; \
-                            switch( ln ) { case 0:
-#define COR_YIELD           ln = __LINE__; return true; case __LINE__:
+#define COR_BEGIN           if( corSleeps ) { return Sleeping(); }; \
+                            switch( corLn ) { case 0:
+#define COR_YIELD           corLn = __LINE__; return true; case __LINE__:
 #define COR_END             } return false;
-#define COR_SLEEP( N )      sleeps = N - 1; COR_YIELD;
+#define COR_SLEEP( N )      corSleeps = N - 1; COR_YIELD;
 
 
-#define REF_DECL( T, N )    T* N = nullptr; int N##Id = 0
-#define REF_SET( N, P )     N = P; N##Id = P->id
-#define REF_ENSURE( N )     if( N && N->id != N##Id ) N = nullptr
+#define REF_DECL( T, N )    T* N = nullptr; int N##_corId = 0
+#define REF_SET( N, P )     N = P; N##_corId = P->corId
+#define REF_ENSURE( N )     if( N && N->corId != N##_corId ) N = nullptr
 #define REF_CLEAR( N )      N = nullptr
 
     // todo: message ?
@@ -55,21 +55,21 @@ namespace xxx
                 rtv = new CT();
                 rtv->manager = this;
             }
-            rtv->T::id = ++aiid;
+            rtv->T::corId = ++aiid;
             rtv->Init( std::forward<PTS>( _parms )... );
-            rtv->T::idx = items.Size();
-            rtv->T::ln = 0;
-            rtv->T::sleeps = 0;
+            rtv->T::corIdx = items.Size();
+            rtv->T::corLn = 0;
+            rtv->T::corSleeps = 0;
             items.Push( rtv );
             return rtv;
         }
 
         void DestroyItem( T* _o )
         {
-            items.Top()->idx = _o->idx;
-            items.EraseFast( _o->idx );
+            items.Top()->corIdx = _o->corIdx;
+            items.EraseFast( _o->corIdx );
             _o->Destroy();
-            _o->id = 0;
+            _o->corId = 0;
             pool[ _o->GetTypeId() ].Push( _o );
         }
 
@@ -111,27 +111,26 @@ namespace xxx
         }
     };
 
+    struct CorCore
+    {
+        // void Init( ... );
+        inline virtual void EnsureRefs() {}
+        inline virtual void Destroy() {}
+        virtual ~CorCore() {}
 
+        int corId = 0, corIdx = 0, corLn = 0, corSleeps = 0;
+        virtual bool Process( int ticks ) = 0;
+        inline virtual bool Sleeping() { --corSleeps; return true; }
+    };
 
-    struct Cor
+    struct Cor : public CorCore
     {
         CorManager<Cor>* manager;
 
         // static const AutoID<Base1> typeId;
         // int GetTypeId() override { return typeId.value; }
         virtual int GetTypeId() = 0;
-
-        // void Init( ... );
-        inline virtual void EnsureRefs() {}
-        inline virtual void Destroy() {}
-        virtual ~Cor() {}
-
-        int id = 0, idx = 0, ln = 0, sleeps = 0;
-        virtual bool Process( int ticks ) = 0;
-        inline virtual bool Sleeping() { --sleeps; return true; }
     };
-
-
 
     template<typename T>
     struct CorBase : public Cor
