@@ -44,12 +44,7 @@ struct Foo : public CorBase < Foo >
     DieState<Foo>           dieState;
     StateBase<Foo>*         currState = nullptr;
     std::function<void()>   changeState;
-    Foo()
-        : bornState( this )
-        , liveState( this )
-        , dieState( this )
-    {
-    }
+    Foo();
     void Init();
     bool Process( int _ticks ) override;
 };
@@ -61,6 +56,13 @@ struct Foo : public CorBase < Foo >
 
 
 
+
+Foo::Foo()
+    : bornState( this )
+    , liveState( this )
+    , dieState( this )
+{
+}
 
 void Foo::Init()
 {
