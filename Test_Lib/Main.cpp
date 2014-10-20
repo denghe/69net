@@ -9,27 +9,28 @@ struct StateBase : CorCore
     T* owner = nullptr;
 };
 
-struct Foo;
-
-struct DieState : public StateBase < Foo >
+template<typename T>
+struct DieState : public StateBase < T >
 {
-    DieState( Foo* _owner );
+    DieState( T* _owner );
     void Init();   // todo: more parms
     bool Process( int _ticks ) override;
     void Destroy() override;
 };
 
-struct LiveState : public StateBase < Foo >
+template<typename T>
+struct LiveState : public StateBase < T >
 {
-    LiveState( Foo* _owner );
+    LiveState( T* _owner );
     void Init();   // todo: more parms
     bool Process( int _ticks ) override;
     void Destroy() override;
 };
 
-struct BornState : public StateBase < Foo >
+template<typename T>
+struct BornState : public StateBase < T >
 {
-    BornState( Foo* _owner );
+    BornState( T* _owner );
     void Init();   // todo: more parms
     bool Process( int _ticks ) override;
     void Destroy() override;
@@ -38,9 +39,9 @@ struct BornState : public StateBase < Foo >
 
 struct Foo : public CorBase < Foo >
 {
-    BornState               bornState;
-    LiveState               liveState;
-    DieState                dieState;
+    BornState<Foo>          bornState;
+    LiveState<Foo>          liveState;
+    DieState<Foo>           dieState;
     StateBase<Foo>*         currState = nullptr;
     std::function<void()>   changeState;
     Foo()
@@ -82,20 +83,21 @@ bool Foo::Process( int _ticks )
 
 
 
-
-
-BornState::BornState( Foo* _owner )
+template<typename T>
+BornState<T>::BornState( T* _owner )
 {
     owner = _owner;
 }
 
-void BornState::Init()
+template<typename T>
+void BornState<T>::Init()
 {
     owner->currState = this;
     Cout( "born begin" );
 }
 
-bool BornState::Process( int _ticks )
+template<typename T>
+bool BornState<T>::Process( int _ticks )
 {
     COR_BEGIN;
     Cout( "born ing..." );
@@ -105,25 +107,29 @@ bool BornState::Process( int _ticks )
     COR_END;
 }
 
-void BornState::Destroy()
+template<typename T>
+void BornState<T>::Destroy()
 {
     Cout( "born end" );
 }
 
 
 
-LiveState::LiveState( Foo* _owner )
+template<typename T>
+LiveState<T>::LiveState( T* _owner )
 {
     owner = _owner;
 }
 
-void LiveState::Init()
+template<typename T>
+void LiveState<T>::Init()
 {
     owner->currState = this;
     Cout( "live begin" );
 }
 
-bool LiveState::Process( int _ticks )
+template<typename T>
+bool LiveState<T>::Process( int _ticks )
 {
     COR_BEGIN;
     Cout( "live ing..." );
@@ -133,7 +139,8 @@ bool LiveState::Process( int _ticks )
     COR_END;
 }
 
-void LiveState::Destroy()
+template<typename T>
+void LiveState<T>::Destroy()
 {
     Cout( "live end" );
 }
@@ -141,18 +148,21 @@ void LiveState::Destroy()
 
 
 
-DieState::DieState( Foo* _owner )
+template<typename T>
+DieState<T>::DieState( T* _owner )
 {
     owner = _owner;
 }
 
-void DieState::Init()
+template<typename T>
+void DieState<T>::Init()
 {
     owner->currState = this;
     Cout( "die begin" );
 }
 
-bool DieState::Process( int _ticks )
+template<typename T>
+bool DieState<T>::Process( int _ticks )
 {
     COR_BEGIN;
     Cout( "die ing..." );
@@ -161,7 +171,8 @@ bool DieState::Process( int _ticks )
     COR_END;
 }
 
-void DieState::Destroy()
+template<typename T>
+void DieState<T>::Destroy()
 {
     Cout( "die end" );
 }
