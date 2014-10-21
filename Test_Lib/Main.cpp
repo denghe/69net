@@ -3,188 +3,135 @@ using namespace std;
 using namespace xxx;
 
 
-template<typename T>
-struct StateBase : CorCore
+template<typename T, typename... Args>
+struct MaxSize
 {
-    T* owner = nullptr;
+    enum
+    {
+        value = sizeof( T ) > MaxSize<Args...>::value
+        ? sizeof( T )
+        : MaxSize<Args...>::value
+    };
+};
+template<typename T>
+struct MaxSize < T >
+{
+    enum { value = sizeof( T ) };
 };
 
-template<typename T>
-struct DieState : public StateBase < T >
+
+struct Foo;
+
+struct FooStateBase : public CorCore
 {
-    DieState( T* _owner );
-    void Init();   // todo: more parms
+    Foo* owner;
+};
+struct FooState1 : public FooStateBase
+{
+    String name;
+    void Init( Foo* _owner, String const& _name /* , ... */ );
     bool Process( int _ticks ) override;
     void Destroy() override;
 };
-
-template<typename T>
-struct LiveState : public StateBase < T >
+struct FooState2 : public FooStateBase
 {
-    LiveState( T* _owner );
-    void Init();   // todo: more parms
+    String name;
+    void Init( Foo* _owner, String const& _name /* , ... */ );
     bool Process( int _ticks ) override;
     void Destroy() override;
 };
-
-template<typename T>
-struct BornState : public StateBase < T >
-{
-    BornState( T* _owner );
-    void Init();   // todo: more parms
-    bool Process( int _ticks ) override;
-    void Destroy() override;
-};
-
-
 struct Foo : public CorBase < Foo >
 {
-    BornState<Foo>          bornState;
-    LiveState<Foo>          liveState;
-    DieState<Foo>           dieState;
-    StateBase<Foo>*         currState = nullptr;
-    std::function<void()>   changeState;
-    Foo();
-    void Init();
+    std::aligned_storage_t < MaxSize<
+        FooState1, FooState2 /* , ... */
+    >::value, 8 > stateData[ 1 ];
+    FooStateBase* state = (FooStateBase*)stateData;
+    String name;
+    void Init( String const& _name );
     bool Process( int _ticks ) override;
 };
 
 
 
-
-
-
-
-
-
-Foo::Foo()
-    : bornState( this )
-    , liveState( this )
-    , dieState( this )
+void FooState1::Init( Foo* _owner, String const& _name )
 {
+    new ( this ) FooState1();
+    owner = _owner;
+    // ...
+    name = _name;
+    Cout( name, " Init ed" );
+}
+bool FooState1::Process( int _ticks )
+{
+    COR_BEGIN;
+    Cout( name, " Process: before sleep( 2 )" );
+    COR_SLEEP( 2 );
+    Cout( name, " Process: sleeped" );
+    COR_END;
+}
+void FooState1::Destroy()
+{
+    Cout( name, " Destroy ing" );
+    // ...
+    auto o = owner;
+    String fs2Name;
+    fs2Name.Append( o->name, "'s FS2" );
+    FooState1::~FooState1();
+    ( (FooState2*)o->state )->Init( o, std::move( fs2Name ) );
 }
 
-void Foo::Init()
+void FooState2::Init( Foo* _owner, String const& _name )
 {
-    changeState = [ this ] { bornState.Init(); };
+    new ( this )FooState2();
+    owner = _owner;
+    // ...
+    name = _name;
+    Cout( name, " Init ed" );
+}
+bool FooState2::Process( int _ticks )
+{
+    COR_BEGIN;
+    Cout( name, " Process: before sleep( 4 )" );
+    COR_SLEEP( 4 );
+    Cout( name, " Process: sleeped" );
+    COR_END;
+}
+void FooState2::Destroy()
+{
+    Cout( name, " Destroy ing" );
+    // ...
+    auto o = owner;
+    FooState2::~FooState2();
+    o->state = nullptr;
+}
+
+
+
+void Foo::Init( String const& _name )
+{
+    name = _name;
+    auto stateName = name;
+    stateName.Append( "'s FS1" );
+    ( (FooState1*)state )->Init( this, stateName );
 }
 
 bool Foo::Process( int _ticks )
 {
-    if( currState )
-    {
-        if( currState->Process( _ticks ) ) return true;
-        currState->Destroy();
-        currState = nullptr;
-    }
-    if( changeState ) changeState();
-    if( currState ) return true;
-    return false;
+    if( state->Process( _ticks ) ) return true;
+    state->Destroy();
+    return state != nullptr;
 }
 
 
-
-
-template<typename T>
-BornState<T>::BornState( T* _owner )
-{
-    owner = _owner;
-}
-
-template<typename T>
-void BornState<T>::Init()
-{
-    owner->currState = this;
-    Cout( "born begin" );
-}
-
-template<typename T>
-bool BornState<T>::Process( int _ticks )
-{
-    COR_BEGIN;
-    Cout( "born ing..." );
-    COR_SLEEP( 1 );
-    auto _owner = owner;
-    owner->changeState = [ _owner ] { _owner->liveState.Init(); };
-    COR_END;
-}
-
-template<typename T>
-void BornState<T>::Destroy()
-{
-    Cout( "born end" );
-}
-
-
-
-template<typename T>
-LiveState<T>::LiveState( T* _owner )
-{
-    owner = _owner;
-}
-
-template<typename T>
-void LiveState<T>::Init()
-{
-    owner->currState = this;
-    Cout( "live begin" );
-}
-
-template<typename T>
-bool LiveState<T>::Process( int _ticks )
-{
-    COR_BEGIN;
-    Cout( "live ing..." );
-    COR_SLEEP( 2 );
-    auto _owner = owner;
-    owner->changeState = [ _owner ] { _owner->dieState.Init(); };
-    COR_END;
-}
-
-template<typename T>
-void LiveState<T>::Destroy()
-{
-    Cout( "live end" );
-}
-
-
-
-
-template<typename T>
-DieState<T>::DieState( T* _owner )
-{
-    owner = _owner;
-}
-
-template<typename T>
-void DieState<T>::Init()
-{
-    owner->currState = this;
-    Cout( "die begin" );
-}
-
-template<typename T>
-bool DieState<T>::Process( int _ticks )
-{
-    COR_BEGIN;
-    Cout( "die ing..." );
-    COR_SLEEP( 3 );
-    owner->changeState = nullptr;
-    COR_END;
-}
-
-template<typename T>
-void DieState<T>::Destroy()
-{
-    Cout( "die end" );
-}
 
 
 
 int main()
 {
     CorManager<Cor> cm;
-    cm.CreateItem<Foo>();
+    cm.CreateItem<Foo>( "Foo1" );
+    cm.CreateItem<Foo>( "Foo2" );
+    cm.CreateItem<Foo>( "Foo3" );
     int i = 0;
     do
     {
