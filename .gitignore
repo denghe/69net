@@ -17,3 +17,4 @@ ipch
 /enet/x64
 /*.opensdf
 vc120.idb
+/Test_Lib/*.i

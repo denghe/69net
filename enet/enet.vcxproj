@@ -158,6 +158,7 @@
       </ObjectFileName>
       <ProgramDataBaseFileName>
       </ProgramDataBaseFileName>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>
