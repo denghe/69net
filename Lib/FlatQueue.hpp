@@ -123,10 +123,11 @@ namespace xxx
         tail = size;
     }
 
-    template <class T>
-    void FlatQueue<T>::Push( T const& v )
+    template <typename T>
+    template <typename VT>
+    void FlatQueue<T>::Push( VT&& v )
     {
-        new ( buf + tail++ ) T( v );
+        new ( buf + tail++ ) T( std::forward<VT>( v ) );
         if( tail == maxSize ) tail = 0;
         if( tail == head ) Reserve( maxSize + 1, true );
     }

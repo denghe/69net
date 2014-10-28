@@ -31,10 +31,11 @@
     <ClInclude Include="Pool.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="Hash.hpp" />
+    <ClInclude Include="String_.h" />
+    <ClInclude Include="Cor.h" />
     <ClInclude Include="Links.h" />
     <ClInclude Include="Links.hpp" />
-    <ClInclude Include="Cor.h" />
-    <ClInclude Include="String_.h" />
+    <ClInclude Include="Singleton.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />

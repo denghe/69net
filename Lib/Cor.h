@@ -42,7 +42,7 @@ namespace xxx
 
         int aiid = 0;
         template<typename CT, typename ...PTS>
-        CT* CreateItem( PTS ..._parms )
+        CT* CreateItem( PTS&& ..._parms )
         {
             CT* rtv;
             auto& objs = pool[ CT::typeId.value ];

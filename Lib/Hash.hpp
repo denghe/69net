@@ -67,8 +67,7 @@ namespace xxx
     }
 
     template <typename TK>
-    template <typename KT>
-    std::pair<typename Hash<TK>::Node*, bool> Hash<TK>::Insert( KT && k )
+    std::pair<typename Hash<TK>::Node*, bool> Hash<TK>::Insert( TK const& k )
     {
         std::pair<typename Hash<TK>::Node*, bool> rtv;
         uint hashCode = (uint)GetHashCode( k );
@@ -88,7 +87,7 @@ namespace xxx
         n->next = buckets[ mod ];
         n->hash = hashCode;
         n->index = nodes.Size();
-        new ( &n->key ) TK( std::forward<KT>( k ) );
+        new ( &n->key ) TK( k );
         buckets[ mod ] = n;
         nodes.Push( n );
         if( nodes.Size() == buckets.Size() ) Resize();

@@ -68,6 +68,11 @@ namespace xxx
             *(void**)p = pages[ j + 1 ];   // finger to next page's first item
         }
         *(void**)p = nullptr;   // Clear last finger
+
+#if __DEBUG
+        allocatedCounter = 0;
+#endif
+
     }
 
     NOINLINE void Pool::Reserve()
@@ -94,6 +99,11 @@ namespace xxx
         if( !itemHeader ) Reserve();
         auto rtv = itemHeader;
         itemHeader = *(void**)itemHeader;
+
+#if __DEBUG
+        ++allocatedCounter;
+#endif
+
         return rtv;
     }
 
@@ -102,6 +112,10 @@ namespace xxx
         assert( p );
         *(void**)p = itemHeader;
         itemHeader = p;
+
+#if __DEBUG
+        --allocatedCounter;
+#endif
     }
 
     int Pool::ItemBufLen() const

@@ -34,9 +34,7 @@ namespace xxx
     template<typename T>
     int GetHashCode( T const &in )
     {
-        auto rtv = GetHashCodeCore( in );
-        return rtv;
-        //return GetHashCodeCore( in );
+        return GetHashCodeCore( in );
     }
 
     template<typename T1, typename T2>

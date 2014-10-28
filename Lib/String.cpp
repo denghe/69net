@@ -131,7 +131,7 @@ namespace xxx
         Dispose();
     }
 
-    void String::Assign( char const* _buf, int _bufLen, int _dataLen /*= 0*/, bool isRef /*= true */ )
+    void String::Assign( char const* _buf, int _bufLen, int _dataLen /*= 0*/, bool isRef )
     {
         assert( buf != _buf );
         if( isRef )
@@ -155,10 +155,15 @@ namespace xxx
         buf[ dataLen ] = '\0';
     }
 
+    void String::Assign( char const* s, int sLen, bool isRef )
+    {
+        if( !sLen ) sLen = (int)strlen( s );
+        Assign( s, sLen + 1, sLen, isRef );
+    }
     void String::Assign( char const* s, bool isRef /*= false */ )
     {
-        auto _dataLen = (int)strlen( s );
-        Assign( s, _dataLen + 1, _dataLen, isRef );
+        auto sLen = (int)strlen( s );
+        Assign( s, sLen + 1, sLen, isRef );
     }
 
     void String::Reserve( int capacity )
@@ -251,6 +256,53 @@ namespace xxx
             delete[] buf;
         }
     }
+
+    void String::Pop()
+    {
+        assert( dataLen > 0 );
+        --dataLen;
+    }
+
+    char& String::Top()
+    {
+        assert( dataLen > 0 );
+        return buf[ dataLen - 1 ];
+    }
+
+    char const& String::Top() const
+    {
+        assert( dataLen > 0 );
+        return buf[ dataLen - 1 ];
+    }
+
+    bool String::Empty() const
+    {
+        return dataLen == 0;
+    }
+
+    void String::Insert( int idx, char const* s, int sLen )
+    {
+        if( idx >= dataLen )
+        {
+            Append( String( s, sLen, sLen, true ) );
+        }
+        if( !sLen )
+        {
+            sLen = strlen( s );
+            if( !sLen ) return;
+        }
+        Reserve( dataLen + sLen );
+        memmove( buf + idx + sLen, buf + idx, dataLen - idx );
+        memcpy( buf + idx, s, sLen );
+        dataLen += sLen;
+    }
+
+    void String::Insert( int idx, String const& s )
+    {
+        Insert( idx, s.C_str(), s.Size() );
+    }
+
+
 
 
 
@@ -353,14 +405,7 @@ namespace xxx
 
     int String::GetHashCode() const
     {
-#ifdef __IA
         return GetHash_CS( (byte const*)buf, dataLen );
-#else
-        if( dataLen >= 4 && ( (size_t)buf % sizeof( size_t ) == 0 ) )
-            return GetHash_CS( (byte const*)buf, dataLen );
-        else
-            return GetHash_Lua( (byte const*)buf, dataLen );
-#endif
     }
 
     std::string String::Std_str()
@@ -373,7 +418,7 @@ namespace xxx
 
     int String::GetWriteBufferSize() const
     {
-        return sizeof( int ) + Size();
+        return sizeof( int ) + dataLen;
     }
 
     void String::WriteBuffer( FlatBuffer& fb ) const
@@ -397,22 +442,5 @@ namespace xxx
         return true;
     }
 
-    void String::Pop()
-    {
-        assert( dataLen > 0 );
-        --dataLen;
-    }
-
-    char& String::Top()
-    {
-        assert( dataLen > 0 );
-        return buf[ dataLen - 1 ];
-    }
-
-    char const& String::Top() const
-    {
-        assert( dataLen > 0 );
-        return buf[ dataLen - 1 ];
-    }
 
 }

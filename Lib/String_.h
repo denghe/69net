@@ -13,15 +13,16 @@ namespace xxx
         String( Pool& p );                                          // prepare with pool buffer
         template<int len>
         String( Pool& p, char const ( &s )[ len ] );                // Get _buf from pool and Copy s into
-        String( Pool& p, char const* _buf, int _dataLen );            // Get _buf from pool and Copy s into
-        String( char const* _buf, int _bufLen, int _dataLen, bool isRef = true );    // ref or Copy
+        String( Pool& p, char const* _buf, int _dataLen );          // Get _buf from pool and Copy s into
+        String( char const* _buf, int _bufLen, int _dataLen, bool isRef );    // ref or Copy
         String( char const* s, bool isRef = false );                // Copy or ref
-        String( String const& o );                              // Copy
-        String( String&& o );                                   // move
-        String& operator=( String const& o );                   // Copy
-        String& operator=( String&& o );                        // move
+        String( String const& o );                                  // Copy
+        String( String&& o );                                       // move
+        String& operator=( String const& o );                       // Copy
+        String& operator=( String&& o );                            // move
         ~String();                                                  // Dispose _buf
-        void Assign( char const* _buf, int _bufLen, int _dataLen, bool isRef = true );     // ref or Copy
+        void Assign( char const* _buf, int _bufLen, int _dataLen, bool isRef );     // ref or Copy
+        void Assign( char const* s, int sLen, bool isRef );         // Copy or ref
         void Assign( char const* s, bool isRef = false );           // Copy or ref
         void Reserve( int capacity );                               // prepare memory
         void Resize( int len, bool fillZero = true );               // cut( maybe damage utf8 ) or grow up
@@ -37,6 +38,9 @@ namespace xxx
         void Pop();
         char& Top();
         char const& Top() const;
+        bool Empty() const;
+        void Insert( int idx, char const* s, int sLen = 0 );
+        void Insert( int idx, String const& s );
 
         // todo: more util funcs like  Find, trim, split, replace, ....
         // todo: Formatter with AppendTo( String& s ) interface
@@ -177,6 +181,7 @@ namespace xxx
         static Pool emptyPool;     // for do not need delete's buffer
         void Dispose();
     };
+
 
 }
 

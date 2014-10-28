@@ -24,10 +24,10 @@ namespace xxx
         Dict& operator=( Dict&& o );
         Dict& operator=( Dict const& o );
         ~Dict();
-        template <typename KT, typename VT>
-        std::pair<Node*, bool> Insert( KT&& k, VT&& v, bool replace = false );      // if exists, return Node* + false. else add and return Node* + true
-        template<typename KT, typename ...VPTS>
-        std::pair<Node*, bool> Emplace( bool replace, KT&& k, VPTS&& ...vps );      // same as Insert but need value type's construct parameters
+        template <typename VT>
+        std::pair<Node*, bool> Insert( TK const& k, VT&& v, bool replace = false );      // if exists, return Node* + false. else add and return Node* + true
+        template<typename ...VPTS>
+        std::pair<Node*, bool> Emplace( bool replace, TK const& k, VPTS&& ...vps );      // same as Insert but need value type's construct parameters
         Node* Find( TK const& k );                                                  // if exists, return Node*. else return nullptr
         void Erase( TK const& k );
         void Erase( Node* n );
@@ -36,10 +36,8 @@ namespace xxx
         void Reserve( int capacity );
         List<Node*> const& Data() const;
         int Size() const;
-        template <typename KT>
-        TV& operator[]( KT&& k );                   // Find or Insert ( default value ) and return
-        template <typename KT>
-        TV& At( KT&& k );                           // same as operator[]
+        TV& operator[]( TK const& k );                   // Find or Insert ( default value ) and return
+        TV& At( TK const& k );                           // same as operator[]
 
 
 

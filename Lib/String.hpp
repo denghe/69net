@@ -16,6 +16,8 @@ namespace xxx
     }
 
 
+
+
     template<typename ...TS>
     void String::Append( TS const & ...vs )
     {

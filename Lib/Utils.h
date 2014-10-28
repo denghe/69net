@@ -3,6 +3,7 @@
 
 namespace xxx
 {
+
     // 取长度系列，值为 ToString 后的最大长. 10 进制。
     int GetToStringMaxLength( uint8   v );
     int GetToStringMaxLength( uint16  v );
@@ -207,6 +208,23 @@ namespace xxx
 
 
 
+
+
+    template<typename T, typename... Args>
+    struct MaxSize
+    {
+        enum
+        {
+            value = sizeof( T ) > MaxSize<Args...>::value
+            ? sizeof( T )
+            : MaxSize<Args...>::value
+        };
+    };
+    template<typename T>
+    struct MaxSize < T >
+    {
+        enum { value = sizeof( T ) };
+    };
 
 
 

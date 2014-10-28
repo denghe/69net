@@ -68,15 +68,15 @@ namespace xxx
     }
 
     template <typename TK, typename TV>
-    template <typename KT, typename VT>
-    std::pair<typename Dict<TK, TV>::Node*, bool> Dict<TK, TV>::Insert( KT && k, VT && v, bool replace /*= false */ )
+    template <typename VT>
+    std::pair<typename Dict<TK, TV>::Node*, bool> Dict<TK, TV>::Insert( TK const& k, VT && v, bool replace /*= false */ )
     {
-        return Emplace( replace, std::forward<KT>( k ), std::forward<VT>( v ) );
+        return Emplace( replace, k, std::forward<VT>( v ) );
     }
 
     template <typename TK, typename TV>
-    template<typename KT, typename ...VPTS>
-    std::pair<typename Dict<TK, TV>::Node*, bool> Dict<TK, TV>::Emplace( bool replace, KT&& k, VPTS&& ...vps )
+    template<typename ...VPTS>
+    std::pair<typename Dict<TK, TV>::Node*, bool> Dict<TK, TV>::Emplace( bool replace, TK const& k, VPTS&& ...vps )
     {
         std::pair<typename Dict<TK, TV>::Node*, bool> rtv;
         uint hashCode = (uint)GetHashCode( k );
@@ -97,7 +97,7 @@ namespace xxx
         n->next = buckets[ mod ];
         n->hash = hashCode;
         n->index = nodes.Size();
-        new ( &n->key ) TK( std::forward<KT>( k ) );
+        new ( &n->key ) TK( k );
         new ( &n->value ) TV( std::forward<VPTS>( vps )... );
         buckets[ mod ] = n;
         nodes.Push( n );
@@ -163,8 +163,7 @@ namespace xxx
     }
 
     template <typename TK, typename TV>
-    template <typename KT>
-    TV& Dict<TK, TV>::operator[]( KT&& k )
+    TV& Dict<TK, TV>::operator[]( TK const& k )
     {
         uint hashCode = (uint)GetHashCode( k );
         uint mod = hashCode % (uint)buckets.Size();
@@ -181,7 +180,7 @@ namespace xxx
         n->next = buckets[ mod ];
         n->hash = hashCode;
         n->index = nodes.Size();
-        new ( &n->key ) TK( std::forward<KT>( k ) );
+        new ( &n->key ) TK( k );
         new ( &n->value ) TV();
         buckets[ mod ] = n;
         nodes.Push( n );
@@ -190,10 +189,9 @@ namespace xxx
     }
 
     template <typename TK, typename TV>
-    template <typename KT>
-    TV& Dict<TK, TV>::At( KT&& k )
+    TV& Dict<TK, TV>::At( TK const& k )
     {
-        return operator[]( std::forward<KT>( k ) );
+        return operator[]( k );
     }
 
     template <typename TK, typename TV>

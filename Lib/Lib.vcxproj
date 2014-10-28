@@ -47,6 +47,7 @@
     <ClInclude Include="SharedMemory.h" />
     <ClInclude Include="SharedMemory.hpp" />
     <ClInclude Include="SharedPtr.h" />
+    <ClInclude Include="Singleton.h" />
     <ClInclude Include="SMBuffer.h" />
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="String.hpp" />

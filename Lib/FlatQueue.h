@@ -25,7 +25,8 @@ namespace xxx
         void Clear();
         void Reserve( int capacity, bool afterPush = false );
 
-        void Push( T const& v );
+        template<typename VT>
+        void Push( VT&& v );
         template<typename ...PTS>
         void Emplace( PTS&& ...ps );
         void Pop();

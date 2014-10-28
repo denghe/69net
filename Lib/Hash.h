@@ -21,8 +21,7 @@ namespace xxx
         Hash& operator=( Hash&& o );
         Hash& operator=( Hash const& o );
         ~Hash();
-        template <typename KT>
-        std::pair<Node*, bool> Insert( KT&& k );      // if exists, return Node* + false. else add and return Node* + true
+        std::pair<Node*, bool> Insert( TK const& k );      // if exists, return Node* + false. else add and return Node* + true
         Node* Find( TK const& k );                                                  // if exists, return Node*. else return nullptr
         void Erase( TK const& k );
         void Erase( Node* n );

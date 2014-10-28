@@ -214,6 +214,43 @@ TN& operator=( TN&& other );
 
 
 
+// _countof
+#ifndef _countof
+template<typename T, size_t N>
+int _countof( T const ( &arr )[ N ] ) { return N; }
+#endif
+
+
+
+// A macro to disallow the copy constructor and operator= functions
+// This should be used in the private: declarations for a class
+#if defined(__GNUC__) && ((__GNUC__ >= 5) || ((__GNUG__ == 4) && (__GNUC_MINOR__ >= 4))) \
+    || (defined(__clang__) && (__clang_major__ >= 3)) || (_MSC_VER >= 1800)
+#define DELETE_COPY_ASSIGN(TypeName)        \
+    TypeName(const TypeName &) = delete;    \
+    TypeName &operator =(const TypeName &) = delete;
+#else
+#define DELETE_COPY_ASSIGN(TypeName)        \
+    TypeName(const TypeName &);             \
+    TypeName &operator =(const TypeName &);
+#endif
+
+
+
+
+// deprecated attribute
+#if defined(__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
+#define CC_DEPRECATED_ATTRIBUTE __attribute__((deprecated))
+#elif _MSC_VER >= 1400 //vs 2005 or higher
+#define DEPRECATED __declspec(deprecated) 
+#else
+#define DEPRECATED
+#endif 
+
+
+
+
+
 
 #ifndef MIN
 #define MIN( a, b )  ( (a) < (b) ? (a) : (b) )
@@ -301,7 +338,7 @@ inline void* aligned_alloc( size_t alignment, size_t size )
 }
 inline void aligned_free( void* p )
 {
-    Free( static_cast<void**>( p )[ -1 ] );
+    free( static_cast<void**>( p )[ -1 ] );
 }
 #endif
 
@@ -309,6 +346,7 @@ inline void aligned_free( void* p )
 
 
 
+#include "Singleton.h"
 #include "ScopeGuard.h"
 #include "ClassAttributes.h"
 #include "Stopwatch.h"
