@@ -36,6 +36,8 @@
     <ClInclude Include="Links.h" />
     <ClInclude Include="Links.hpp" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="Nullable.h" />
+    <ClInclude Include="Nullable.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />

@@ -345,7 +345,7 @@ inline void aligned_free( void* p )
 
 
 
-
+#include "Nullable.h"
 #include "Singleton.h"
 #include "ScopeGuard.h"
 #include "ClassAttributes.h"
@@ -372,7 +372,7 @@ inline void aligned_free( void* p )
 // ... more
 
 
-
+#include "Nullable.hpp"
 #include "BufferUtils.hpp"
 #include "FlatBuffer.hpp"
 #include "List.hpp"

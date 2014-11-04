@@ -7,4 +7,7 @@
     <Text Include="bak.txt" />
     <Text Include="todo.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Nullable.h" />
+  </ItemGroup>
 </Project>

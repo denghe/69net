@@ -25,6 +25,9 @@
     <Text Include="bak.txt" />
     <Text Include="todo.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Nullable.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DE461C3C-C0F6-418C-B16A-DA6F31D97CCF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

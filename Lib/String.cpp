@@ -288,7 +288,7 @@ namespace xxx
         }
         if( !sLen )
         {
-            sLen = strlen( s );
+            sLen = (int)strlen( s );
             if( !sLen ) return;
         }
         Reserve( dataLen + sLen );
