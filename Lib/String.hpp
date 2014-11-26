@@ -48,7 +48,7 @@ namespace xxx
     {
         static std::atomic<int> bufIdx( 0 );
         static char bufs[ 32 ][ 1024 ];
-        String rtv( bufs[ ( bufIdx++ ) % 32 ], 1024, 0 );
+        String rtv( bufs[ ( bufIdx++ ) % 32 ], 1024, 0, true );
         rtv.Append( vs... );
         return rtv;
     }
@@ -105,7 +105,7 @@ namespace xxx
         memset( flags, 0, sizeof( flag )*sizeof...( vs ) );
 
         ALIGN8( char numBuf[ 32 ] );
-        String numStr( numBuf, 32, 0 );
+        String numStr( numBuf, 32, 0, true );
 
         int offset = 0, i = 0, n = 0;
         while( auto c = format[ offset ] )
@@ -193,7 +193,7 @@ namespace xxx
         static std::atomic<int> bufIdx( 0 );
         static char bufs[ 32 ][ 128 ];
         if( GetToStringMaxLength( v ) >= 128 ) return Make( v );
-        String s( bufs[ ( bufIdx++ ) % 32 ], 128, 0 );
+        String s( bufs[ ( bufIdx++ ) % 32 ], 128, 0, true );
         s.Append( v );
         return s;
     }
@@ -211,7 +211,7 @@ namespace xxx
     {
         static std::atomic<int> bufIdx( 0 );
         static char bufs[ 32 ][ 32 ];
-        String s( bufs[ ( bufIdx++ ) % 32 ], 32, 0 );
+        String s( bufs[ ( bufIdx++ ) % 32 ], 32, 0, true );
         s.AppendHex( v );
         return s;
     }

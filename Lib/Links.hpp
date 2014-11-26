@@ -91,7 +91,10 @@ namespace xxx
     {
         auto last = nodes.Top();
         nodes.Pop();
-        nodes[ n->index ] = last;
+        if( n != last )
+        {
+            nodes[ n->index ] = last;
+        }
         last->index = n->index;
 
         Dispose( n );

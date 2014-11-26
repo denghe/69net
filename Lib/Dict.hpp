@@ -142,7 +142,7 @@ namespace xxx
         else
         {
             auto parent = node;
-            while( node = node->next )
+            while( ( node = node->next ) )
             {
                 if( node == n )
                 {
@@ -155,8 +155,11 @@ namespace xxx
 
         auto last = nodes.Top();
         nodes.Pop();
-        nodes[ n->index ] = last;
-        last->index = n->index;
+        if( n != last )
+        {
+            nodes[ n->index ] = last;
+            last->index = n->index;
+        }
 
         Dispose( n );
         pool.Free( n );

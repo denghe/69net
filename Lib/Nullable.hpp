@@ -140,7 +140,7 @@ namespace xxx
             }
             return false;
         }
-        return o.hasValue
+        return o.hasValue;
     }
 
     template<typename T>

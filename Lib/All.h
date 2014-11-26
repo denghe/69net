@@ -281,7 +281,7 @@ int _countof( T const ( &arr )[ N ] ) { return N; }
 #include <deque>
 #include <queue>
 #include <map>
-#include <Set>
+#include <set>
 #include <stack>
 #include <unordered_set>
 #include <unordered_map>
@@ -294,7 +294,7 @@ int _countof( T const ( &arr )[ N ] ) { return N; }
 
 #include <type_traits>
 #include <array>
-#include <thRead>
+#include <thread>
 #include <condition_variable>
 #include <mutex>
 #include <atomic>

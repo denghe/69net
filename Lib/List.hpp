@@ -228,24 +228,28 @@ namespace xxx
     template<typename T>
     T const & List<T>::operator[]( int idx ) const
     {
+        assert( idx < size && idx >= 0 );
         return buf[ idx ];
     }
 
     template<typename T>
     T& List<T>::operator[]( int idx )
     {
+        assert( idx < size && idx >= 0 );
         return buf[ idx ];
     }
 
     template<typename T>
     T const & List<T>::At( int idx ) const
     {
+        assert( idx < size && idx >= 0 );
         return buf[ idx ];
     }
 
     template<typename T>
     T& List<T>::At( int idx )
     {
+        assert( idx < size && idx >= 0 );
         return buf[ idx ];
     }
 
