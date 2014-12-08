@@ -2,6 +2,80 @@
 using namespace std;
 using namespace xxx;
 
+
+//class X : Singleton < X >
+//{
+//public:
+//    int( *func1 )( int a, int b );
+//    int( *func2 )( int a, int b );
+//
+//    // ...
+//
+//    HINSTANCE dll = nullptr;
+//    X()
+//    {
+//        if( dll = LoadLibrary( L"MyDll.dll" ) )
+//        {
+//            func1 = (decltype( func1 ))GetProcAddress( dll, "func1" );
+//            func2 = (decltype( func2 ))GetProcAddress( dll, "func2" );
+//            // ...
+//        }
+//    }
+//    ~X()
+//    {
+//        if( dll ) FreeLibrary( dll );
+//    }
+//}
+
+
+struct Foo
+{
+    explicit Foo( int n ) { Cout( n ); }
+};
+
+int main()
+{
+    Nullable<Foo> f;
+    Cout( f.HasValue() );
+    f.Emplace( 123 );
+    Cout( f.HasValue() );
+    f.Clear();
+    Cout( f.HasValue() );
+
+    system( "pause" );
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Lib/All.h"
+using namespace std;
+using namespace xxx;
+
 #include "Nullable.h"
 
 struct Foo;
