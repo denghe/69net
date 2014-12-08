@@ -15,7 +15,7 @@ namespace xxx
         BufBaseCore() = default;
 
         // 生命周期 -- 初始化/ 创建( 派生类自己实现 )
-        // void Init( ... );                    
+        // void Init( ... );
 
         // 生命周期 -- 执行
         inline virtual bool Process( int ticks ) = 0;
@@ -25,6 +25,9 @@ namespace xxx
 
         // 不应放置逻辑相关代码
         virtual ~BufBaseCore() {};
+
+        // todo: 将生命周期值暴露出来 以便 BufContainer Destroy
+        // 
     };
 
     template<typename T>
