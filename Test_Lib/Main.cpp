@@ -8,6 +8,10 @@ namespace xxx
         // 位于容器中时的位置 for 速删
         int bufIdx = 0;
 
+        // bufs: 到达这个 ticks 将 Destroy
+        // dots: 到达这个 ticks 将 Process
+        int activeTicks = 0;
+
         // 读类型自增编号 for 定位子pool
         virtual int GetTypeId() = 0;
 
@@ -25,9 +29,6 @@ namespace xxx
 
         // 不应放置逻辑相关代码
         virtual ~BufBaseCore() {};
-
-        // todo: 将生命周期值暴露出来 以便 BufContainer Destroy
-        // 
     };
 
     template<typename T>
@@ -95,14 +96,15 @@ namespace xxx
         // 指向公用的 buf 池
         BufPool* pool;
 
-        // Create/DestroyLazy 后变 true 以令 Process 时 遍历处理 bufs
-        bool bufsDirty;
+        // 存 buf/dot 最小的死亡 ticks for 分时段批量跳过 Process 的过程
+        int bufActiveTicks;
+        int dotActiveTicks;
 
         // bufsDirty 为 true 时将 call 它再 遍历处理 bufs
-        std::function<void()> ResetBufProps;
+        std::function<void()> BeforeBufProcess;
 
         // bufsDirty 为 true 时 遍历处理 bufs 后将 call 它
-        std::function<void()> CalcBufProps;
+        std::function<void()> AfterBufProcess;
 
         // 持续生效的，以改 Properties buf 系数为主的 buf
         // 当成员构成( 有增删 )变化( lazyDirty 为 true )时，遍历处理
@@ -114,7 +116,8 @@ namespace xxx
 
         BufContainer( BufPool* pool )
             : pool( pool )
-            , bufsDirty( false )
+            , bufActiveTicks( INT_MAX )
+            , dotActiveTicks( INT_MAX )
         {
         }
 
@@ -124,7 +127,7 @@ namespace xxx
             auto rtv = pool->Alloc<T>( std::forward<PTS>( ps )... );
             rtv->T::bufIdx = bufs.Size();
             bufs.Push( rtv );
-            bufsDirty = true;
+            bufActiveTicks = 0;     // 相当于标脏，全面重算
             return rtv;
         }
 
@@ -134,6 +137,10 @@ namespace xxx
             auto rtv = pool->Alloc<T>( std::forward<PTS>( ps )... );
             rtv->T::bufIdx = dots.Size();
             dots.Push( rtv );
+            if( rtv->activeTicks < dotActiveTicks )
+            {
+                dotActiveTicks = rtv->activeTicks;
+            }
             return rtv;
         }
 
@@ -142,7 +149,7 @@ namespace xxx
             bufs.Top()->bufIdx = buf->bufIdx;
             bufs.EraseFast( buf->bufIdx );
             pool->Free( buf );
-            bufsDirty = true;
+            bufActiveTicks = 0;     // 相当于标脏，全面重算
         }
 
         inline void DestroyDot( BufBaseCore* buf )
@@ -162,39 +169,65 @@ namespace xxx
             {
                 DestroyDot( dots[ i ] );
             }
-            bufsDirty = true;
+            bufActiveTicks = INT_MAX;
+            dotActiveTicks = INT_MAX;
         }
 
         inline bool Process( int ticks = 0 )
         {
-            if( bufsDirty )
+            if( bufActiveTicks <= ticks )
             {
-                bufsDirty = false;  // 放这里改，万一 Process 过程中又有改变 bufs, 它将正确的变 true
-                if( ResetBufProps )
+                bufActiveTicks = INT_MAX;
+                if( BeforeBufProcess )
                 {
-                    ResetBufProps();
+                    BeforeBufProcess();
                 }
                 for( int i = bufs.Size() - 1; i >= 0; --i )
                 {
                     auto& o = bufs[ i ];
-                    if( !o->Process( ticks ) )
+                    if( !o->Process( ticks ) || o->activeTicks <= ticks )
                     {
                         DestroyBuf( o );
                     }
+                    else
+                    {
+                        // 只扫出还活着的 buf 的下次执行 ticks
+                        if( o->activeTicks < bufActiveTicks )
+                        {
+                            bufActiveTicks = o->activeTicks;
+                        }
+                    }
                 }
-                if( CalcBufProps )
+                if( AfterBufProcess )
                 {
-                    CalcBufProps();
+                    AfterBufProcess();
                 }
             }
 
-            for( int i = dots.Size() - 1; i >= 0; --i )
+            if( dotActiveTicks <= ticks )
             {
-                auto& o = dots[ i ];
-                if( !o->Process( ticks ) )
+                dotActiveTicks = INT_MAX;
+                for( int i = dots.Size() - 1; i >= 0; --i )
                 {
-                    DestroyDot( o );
+                    auto& o = dots[ i ];
+                    // 试扫出下次执行的最小间隔
+                    // 如果被杀掉的刚好是最小间隔 也没关系 不严格, 到那个 ticks 会再扫出正确值
+                    // 感觉略冗余，但省掉了 存放 或立即扫出 最小间隔的消耗
+                    if( o->activeTicks < dotActiveTicks )
+                    {
+                        dotActiveTicks = o->activeTicks;
+                    }
+                    if( o->activeTicks <= ticks )
+                    {
+                        if( !o->Process( ticks ) )
+                        {
+                            DestroyDot( o );
+                        }
+                    }
                 }
+                // 当前算法：每到一个执行点，就硬扫，适合对象数较少的情况( 阈值不明确，猜测是 10 个以内 )。
+                // 如果元素再多点，则需要在扫的同时将下次执行点的 dot 放队列了
+                // 如果又继续扫到更小的间隔，则将先前的队列中的元素清了，再放入队列
             }
 
             return true;
@@ -209,6 +242,10 @@ namespace xxx
 using namespace std;
 using namespace xxx;
 
+
+struct Buf_MaxHP_Enhance100Percent;
+struct Buf_MaxHP_Enhance10Point;
+struct Dot_HP_Recover1PointPerTicks;
 
 
 struct Foo
@@ -280,18 +317,28 @@ struct Foo
     Foo( BufPool* bp )
         : bc( bp )
     {
-        bc.ResetBufProps = [ this ] { ResetBufProperties(); };
-        bc.CalcBufProps = [ this ] { CalcBufProperties(); };
+        bc.BeforeBufProcess = [ this ] { ResetBufProperties(); };
+        bc.AfterBufProcess = [ this ] { CalcBufProperties(); };
         Init();
     }
+
+    inline void Process( int ticks )
+    {
+        bc.Process( ticks );
+    }
+
+    void CreateBuf_最大血量加10点( int ticks, int life );
+    void CreateBuf_最大血量加百分之100( int ticks, int life );
+    void CreateDot_血量恢复1点( int ticks, int cd );
 };
 
-struct Buf_maxHP_Enhance100Percent : BufBase<Buf_maxHP_Enhance100Percent>
+struct Buf_MaxHP_Enhance100Percent : BufBase<Buf_MaxHP_Enhance100Percent>
 {
     Foo* owner;
-    inline void Init( Foo* owner )
+    inline void Init( Foo* owner, int ticks, int life )
     {
         this->owner = owner;
+        this->activeTicks = ticks + life;
     }
     inline bool Process( int ticks ) override
     {
@@ -300,12 +347,13 @@ struct Buf_maxHP_Enhance100Percent : BufBase<Buf_maxHP_Enhance100Percent>
     }
 };
 
-struct Buf_maxHP_Enhance10Point : BufBase<Buf_maxHP_Enhance10Point>
+struct Buf_MaxHP_Enhance10Point : BufBase<Buf_MaxHP_Enhance10Point>
 {
     Foo* owner;
-    inline void Init( Foo* owner )
+    inline void Init( Foo* owner, int ticks, int life )
     {
         this->owner = owner;
+        this->activeTicks = ticks + life;
     }
     inline bool Process( int ticks ) override
     {
@@ -317,9 +365,12 @@ struct Buf_maxHP_Enhance10Point : BufBase<Buf_maxHP_Enhance10Point>
 struct Dot_HP_Recover1PointPerTicks : BufBase<Dot_HP_Recover1PointPerTicks>
 {
     Foo* owner;
-    inline void Init( Foo* owner )
+    int cd;
+    inline void Init( Foo* owner, int ticks, int cd )
     {
         this->owner = owner;
+        this->activeTicks = ticks + cd;
+        this->cd = cd;
     }
     inline bool Process( int ticks ) override
     {
@@ -328,37 +379,59 @@ struct Dot_HP_Recover1PointPerTicks : BufBase<Dot_HP_Recover1PointPerTicks>
         {
             owner->cur_HP = owner->buf_maxHP;
         }
+        activeTicks = ticks + cd;
+        Cout( "owner->cur_HP = ", owner->cur_HP );
         return true;
     }
 };
 
+void Foo::CreateBuf_最大血量加10点( int ticks, int life )
+{
+    bc.CreateBuf<Buf_MaxHP_Enhance10Point>( this, ticks, life );
+}
+void Foo::CreateBuf_最大血量加百分之100( int ticks, int life )
+{
+    bc.CreateBuf<Buf_MaxHP_Enhance100Percent>( this, ticks, life );
+}
+void Foo::CreateDot_血量恢复1点( int ticks, int cd )
+{
+    bc.CreateDot<Dot_HP_Recover1PointPerTicks>( this, ticks, cd );
+}
 
+
+typedef xxx::Singleton<BufPool> FooBufPool;
 int main()
 {
-    BufPool p;
-    Foo foo( &p );
+    FooBufPool::InitInstance();
 
-    // 来几个 buf( 加 血上限 百分比和点数 )
-    foo.bc.CreateBuf<Buf_maxHP_Enhance10Point>( &foo );
-    foo.bc.CreateBuf<Buf_maxHP_Enhance100Percent>( &foo );
-    foo.bc.CreateBuf<Buf_maxHP_Enhance10Point>( &foo );
-    foo.bc.CreateBuf<Buf_maxHP_Enhance100Percent>( &foo );
-    foo.bc.CreateBuf<Buf_maxHP_Enhance10Point>( &foo );
+    Foo foo( FooBufPool::GetInstance() );
 
-    // 来几个 dot( 每周期不断的恢复血 )
-    foo.bc.CreateDot<Dot_HP_Recover1PointPerTicks>( &foo );
-    foo.bc.CreateDot<Dot_HP_Recover1PointPerTicks>( &foo );
-    foo.bc.CreateDot<Dot_HP_Recover1PointPerTicks>( &foo );
+    // 仿一个帧步进值
+    int ticks = 123;
 
-    Stopwatch sw;
-    for( int i = 0; i < 9999999; ++i )
+    // 来几个 buf( 加 血上限 百分比和点数, 存活时长不同 )
+    foo.CreateBuf_最大血量加10点( ticks, 10 );
+    foo.CreateBuf_最大血量加百分之100( ticks, 9 );
+    foo.CreateBuf_最大血量加10点( ticks, 8 );
+    foo.CreateBuf_最大血量加百分之100( ticks, 7 );
+    foo.CreateBuf_最大血量加10点( ticks, 6 );
+
+    // 来几个 dot( 不断的恢复血, 每跳间隔时长不同 )
+    foo.CreateDot_血量恢复1点( ticks, 1 );
+    foo.CreateDot_血量恢复1点( ticks, 2 );
+    foo.CreateDot_血量恢复1点( ticks, 3 );
+
+    //Stopwatch sw;
+    for( int i = 0; i < 52; ++i )
     {
-        foo.bc.Process();
+        ticks++;
+        foo.Process( ticks );
+        //Cout( "buf_maxHP = ", foo.buf_maxHP, ", cur_HP = ", foo.cur_HP );
     }
-    Cout( "ms = ", sw.ElapsedMillseconds() );
+    //Cout( "ms = ", sw.ElapsedMillseconds() );
 
     // shoud be 330, 330
-    Cout( "buf_maxHP = ", foo.buf_maxHP, ", cur_HP = ", foo.cur_HP );
+    //Cout( "buf_maxHP = ", foo.buf_maxHP, ", cur_HP = ", foo.cur_HP );
 
     //foo.CallFuncs();
 
