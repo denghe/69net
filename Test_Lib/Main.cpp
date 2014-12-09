@@ -120,6 +120,10 @@ namespace xxx
             , dotActiveTicks( INT_MAX )
         {
         }
+        ~BufContainer()
+        {
+            Clear();
+        }
 
         template<typename T, typename ...PTS>
         inline T* CreateBuf( PTS&& ...ps )
@@ -161,13 +165,20 @@ namespace xxx
 
         inline void Clear()
         {
-            for( int i = bufs.Size() - 1; i >= 0; --i )
+            // 有可能存在清不完的情况，比如 Destroy 的时候又创建了新的
+            while( bufs.Size() )
             {
-                DestroyBuf( bufs[ i ] );
+                for( int i = bufs.Size() - 1; i >= 0; --i )
+                {
+                    DestroyBuf( bufs[ i ] );
+                }
             }
-            for( int i = dots.Size() - 1; i >= 0; --i )
+            while( dots.Size() )
             {
-                DestroyDot( dots[ i ] );
+                for( int i = dots.Size() - 1; i >= 0; --i )
+                {
+                    DestroyDot( dots[ i ] );
+                }
             }
             bufActiveTicks = INT_MAX;
             dotActiveTicks = INT_MAX;
@@ -380,7 +391,7 @@ struct Dot_HP_Recover1PointPerTicks : BufBase<Dot_HP_Recover1PointPerTicks>
             owner->cur_HP = owner->buf_maxHP;
         }
         activeTicks = ticks + cd;
-        Cout( "owner->cur_HP = ", owner->cur_HP );
+        //Cout( "owner->cur_HP = ", owner->cur_HP );
         return true;
     }
 };
@@ -404,36 +415,38 @@ int main()
 {
     FooBufPool::InitInstance();
 
-    Foo foo( FooBufPool::GetInstance() );
-
-    // 仿一个帧步进值
-    int ticks = 123;
-
-    // 来几个 buf( 加 血上限 百分比和点数, 存活时长不同 )
-    foo.CreateBuf_最大血量加10点( ticks, 10 );
-    foo.CreateBuf_最大血量加百分之100( ticks, 9 );
-    foo.CreateBuf_最大血量加10点( ticks, 8 );
-    foo.CreateBuf_最大血量加百分之100( ticks, 7 );
-    foo.CreateBuf_最大血量加10点( ticks, 6 );
-
-    // 来几个 dot( 不断的恢复血, 每跳间隔时长不同 )
-    foo.CreateDot_血量恢复1点( ticks, 1 );
-    foo.CreateDot_血量恢复1点( ticks, 2 );
-    foo.CreateDot_血量恢复1点( ticks, 3 );
-
-    //Stopwatch sw;
-    for( int i = 0; i < 52; ++i )
+    Stopwatch sw;
+    //for( int j = 0; j < 10000000; ++j )
     {
-        ticks++;
-        foo.Process( ticks );
-        //Cout( "buf_maxHP = ", foo.buf_maxHP, ", cur_HP = ", foo.cur_HP );
+        Foo foo( FooBufPool::GetInstance() );
+
+        // 仿一个帧步进值
+        int ticks = 123;
+
+        // 来几个 buf( 加 血上限 百分比和点数, 存活时长不同 )
+        foo.CreateBuf_最大血量加10点( ticks, 10 );
+        foo.CreateBuf_最大血量加百分之100( ticks, 9 );
+        foo.CreateBuf_最大血量加10点( ticks, 8 );
+        foo.CreateBuf_最大血量加百分之100( ticks, 7 );
+        foo.CreateBuf_最大血量加10点( ticks, 6 );
+
+        // 来几个 dot( 不断的恢复血, 每跳间隔时长不同 )
+        foo.CreateDot_血量恢复1点( ticks, 1 );
+        foo.CreateDot_血量恢复1点( ticks, 2 );
+        foo.CreateDot_血量恢复1点( ticks, 3 );
+
+        for( int i = 0; i < 11; ++i )
+        {
+            ticks++;
+            foo.Process( ticks );
+            Cout( "buf_maxHP = ", foo.buf_maxHP, ", cur_HP = ", foo.cur_HP );
+        }
     }
-    //Cout( "ms = ", sw.ElapsedMillseconds() );
+    Cout( "ms = ", sw.ElapsedMillseconds() );
 
-    // shoud be 330, 330
-    //Cout( "buf_maxHP = ", foo.buf_maxHP, ", cur_HP = ", foo.cur_HP );
-
-    //foo.CallFuncs();
+    Cout( "FooBufPool::GetInstance()->data[ 0 ].Size() = ", FooBufPool::GetInstance()->data[ 0 ].Size() );
+    Cout( "FooBufPool::GetInstance()->data[ 1 ].Size() = ", FooBufPool::GetInstance()->data[ 1 ].Size() );
+    Cout( "FooBufPool::GetInstance()->data[ 2 ].Size() = ", FooBufPool::GetInstance()->data[ 2 ].Size() );
 
     system( "pause" );
     return 0;
