@@ -1,19 +1,19 @@
 #include "Lib/All.h"
 
-// todo: buf / debuf calc system
+// buf / debuf calc system
 namespace xxx
 {
     struct BufBaseCore
     {
-        // 位于容器中时的位置 for 速删
-        int bufIdx = 0;
-
         // bufs: 到达这个 ticks 将 Destroy
         // dots: 到达这个 ticks 将 Process
         int activeTicks = 0;
 
-        // 读类型自增编号 for 定位子pool
-        virtual int GetTypeId() = 0;
+        // 类型自增编号 for 定位pool ( 于 new 时填充 )
+        int typeId = 0;
+
+        // 位于容器中时的位置 for 速删
+        int bufIdx = 0;
 
         // 不应放置逻辑相关代码
         BufBaseCore() = default;
@@ -35,7 +35,10 @@ namespace xxx
     struct BufBase : public BufBaseCore
     {
         static const AutoID<BufBaseCore> typeId;
-        int GetTypeId() override { return typeId.value; }
+        BufBase()
+        {
+            BufBaseCore::typeId = this->typeId.value;
+        }
     };
     template<typename T>
     const AutoID<BufBaseCore> BufBase<T>::typeId;
@@ -66,7 +69,7 @@ namespace xxx
         inline void Free( BufBaseCore* buf )
         {
             buf->Destroy();
-            data[ buf->GetTypeId() ].Push( buf );
+            data[ buf->typeId ].Push( buf );
         }
         template<typename T>
         inline void Prepare( int count )
@@ -245,9 +248,6 @@ namespace xxx
         }
     };
 
-    /*
-    sample:
-    */
 }
 
 using namespace std;
@@ -336,6 +336,7 @@ struct Foo
     inline void Process( int ticks )
     {
         bc.Process( ticks );
+        // todo: foreach call funcs
     }
 
     void CreateBuf_最大血量加10点( int ticks, int life );
@@ -385,6 +386,9 @@ struct Dot_HP_Recover1PointPerTicks : BufBase<Dot_HP_Recover1PointPerTicks>
     }
     inline bool Process( int ticks ) override
     {
+        // 理论上讲，不少 dot 需要以这种方式来运作: owner->funcs.Push( .... )
+        // 即相当于把事情放到 Process 之后来做. 
+        // 执行过程中，有可能目标已死啥的，都需要做相应处理
         owner->cur_HP += 1;
         if( owner->cur_HP > owner->buf_maxHP )
         {
@@ -416,7 +420,7 @@ int main()
     FooBufPool::InitInstance();
 
     Stopwatch sw;
-    //for( int j = 0; j < 10000000; ++j )
+    for( int j = 0; j < 10000000; ++j )
     {
         Foo foo( FooBufPool::GetInstance() );
 
@@ -439,7 +443,7 @@ int main()
         {
             ticks++;
             foo.Process( ticks );
-            Cout( "buf_maxHP = ", foo.buf_maxHP, ", cur_HP = ", foo.cur_HP );
+            //Cout( "buf_maxHP = ", foo.buf_maxHP, ", cur_HP = ", foo.cur_HP );
         }
     }
     Cout( "ms = ", sw.ElapsedMillseconds() );
