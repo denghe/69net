@@ -38,6 +38,8 @@
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Nullable.h" />
     <ClInclude Include="Nullable.hpp" />
+    <ClInclude Include="Buf.h" />
+    <ClInclude Include="AutoIDPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />

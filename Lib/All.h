@@ -367,7 +367,9 @@ inline void aligned_free( void* p )
 #include "SharedMemory.h"
 #include "SMBuffer.h"
 #include "SharedPtr.h"
+#include "AutoIDPool.h"
 #include "Cor.h"
+#include "Buf.h"
 
 // ... more
 

@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="All.h" />
+    <ClInclude Include="AutoIDPool.h" />
+    <ClInclude Include="Buf.h" />
     <ClInclude Include="BufferUtils.h" />
     <ClInclude Include="BufferUtils.hpp" />
     <ClInclude Include="BlockBuffer.h" />

@@ -19,14 +19,22 @@ namespace xxx
     // todo: message ?
 
     template<typename T>
-    struct AutoID
+    struct CorManager;
+
+    struct CorCore
     {
-        int value;
-        static int maxValue;
-        AutoID() { value = maxValue++; }
+        CorCore() = default;
+        // void Init( ... );
+        inline virtual void EnsureRefs() {}
+        inline virtual void Destroy() {}
+        virtual ~CorCore() {}
+
+        int typeId = 0, corId = 0, corIdx = 0, corLn = 0, corSleeps = 0;
+        virtual bool Process( int ticks ) = 0;
+        inline virtual bool Sleeping() { --corSleeps; return true; }
+
+        CorManager<CorCore>* manager = nullptr;
     };
-    template<typename T>
-    int AutoID<T>::maxValue = 0;
 
 
     template<typename T>
@@ -39,10 +47,15 @@ namespace xxx
         {
             pool.Resize( AutoID<T>::maxValue + 1 );
         }
+        ~CorManager()
+        {
+            Clear();
+            Compress();
+        }
 
         int aiid = 0;
         template<typename CT, typename ...PTS>
-        CT* CreateItem( PTS&& ..._parms )
+        CT* CreateItem( PTS&& ...ps )
         {
             CT* rtv;
             auto& objs = pool[ CT::typeId.value ];
@@ -56,7 +69,7 @@ namespace xxx
                 rtv->manager = this;
             }
             rtv->T::corId = ++aiid;
-            rtv->Init( std::forward<PTS>( _parms )... );
+            rtv->Init( std::forward<PTS>( ps )... );
             rtv->T::corIdx = items.Size();
             rtv->T::corLn = 0;
             rtv->T::corSleeps = 0;
@@ -66,11 +79,11 @@ namespace xxx
 
         void DestroyItem( T* _o )
         {
-            items.Top()->corIdx = _o->corIdx;
-            items.EraseFast( _o->corIdx );
+            items.Top()->CorCore::corIdx = _o->CorCore::corIdx;
+            items.EraseFast( _o->CorCore::corIdx );
             _o->Destroy();
-            _o->corId = 0;
-            pool[ _o->GetTypeId() ].Push( _o );
+            _o->CorCore::corId = 0;
+            pool[ _o->CorCore::typeId ].Push( _o );
         }
 
         bool Process( int _ticks = 0 )
@@ -111,36 +124,18 @@ namespace xxx
         }
     };
 
-    struct CorCore
-    {
-        // void Init( ... );
-        inline virtual void EnsureRefs() {}
-        inline virtual void Destroy() {}
-        virtual ~CorCore() {}
-
-        int corId = 0, corIdx = 0, corLn = 0, corSleeps = 0;
-        virtual bool Process( int ticks ) = 0;
-        inline virtual bool Sleeping() { --corSleeps; return true; }
-    };
-
-    struct Cor : public CorCore
-    {
-        CorManager<Cor>* manager;
-
-        // static const AutoID<Base1> typeId;
-        // int GetTypeId() override { return typeId.value; }
-        virtual int GetTypeId() = 0;
-    };
 
     template<typename T>
-    struct CorBase : public Cor
+    struct CorBase : public CorCore
     {
-        static const AutoID<Cor> typeId;
-        int GetTypeId() override { return typeId.value; }
+        static const AutoID<CorCore> typeId;
+        CorBase()
+        {
+            this->CorCore::typeId = CorBase::typeId.value;
+        }
     };
     template<typename T>
-    const AutoID<Cor> CorBase<T>::typeId;
-
+    const AutoID<CorCore> CorBase<T>::typeId;
 
 }
 
