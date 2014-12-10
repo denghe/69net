@@ -128,7 +128,7 @@ namespace xxx
             for( int i = pool.Size() - 1; i >= 0; --i )
             {
                 auto& objs = pool[ i ];
-                for( int j = 0; j < pool.Size(); ++j )
+                for( int j = 0; j < objs.Size(); ++j )
                 {
                     delete objs[ j ];
                 }
