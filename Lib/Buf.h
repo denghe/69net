@@ -82,7 +82,7 @@ namespace xxx
         inline T* CreateBuf( PTS&& ...ps )
         {
             auto rtv = pool->Alloc<T>( std::forward<PTS>( ps )... );
-            rtv->T::bufIdx = bufs.Size();
+            rtv->bufIdx = bufs.Size();
             bufs.Push( rtv );
             bufActiveTicks = 0;     // 相当于标脏，全面重算
             return rtv;
@@ -92,7 +92,7 @@ namespace xxx
         inline T* CreateDot( PTS&& ...ps )
         {
             auto rtv = pool->Alloc<T>( std::forward<PTS>( ps )... );
-            rtv->T::bufIdx = dots.Size();
+            rtv->bufIdx = dots.Size();
             dots.Push( rtv );
             if( rtv->activeTicks < dotActiveTicks )
             {

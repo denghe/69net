@@ -18,34 +18,44 @@ namespace xxx
 
     // todo: message ?
 
-    template<typename T>
-    struct CorManager;
 
-    struct CorCore
+    struct CorManager;
+    struct CorBase
     {
-        CorCore() = default;
+        CorBase() = default;
         // void Init( ... );
         inline virtual void EnsureRefs() {}
         inline virtual void Destroy() {}
-        virtual ~CorCore() {}
+        virtual ~CorBase() {}
 
         int typeId = 0, corId = 0, corIdx = 0, corLn = 0, corSleeps = 0;
         virtual bool Process( int ticks ) = 0;
         inline virtual bool Sleeping() { --corSleeps; return true; }
-
-        CorManager<CorCore>* manager = nullptr;
+        CorManager* manager = nullptr;
     };
 
 
     template<typename T>
+    struct Cor : public CorBase
+    {
+        static const AutoID<CorBase> typeId;
+        Cor()
+        {
+            this->CorBase::typeId = Cor::typeId.value;
+        }
+    };
+    template<typename T>
+    const AutoID<CorBase> Cor<T>::typeId;
+
+
     struct CorManager
     {
-        List<T*> items;
-        List<List<T*>> pool;
+        List<CorBase*> items;
+        List<List<CorBase*>> pool;
 
         CorManager()
         {
-            pool.Resize( AutoID<T>::maxValue + 1 );
+            pool.Resize( AutoID<CorBase>::maxValue + 1 );
         }
         ~CorManager()
         {
@@ -66,24 +76,24 @@ namespace xxx
             else
             {
                 rtv = new CT();
-                rtv->manager = this;
+                rtv->CorBase::manager = this;
             }
-            rtv->T::corId = ++aiid;
+            rtv->CorBase::corId = ++aiid;
             rtv->Init( std::forward<PTS>( ps )... );
-            rtv->T::corIdx = items.Size();
-            rtv->T::corLn = 0;
-            rtv->T::corSleeps = 0;
+            rtv->CorBase::corIdx = items.Size();
+            rtv->CorBase::corLn = 0;
+            rtv->CorBase::corSleeps = 0;
             items.Push( rtv );
             return rtv;
         }
 
-        void DestroyItem( T* _o )
+        void DestroyItem( CorBase* _o )
         {
-            items.Top()->CorCore::corIdx = _o->CorCore::corIdx;
-            items.EraseFast( _o->CorCore::corIdx );
+            items.Top()->corIdx = _o->corIdx;
+            items.EraseFast( _o->corIdx );
             _o->Destroy();
-            _o->CorCore::corId = 0;
-            pool[ _o->CorCore::typeId ].Push( _o );
+            _o->corId = 0;
+            pool[ _o->typeId ].Push( _o );
         }
 
         bool Process( int _ticks = 0 )
@@ -99,9 +109,12 @@ namespace xxx
 
         void Clear()
         {
-            for( int i = items.Size() - 1; i >= 0; --i )
+            while( items.Size() )
             {
-                DestroyItem( items[ i ] );
+                for( int i = items.Size() - 1; i >= 0; --i )
+                {
+                    DestroyItem( items[ i ] );
+                }
             }
             aiid = 0;
         }
@@ -123,20 +136,6 @@ namespace xxx
             }
         }
     };
-
-
-    template<typename T>
-    struct CorBase : public CorCore
-    {
-        static const AutoID<CorCore> typeId;
-        CorBase()
-        {
-            this->CorCore::typeId = CorBase::typeId.value;
-        }
-    };
-    template<typename T>
-    const AutoID<CorCore> CorBase<T>::typeId;
-
 }
 
 #endif
