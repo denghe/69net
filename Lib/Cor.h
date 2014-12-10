@@ -132,7 +132,7 @@ namespace xxx
                 {
                     delete objs[ j ];
                 }
-                pool.Clear();
+                objs.Clear();
             }
         }
     };
