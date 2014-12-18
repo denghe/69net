@@ -11,7 +11,7 @@ namespace xxx
 struct FooBase
 {
     int typeId = 0;                     // 类型自增id. 将于派生类 new 时填充
-    CorCore() = default;                // 默认构造函数
+    FooBase() = default;                // 默认构造函数
     virtual ~FooBase();                 // 虚析构，必须的
     // void Init( ... );                // 在派生类中实现. 想象为构造函数
     inline virtual void Destroy() {}    // 想象为析构函数
@@ -45,7 +45,7 @@ struct Foo2 : Foo<Foo2>
 ...
 
 
-BufPool<Foo> p;
+AutoIDPool<Foo> p;
 auto f1 = p.Alloc<Foo1>( ... );
 auto f2 = p.Alloc<Foo2>( ... );
 ...
@@ -68,15 +68,15 @@ p.Free( f2 );
 
     // T 的接口需求参看示例
     template<typename T>
-    struct BufPool
+    struct AutoIDPool
     {
         List<List<T*>> data;
 
-        BufPool()
+        AutoIDPool()
         {
             data.Resize( AutoID<T>::maxValue + 1 );
         }
-        ~BufPool()
+        ~AutoIDPool()
         {
             Clear();
         }

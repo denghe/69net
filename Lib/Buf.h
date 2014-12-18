@@ -47,7 +47,7 @@ namespace xxx
     struct BufContainer
     {
         // 指向公用的 buf 池
-        BufPool<BufBase>* pool;
+        AutoIDPool<BufBase>* pool;
 
         // 存 buf/dot 最小的死亡 ticks for 分时段批量跳过 Process 的过程
         int bufActiveTicks;
@@ -67,7 +67,7 @@ namespace xxx
         // 每次 Process 都遍历处理
         List<BufBase*> dots;
 
-        BufContainer( BufPool<BufBase>* pool )
+        BufContainer( AutoIDPool<BufBase>* pool )
             : pool( pool )
             , bufActiveTicks( INT_MAX )
             , dotActiveTicks( INT_MAX )
