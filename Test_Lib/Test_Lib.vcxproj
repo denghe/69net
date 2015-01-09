@@ -23,6 +23,8 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />
+    <Text Include="map.txt" />
+    <Text Include="map2.txt" />
     <Text Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>

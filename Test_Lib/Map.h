@@ -27,12 +27,13 @@ struct Map
         return data[ y * w + x ];
     }
 
-    void All( std::function<void( T& )> handler )
+    void Clear()
     {
-        for( int i = 0; i < w * h; ++i )
-        {
-            handler( data[ i ] );
-        }
+        memset( data, 0, w * h * sizeof( T ) );
+        //for( int i = 0; i < w * h; ++i )
+        //{
+        //    data[ i ] = nullptr;
+        //}
     }
 
 //private:

@@ -1,18 +1,13 @@
 #include <stack>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <cassert>
-
-#include "AStar.h"
-
+#include <algorithm>
 using namespace std;
 
-
-struct Pos
-{
-    int x, y;
-};
+#include "AStar.h"
 
 enum class ItemType : short
 {
@@ -27,37 +22,30 @@ struct Item
     int x, y;
     bool IsWalkable( Item const& o )
     {
-        return o.type != ItemType::None;
+        return o.type == ItemType::Space;
     }
 };
 
-vector<string> mapConfig = {
-    "%%%%%%%%%%%%%%%%%%%",
-    "%######%%%########%",
-    "%# @  #%%%#      #%",
-    "%#    #####      #%",
-    "%#    #          #%",
-    "%#    #   #      #%",
-    "%#        #    * #%",
-    "%#        #      #%",
-    "%#################%",
-    "%%%%%%%%%%%%%%%%%%%",
-};
-Map<Item> mapData( (int)mapConfig[ 0 ].size(), (int)mapConfig.size() );
 
-
-int main()
+Map<Item>* Fill( int& aX, int& aY, int& bX, int& bY )
 {
-    Pos posBegin, posEnd;
-
-    // fill
-    for( int y = 0; y < mapData.h; ++y )
+    ifstream f( "map.txt" );
+    string tmp;
+    vector<string> ss;
+    while( getline( f, tmp ) )
     {
-        auto& mapRow = mapConfig[ y ];
-        for( int x = 0; x < mapData.w; ++x )
+        ss.push_back( tmp );
+    }
+
+    auto result = new Map<Item>( (int)ss[ 0 ].size(), (int)ss.size() );
+
+    for( int y = 0; y < ss.size(); ++y )
+    {
+        auto& s = ss[ y ];
+        for( int x = 0; x < s.size(); ++x )
         {
-            auto& c = mapRow[ x ];
-            auto& item = mapData.At( x, y );
+            auto& c = s[ x ];
+            auto& item = result->At( x, y );
             switch( c )
             {
             case '%':
@@ -71,39 +59,62 @@ int main()
                 break;
             case '@':
                 item = { ItemType::Space, x, y };
-                posBegin = Pos{ x, y };
+                aX = x; aY = y;
                 break;
             case '*':
                 item = { ItemType::Space, x, y };
-                posEnd = Pos{ x, y };
+                bX = x; bY = y;
                 break;
             }
         }
     }
 
-    // dump for auth
-    for( int y = 0; y < mapData.h; ++y )
+    return result;
+}
+void Dump( Map<Item>& m, int aX, int aY, int bX, int bY, AStar<Item>* astar = nullptr )
+{
+    for( int y = 0; y < m.h; ++y )
     {
-        for( int x = 0; x < mapData.w; ++x )
+        for( int x = 0; x < m.w; ++x )
         {
-            auto& item = mapData.At( x, y );
+            auto& item = m.At( x, y );
             switch( item.type )
             {
             case ItemType::None:
                 cout << "%";
                 break;
             case ItemType::Space:
-                if( posBegin.x == x && posBegin.y == y )
+                if( aX == x && aY == y )
                 {
                     cout << "@";
                 }
-                else if( posEnd.x == x && posEnd.y == y )
+                else if( bX == x && bY == y )
                 {
                     cout << "*";
                 }
                 else
                 {
-                    cout << " ";
+                    if( astar )
+                    {
+                        bool found = false;
+                        for( auto& o : astar->searchResults )
+                        {
+                            if( o->x == x && o->y == y )
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if( found )
+                        {
+                            cout << "+";
+                        }
+                        else
+                        {
+                            cout << " ";
+                        }
+                    }
+                    else cout << " ";
                 }
                 break;
             case ItemType::Wall:
@@ -115,20 +126,33 @@ int main()
         }
         cout << endl;
     }
+    cout << endl;
+}
 
+#include "Lib/All.h"
+int main()
+{
+    int aX, aY, bX, bY;
+    auto m = Fill( aX, aY, bX, bY );
+    //Dump( *m, aX, aY, bX, bY );
 
+    AStar<Item> astar( m );
 
-    // todo AStar
-    AStar<Item> astar( &mapData );
-    std::vector<Item*> resultContainer;
-    if( astar.Search( posBegin.x, posBegin.y, posEnd.x, posEnd.y, resultContainer ) )
+    xxx::Stopwatch sw;
+    int count = 0;
+    for( int i = 0; i < 100; ++i )
     {
-        for( auto& item : resultContainer )
+        if( astar.Search( aX, aY, bX, bY ) )
         {
-            cout << "x = " << item->x << ", y = " << item->y << endl;
+            ++count;
         }
     }
+    cout << "elapsed ms = " << sw.ElapsedMillseconds() << endl;
+    cout << "count = " << count << endl;
+    cout << "map width = " << m->w << ", height = " << m->h << endl;
+    //if( count ) Dump( *m, aX, aY, bX, bY, &astar );
 
+    delete m;
 
     system( "pause" );
     return 0;

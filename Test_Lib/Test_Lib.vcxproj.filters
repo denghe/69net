@@ -6,6 +6,8 @@
   <ItemGroup>
     <Text Include="bak.txt" />
     <Text Include="todo.txt" />
+    <Text Include="map.txt" />
+    <Text Include="map2.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AStar.h" />

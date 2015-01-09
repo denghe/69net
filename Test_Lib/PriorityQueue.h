@@ -28,7 +28,7 @@ struct PriorityQueue
         return p;
     }
 
-    inline T Pop()
+    T Pop()
     {
         auto result = data[ 0 ];
         int p = 0, p1, p2, pn;
@@ -52,7 +52,7 @@ struct PriorityQueue
         return result;
     }
 
-    inline void Update( T item )
+    void Update( T item )
     {
         int count = (int)data.size();
         while( ( item->pqIdx - 1 >= 0 ) && ( data[ item->pqIdx - 1 ]->f > data[ item->pqIdx ]->f ) )
@@ -65,7 +65,7 @@ struct PriorityQueue
         }
     }
 
-    inline void Clear()
+    void Clear()
     {
         data.clear();
     }
