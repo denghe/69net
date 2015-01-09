@@ -41,7 +41,7 @@ struct AStar
         {
             for( int y = 0; y < h; y++ )
             {
-                pathNodeMap->At( x, y ).userContext = &m->At( x, y );
+                pathNodeMap->At( x, y ).Assign( x, y, &m->At( x, y ) );
             }
         }
     }
@@ -63,35 +63,15 @@ struct AStar
         runtimeGrid = nullptr;
     }
 
-    const double sqrt_2 = sqrt( 2 );
-    double Heuristic( PPNT a, PPNT b )
+    bool Search( int aX, int aY, int bX, int bY, std::vector<T*>& resultContainer )
     {
-        return sqrt( ( a.x - b.x ) * ( a.x - b.x ) + ( a.y - b.y ) * ( a.y - b.y ) );
-    }
-    double NeighborDistance( PPNT a, PPNT b )
-    {
-        int diffX = abs( a->x - b->x );
-        int diffY = abs( a->y - b->y );
-
-        switch( diffX + diffY )
-        {
-        case 1: return 1;
-        case 2: return SQRT_2;
-        case 0: return 0;
-        default:
-            assert( false );
-        }
-    }
-
-    int Search( int aX, int aY, int bX, int bY, std::vector<T*>& resultContainer )
-    {
-        PPNT startNode = pathNodeMap->At( aX, aY );
-        PPNT endNode = pathNodeMap->At( bX, bY );
+        auto startNode = &pathNodeMap->At( aX, aY );
+        auto endNode = &pathNodeMap->At( bX, bY );
 
         if( startNode == endNode )
         {
-            resultContainer->clear();
-            return 0;
+            resultContainer.clear();
+            return true;
         }
 
         closedSet->Clear();
@@ -102,7 +82,7 @@ struct AStar
 
         startNode->g = 0;
         startNode->h = Heuristic( startNode, endNode );
-        startNode->f = startNode->H;
+        startNode->f = startNode->h;
 
         openSet->Add( startNode );
         orderedOpenSet->Push( startNode );
@@ -114,7 +94,8 @@ struct AStar
             auto x = orderedOpenSet->Pop();
             if( x == endNode )
             {
-                return ReconstructPath( cameFrom->At( endNode->x, endNode->y ), resultContainer );
+                ReconstructPath( cameFrom->At( endNode->x, endNode->y ), resultContainer );
+                return true;
             }
 
             openSet->Remove( x );
@@ -124,7 +105,7 @@ struct AStar
 
             for( auto y : neighbors )
             {
-                if( y == null
+                if( !y
                     || !x->userContext->IsWalkable( *y->userContext )
                     || closedSet->Contains( y ) ) continue;
 
@@ -138,7 +119,7 @@ struct AStar
                     better = true;
                     added = true;
                 }
-                else if( score < runtimeGrid[ y ]->g )
+                else if( score < runtimeGrid->At( y->x, y->y )->g )
                 {
                     better = true;
                 }
@@ -163,40 +144,62 @@ struct AStar
             }
         }
 
-        return null;
+        return false;
     }
+
+protected:
 
     void FillNeighbors( PPNT o, std::vector<PPNT>& resultContainer )
     {
         resultContainer.resize( 8 );
         int x = o->x, y = o->y;
-        inNeighbors[ 0 ] = &pathNodeMap->At( x - 1, y - 1 );
-        inNeighbors[ 1 ] = &pathNodeMap->At( x, y - 1 );
-        inNeighbors[ 2 ] = &pathNodeMap->At( x + 1, y - 1 );
-        inNeighbors[ 3 ] = &pathNodeMap->At( x - 1, y );
-        inNeighbors[ 4 ] = &pathNodeMap->At( x + 1, y );
-        inNeighbors[ 5 ] = &pathNodeMap->At( x - 1, y + 1 );
-        inNeighbors[ 6 ] = &pathNodeMap->At( x, y + 1 );
-        inNeighbors[ 7 ] = &pathNodeMap->At( x + 1, y + 1 );
+        resultContainer[ 0 ] = &pathNodeMap->At( x - 1, y - 1 );
+        resultContainer[ 1 ] = &pathNodeMap->At( x, y - 1 );
+        resultContainer[ 2 ] = &pathNodeMap->At( x + 1, y - 1 );
+        resultContainer[ 3 ] = &pathNodeMap->At( x - 1, y );
+        resultContainer[ 4 ] = &pathNodeMap->At( x + 1, y );
+        resultContainer[ 5 ] = &pathNodeMap->At( x - 1, y + 1 );
+        resultContainer[ 6 ] = &pathNodeMap->At( x, y + 1 );
+        resultContainer[ 7 ] = &pathNodeMap->At( x + 1, y + 1 );
 
         // todo: custom neighbors like teleport door ?
     }
 
-    int ReconstructPath( PPNT n, std::vector<T*>& resultContainer )
+    void ReconstructPath( PPNT n, std::vector<T*>& resultContainer )
     {
         resultContainer.clear();
         ReconstructPathRecursive( n, resultContainer );
         resultContainer.push_back( n->userContext );
-        return resultContainer.size();
     }
 
     void ReconstructPathRecursive( PPNT n, std::vector<T*>& resultContainer )
     {
         if( auto p = cameFrom->At( n->x, n->y ) )
         {
-            ReconstructPathRecursive( p, result );
+            ReconstructPathRecursive( p, resultContainer );
         }
-        result.AddLast( n->userContext );
+        resultContainer.push_back( n->userContext );
+    }
+
+    const double sqrt_2 = sqrt( 2 );
+    double Heuristic( PPNT a, PPNT b )
+    {
+        return sqrt( ( a->x - b->x ) * ( a->x - b->x ) + ( a->y - b->y ) * ( a->y - b->y ) );
+    }
+    double NeighborDistance( PPNT a, PPNT b )
+    {
+        int diffX = abs( a->x - b->x );
+        int diffY = abs( a->y - b->y );
+
+        switch( diffX + diffY )
+        {
+        case 1: return 1;
+        case 2: return sqrt_2;
+        case 0: return 0;
+        default:
+            assert( false );
+            return 0;
+        }
     }
 
 };

@@ -11,7 +11,7 @@ struct PriorityQueue
 {
     int Push( T item )
     {
-        int p = data.size(), p2;
+        int p = (int)data.size(), p2;
         item->pqIdx = p;
         data.push_back( item );
         do
@@ -54,7 +54,7 @@ struct PriorityQueue
 
     inline void Update( T item )
     {
-        int count = data.size();
+        int count = (int)data.size();
         while( ( item->pqIdx - 1 >= 0 ) && ( data[ item->pqIdx - 1 ]->f > data[ item->pqIdx ]->f ) )
         {
             Swap( item->pqIdx - 1, item->pqIdx );

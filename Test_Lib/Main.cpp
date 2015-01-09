@@ -120,8 +120,14 @@ int main()
 
     // todo AStar
     AStar<Item> astar( &mapData );
-
-
+    std::vector<Item*> resultContainer;
+    if( astar.Search( posBegin.x, posBegin.y, posEnd.x, posEnd.y, resultContainer ) )
+    {
+        for( auto& item : resultContainer )
+        {
+            cout << "x = " << item->x << ", y = " << item->y << endl;
+        }
+    }
 
 
     system( "pause" );

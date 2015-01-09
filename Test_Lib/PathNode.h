@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-template<typename UCT>
+template<typename T>
 struct PathNode
 {
     int x = -1, y = -1;
@@ -11,19 +11,19 @@ struct PathNode
     double g = 0;
     double h = 0;
     double f = 0;
-    UCT userContext;
+    T userContext;
 
     bool operator<( PathNode const& other )
     {
         return this->f < other.f;
     }
 
-    template<typename T>
-    void Assign( int x, int y, T&& userContext )
+    template<typename VT>
+    void Assign( int x, int y, VT&& userContext )
     {
         this->x = x;
         this->y = y;
-        this->userContext = std::forward<T>( userContext );
+        this->userContext = std::forward<VT>( userContext );
     }
 };
 
