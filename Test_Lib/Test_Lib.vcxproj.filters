@@ -7,4 +7,11 @@
     <Text Include="bak.txt" />
     <Text Include="todo.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AStar.h" />
+    <ClInclude Include="OpenCloseMap.h" />
+    <ClInclude Include="PathNode.h" />
+    <ClInclude Include="PriorityQueue.h" />
+    <ClInclude Include="Map.h" />
+  </ItemGroup>
 </Project>
