@@ -2,6 +2,12 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ZS\AStar.cpp">
+      <Filter>ZS</Filter>
+    </ClCompile>
+    <ClCompile Include="ZS\PriorityQueue.cpp">
+      <Filter>ZS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />
@@ -15,5 +21,19 @@
     <ClInclude Include="PathNode.h" />
     <ClInclude Include="PriorityQueue.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="ZS\AStar.h">
+      <Filter>ZS</Filter>
+    </ClInclude>
+    <ClInclude Include="ZS\AStarNode.h">
+      <Filter>ZS</Filter>
+    </ClInclude>
+    <ClInclude Include="ZS\PriorityQueue.h">
+      <Filter>ZS</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ZS">
+      <UniqueIdentifier>{b4eae05b-0c65-4f02-9d56-fb91bdc9e5e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
