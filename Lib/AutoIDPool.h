@@ -3,56 +3,7 @@
 
 namespace xxx
 {
-    /*
-示例：
-
-
-// 基类，必须具备下列接口要素
-struct FooBase
-{
-    int typeId = 0;                     // 类型自增id. 将于派生类 new 时填充
-    FooBase() = default;                // 默认构造函数
-    virtual ~FooBase();                 // 虚析构，必须的
-    // void Init( ... );                // 在派生类中实现. 想象为构造函数
-    inline virtual void Destroy() {}    // 想象为析构函数
-}
-
-
-// 为了给派生类型附加上自增id, 实现一个模板以继承. 也可以复制代码或用宏啥的
-template<typename T>
-struct Foo : public FooBase
-{
-    static const AutoID<FooBase> typeId;
-    Foo()
-    {
-        FooBase::typeId = this->typeId.value;
-    }
-};
-template<typename T>
-const AutoID<FooBase> Foo<T>::typeId;
-
-
-// 这里约定，池对象每次初始化用 Init 函数，参数可变
-struct Foo1 : Foo<Foo1> 
-{
-    void Init( ... );
-}
-struct Foo2 : Foo<Foo2>
-{
-    void Init( ... );
-    void Destroy() override {}
-}
-...
-
-
-AutoIDPool<Foo> p;
-auto f1 = p.Alloc<Foo1>( ... );
-auto f2 = p.Alloc<Foo2>( ... );
-...
-p.Free( f1 );
-p.Free( f2 );
-    */
-
+    // 示例参看 Buf.h
 
     // 作为静态成员置入 class, 提供自增 type id 的生成功能
     template<typename T>
@@ -64,6 +15,22 @@ p.Free( f2 );
     };
     template<typename T>
     int AutoID<T>::maxValue = 0;
+
+
+    // sample: struct Foo : public XxxBase, public AutoIDAttacher<Foo, XxxBase>
+    // struct Foo_Child : public Foo, public AutoIDAttacher<Foo_Child, XxxBase>
+    template<typename T, typename BT>
+    struct AutoIDAttacher
+    {
+        static const AutoID<BT> autoTypeId;
+        AutoIDAttacher()
+        {
+            ( ( T* )this )->BT::typeId = AutoIDAttacher<T, BT>::autoTypeId.value;
+        }
+    };
+    template<typename T, typename BT>
+    const AutoID<BT> AutoIDAttacher<T, BT>::autoTypeId;
+
 
 
     // T 的接口需求参看示例
@@ -85,7 +52,7 @@ p.Free( f2 );
         CT* Alloc( PTS&& ...ps )
         {
             CT* rtv;
-            auto& os = data[ CT::typeId.value ];
+            auto& os = data[ CT::AutoIDAttacher<CT, T>::autoTypeId.value ];
             if( os.Size() )
                 rtv = (CT*)os.TopPop();
             else
@@ -103,7 +70,7 @@ p.Free( f2 );
         template<typename CT>
         void Prepare( int count )
         {
-            auto& os = data[ CT::typeId.value ];
+            auto& os = data[ CT::::AutoIDAttacher<CT, T>autoTypeId.value ];
             for( int i = 0; i < data.Size(); ++i )
             {
                 os.Push( new CT() );

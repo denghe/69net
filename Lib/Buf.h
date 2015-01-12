@@ -3,6 +3,9 @@
 
 namespace xxx
 {
+    // sample: struct Foo : public BufBase, public AutoIDAttaher<Foo, BufBase>
+    // struct Child : public Foo, public AutoIDAttaher<Child, BufBase>
+
     struct BufBase
     {
         // bufs: 到达这个 ticks 将 Destroy
@@ -30,18 +33,6 @@ namespace xxx
         // 不应放置逻辑相关代码
         virtual ~BufBase() {};
     };
-
-    template<typename T>
-    struct Buf : public BufBase
-    {
-        static const AutoID<BufBase> typeId;
-        Buf()
-        {
-            this->BufBase::typeId = Buf::typeId.value;
-        }
-    };
-    template<typename T>
-    const AutoID<BufBase> Buf<T>::typeId;
 
 
     struct BufContainer

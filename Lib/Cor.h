@@ -16,8 +16,9 @@ namespace xxx
 #define REF_ENSURE( N )     if( N && N->corId != N##_corId ) N = nullptr
 #define REF_CLEAR( N )      N = nullptr
 
-    // todo: message ?
 
+    // sample: struct Foo : public CorBase, public AutoIDAttaher<Foo, CorBase>
+    // struct Foo_Child : public Foo, public AutoIDAttaher<Foo_Child, CorBase>
 
     struct CorManager;
     struct CorBase
@@ -35,19 +36,7 @@ namespace xxx
     };
 
 
-    template<typename T>
-    struct Cor : public CorBase
-    {
-        static const AutoID<CorBase> typeId;
-        Cor()
-        {
-            this->CorBase::typeId = Cor::typeId.value;
-        }
-    };
-    template<typename T>
-    const AutoID<CorBase> Cor<T>::typeId;
-
-
+    // todo: message ?
     struct CorManager
     {
         List<CorBase*> items;
@@ -68,7 +57,7 @@ namespace xxx
         CT* CreateItem( PTS&& ...ps )
         {
             CT* rtv;
-            auto& objs = pool[ CT::typeId.value ];
+            auto& objs = pool[ CT::AutoIDAttacher<CT, CorBase>::autoTypeId.value ];
             if( objs.Size() )
             {
                 rtv = (CT*)objs.TopPop();
