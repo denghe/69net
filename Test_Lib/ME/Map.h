@@ -1,7 +1,7 @@
 #ifndef __MAP_H__
 #define __MAP_H__
 
-#include <functional>
+#include <vector>
 
 template<typename T>
 struct Map
@@ -13,32 +13,23 @@ struct Map
     Map( int w, int h )
         : w( w )
         , h( h )
-        , data( new T[ w * h ] )
     {
+        data.resize( w * h );
     }
-    ~Map()
-    {
-        delete[] data;
-        data = nullptr;
-    }
-
     T& At( int x, int y )
     {
+        assert( x >= 0 && y >= 0 && x < w && y < h );
         return data[ y * w + x ];
     }
-
     void Clear()
     {
-        memset( data, 0, w * h * sizeof( T ) );
-        //for( int i = 0; i < w * h; ++i )
-        //{
-        //    data[ i ] = nullptr;
-        //}
+        memset( data.data(), 0, w * h * sizeof( T ) );
     }
 
 //private:
     int w = 0, h = 0;
-    T* data = nullptr;
+    std::vector<T> data;
 };
+
 
 #endif

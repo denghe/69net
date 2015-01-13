@@ -1,8 +1,6 @@
 #ifndef _PRIORITY_QUEUE_H_
 #define _PRIORITY_QUEUE_H_
 
-#include "Common.h"
-
 #include <vector>
 using namespace std;
 
@@ -104,6 +102,6 @@ private:
     vector<NODE *> _data;
 };
 
-#include "PriorityQueue.cpp"
+#include "PriorityQueue.hpp"
 
 #endif

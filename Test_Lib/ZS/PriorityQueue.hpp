@@ -1,7 +1,6 @@
-#ifndef _PRIORITY_QUEUE_CPP_
-#define _PRIORITY_QUEUE_CPP_
+#ifndef _PRIORITY_QUEUE_HPP_
+#define _PRIORITY_QUEUE_HPP_
 
-#include "PriorityQueue.h"
 #include <assert.h>
 
 template<typename NODE>

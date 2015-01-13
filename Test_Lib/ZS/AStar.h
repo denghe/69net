@@ -1,8 +1,6 @@
 #ifndef _ASTAR_H_
 #define _ASTAR_H_
 
-#include "../core/Common.h"
-
 #include <list>
 using namespace std;
 
@@ -138,6 +136,6 @@ private:
     void *_user_data;
 };
 
-#include "AStar.cpp"
+#include "AStar.hpp"
 
 #endif

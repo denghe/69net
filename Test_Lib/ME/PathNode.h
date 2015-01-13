@@ -9,9 +9,9 @@ struct PathNode
     T userContext;
     int x = -1, y = -1;
     int pqIdx = -1;
-    double g = 0;
-    double h = 0;
-    double f = 0;
+    float g = 0;
+    float h = 0;
+    float f = 0;
 
     bool operator<( PathNode const& other )
     {

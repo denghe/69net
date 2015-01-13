@@ -1,32 +1,3 @@
-#include "Lib/All.h"
-using namespace xxx;
-
-struct A
-{
-    int a = 123;
-};
-struct C
-{
-};
-struct C0 : public C, public A
-{
-};
-struct C1 : public C0, public A
-{
-};
-
-int main()
-{
-    C1 c;
-    c.C0::A::a = 1;
-    c.A::a = 2;
-    Cout( c.C0::A::a, ", ", c.A::a );
-}
-
-
-
-//#include "Lib/All.h"
-//
 //#include <stack>
 //#include <string>
 //#include <iostream>
@@ -34,9 +5,13 @@ int main()
 //#include <vector>
 //#include <cassert>
 //#include <algorithm>
-//using namespace std;
 //
-//#include "AStar.h"
+//
+//typedef unsigned short ushort;
+//typedef unsigned int uint32, uint;
+//#define SAFE_DELETE(p) if( p ) { delete p; p = nullptr; }
+//#include "ZS/AStar.h"
+//#include "ME/Map.h"
 //
 //enum class ItemType : short
 //{
@@ -48,17 +23,66 @@ int main()
 //struct Item
 //{
 //    ItemType type;
-//    int x, y;
-//    bool IsWalkable( Item const& o )
+//    ushort x, y;
+//};
+//
+//struct ASN : public AStarNode < ASN >
+//{
+//    ushort x, y;
+//    ASN( ushort x, ushort  y ) : x( x ), y( y ) {}
+//    uint32 key() override
 //    {
-//        return o.type == ItemType::Space;
+//        return ( x << 16 ) | y;
+//    }
+//};
+//
+//Map<Item>* _map;
+//
+//struct AS : public AStar < ASN, Item >
+//{
+//    float h( ASN *a, ASN *b ) override
+//    {
+//        return sqrtf( ( a->x - b->x ) * ( a->x - b->x ) + ( a->y - b->y ) * ( a->y - b->y ) );
+//    }
+//
+//    void try_tile( ushort x, ushort y, ASN *parent, float base_cost )
+//    {
+//        if( _map->At( x, y ).type == ItemType::Space )
+//        {
+//            this->add_successor( new ASN{ x, y }, parent, base_cost );
+//        }
+//    }
+//    void expand_node( ASN *node ) override
+//    {
+//        try_tile( node->x, node->y - 1, node, 1.0f );
+//        try_tile( node->x, node->y + 1, node, 1.0f );
+//        try_tile( node->x - 1, node->y, node, 1.0f );
+//        try_tile( node->x + 1, node->y, node, 1.0f );
+//
+//        try_tile( node->x - 1, node->y - 1, node, 1.41421356f );
+//        try_tile( node->x - 1, node->y + 1, node, 1.41421356f );
+//        try_tile( node->x + 1, node->y - 1, node, 1.41421356f );
+//        try_tile( node->x + 1, node->y + 1, node, 1.41421356f );
+//    }
+//    WayPointList *build_path( ASN *node ) override
+//    {
+//        WayPointList *p = new WayPointList();
+//        while( node )
+//        {
+//            p->push_front( Item{ ItemType::None, node->x, node->y } );
+//            node = node->parent();
+//        }
+//        return p;
 //    }
 //};
 //
 //
+//
+//
+//
 //Map<Item>* Fill( int& aX, int& aY, int& bX, int& bY )
 //{
-//    ifstream f( "map.txt" );
+//    ifstream f( "map2.txt" );
 //    string tmp;
 //    vector<string> ss;
 //    while( getline( f, tmp ) )
@@ -68,10 +92,10 @@ int main()
 //
 //    auto result = new Map<Item>( (int)ss[ 0 ].size(), (int)ss.size() );
 //
-//    for( int y = 0; y < ss.size(); ++y )
+//    for( size_t y = 0; y < ss.size(); ++y )
 //    {
 //        auto& s = ss[ y ];
-//        for( int x = 0; x < s.size(); ++x )
+//        for( size_t x = 0; x < s.size(); ++x )
 //        {
 //            auto& c = s[ x ];
 //            auto& item = result->At( x, y );
@@ -100,7 +124,10 @@ int main()
 //
 //    return result;
 //}
-//void Dump( Map<Item>& m, int aX, int aY, int bX, int bY, AStar<Item>* astar = nullptr )
+//
+//
+//
+//void Dump( Map<Item>& m, int aX, int aY, int bX, int bY, list<Item>* way = nullptr )
 //{
 //    for( int y = 0; y < m.h; ++y )
 //    {
@@ -123,12 +150,12 @@ int main()
 //                }
 //                else
 //                {
-//                    if( astar )
+//                    if( way )
 //                    {
 //                        bool found = false;
-//                        for( auto& o : astar->searchResults )
+//                        for( auto& o : *way )
 //                        {
-//                            if( o->x == x && o->y == y )
+//                            if( o.x == x && o.y == y )
 //                            {
 //                                found = true;
 //                                break;
@@ -159,29 +186,33 @@ int main()
 //}
 //
 //#include "Lib/All.h"
+//
 //int main()
 //{
 //    int aX, aY, bX, bY;
-//    auto m = Fill( aX, aY, bX, bY );
-//    //Dump( *m, aX, aY, bX, bY );
+//    _map = Fill( aX, aY, bX, bY );
 //
-//    AStar<Item> astar( m );
+//    cout << aX << ", " << aY << ", " << bX << ", " << bY << endl;
+//    //Dump( *_map, aX, aY, bX, bY );
+//
+//    AS a;
 //
 //    xxx::Stopwatch sw;
-//    int count = 0;
 //    for( int i = 0; i < 100; ++i )
 //    {
-//        if( astar.Search( aX, aY, bX, bY ) )
-//        {
-//            ++count;
-//        }
+//        a.init( new ASN( aX, aY ), new ASN( bX, bY ) );
+//        while( a.search() == 0 );
+//        auto way = a.detach_path();
+//        delete way;
+//        a.reset();
 //    }
-//    cout << "elapsed ms = " << sw.ElapsedMillseconds() << endl;
-//    cout << "count = " << count << endl;
-//    cout << "map width = " << m->w << ", height = " << m->h << endl;
-//    //if( count ) Dump( *m, aX, aY, bX, bY, &astar );
+//    //Dump( *_map, aX, aY, bX, bY, way );
+//    cout << sw.ElapsedMillseconds() << endl;
 //
-//    delete m;
+//    //for( auto p : *way )
+//    //{
+//    //    cout << p.x << ", " << p.y << endl;
+//    //}
 //
 //    system( "pause" );
 //    return 0;

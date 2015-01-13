@@ -20,12 +20,25 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Main1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />
     <Text Include="map.txt" />
     <Text Include="map2.txt" />
     <Text Include="todo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ME\AStar.h" />
+    <ClInclude Include="ME\OpenCloseMap.h" />
+    <ClInclude Include="ME\Map.h" />
+    <ClInclude Include="ME\PathNode.h" />
+    <ClInclude Include="ME\PriorityQueue.h" />
+    <ClInclude Include="ZS\AStar.h" />
+    <ClInclude Include="ZS\AStar.hpp" />
+    <ClInclude Include="ZS\AStarNode.h" />
+    <ClInclude Include="ZS\PriorityQueue.h" />
+    <ClInclude Include="ZS\PriorityQueue.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DE461C3C-C0F6-418C-B16A-DA6F31D97CCF}</ProjectGuid>

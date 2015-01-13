@@ -1,8 +1,7 @@
 #ifndef _ASTAR_NODE_H_
 #define _ASTAR_NODE_H_
 
-#include "../core/Common.h"
-#include "../core/PriorityQueue.h"
+#include "PriorityQueue.h"
 
 #include <unordered_set>
 using namespace std;

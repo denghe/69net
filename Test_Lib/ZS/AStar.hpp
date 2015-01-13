@@ -1,7 +1,5 @@
-#ifndef _ASTAR_CPP_
-#define _ASTAR_CPP_
-
-#include "AStar.h"
+#ifndef _ASTAR_HPP_
+#define _ASTAR_HPP_
 
 template<typename NODE, typename WAYPOINT>
 void AStar<NODE, WAYPOINT>::init(NODE *start, NODE *goal, void *user_data)

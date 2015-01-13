@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="bak.txt" />
     <Text Include="todo.txt" />
     <Text Include="map.txt" />
@@ -13,5 +10,21 @@
     <Filter Include="ZS">
       <UniqueIdentifier>{b4eae05b-0c65-4f02-9d56-fb91bdc9e5e2}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main1.cpp" />
+    <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ZS\AStar.h" />
+    <ClInclude Include="ZS\AStar.hpp" />
+    <ClInclude Include="ZS\AStarNode.h" />
+    <ClInclude Include="ZS\PriorityQueue.h" />
+    <ClInclude Include="ZS\PriorityQueue.hpp" />
+    <ClInclude Include="ME\AStar.h" />
+    <ClInclude Include="ME\Map.h" />
+    <ClInclude Include="ME\PathNode.h" />
+    <ClInclude Include="ME\PriorityQueue.h" />
+    <ClInclude Include="ME\OpenCloseMap.h" />
   </ItemGroup>
 </Project>

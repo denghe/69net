@@ -5,6 +5,7 @@
 #include <cassert>
 #include <vector>
 #include "PriorityQueue.h"
+//#include "OpenCloseMap.h"
 #include "OpenCloseMap.h"
 #include "Map.h"
 #include "PathNode.h"
@@ -15,60 +16,33 @@ struct AStar
     typedef PathNode<T*>    PNT;
     typedef PathNode<T*>*   PPNT;
 
-    Map<T>*                 originalMap = nullptr;      // 指向原地图数据
-    int                     w = 0, h = 0;
     std::vector<PPNT>       searchResults;              // Search 函数的执行结果
+    Map<PNT>                pathNodeMap;                // 通过原地图数据填充，扩展出计算字段
+    PriorityQueue<PPNT>     orderedOpenSet;
+    Map<PPNT>               cameFrom;
+    OpenCloseMap        closedSet;
+    OpenCloseMap        openSet;
 
-    Map<PNT>*               pathNodeMap = nullptr;      // 通过原地图数据填充
-    OpenCloseMap<PPNT>*     closedSet = nullptr;
-    OpenCloseMap<PPNT>*     openSet = nullptr;
-    PriorityQueue<PPNT>*    orderedOpenSet = nullptr;
-    Map<PPNT>*              cameFrom = nullptr;
-    OpenCloseMap<PPNT>*     runtimeGrid = nullptr;
 
-    AStar( Map<T>* m )
+    AStar( Map<T>& m )
+        : pathNodeMap( m.w, m.h )
+        , cameFrom( m.w, m.h )
+        , closedSet( m.w, m.h )
+        , openSet( m.w, m.h )
     {
-        assert( m );
-        w = m->w;
-        h = m->h;
-        originalMap = m;
-        pathNodeMap = new Map<PNT>( w, h );
-        closedSet = new OpenCloseMap<PPNT>( w, h );
-        openSet = new OpenCloseMap<PPNT>( w, h );
-        orderedOpenSet = new PriorityQueue<PPNT>(); // todo: opacity ?
-        cameFrom = new Map<PPNT>( w, h );
-        runtimeGrid = new OpenCloseMap<PPNT>( w, h );
-
-        for( int x = 0; x < w; x++ )
+        for( int x = 0; x < m.w; x++ )
         {
-            for( int y = 0; y < h; y++ )
+            for( int y = 0; y < m.h; y++ )
             {
-                pathNodeMap->At( x, y ).Assign( x, y, &m->At( x, y ) );
+                pathNodeMap.At( x, y ).Assign( x, y, &m.At( x, y ) );
             }
         }
-    }
-    ~AStar()
-    {
-        delete pathNodeMap;
-        delete closedSet;
-        delete openSet;
-        delete orderedOpenSet;
-        delete cameFrom;
-        delete runtimeGrid;
-
-        originalMap = nullptr;
-        pathNodeMap = nullptr;
-        closedSet = nullptr;
-        openSet = nullptr;
-        orderedOpenSet = nullptr;
-        cameFrom = nullptr;
-        runtimeGrid = nullptr;
     }
 
     bool Search( int aX, int aY, int bX, int bY )
     {
-        auto startNode = &pathNodeMap->At( aX, aY );
-        auto endNode = &pathNodeMap->At( bX, bY );
+        auto startNode = &pathNodeMap.At( aX, aY );
+        auto endNode = &pathNodeMap.At( bX, bY );
 
         if( startNode == endNode )
         {
@@ -76,65 +50,62 @@ struct AStar
             return true;
         }
 
-        closedSet->Clear();
-        openSet->Clear();
-        orderedOpenSet->Clear();
+        closedSet.Clear();
+        openSet.Clear();
+        orderedOpenSet.Clear();
 
         if( searchResults.size() )
         {
-            for( int i = 0; i < searchResults.size(); ++i )
+            for( size_t i = 0; i < searchResults.size(); ++i )
             {
                 auto n = searchResults[ i ];
-                cameFrom->At( n->x, n->y ) = nullptr;
+                cameFrom.At( n->x, n->y ) = nullptr;
             }
             searchResults.clear();
         }
-        else cameFrom->Clear();
-
-        runtimeGrid->Clear();
+        else cameFrom.Clear();
 
         startNode->g = 0;
         startNode->h = Heuristic( startNode, endNode );
         startNode->f = startNode->h;
 
-        openSet->Add( startNode );
-        orderedOpenSet->Push( startNode );
-        runtimeGrid->Add( startNode );
+        openSet.Add( startNode->x, startNode->y );
+        orderedOpenSet.Push( startNode );
 
         std::vector<PPNT> neighbors;
         neighbors.resize( 8 );
 
-        while( openSet->c )
+        while( openSet.c )
         {
-            auto x = orderedOpenSet->Pop();
+            auto x = orderedOpenSet.Pop();
             if( x == endNode )
             {
-                ReconstructPath( cameFrom->At( endNode->x, endNode->y ) );
+                ReconstructPath( cameFrom.At( endNode->x, endNode->y ) );
                 searchResults.push_back( endNode );
                 return true;
             }
 
-            openSet->Remove( x );
-            closedSet->Add( x );
+            openSet.Remove( x->x, x->y );
+            closedSet.Add( x->x, x->y );
 
             FillNeighbors( x, neighbors );
 
             for( auto y : neighbors )
             {
                 if( !x->userContext->IsWalkable( *y->userContext )
-                    || closedSet->Contains( y ) ) continue;
+                    || closedSet.Contains( y->x, y->y ) ) continue;
 
                 bool better, added = false;
 
-                double score = runtimeGrid->At( x->x, x->y )->g + NeighborDistance( x, y );
+                auto score = pathNodeMap.At( x->x, x->y ).g + NeighborDistance( x, y );
 
-                if( !openSet->Contains( y ) )
+                if( !openSet.Contains( y->x, y->y ) )
                 {
-                    openSet->Add( y );
+                    openSet.Add( y->x, y->y );
                     better = true;
                     added = true;
                 }
-                else if( score < runtimeGrid->At( y->x, y->y )->g )
+                else if( score < pathNodeMap.At( y->x, y->y ).g )
                 {
                     better = true;
                 }
@@ -145,16 +116,15 @@ struct AStar
 
                 if( better )
                 {
-                    cameFrom->At( y->x, y->y ) = x;
+                    cameFrom.At( y->x, y->y ) = x;
 
-                    if( !runtimeGrid->Contains( y ) ) runtimeGrid->Add( y );
+                    auto& n = pathNodeMap.At( y->x, y->y );
+                    n.g = score;
+                    n.h = Heuristic( y, endNode );
+                    n.f = n.g + n.h;
 
-                    runtimeGrid->At( y->x, y->y )->g = score;
-                    runtimeGrid->At( y->x, y->y )->h = Heuristic( y, endNode );
-                    runtimeGrid->At( y->x, y->y )->f = runtimeGrid->At( y->x, y->y )->g + runtimeGrid->At( y->x, y->y )->h;
-
-                    if( added ) orderedOpenSet->Push( y );
-                    else orderedOpenSet->Update( y );
+                    if( added ) orderedOpenSet.Push( y );
+                    else orderedOpenSet.Update( y );
                 }
             }
         }
@@ -167,14 +137,14 @@ protected:
     void FillNeighbors( PPNT o, std::vector<PPNT>& neighbors )
     {
         int x = o->x, y = o->y;
-        neighbors[ 0 ] = &pathNodeMap->At( x - 1, y - 1 );
-        neighbors[ 1 ] = &pathNodeMap->At( x, y - 1 );
-        neighbors[ 2 ] = &pathNodeMap->At( x + 1, y - 1 );
-        neighbors[ 3 ] = &pathNodeMap->At( x - 1, y );
-        neighbors[ 4 ] = &pathNodeMap->At( x + 1, y );
-        neighbors[ 5 ] = &pathNodeMap->At( x - 1, y + 1 );
-        neighbors[ 6 ] = &pathNodeMap->At( x, y + 1 );
-        neighbors[ 7 ] = &pathNodeMap->At( x + 1, y + 1 );
+        neighbors[ 0 ] = &pathNodeMap.At( x - 1, y - 1 );
+        neighbors[ 1 ] = &pathNodeMap.At( x, y - 1 );
+        neighbors[ 2 ] = &pathNodeMap.At( x + 1, y - 1 );
+        neighbors[ 3 ] = &pathNodeMap.At( x - 1, y );
+        neighbors[ 4 ] = &pathNodeMap.At( x + 1, y );
+        neighbors[ 5 ] = &pathNodeMap.At( x - 1, y + 1 );
+        neighbors[ 6 ] = &pathNodeMap.At( x, y + 1 );
+        neighbors[ 7 ] = &pathNodeMap.At( x + 1, y + 1 );
 
         // todo: custom neighbors like teleport door ?
     }
@@ -183,35 +153,20 @@ protected:
     void ReconstructPath( PPNT n )
     {
         searchResults.clear();
-        auto p = cameFrom->At( n->x, n->y );
+        auto p = cameFrom.At( n->x, n->y );
         searchResults.push_back( p );
-        while( p = cameFrom->At( p->x, p->y ) )
+        while( p = cameFrom.At( p->x, p->y ) )
         {
             searchResults.push_back( p );
         }
     }
 
-    //void ReconstructPath( PPNT n )
-    //{
-    //    searchResults.clear();
-    //    ReconstructPathRecursive( n );
-    //}
-
-    //void ReconstructPathRecursive( PPNT n )
-    //{
-    //    if( auto p = cameFrom->At( n->x, n->y ) )
-    //    {
-    //        ReconstructPathRecursive( p );
-    //    }
-    //    searchResults.push_back( n );
-    //}
-
-    const double sqrt_2 = sqrt( 2 );
-    double Heuristic( PPNT a, PPNT b )
+    const float sqrt_2 = sqrtf( 2 );
+    float Heuristic( PPNT a, PPNT b )
     {
-        return sqrt( ( a->x - b->x ) * ( a->x - b->x ) + ( a->y - b->y ) * ( a->y - b->y ) );
+        return sqrtf( float(( a->x - b->x ) * ( a->x - b->x ) + ( a->y - b->y ) * ( a->y - b->y )) );
     }
-    double NeighborDistance( PPNT a, PPNT b )
+    float NeighborDistance( PPNT a, PPNT b )
     {
         int diffX = abs( a->x - b->x );
         int diffY = abs( a->y - b->y );
