@@ -2,8 +2,6 @@
 
 namespace xxx
 {
-
-
     List<bool>::List( int capacity )
     {
         assert( capacity > 0 );
@@ -130,13 +128,46 @@ namespace xxx
     void List<bool>::Set( int idx, bool v )
     {
         assert( idx >= 0 && idx < size );
-        if( v )
-            ( (size_t*)buf )[ idx / ( sizeof( size_t ) * 8 ) ] |=
+        if( v ) SetTrue( idx );
+        else SetFalse( idx );
+    }
+
+    void List<bool>::SetTrue( int idx )
+    {
+        assert( idx >= 0 && idx < size );
+        ( (size_t*)buf )[ idx / ( sizeof( size_t ) * 8 ) ] |=
             ( size_t( 1 ) << ( idx % ( sizeof( size_t ) * 8 ) ) );
-        else
-            ( (size_t*)buf )[ idx / ( sizeof( size_t ) * 8 ) ] &=
+    }
+
+    void List<bool>::SetFalse( int idx )
+    {
+        assert( idx >= 0 && idx < size );
+        ( (size_t*)buf )[ idx / ( sizeof( size_t ) * 8 ) ] &=
             ~( size_t( 1 ) << ( idx % ( sizeof( size_t ) * 8 ) ) );
     }
 
+    void List<bool>::Fill( bool v )
+    {
+        if( v ) FillTrue();
+        else FillFalse();
+    }
+    void List<bool>::FillTrue()
+    {
+        memset( buf, 0xFFFFFFFFu, ( size - 1 ) / 8 + 1 );
+    }
+    void List<bool>::FillFalse()
+    {
+        memset( buf, 0, ( size - 1 ) / 8 + 1 );
+    }
 
+    void List<bool>::Resize( int capacity, bool v )
+    {
+        if( capacity == size ) return;
+        else if( capacity > size )
+        {
+            Reserve( capacity );
+        }
+        size = capacity;
+        Fill( v );
+    }
 }

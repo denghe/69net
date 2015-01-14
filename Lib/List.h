@@ -87,6 +87,12 @@ namespace xxx
         bool operator[]( int idx ) const;
         bool At( int idx ) const;
         void Set( int idx, bool v );
+        void SetTrue( int idx );
+        void SetFalse( int idx );
+        void Fill( bool v );
+        void FillTrue();
+        void FillFalse();
+        void Resize( int capacity, bool v );
         // todo: more functions
     private:
         char*       buf;

@@ -7,11 +7,6 @@
     <Text Include="map2.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="ZS">
-      <UniqueIdentifier>{b4eae05b-0c65-4f02-9d56-fb91bdc9e5e2}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Main1.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
