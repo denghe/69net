@@ -57,7 +57,8 @@ namespace xxx
         CT* CreateItem( PTS&& ...ps )
         {
             CT* rtv;
-            auto& objs = pool[ CT::AutoIDAttacher<CT, CorBase>::autoTypeId.value ];
+            auto& tid = CT::template AutoIDAttacher<CT, CorBase>::autoTypeId.value;
+            auto& objs = pool[ tid ];
             if( objs.Size() )
             {
                 rtv = (CT*)objs.TopPop();
