@@ -57,7 +57,11 @@ namespace xxx
         CT* CreateItem( PTS&& ...ps )
         {
             CT* rtv;
+#if __WIN
+            auto& tid = CT::AutoIDAttacher<CT, CorBase>::autoTypeId.value;
+#else
             auto& tid = CT::template AutoIDAttacher<CT, CorBase>::autoTypeId.value;
+#endif
             auto& objs = pool[ tid ];
             if( objs.Size() )
             {
