@@ -3,8 +3,6 @@
 
 namespace xxx
 {
-    // 示例参看 Buf.h
-
     // 作为静态成员置入 class, 提供自增 type id 的生成功能
     template<typename T>
     struct AutoID
@@ -17,8 +15,14 @@ namespace xxx
     int AutoID<T>::maxValue = 0;
 
 
-    // sample: struct Foo : public XxxBase, public AutoIDAttacher<Foo, XxxBase>
-    // struct Foo_Child : public Foo, public AutoIDAttacher<Foo_Child, XxxBase>
+
+
+    // 为类附加自增ID
+    // sample:
+    /*
+    struct Foo : public XxxBase, public AutoIDAttacher<Foo, XxxBase>
+    struct Foo_Child : public Foo, public AutoIDAttacher<Foo_Child, XxxBase>
+    */
     template<typename T, typename BT>
     struct AutoIDAttacher
     {
@@ -33,15 +37,70 @@ namespace xxx
 
 
 
-    // T 的接口需求参看示例
+
+    // 池对象的 带版本控制需求的指针 容器
+    // sample: 
+    /*
+    PoolPtr<Foo> foo;
+    foo = xxxx;
+    if( auto o = foo.Ptr() ) ...
+    */
+    template<typename T>
+    struct PoolPtr
+    {
+        T* pointer = nullptr;
+        int versionNumber = 0;
+
+        PoolPtr() = default;
+        PoolPtr( T const* const p )
+            : pointer( p )
+            , versionNumber( p->versionNumber )
+        {
+        }
+        PoolPtr( PoolPtr const& o )
+            : pointer( o.pointer )
+            , versionNumber( o.versionNumber )
+        {
+        }
+        inline PoolPtr& operator=( T const* const o )
+        {
+            pointer = o.pointer;
+            versionNumber = o.versionNumber;
+            return *this;
+        }
+        inline PoolPtr& operator=( PoolPtr const& o )
+        {
+            pointer = o.pointer;
+            versionNumber = o.versionNumber;
+            return *this;
+        }
+        // 没有数据管理需求, 不需要实现右值版复制构造
+
+        inline void Ensure()
+        {
+            if( pointer->versionNumber != versionNumber )
+                pointer = nullptr;
+        }
+        inline T* Ptr()
+        {
+            if( !pointer ) return nullptr;
+            Ensure();
+            return pointer;
+        }
+    };
+
+
+    // 对象池，提供创建 / 分配 / 回收, 版本管理
+    // T 的接口需求参看 Buf.h
     template<typename T>
     struct AutoIDPool
     {
-        List<List<T*>> data;
+        List<List<T*>> pool;
+        int poolVersion = 0;
 
         AutoIDPool()
         {
-            data.Resize( AutoID<T>::maxValue + 1 );
+            pool.Resize( AutoID<T>::maxValue + 1 );
         }
         ~AutoIDPool()
         {
@@ -52,11 +111,17 @@ namespace xxx
         CT* Alloc( PTS&& ...ps )
         {
             CT* rtv;
-            auto& os = data[ CT::AutoIDAttacher<CT, T>::autoTypeId.value ];
+#if __WIN
+            auto& tid = CT::AutoIDAttacher<CT, T>::autoTypeId.value;
+#else
+            auto& tid = CT::template AutoIDAttacher<CT, T>::autoTypeId.value;
+#endif
+            auto& os = pool[ tid ];
             if( os.Size() )
                 rtv = (CT*)os.TopPop();
             else
                 rtv = new CT();
+            rtv->T::poolVersion = ++poolVersion;
             rtv->Init( std::forward<PTS>( ps )... );
             return rtv;
         }
@@ -64,14 +129,20 @@ namespace xxx
         void Free( T* o )
         {
             o->Destroy();
-            data[ o->typeId ].Push( o );
+            o->poolVersion = 0;
+            pool[ o->typeId ].Push( o );
         }
 
         template<typename CT>
         void Prepare( int count )
         {
-            auto& os = data[ CT::::AutoIDAttacher<CT, T>autoTypeId.value ];
-            for( int i = 0; i < data.Size(); ++i )
+#if __WIN
+            auto& tid = CT::AutoIDAttacher<CT, T>::autoTypeId.value;
+#else
+            auto& tid = CT::template AutoIDAttacher<CT, T>::autoTypeId.value;
+#endif
+            auto& os = pool[ tid ];
+            for( int i = 0; i < pool.Size(); ++i )
             {
                 os.Push( new CT() );
             }
@@ -79,9 +150,9 @@ namespace xxx
 
         void Clear()
         {
-            for( int i = 0; i < data.Size(); ++i )
+            for( int i = 0; i < pool.Size(); ++i )
             {
-                auto& os = data[ i ];
+                auto& os = pool[ i ];
                 for( int j = 0; j < os.Size(); ++j )
                 {
                     delete os[ j ];
@@ -90,6 +161,7 @@ namespace xxx
             }
         }
     };
+
 
 }
 
