@@ -11,7 +11,7 @@ namespace xxx
         // dots: 到达这个 ticks 将 Process
         int activeTicks = 0;
 
-        int typeId = 0, poolVersion = 0;                // for Pool
+        int typeId = 0, versionNumber = 0;                  // for Pool
 
         // 位于容器中时的位置 for 速删
         int bufIdx = 0;

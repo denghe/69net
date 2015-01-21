@@ -52,7 +52,7 @@ namespace xxx
         int versionNumber = 0;
 
         PoolPtr() = default;
-        PoolPtr( T const* const p )
+        PoolPtr( T* const p )
             : pointer( p )
             , versionNumber( p->versionNumber )
         {
@@ -62,7 +62,7 @@ namespace xxx
             , versionNumber( o.versionNumber )
         {
         }
-        inline PoolPtr& operator=( T const* const o )
+        inline PoolPtr& operator=( T* const o )
         {
             pointer = o.pointer;
             versionNumber = o.versionNumber;
@@ -87,6 +87,10 @@ namespace xxx
             Ensure();
             return pointer;
         }
+        inline T* operator()()
+        {
+            return Ptr();
+        }
     };
 
 
@@ -96,7 +100,7 @@ namespace xxx
     struct AutoIDPool
     {
         List<List<T*>> pool;
-        int poolVersion = 0;
+        int versionNumber = 0;
 
         AutoIDPool()
         {
@@ -121,7 +125,7 @@ namespace xxx
                 rtv = (CT*)os.TopPop();
             else
                 rtv = new CT();
-            rtv->T::poolVersion = ++poolVersion;
+            rtv->T::versionNumber = ++versionNumber;
             rtv->Init( std::forward<PTS>( ps )... );
             return rtv;
         }
@@ -129,7 +133,7 @@ namespace xxx
         void Free( T* o )
         {
             o->Destroy();
-            o->poolVersion = 0;
+            o->versionNumber = 0;
             pool[ o->typeId ].Push( o );
         }
 

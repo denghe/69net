@@ -55,12 +55,23 @@ namespace xxx
         inline virtual void EnsureRefs() {}             // for manager compress( 调所有 PoolPtr 类成员 Ensure() )
         inline virtual void Destroy() {}                // 相当于 析构
 
-        int typeId = 0, poolVersion = 0;                // for pool
+        int typeId = 0, versionNumber = 0;              // for pool
         int corIdx = 0, corLn = 0, corSleeps = 0;       // for coroutine
         virtual bool Process( int ticks ) = 0;
         inline virtual bool Sleeping() { --corSleeps; return true; }
         CorManager* manager = nullptr;
     };
+
+
+    // 用于状态类的协程基类( 上面的简化版, 自己处理 Process )
+    struct CorStateBase
+    {
+        virtual ~CorStateBase() {}
+        int corIdx = 0, corLn = 0, corSleeps = 0;       // for coroutine
+        virtual bool Process( int ticks ) = 0;
+        inline virtual bool Sleeping() { --corSleeps; return true; }
+    };
+
 
 
     // coroutine 对象池 / 管理器
@@ -76,7 +87,7 @@ namespace xxx
     {
         List<CorBase*> items;
         AutoIDPool<CorBase> pool;
-        int poolVersion = 0;
+        int versionNumber = 0;
 
         ~CorManager()
         {
@@ -122,7 +133,7 @@ namespace xxx
                     DestroyItem( items[ i ] );
                 }
             }
-            pool.poolVersion = 0;
+            pool.versionNumber = 0;
         }
 
         void Compress()

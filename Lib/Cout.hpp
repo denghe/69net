@@ -10,11 +10,12 @@ namespace xxx
     {
         String s;
         s.Append( parms... );
-        puts( s.C_str() );
+        //printf( "%s", s.C_str() );
+        fwrite( s.C_str(), 1, s.Size(), stdout );
     }
 
     template<typename ...TS>
-    void Coutn( TS const& ...parms )
+    void CoutLine( TS const& ...parms )
     {
         Cout( parms..., '\n' );
     }
