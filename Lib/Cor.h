@@ -3,6 +3,8 @@
 
 namespace xxx
 {
+    // 最下面有较为全面的示例
+
     // 下面是可用于 coroutine 编程的实用宏
     // sample:
     /*
@@ -148,3 +150,170 @@ namespace xxx
 }
 
 #endif
+
+
+/*
+
+
+struct Foo;
+struct FooState1 : public CorStateBase
+{
+    Foo* owner;
+    String name;
+    int sleepTicks = 0;
+    FooState1( Foo* owner );
+    void Init( String const& name, int sleepTicks );
+    bool Process( int ticks ) override;
+};
+struct FooState2 : public CorStateBase
+{
+    Foo* owner;
+    String name;
+    int sleepTicks = 0;
+    FooState2( Foo* owner );
+    void Init( String const& name, int sleepTicks );
+    bool Process( int ticks ) override;
+};
+struct Foo : public CorBase, public AutoIDAttacher < Foo, CorBase >
+{
+    CorStateBase* s = nullptr;
+    String name;
+    FooState1 s1;
+    FooState2 s2;
+    Foo();
+    void Init( String const& name, int sleepTicks );
+    bool Process( int ticks ) override;
+};
+
+struct Bar : public CorBase, public AutoIDAttacher < Bar, CorBase >
+{
+    void Init( String const& name );
+    bool Process( int ticks ) override;
+    String name;
+    List<PoolPtr<Foo>> childs;
+    void AddChild( Foo* foo );
+};
+
+
+
+
+Foo::Foo()
+    : s1( this )
+    , s2( this )
+{
+}
+void Foo::Init( String const& name, int sleepTicks )
+{
+    this->name = name;
+    s1.Init( String::Make( name, "_state_1" ), sleepTicks );
+}
+bool Foo::Process( int ticks )
+{
+    CoutLine( name, " Process" );
+    s->Process( ticks );
+    return s != nullptr;
+}
+
+
+
+
+FooState1::FooState1( Foo* owner )
+{
+    this->owner = owner;
+}
+void FooState1::Init( String const& name, int sleepTicks )
+{
+    this->name = name;
+    this->sleepTicks = sleepTicks;
+    owner->s = this;
+}
+bool FooState1::Process( int ticks )
+{
+    COR_BEGIN;
+    CoutLine( name, " Process: before sleep( ", sleepTicks, " )" );
+    COR_SLEEP( sleepTicks );
+    CoutLine( name, " Process: sleeped" );
+    owner->s2.Init( String::Make( name, "_state_2" ), sleepTicks );
+    COR_END;
+}
+
+
+
+
+FooState2::FooState2( Foo* owner )
+{
+    this->owner = owner;
+}
+void FooState2::Init( String const& name, int sleepTicks )
+{
+    this->name = name;
+    this->sleepTicks = sleepTicks;
+    owner->s = this;
+}
+bool FooState2::Process( int ticks )
+{
+    COR_BEGIN;
+    CoutLine( name, " Process: before sleep( ", sleepTicks, " )" );
+    COR_SLEEP( sleepTicks );
+    CoutLine( name, " Process: sleeped" );
+    owner->s = nullptr;
+    COR_END;
+}
+
+
+
+
+
+
+void Bar::Init( String const& name )
+{
+    this->name = name;
+}
+
+bool Bar::Process( int ticks )
+{
+    CoutLine( name, " Process begin" );
+    Cout( "alive childs: {" );
+    for( int i = childs.Size() - 1; i >= 0; --i )
+    {
+        auto& c = childs[ i ];
+        if( auto p = c.Ptr() )
+        {
+            Cout( p->name, ", " );
+        }
+        else
+        {
+            childs.EraseFast( i );
+        }
+    }
+    CoutLine( "}" );
+    CoutLine( name, " Process end" );
+    return true;
+}
+
+void Bar::AddChild( Foo* foo )
+{
+    childs.Push( foo );
+}
+
+
+
+
+int main()
+{
+    CorManager cm;
+    auto b = cm.CreateItem<Bar>( "bar" );
+    b->AddChild( cm.CreateItem<Foo>( "foo1", 1 ) );
+    b->AddChild( cm.CreateItem<Foo>( "foo2", 2 ) );
+    b->AddChild( cm.CreateItem<Foo>( "foo3", 3 ) );
+    while( cm.Process() )
+    {
+        _getch();
+        CoutLine();
+    };
+    system( "pause" );
+    return 0;
+}
+
+
+*/

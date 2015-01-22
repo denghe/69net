@@ -76,7 +76,7 @@ namespace xxx
         List( List<bool> const& o );
         List& operator=( List<bool>&& o );
         List& operator=( List<bool> const& o );
-        void Push( bool v );
+        void Push( bool bit );
         void Pop();
         bool Top() const;
         void Clear();
@@ -86,13 +86,13 @@ namespace xxx
         int ByteSize() const;
         bool operator[]( int idx ) const;
         bool At( int idx ) const;
-        void Set( int idx, bool v );
+        void Set( int idx, bool bit );
         void SetTrue( int idx );
         void SetFalse( int idx );
-        void Fill( bool v );
+        void Fill( bool bit );
         void FillTrue();
         void FillFalse();
-        void Resize( int capacity, bool v );
+        void Resize( int capacity, bool fillBit = false );
         // todo: more functions
     private:
         char*       buf;

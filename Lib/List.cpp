@@ -160,7 +160,7 @@ namespace xxx
         memset( buf, 0, ( size - 1 ) / 8 + 1 );
     }
 
-    void List<bool>::Resize( int capacity, bool v )
+    void List<bool>::Resize( int capacity, bool fillBit )
     {
         if( capacity == size ) return;
         else if( capacity > size )
@@ -168,6 +168,6 @@ namespace xxx
             Reserve( capacity );
         }
         size = capacity;
-        Fill( v );
+        Fill( fillBit );
     }
 }
