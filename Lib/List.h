@@ -37,7 +37,7 @@ namespace xxx
         T const& TopPop() const;
         void Clear();
         void Reserve( int capacity );
-        void Resize( int capacity, bool Init = true );
+        void Resize( int capacity, bool init = true );
         T* Data() const;
         int Size() const;
         int& Size();
@@ -89,10 +89,10 @@ namespace xxx
         void Set( int idx, bool bit );
         void SetTrue( int idx );
         void SetFalse( int idx );
-        void Fill( bool bit );
         void FillTrue();
         void FillFalse();
-        void Resize( int capacity, bool fillBit = false );
+        void Fill( bool bit, int idxFrom = 0, int idxTo = 0 );
+        void Resize( int capacity, bool init = true );
         // todo: more functions
     private:
         char*       buf;

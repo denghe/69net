@@ -10,6 +10,7 @@
     <ClCompile Include="Main1.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Main2.cpp" />
+    <ClCompile Include="Main3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ZS\AStar.h" />

@@ -22,6 +22,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Main1.cpp" />
     <ClCompile Include="Main2.cpp" />
+    <ClCompile Include="Main3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bak.txt" />

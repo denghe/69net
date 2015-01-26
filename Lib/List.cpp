@@ -146,28 +146,81 @@ namespace xxx
             ~( size_t( 1 ) << ( idx % ( sizeof( size_t ) * 8 ) ) );
     }
 
-    void List<bool>::Fill( bool v )
-    {
-        if( v ) FillTrue();
-        else FillFalse();
-    }
     void List<bool>::FillTrue()
     {
         memset( buf, 0xFFFFFFFFu, ( size - 1 ) / 8 + 1 );
     }
+
     void List<bool>::FillFalse()
     {
         memset( buf, 0, ( size - 1 ) / 8 + 1 );
     }
 
-    void List<bool>::Resize( int capacity, bool fillBit )
+    void List<bool>::Fill( bool v, int idxFrom, int idxTo )
+    {
+        assert( size > 0 && idxFrom >= 0 && idxTo >= 0 && idxFrom < size && idxTo < size );
+        if( idxFrom == idxTo )
+        {
+            Set( idxFrom, v );
+            return;
+        }
+        if( idxFrom > idxTo )
+        {
+            std::swap( idxFrom, idxTo );
+        }
+        auto byteIdxFrom = idxFrom >> 3;
+        auto byteIdxTo = idxTo >> 3;
+
+        if( byteIdxFrom == byteIdxTo )
+        {
+            // 搞一个 中间一段是 v 的 byte 出来
+            if( v )
+            {
+                buf[ byteIdxFrom ] |= (byte)0xFFu >> ( 7 - ( idxTo - idxFrom ) ) << ( idxFrom & 7 );
+            }
+            else
+            {
+                buf[ byteIdxFrom ] &= ~( (byte)0xFFu >> ( 7 - ( idxTo - idxFrom ) ) << ( idxFrom & 7 ) );
+            }
+        }
+        else
+        {
+            // 分别搞一头一尾, 再 memset 中间
+            auto idxFrom7 = idxFrom & 7;
+            auto idxTo7 = idxTo & 7;
+            if( v )
+            {
+                buf[ byteIdxFrom ] |= (byte)0xFFu << idxFrom7;
+                buf[ byteIdxTo ] |= (byte)0xFFu >> ( 7 - idxTo7 );
+            }
+            else
+            {
+                buf[ byteIdxFrom ] &= ~( (byte)0xFFu << idxFrom7 );
+                buf[ byteIdxTo ] &= ~( (byte)0xFFu >> ( 7 - idxTo7 ) );
+            }
+            if( idxFrom7 ) ++byteIdxFrom;
+            if( idxTo7 ) --byteIdxTo;
+            if( byteIdxFrom <= byteIdxTo )
+            {
+                memset( buf + byteIdxFrom, v ? 0xFFFFFFFFu : 0, byteIdxTo - byteIdxFrom );
+            }
+        }
+    }
+
+    void List<bool>::Resize( int capacity, bool init )
     {
         if( capacity == size ) return;
-        else if( capacity > size )
+        if( capacity < size )
         {
-            Reserve( capacity );
+            size = capacity;
+            return;
         }
+        Reserve( capacity );
+        auto oldSize = size;
         size = capacity;
-        Fill( fillBit );
+        if( init )
+        {
+            Fill( false, oldSize, capacity - 1 );
+        }
     }
 }
