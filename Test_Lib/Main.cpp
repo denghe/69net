@@ -29,8 +29,7 @@ int main()
     q.execute( []( Sqlite::DataReader& dr )
     {
         std::cout << dr.readInt32();
-        std::cout << ", ";
-        std::cout << dr.readString();
+        std::cout << ", " << dr.readString();
         std::cout << ", " << dr.readDouble();
         std::cout << std::endl;
     } );

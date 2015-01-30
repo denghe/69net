@@ -1,4 +1,5 @@
 #include "Lib/All.h"
+#include <conio.h>
 using namespace xxx;
 
 #include <enet/enet.h>
@@ -6,7 +7,10 @@ int test()
 {
     // 这个必须用前用后整体初始化和反初始化，放到这个函数这里不一定合适，理论上讲应该是在程序的开始和结束时分别搞一把
     if( auto rtv = enet_initialize() ) return rtv;
-    ScopeGuard sg_enet_deinitialize( [] { enet_deinitialize(); } );
+    ScopeGuard sg_enet_deinitialize( [] 
+    {
+        enet_deinitialize();
+    } );
 
     // 创建一个地址对象, 打算在所有 IP 的 1234 上接受数据
     ENetAddress address = { ENET_HOST_ANY, 1234 };
@@ -14,7 +18,7 @@ int test()
     // enet_address_set_host( &address, "x.x.x.x" );
 
     // 创建 host 对象( 出函数时析构 )
-    auto server = enet_host_create( &address, 32, 2, 0, 0 );    // num of clients, num of channels, incoming bandwidth, outgoing bandwidth
+    auto server = enet_host_create( &address, 64, 2, 0, 0 );    // num of clients, num of channels, incoming bandwidth, outgoing bandwidth
     if( !server ) return -1;
     ScopeGuard sg_server( [ = ] { enet_host_destroy( server ); } );
 
@@ -81,7 +85,10 @@ int test()
             if( !elapsedSeconds ) elapsedSeconds = 1;
             CoutPos( 0, 0, counter, ", ", counter / (int64)elapsedSeconds );
             lastTime = now;
+
+            if( _kbhit() ) break;
         }
+
 
         // other logic here
     }

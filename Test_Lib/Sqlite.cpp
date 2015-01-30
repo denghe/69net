@@ -117,7 +117,7 @@ namespace Sqlite
         {
             _existsQuery = newQuery( "SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?" );
         }
-        ( *_existsQuery ) << tn;
+        ( *_existsQuery ).add( tn );
         _existsQuery->execute( [ &]( Sqlite::DataReader& dr )
         {
             rtv = dr.readInt32() > 0;
