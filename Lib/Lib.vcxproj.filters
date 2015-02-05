@@ -40,6 +40,8 @@
     <ClInclude Include="Nullable.hpp" />
     <ClInclude Include="Buf.h" />
     <ClInclude Include="AutoIDPool.h" />
+    <ClInclude Include="ByteBuffer.h" />
+    <ClInclude Include="ByteBuffer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
@@ -55,5 +57,6 @@
     <ClCompile Include="SMBuffer.cpp" />
     <ClCompile Include="OldPool.cpp" />
     <ClCompile Include="Pool.cpp" />
+    <ClCompile Include="ByteBuffer.cpp" />
   </ItemGroup>
 </Project>

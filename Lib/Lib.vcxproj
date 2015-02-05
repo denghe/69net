@@ -25,6 +25,8 @@
     <ClInclude Include="BufferUtils.h" />
     <ClInclude Include="BufferUtils.hpp" />
     <ClInclude Include="BlockBuffer.h" />
+    <ClInclude Include="ByteBuffer.h" />
+    <ClInclude Include="ByteBuffer.hpp" />
     <ClInclude Include="ClassAttributes.h" />
     <ClInclude Include="Cor.h" />
     <ClInclude Include="Cout.h" />
@@ -68,6 +70,7 @@
     </ClCompile>
     <ClCompile Include="BufferUtils.cpp" />
     <ClCompile Include="BlockBuffer.cpp" />
+    <ClCompile Include="ByteBuffer.cpp" />
     <ClCompile Include="Pool.cpp" />
     <ClCompile Include="FlatBuffer.cpp" />
     <ClCompile Include="ftoa.c">

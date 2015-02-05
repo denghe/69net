@@ -12,8 +12,9 @@
     <ClCompile Include="Main3.cpp" />
     <ClCompile Include="Main0.cpp" />
     <ClCompile Include="sqlite3.c" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="Sqlite.cpp" />
+    <ClCompile Include="Main4.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ZS\AStar.h" />

@@ -19,7 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Main4.cpp" />
     <ClCompile Include="Main0.cpp" />
     <ClCompile Include="Main1.cpp" />
     <ClCompile Include="Main2.cpp" />

@@ -97,15 +97,15 @@ namespace xxx
             *(T*)dest = src;
 #else
             auto p = (char*)&src;
-            if( sizeof( T ) == 1 )
+            if( sizeof( T ) >= 1 )
             {
                 dest[ 0 ] = p[ 0 ];
             }
-            if( sizeof( T ) == 2 )
+            if( sizeof( T ) >= 2 )
             {
                 dest[ 1 ] = p[ 1 ];
             }
-            if( sizeof( T ) == 4 )
+            if( sizeof( T ) >= 4 )
             {
                 dest[ 2 ] = p[ 2 ];
                 dest[ 3 ] = p[ 3 ];
@@ -140,15 +140,15 @@ namespace xxx
             dest = *(T*)src;
 #else
             auto p = (char*)&dest;
-            if( sizeof( T ) == 1 )
+            if( sizeof( T ) >= 1 )
             {
                 p[ 0 ] = src[ 0 ];
             }
-            if( sizeof( T ) == 2 )
+            if( sizeof( T ) >= 2 )
             {
                 p[ 1 ] = src[ 1 ];
             }
-            if( sizeof( T ) == 4 )
+            if( sizeof( T ) >= 4 )
             {
                 p[ 2 ] = src[ 2 ];
                 p[ 3 ] = src[ 3 ];
