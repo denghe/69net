@@ -5,11 +5,13 @@ namespace xxx
 {
 
     class FlatBuffer;
+    class ByteBuffer;
 
     class String : Memmoveable
     {
     public:
-        explicit String( int capacity = 64 );                       // prepare
+        explicit String( int capacity );                            // prepare
+        String();
         String( Pool& p );                                          // prepare with pool buffer
         template<int len>
         String( Pool& p, char const ( &s )[ len ] );                // Get _buf from pool and Copy s into
@@ -136,6 +138,10 @@ namespace xxx
         bool ReadBuffer( FlatBuffer& fb );
 
 
+        // for ByteBuffer
+        void WriteTo( ByteBuffer& fb ) const;
+        void FastWriteTo( ByteBuffer& fb ) const;
+        bool ReadFrom( ByteBuffer& fb );
 
 
 
@@ -173,11 +179,11 @@ namespace xxx
         template<typename ...TS>
         static int GetFillMaxLength( TS const & ...vs );
 
-        char*       buf;
-        int         bufLen;
-        int         dataLen;
+        char*       buf = nullptr;
+        int         bufLen = 0;
+        int         dataLen = 0;
 
-        Pool*       disposer;
+        Pool*       disposer;// = nullptr;
         static Pool emptyPool;     // for do not need delete's buffer
         void Dispose();
     };

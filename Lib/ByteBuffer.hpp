@@ -5,7 +5,7 @@ namespace xxx
 {
 
     template<typename T>
-    void ByteBuffer::Write( char* dest, T const& src )
+    void ByteBuffer::WriteCore( char* dest, T const& src )
     {
 #ifdef __IA
         *(T*)dest = src;
@@ -37,7 +37,7 @@ namespace xxx
 
 
     template<typename T>
-    void ByteBuffer::Read( T& dest, char const* src )
+    void ByteBuffer::ReadCore( T& dest, char const* src )
     {
 #ifdef __IA
         dest = *(T*)src;
@@ -78,7 +78,7 @@ namespace xxx
     typename std::enable_if<!HasFunc_FastWriteTo<T>::value, void>::type FastWriteSwitch( ByteBuffer& b, T const& v )
     {
         //static_assert( std::is_pod<T>::value, "forget impl FastWriteTo func ?" );
-        ByteBuffer::Write( b.buf + b.dataLen, v );
+        ByteBuffer::WriteCore( b.buf + b.dataLen, v );
         b.dataLen += sizeof( v );
     };
     template<typename T>
@@ -136,7 +136,7 @@ namespace xxx
     void ByteBuffer::FastRead( T& v )
     {
         assert( std::is_pod<T>::value );
-        ByteBuffer::Read( v, buf + offset );
+        ByteBuffer::ReadCore( v, buf + offset );
         offset += sizeof( v );
     }
 
@@ -173,9 +173,9 @@ namespace xxx
     template<typename T>
     typename std::enable_if<!HasFunc_WriteTo<T>::value, void>::type WriteSwitch( ByteBuffer& b, T const& v )
     {
-        //static_assert( std::is_pod<T>::value, "forget impl WriteTo func ?" );
+        static_assert( std::is_pod<T>::value, "forget impl WriteTo func ?" );
         b.Reserve( b.dataLen + sizeof( T ) );
-        ByteBuffer::Write( b.buf + b.dataLen, v );
+        ByteBuffer::WriteCore( b.buf + b.dataLen, v );
         b.dataLen += sizeof( T );
     };
     template<typename T>
@@ -234,14 +234,14 @@ namespace xxx
     template<typename T>
     typename std::enable_if<HasFunc_ReadFrom<T>::value, bool>::type ReadSwitch( ByteBuffer& b, T& v )
     {
-        return v.ReadBuffer( b );
+        return v.ReadFrom( b );
     };
     template<typename T>
     typename std::enable_if<!HasFunc_ReadFrom<T>::value, bool>::type ReadSwitch( ByteBuffer& b, T& v )
     {
         assert( std::is_pod<T>::value );
         if( b.offset + sizeof( T ) > b.dataLen ) return false;
-        ByteBuffer::Read( v, b.buf + b.offset );
+        ByteBuffer::ReadCore( v, b.buf + b.offset );
         b.offset += sizeof( T );
         return true;
     };

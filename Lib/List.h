@@ -6,11 +6,13 @@ namespace xxx
 
 
     class FlatBuffer;
+    class ByteBuffer;
 
     template<typename T>
     class List : Memmoveable
     {
     public:
+        List( std::initializer_list<T> items );
         List( int capacity = 8 );
         ~List();
         List( List&& o );
@@ -56,6 +58,11 @@ namespace xxx
         void WriteBufferDirect( FlatBuffer& fb ) const;
         bool ReadBuffer( FlatBuffer& fb );
 
+        // for ByteBuffer Write
+        void WriteTo( ByteBuffer& bb ) const;
+        void FastWriteTo( ByteBuffer& bb ) const;
+        bool ReadFrom( ByteBuffer& bb );
+
 
     private:
         T*          buf;
@@ -94,6 +101,7 @@ namespace xxx
         void Fill( bool bit, int idxFrom = 0, int idxTo = 0 );
         void Resize( int capacity, bool init = true );
         // todo: more functions
+        // todo: // for ByteBuffer Write
     private:
         char*       buf;
         int         size;

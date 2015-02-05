@@ -229,13 +229,13 @@ namespace xxx
 
 
 
-    void ByteBuffer::WriteTo( ByteBuffer& fb )
+    void ByteBuffer::WriteTo( ByteBuffer& fb ) const
     {
         fb.Write( dataLen );
         fb.Write( buf, dataLen );
     }
 
-    void ByteBuffer::FastWriteTo( ByteBuffer& fb )
+    void ByteBuffer::FastWriteTo( ByteBuffer& fb ) const
     {
         fb.FastWrite( dataLen );
         fb.FastWrite( buf, dataLen );

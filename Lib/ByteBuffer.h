@@ -3,8 +3,9 @@
 
 namespace xxx
 {
-    struct ByteBuffer : Memmoveable
+    class ByteBuffer : Memmoveable
     {
+    public:
         char*       buf;
         int         bufLen;
         int         dataLen;
@@ -34,9 +35,9 @@ namespace xxx
 
         // 最基础的读写函数实现体
         template<typename T>
-        static void Write( char* dest, T const& src );
+        static void WriteCore( char* dest, T const& src );
         template<typename T>
-        static void Read( T& dest, char const* src );
+        static void ReadCore( T& dest, char const* src );
 
 
         // todo: VariantWrite  VariantRead 系列
@@ -86,8 +87,8 @@ namespace xxx
 
 
         // interface for ByteBuffer
-        void WriteTo( ByteBuffer& fb );
-        void FastWriteTo( ByteBuffer& fb );
+        void WriteTo( ByteBuffer& fb ) const;
+        void FastWriteTo( ByteBuffer& fb ) const;
         bool ReadFrom( ByteBuffer& fb );
 
     protected:

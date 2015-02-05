@@ -15,6 +15,12 @@ namespace xxx
         buf[ 0 ] = '\0';
     }
 
+
+    String::String()
+        : String( 64 )
+    {
+    }
+
     String::String( Pool& p )
     {
         buf = (char*)p.Alloc();
@@ -442,5 +448,32 @@ namespace xxx
         return true;
     }
 
+
+
+
+    void String::WriteTo( ByteBuffer& bb ) const
+    {
+        bb.Write( dataLen );
+        bb.Write( buf, dataLen );
+    }
+    void String::FastWriteTo( ByteBuffer& bb ) const
+    {
+        bb.FastWrite( dataLen );
+        bb.FastWrite( buf, dataLen );
+    }
+
+    bool String::ReadFrom( ByteBuffer& bb )
+    {
+        int len;
+        if( !bb.Read( len )
+            || len < 0
+            || bb.offset + len > bb.dataLen )
+        {
+            return false;
+        }
+        Assign( bb.buf + bb.offset, 0, len, false );
+        bb.offset += len;
+        return true;
+    }
 
 }

@@ -4,6 +4,12 @@
 namespace xxx
 {
 
+    template<typename T>
+    xxx::List<T>::List( std::initializer_list<T> items )
+        : List( (int)items.size() )
+    {
+        for( auto& i : items ) Push( i );
+    }
 
     template<typename T>
     List<T>::List( int capacity )
@@ -442,6 +448,68 @@ namespace xxx
     }
 
 
+
+
+
+
+
+    template<typename T>
+    void List<T>::WriteTo( ByteBuffer& bb ) const
+    {
+        bb.Write( size );
+        if( std::is_pod<T>::value )
+        {
+            bb.Write( (char*)buf, size * sizeof( T ) );
+            return;
+        }
+        for( int i = 0; i < size; ++i )
+        {
+            bb.Write( buf[ i ] );
+        }
+    }
+
+    template<typename T>
+    void List<T>::FastWriteTo( ByteBuffer& bb ) const
+    {
+        bb.FastWrite( size );
+        if( std::is_pod<T>::value )
+        {
+            bb.FastWrite( (char*)buf, size * sizeof( T ) );
+            return;
+        }
+        for( int i = 0; i < size; ++i )
+        {
+            bb.FastWrite( buf[ i ] );
+        }
+    }
+
+
+    template<typename T>
+    bool List<T>::ReadFrom( ByteBuffer& bb )
+    {
+        int len;
+        if( !bb.Read( len ) || len < 0 ) return false;
+        if( std::is_pod<T>::value )
+        {
+            int siz = len * ( int )sizeof( T );
+            if( bb.offset + siz > bb.dataLen ) return false;
+            Clear();
+            Resize( len, false );
+            memcpy( buf, bb.buf + bb.offset, siz );
+            bb.offset += siz;
+            return true;
+        }
+        Clear();
+        Reserve( len );
+        for( int i = 0; i < len; ++i )
+        {
+            new ( buf + i ) T();
+            size = i + 1;
+            if( !bb.Read( buf[ i ] ) ) return false;
+        }
+        return true;
+    }
+
 }
 
 #endif
@@ -457,89 +525,89 @@ using namespace xxx;
 
 int main()
 {
-    List<bool> bs;
+List<bool> bs;
 
-    auto dump = [&]
-    {
-        for( int i = 0; i < bs.Size(); ++i )
-        {
-            Cout( bs[ i ] ? "t " : "F " );
-        }
-        CoutLine();
-    };
+auto dump = [&]
+{
+for( int i = 0; i < bs.Size(); ++i )
+{
+Cout( bs[ i ] ? "t " : "F " );
+}
+CoutLine();
+};
 
-    bs.Push( false );
-    bs.Push( true );
-    bs.Resize( 9, false );  // 只扩容不初始化
-    dump();                 // 将输出 false true ....随机
-    bs.Fill( false, 2, 8 );
-    dump();                 // 输出 false true false 一串
-    bs.Fill( true, 8, 7 );
-    dump();                 // 最后 2 位应该输出 true
-    bs.Resize( 12, true );
-    dump();                 // 最后 3 位应该输出 false
-    bs.Resize( 16 );
-    bs.Fill( true, 12, 15 );
-    dump();                 // 最后 3 位应该输出 true
-    bs.Fill( true, 0, 0 );
-    dump();                 // 第 1 位应该输出 true
-    bs.Fill( false, 1, 0 );
-    dump();                 // 第 2 位应该输出 false
-    bs.Resize( 24 );
-    bs.FillFalse();
-    dump();                 // 全部输出 false
-    bs.FillFalse();
-    bs.Fill( true, 7, 7 );
-    dump();                 // 第 8 位输出 true
-    bs.FillFalse();
-    bs.Fill( true, 7, 8 );
-    dump();                 // 第 8, 9 位输出 true
-    bs.FillFalse();
-    bs.Fill( true, 0, 8 );
-    dump();                 // 第 1 ~ 9 位输出 true
-    bs.FillFalse();
-    bs.Fill( true, 8, 8 );
-    dump();                 // 第 9 位输出 true
-    bs.FillFalse();
-    bs.Fill( true, 23, 23 );
-    dump();                 // 第 24 位输出 true
-    bs.FillFalse();
-    bs.Fill( true, 15, 23 );
-    dump();                 // 第 16 ~ 24 位输出 true
-    bs.FillFalse();
-    bs.Fill( true, 16, 23 );
-    dump();                 // 第 17 ~ 24 位输出 true
-    bs.FillFalse();
-    bs.Fill( true, 8, 15 );
-    dump();                 // 第 9 ~ 16 位输出 true
+bs.Push( false );
+bs.Push( true );
+bs.Resize( 9, false );  // 只扩容不初始化
+dump();                 // 将输出 false true ....随机
+bs.Fill( false, 2, 8 );
+dump();                 // 输出 false true false 一串
+bs.Fill( true, 8, 7 );
+dump();                 // 最后 2 位应该输出 true
+bs.Resize( 12, true );
+dump();                 // 最后 3 位应该输出 false
+bs.Resize( 16 );
+bs.Fill( true, 12, 15 );
+dump();                 // 最后 3 位应该输出 true
+bs.Fill( true, 0, 0 );
+dump();                 // 第 1 位应该输出 true
+bs.Fill( false, 1, 0 );
+dump();                 // 第 2 位应该输出 false
+bs.Resize( 24 );
+bs.FillFalse();
+dump();                 // 全部输出 false
+bs.FillFalse();
+bs.Fill( true, 7, 7 );
+dump();                 // 第 8 位输出 true
+bs.FillFalse();
+bs.Fill( true, 7, 8 );
+dump();                 // 第 8, 9 位输出 true
+bs.FillFalse();
+bs.Fill( true, 0, 8 );
+dump();                 // 第 1 ~ 9 位输出 true
+bs.FillFalse();
+bs.Fill( true, 8, 8 );
+dump();                 // 第 9 位输出 true
+bs.FillFalse();
+bs.Fill( true, 23, 23 );
+dump();                 // 第 24 位输出 true
+bs.FillFalse();
+bs.Fill( true, 15, 23 );
+dump();                 // 第 16 ~ 24 位输出 true
+bs.FillFalse();
+bs.Fill( true, 16, 23 );
+dump();                 // 第 17 ~ 24 位输出 true
+bs.FillFalse();
+bs.Fill( true, 8, 15 );
+dump();                 // 第 9 ~ 16 位输出 true
 
-    bs.FillTrue();
-    bs.Fill( false, 7, 7 );
-    dump();                 // 第 8 位输出 false
-    bs.FillTrue();
-    bs.Fill( false, 7, 8 );
-    dump();                 // 第 8, 9 位输出 false
-    bs.FillTrue();
-    bs.Fill( false, 0, 8 );
-    dump();                 // 第 1 ~ 9 位输出 false
-    bs.FillTrue();
-    bs.Fill( false, 8, 8 );
-    dump();                 // 第 9 位输出 false
-    bs.FillTrue();
-    bs.Fill( false, 23, 23 );
-    dump();                 // 第 24 位输出 false
-    bs.FillTrue();
-    bs.Fill( false, 15, 23 );
-    dump();                 // 第 16 ~ 24 位输出 false
-    bs.FillTrue();
-    bs.Fill( false, 16, 23 );
-    dump();                 // 第 17 ~ 24 位输出 false
-    bs.FillTrue();
-    bs.Fill( false, 8, 15 );
-    dump();                 // 第 9 ~ 16 位输出 false
+bs.FillTrue();
+bs.Fill( false, 7, 7 );
+dump();                 // 第 8 位输出 false
+bs.FillTrue();
+bs.Fill( false, 7, 8 );
+dump();                 // 第 8, 9 位输出 false
+bs.FillTrue();
+bs.Fill( false, 0, 8 );
+dump();                 // 第 1 ~ 9 位输出 false
+bs.FillTrue();
+bs.Fill( false, 8, 8 );
+dump();                 // 第 9 位输出 false
+bs.FillTrue();
+bs.Fill( false, 23, 23 );
+dump();                 // 第 24 位输出 false
+bs.FillTrue();
+bs.Fill( false, 15, 23 );
+dump();                 // 第 16 ~ 24 位输出 false
+bs.FillTrue();
+bs.Fill( false, 16, 23 );
+dump();                 // 第 17 ~ 24 位输出 false
+bs.FillTrue();
+bs.Fill( false, 8, 15 );
+dump();                 // 第 9 ~ 16 位输出 false
 
 
-    return 0;
+return 0;
 }
 
 
