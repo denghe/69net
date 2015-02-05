@@ -240,7 +240,7 @@ namespace xxx
     typename std::enable_if<!HasFunc_ReadFrom<T>::value, bool>::type ReadSwitch( ByteBuffer& b, T& v )
     {
         assert( std::is_pod<T>::value );
-        if( b.offset + sizeof( T ) > b.dataLen ) return false;
+        if( b.offset + (int)sizeof( T ) > b.dataLen ) return false;
         ByteBuffer::ReadCore( v, b.buf + b.offset );
         b.offset += sizeof( T );
         return true;

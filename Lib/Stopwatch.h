@@ -34,7 +34,7 @@ namespace xxx
         {
         }
 
-        inline void reset()
+        inline void Reset()
         {
             beginTime = high_resolution_clock::now();
         }

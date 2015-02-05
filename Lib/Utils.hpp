@@ -3,38 +3,31 @@
 
 namespace xxx
 {
-    HAS_FUNC( GetHashCode_checker, GetHashCode, int ( T::* )( ) const );
+    HAS_FUNC( HasFunc_GetHashCode, GetHashCode, int ( T::* )( ) const );
     template<typename T>
-    typename std::enable_if<GetHashCode_checker<T>::value, int>::type GetHashCodeCore( T const& v )
+    typename std::enable_if<HasFunc_GetHashCode<T>::value, int>::type GetHashCodeSwitch( T const& v )
     {
         return v.GetHashCode();
     };
     template<typename T>
-    typename std::enable_if<!GetHashCode_checker<T>::value, int>::type GetHashCodeCore( T const& in )
+    typename std::enable_if<!HasFunc_GetHashCode<T>::value, int>::type GetHashCodeSwitch( T const& v )
     {
-        static_assert( std::is_pod<T>::value, "forGet impl GetHashCode func ?" );
-        if( sizeof( T ) == 1 )
-            return ( (byte*)&in )[ 0 ];
-        if( sizeof( T ) == 2 )
-            return ( (byte*)&in )[ 0 ] || ( ( (byte*)&in )[ 1 ] << 8 );
-        if( sizeof( T ) == 3 )
-            return ( (byte*)&in )[ 0 ] || ( ( (byte*)&in )[ 1 ] << 8 ) || ( ( (byte*)&in )[ 2 ] << 16 );
-        if( sizeof( T ) == 4 )
-            return *(int*)&in;
-        if( sizeof( T ) == 8 )
+        static_assert( std::is_pod<T>::value, "forget impl GetHashCode func ?" );
+        if( std::is_pointer<T>::value )
         {
-            uint* p = (uint*)&in;
-            return (int)( p[ 0 ] + p[ 1 ] );
+            return (int)(uint)( (size_t)(void*)v / ( sizeof(size_t) * 2 ) );    // 经验数据. 经测试发现 x64 下 vc new 至少是 16 的倍数, x86 至少是 8 的倍数
         }
-        return GetHash_CS( (byte const*)&in, sizeof( T ) );
+        if( sizeof( T ) < 8 )
+        {
+            return (int)std::hash<T>()( v );
+        }
+        return GetHash_CS( (byte const*)&v, sizeof( T ) );
     };
 
-
-
     template<typename T>
-    int GetHashCode( T const &in )
+    int GetHashCode( T const &v )
     {
-        return GetHashCodeCore( in );
+        return GetHashCodeSwitch( v );
     }
 
     template<typename T1, typename T2>
