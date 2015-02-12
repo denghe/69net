@@ -1,0 +1,35 @@
+单词查找思路：
+diablo wiki
+wow wiki
+
+
+以下翻译来自某群友
+
+生命（health power)HP(或者hit points)
+力量（STRENGTH，STR）
+敏捷（DEXTERITY，DEX）
+体质（CONSTITUTION，CON）
+智力（INTELLIGENCE，INT）
+魔法 (magic Power ,MP)
+感知（WISDOM，WIS）
+魅力（CHARISMA，CHA）
+等级（level LV)
+攻击力（PK）
+精神（spirit power, SP)
+抵御：（defence Power, DEF)
+负重（Weight Allowance, WA）
+疲劳度(Fatigue Degree, FD）
+闪避率（Dodge Rate, DR）
+防护等级（Starting, AC）
+命中率（Hit Rate, HR）
+智慧(Intelligence Degree, ID)
+灵力（Dexterity， Dex）
+运气（ Luck, LUK)
+耐力值（Stramina）
+魅力(Charisma, CHA)
+忍受度（Endurance, END)
+气质 （Personality, PER)
+迟钝（Blunt, BLT)
+拦截 （Block BLK)
+狂乱 (Alternation ALT)
+潜入（ Sneak, SNK)

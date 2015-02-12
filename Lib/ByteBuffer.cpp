@@ -8,7 +8,10 @@ namespace xxx
         {
             bufLen = 1024;
         }
-        else bufLen = (int)Round2n( capacity );
+        else
+        {
+            bufLen = (int)Round2n( capacity );
+        }
         isRef = false;
         buf = new char[ bufLen ];
         dataLen = offset = 0;

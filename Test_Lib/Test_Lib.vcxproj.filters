@@ -5,6 +5,7 @@
     <Text Include="todo.txt" />
     <Text Include="map.txt" />
     <Text Include="map2.txt" />
+    <Text Include="ChsEngWords.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main1.cpp" />

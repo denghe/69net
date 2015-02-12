@@ -1,7 +1,6 @@
 #include "Lib/All.h"
 using namespace xxx;
 
-
 class Foo
 {
 public:
@@ -25,6 +24,44 @@ public:
         return bb.ReadMulti( i, d, f, s, ss );
     }
 };
+
+
+class Bar
+{
+public:
+    Bar* parent = nullptr;
+    List<Bar*> childs;
+    int xxx;
+
+    inline void WriteTo( ByteBuffer& bb, Hash<void*>& ptrs ) const
+    {
+        bb.Write<bool>( parent );
+        //if( parent) bb.Write()
+    }
+
+    // ByteBuffer interface
+    inline void WriteTo( ByteBuffer& bb ) const
+    {
+        Hash<void*> ptrs;
+        ptrs.Insert( (void*)this );
+        bb.Write<bool>( parent );
+        if( parent )
+        {
+            //if( not write )
+            bb.Write( *parent );
+        }
+        bb.Write( xxx );
+    }
+    inline void FastWriteTo( ByteBuffer& bb ) const
+    {
+        
+    }
+    inline bool ReadFrom( ByteBuffer& bb )
+    {
+        return true;
+    }
+};
+
 
 int main()
 {
