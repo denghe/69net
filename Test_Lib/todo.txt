@@ -2,3 +2,4 @@ ByteBuffer 存数组长度使用变长 以及提供 存取变长 int 值的函数
 补各种容器于 ByteBuffer 的接口
 设计指针式的数据存储结构用于[反]序列化
 
+用到 is_pod 路由序列化的地方要加上 is_pointer 的限定，指针要另外处理, 理论上讲要把 is_pod 改成 4 个c++ 内置类型 check 的组合

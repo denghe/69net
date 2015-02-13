@@ -57,7 +57,7 @@ namespace xxx
         other.isRef = true;     // ∑¿ªÿ ’
     }
 
-    void ByteBuffer::Dispose()
+    void ByteBuffer::Destroy()
     {
         if( isRef ) return;
         delete[] buf;
@@ -68,7 +68,9 @@ namespace xxx
 
     ByteBuffer::~ByteBuffer()
     {
-        Dispose();
+        Destroy();
+        PtrStoreDestroy();
+        IdxStoreDestroy();
     }
 
     void ByteBuffer::Clear()
@@ -93,7 +95,7 @@ namespace xxx
         offset = 0;
         if( _isRef )
         {
-            Dispose();
+            Destroy();
             buf = (char*)_buf;
             bufLen = _bufLen;
             dataLen = _dataLen;
@@ -102,7 +104,7 @@ namespace xxx
         }
         if( bufLen < _dataLen )
         {
-            Dispose();
+            Destroy();
             bufLen = (int)Round2n( _dataLen );
             _isRef = false;
             buf = new char[ bufLen ];
@@ -117,7 +119,7 @@ namespace xxx
         bufLen = (int)Round2n( capacity );
         auto newBuf = new char[ bufLen ];
         memcpy( newBuf, buf, dataLen );
-        Dispose();
+        Destroy();
         isRef = false;
         buf = newBuf;
     }
@@ -148,7 +150,7 @@ namespace xxx
         }
         else
         {
-            Dispose();
+            Destroy();
             bufLen = (int)Round2n( other.dataLen );
             isRef = false;
             buf = new char[ bufLen ];
@@ -159,7 +161,7 @@ namespace xxx
 
     ByteBuffer& ByteBuffer::operator=( ByteBuffer&& other )
     {
-        Dispose();
+        Destroy();
         buf = other.buf;
         bufLen = other.bufLen;
         dataLen = other.dataLen;
@@ -256,6 +258,188 @@ namespace xxx
         memcpy( buf, fb.buf + fb.offset, len );
         fb.offset += len;
         return true;
+    }
+
+    void ByteBuffer::PtrStoreInit()
+    {
+        if( ptrStore ) ptrStore->Clear();
+        else ptrStore = new Dict<void*, int>();
+    }
+    void ByteBuffer::PtrStoreDestroy()
+    {
+        if( ptrStore ) delete ptrStore;
+    }
+
+    void ByteBuffer::IdxStoreInit()
+    {
+        if( idxStore ) idxStore->Clear();
+        else idxStore = new Dict<int, void*>();
+    }
+    void ByteBuffer::IdxStoreDestroy()
+    {
+        if( idxStore ) delete idxStore;
+    }
+
+    void ByteBuffer::Write7Core( char* buf, int& offset, uint32 v )
+    {
+Lab1:
+        auto b7 = uint8( v );
+        if( ( v >>= 7 ) )
+        {
+            buf[ offset++ ] = b7 | 0x80u;
+            goto Lab1;
+        }
+        buf[ offset++ ] = b7;
+    }
+
+    void ByteBuffer::Write7Core64( char* buf, int& offset, uint64 v )
+    {
+        auto idx8 = offset + 8;
+Lab1:
+        auto b7 = uint8( v );
+        if( ( v >>= 7 ) )
+        {
+            buf[ offset++ ] = b7 | 0x80u;
+            if( offset == idx8 )
+                buf[ offset++ ] = (uint8)v;
+            else
+                goto Lab1;
+        }
+        else
+        {
+            buf[ offset++ ] = b7;
+        }
+    }
+
+    void ByteBuffer::FastRead7Core64( uint64& v, char* buf, int& offset )
+    {
+        auto p = buf + offset;
+        uint64 i = 0, b7;
+        uint lshift = 0, idx = 0;
+Lab1:
+        b7 = p[ idx++ ];
+        if( b7 > 0x7F )
+        {
+            if( idx < 8 )
+            {
+                i |= ( b7 & 0x7F ) << lshift;
+                lshift += 7;
+                goto Lab1;
+            }
+            else i |= ( b7 << lshift ) | ( (uint64)p[ idx++ ] << 28 << 28 );
+        }
+        else i |= b7 << lshift;
+        v = i;
+        offset += idx;
+    }
+
+    bool ByteBuffer::Read7Core64( uint64& v, char* buf, int dataLen, int& offset )
+    {
+        if( offset >= dataLen ) return false;// ReadStatus::NotEnoughData;
+        auto p = buf + offset;
+        uint64 i = 0, b7;
+        uint lshift = 0, idx = 0;
+        dataLen -= offset;
+Lab1:
+        b7 = p[ idx++ ];
+        if( b7 > 0x7F )
+        {
+            if( idx >= dataLen ) return false;// ReadStatus::NotEnoughData;
+            if( idx < 8 )
+            {
+                i |= ( b7 & 0x7F ) << lshift;
+                lshift += 7;
+                goto Lab1;
+            }
+            else i |= ( b7 << lshift ) | ( (uint64)p[ idx++ ] << 28 << 28 );
+        }
+        else i |= b7 << lshift;
+        v = i;
+        offset += idx;
+        return true;// ReadStatus::Success;
+    }
+
+    bool ByteBuffer::Read7Core( uint32& v, char * buf, int len, int & offset )
+    {
+        if( offset >= len ) return false;// ReadStatus::NotEnoughData;
+        auto p = buf + offset;
+        uint i = 0, b7, lshift = 0, idx = 0;
+        len -= offset;
+Lab1:
+        b7 = p[ idx++ ];
+        if( b7 > 0x7F )
+        {
+            if( idx == 5 ) return false;// ReadStatus::Overflow;
+            if( idx >= len ) return false;// ReadStatus::NotEnoughData;
+            i |= ( b7 & 0x7F ) << lshift;
+            lshift += 7;
+            goto Lab1;
+        }
+        else
+        {
+            if( idx == 5 && b7 > 15 ) return false;// ReadStatus::Overflow;
+            else i |= b7 << lshift;
+        }
+        v = i;
+        offset += idx;
+        return true;// ReadStatus::Success;
+    }
+
+    void ByteBuffer::FastRead7Core( uint32& v, char* buf, int& offset )
+    {
+        auto p = buf + offset;
+        uint i = 0, b7, lshift = 0, idx = 0;
+Lab1:
+        b7 = p[ idx++ ];
+        if( b7 > 0x7F )
+        {
+            i |= ( b7 & 0x7F ) << lshift;
+            lshift += 7;
+            goto Lab1;
+        }
+        else i |= b7 << lshift;
+        v = i;
+        offset += idx;
+    }
+
+    void ByteBuffer::VarWrite( int v )
+    {
+
+    }
+
+    void ByteBuffer::VarWrite( uint v )
+    {
+
+    }
+
+    void ByteBuffer::VarWrite( int64 v )
+    {
+
+    }
+
+    void ByteBuffer::VarWrite( uint64 v )
+    {
+
+    }
+
+    bool ByteBuffer::VarRead( int& v )
+    {
+
+    }
+
+    bool ByteBuffer::VarRead( uint& v )
+    {
+
+    }
+
+    bool ByteBuffer::VarRead( int64& v )
+    {
+
+    }
+
+    bool ByteBuffer::VarRead( uint64& v )
+    {
+
     }
 
 }

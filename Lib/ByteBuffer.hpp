@@ -184,6 +184,7 @@ namespace xxx
         WriteSwitch( *this, v );
     }
 
+
     template<int len>
     void ByteBuffer::Write( char const( &s )[ len ] )
     {
@@ -226,6 +227,37 @@ namespace xxx
         WriteMultiCore( vs... );
     }
 
+    template<typename T>
+    void ByteBuffer::Write( T* v )
+    {
+        if( v )
+        {
+            Write( true );
+            Write( *v );
+        }
+        else
+        {
+            Write( false );
+        }
+    }
+    template<typename T>
+    void xxx::ByteBuffer::RootWrite( T const& v )
+    {
+        PtrStoreInit();
+        Write( v );
+    }
+
+
+    template<typename T>
+    void xxx::ByteBuffer::Read( T*& v )
+    {
+        // todo
+    }
+    template<typename T>
+    void xxx::ByteBuffer::RootRead( T& v )
+    {
+        // todo
+    }
 
 
 

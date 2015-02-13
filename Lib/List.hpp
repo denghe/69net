@@ -457,7 +457,7 @@ namespace xxx
     void List<T>::WriteTo( ByteBuffer& bb ) const
     {
         bb.Write( size );
-        if( std::is_pod<T>::value )
+        if( !std::is_pointer<T>::value && std::is_pod<T>::value )
         {
             bb.Write( (char*)buf, size * sizeof( T ) );
             return;
@@ -472,7 +472,7 @@ namespace xxx
     void List<T>::FastWriteTo( ByteBuffer& bb ) const
     {
         bb.FastWrite( size );
-        if( std::is_pod<T>::value )
+        if( !std::is_pointer<T>::value && std::is_pod<T>::value )
         {
             bb.FastWrite( (char*)buf, size * sizeof( T ) );
             return;
@@ -489,7 +489,7 @@ namespace xxx
     {
         int len;
         if( !bb.Read( len ) || len < 0 ) return false;
-        if( std::is_pod<T>::value )
+        if( !std::is_pointer<T>::value && std::is_pod<T>::value )
         {
             int siz = len * ( int )sizeof( T );
             if( bb.offset + siz > bb.dataLen ) return false;

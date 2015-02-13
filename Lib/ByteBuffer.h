@@ -3,6 +3,9 @@
 
 namespace xxx
 {
+    template <typename TK, typename TV>
+    struct Dict;
+
     class ByteBuffer : Memmoveable
     {
     public:
@@ -11,6 +14,8 @@ namespace xxx
         int         dataLen;
         int         offset;
         bool        isRef;
+        Dict<void*, int>* ptrStore = nullptr;
+        Dict<int, void*>* idxStore = nullptr;
 
         explicit ByteBuffer( int capacity = 1024 );                                 // prepare
         ByteBuffer( char* _buf, int _bufLen, int _dataLen = 0, bool isRef = false );   // Copy or ref
@@ -18,7 +23,7 @@ namespace xxx
         ByteBuffer( ByteBuffer&& other );                                           // move
         ByteBuffer& operator=( ByteBuffer const& other );                           // Copy
         ByteBuffer& operator=( ByteBuffer&& other );                                // move
-        void Dispose();                                                             // delete[] buf if need
+        void Destroy();                                                             // delete[] buf if need
         ~ByteBuffer();
         void Assign( char const* _buf, int _bufLen, int _dataLen = 0, bool isRef = false );  // Copy or ref
         void Reserve( int capacity );
@@ -32,15 +37,42 @@ namespace xxx
         char& At( int idx );                                                        // buf[ idx ]
         String Dump();                                                              // return buf string for display memory
 
+        // ptrStore, idxStore 相关
+        void PtrStoreInit();
+        void PtrStoreDestroy();
+
+        void IdxStoreInit();
+        void IdxStoreDestroy();
+
 
         // 最基础的读写函数实现体
+
+        // 基本读写系列
         template<typename T>
         static void WriteCore( char* dest, T const& src );
         template<typename T>
         static void ReadCore( T& dest, char const* src );
 
+        // 变长读写系列
+        static void Write7Core( char* buf, int& offset, uint v );                   // need ensure 7 space
+        static void FastRead7Core( uint& v, char* buf, int& offset );
+        static bool Read7Core( uint& v, char* buf, int len, int& offset );
 
-        // todo: VariantWrite  VariantRead 系列
+        // 64 位长版
+        static void Write7Core64( char* buf, int & offset, uint64 v );              // need ensure 9 space
+        static void FastRead7Core64( uint64& v, char* buf, int& offset );
+        static bool Read7Core64( uint64& v, char* buf, int len, int& offset );
+
+        // negative -> ZegZag positive
+        static uint16 zegZagEncode( int16  i ) { return ( i << 1 ) ^ ( i >> 15 ); }
+        static uint32 zegZagEncode( int32  i ) { return ( i << 1 ) ^ ( i >> 31 ); }
+        static uint64 zegZagEncode( int64  i ) { return ( i << 1 ) ^ ( i >> 63 ); }
+
+        // ZegZag positive -> negative
+        static int16  zegZagDecode( uint16 i ) { return (int16)( i >> 1 ) ^ ( -(int16)( i & 1 ) ); }
+        static int32  zegZagDecode( uint32 i ) { return (int32)( i >> 1 ) ^ ( -(int32)( i & 1 ) ); }
+        static int64  zegZagDecode( uint64 i ) { return (int64)( i >> 1 ) ^ ( -(int64)( i & 1 ) ); }
+
 
 
         // 快速写入系列：不预申请内存（危险，主供生成物代码调用）
@@ -74,6 +106,32 @@ namespace xxx
         // 多值变参版
         template<typename ...TS>
         void WriteMulti( TS const& ...vs );
+
+
+        // 带指针写入系列
+        template<typename T>
+        void Write( T* v );
+        template<typename T>
+        void RootWrite( T const& v );
+
+        // 带指针读出系列
+        template<typename T>
+        void Read( T*& v );
+        template<typename T>
+        void RootRead( T& v );
+
+
+        // 变长写入系列：会预申请内存
+        void VarWrite( int v );
+        void VarWrite( uint v );
+        void VarWrite( int64 v );
+        void VarWrite( uint64 v );
+
+        bool VarRead( int& v );
+        bool VarRead( uint& v );
+        bool VarRead( int64& v );
+        bool VarRead( uint64& v );
+
 
 
         // 正常读出系列：返回 true 表示读出成功
