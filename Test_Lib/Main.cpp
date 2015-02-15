@@ -5,7 +5,7 @@ using namespace xxx;
 // todo: ByteBuffer ptrStore idxStore 改数据类型
 // 各种容器的支持
 // 指针是否为空的 byte 的功能利用：比如可存序列化类型，
-// 类型可能指的是 是否逐个序列化，还是说  index : value 部分列化
+// 类型可能指的是 是否逐个序列化，还是说  index : value 部分列化， 或是 bit 标记
 // 部分序列化，指成员变量的值与默认值不等的那些。
 // 极端需求下，可对比两种方式的序列化后长度差，选出最省的方式
 
