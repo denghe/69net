@@ -268,6 +268,7 @@ namespace xxx
             if( !VarRead( _offset ) ) return false;
             if( _offset == _offset_bak )
             {
+                assert( !v );                       // todo: obj pool support ?
                 v = new T();
                 if( !Read( *v ) )
                 {
@@ -275,7 +276,7 @@ namespace xxx
                     v = nullptr;
                     return false;
                 }
-                idxStore->Insert( _offset, v );   // todo: check
+                idxStore->Insert( _offset, v );     // todo: check
             }
             else
             {
