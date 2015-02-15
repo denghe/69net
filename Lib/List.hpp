@@ -456,7 +456,7 @@ namespace xxx
     template<typename T>
     void List<T>::WriteTo( ByteBuffer& bb ) const
     {
-        bb.Write( size );
+        bb.VarWrite( (uint)size );
         if( !std::is_pointer<T>::value && std::is_pod<T>::value )
         {
             bb.Write( (char*)buf, size * sizeof( T ) );
@@ -471,7 +471,7 @@ namespace xxx
     template<typename T>
     void List<T>::FastWriteTo( ByteBuffer& bb ) const
     {
-        bb.FastWrite( size );
+        bb.FastVarWrite( (uint)size );
         if( !std::is_pointer<T>::value && std::is_pod<T>::value )
         {
             bb.FastWrite( (char*)buf, size * sizeof( T ) );
@@ -488,7 +488,7 @@ namespace xxx
     bool List<T>::ReadFrom( ByteBuffer& bb )
     {
         int len;
-        if( !bb.Read( len ) || len < 0 ) return false;
+        if( !bb.VarRead( *(uint*)&len ) || len < 0 ) return false;
         if( !std::is_pointer<T>::value && std::is_pod<T>::value )
         {
             int siz = len * ( int )sizeof( T );

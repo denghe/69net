@@ -292,7 +292,7 @@ Lab1:
         buf[ offset++ ] = b7;
     }
 
-    void ByteBuffer::Write7Core64( char* buf, int& offset, uint64 v )
+    void ByteBuffer::Write7Core( char* buf, int& offset, uint64 v )
     {
         auto idx8 = offset + 8;
 Lab1:
@@ -311,7 +311,7 @@ Lab1:
         }
     }
 
-    void ByteBuffer::FastRead7Core64( uint64& v, char* buf, int& offset )
+    void ByteBuffer::FastRead7Core( uint64& v, char* buf, int& offset )
     {
         auto p = buf + offset;
         uint64 i = 0, b7;
@@ -333,7 +333,7 @@ Lab1:
         offset += idx;
     }
 
-    bool ByteBuffer::Read7Core64( uint64& v, char* buf, int dataLen, int& offset )
+    bool ByteBuffer::Read7Core( uint64& v, char* buf, int dataLen, int& offset )
     {
         if( offset >= dataLen ) return false;// ReadStatus::NotEnoughData;
         auto p = buf + offset;
@@ -402,44 +402,111 @@ Lab1:
         offset += idx;
     }
 
+
+
+
+
     void ByteBuffer::VarWrite( int v )
     {
-
+        Reserve( dataLen + sizeof( decltype(v) ) );
+        ByteBuffer::Write7Core( buf, dataLen, ByteBuffer::ZegZagEncode( v ) );
     }
 
     void ByteBuffer::VarWrite( uint v )
     {
-
+        Reserve( dataLen + sizeof( decltype( v ) ) );
+        ByteBuffer::Write7Core( buf, dataLen, v );
     }
 
     void ByteBuffer::VarWrite( int64 v )
     {
-
+        Reserve( dataLen + sizeof( decltype( v ) ) );
+        ByteBuffer::Write7Core( buf, dataLen, ByteBuffer::ZegZagEncode( v ) );
     }
 
     void ByteBuffer::VarWrite( uint64 v )
     {
-
+        Reserve( dataLen + sizeof( decltype( v ) ) );
+        ByteBuffer::Write7Core( buf, dataLen, v );
     }
+
+
+
 
     bool ByteBuffer::VarRead( int& v )
     {
-
+        uint i;
+        if( !VarRead( i ) ) return false;
+        v = ByteBuffer::ZegZagDecode( i );
+        return true;
     }
 
     bool ByteBuffer::VarRead( uint& v )
     {
-
+        return ByteBuffer::Read7Core( v, buf, dataLen, offset );
     }
 
     bool ByteBuffer::VarRead( int64& v )
     {
-
+        uint64 i;
+        if( !VarRead( i ) ) return false;
+        v = ByteBuffer::ZegZagDecode( i );
+        return true;
     }
 
     bool ByteBuffer::VarRead( uint64& v )
     {
+        return ByteBuffer::Read7Core( v, buf, dataLen, offset );
+    }
 
+
+
+
+    void ByteBuffer::FastVarWrite( int v )
+    {
+        ByteBuffer::Write7Core( buf, dataLen, ByteBuffer::ZegZagEncode( v ) );
+    }
+
+    void ByteBuffer::FastVarWrite( uint v )
+    {
+        ByteBuffer::Write7Core( buf, dataLen, v );
+    }
+
+    void ByteBuffer::FastVarWrite( int64 v )
+    {
+        ByteBuffer::Write7Core( buf, dataLen, ByteBuffer::ZegZagEncode( v ) );
+    }
+
+    void ByteBuffer::FastVarWrite( uint64 v )
+    {
+        ByteBuffer::Write7Core( buf, dataLen, v );
+    }
+
+
+
+
+    void ByteBuffer::FastVarRead( int& v )
+    {
+        uint i;
+        FastVarRead( i );
+        v = ByteBuffer::ZegZagDecode( i );
+    }
+
+    void ByteBuffer::FastVarRead( uint& v )
+    {
+        ByteBuffer::FastRead7Core( v, buf, offset );
+    }
+
+    void ByteBuffer::FastVarRead( int64& v )
+    {
+        uint64 i;
+        FastVarRead( i );
+        v = ByteBuffer::ZegZagDecode( i );
+    }
+
+    void ByteBuffer::FastVarRead( uint64& v )
+    {
+        ByteBuffer::FastRead7Core( v, buf, offset );
     }
 
 }

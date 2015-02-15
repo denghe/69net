@@ -72,12 +72,15 @@ namespace xxx
     template<typename T>
     typename std::enable_if<HasFunc_FastWriteTo<T>::value, void>::type FastWriteSwitch( ByteBuffer& b, T const& v )
     {
+        auto rtv = ptrStore->Insert( &v, offset );
+        VarWrite( (uint)rtv.first->value );
+        if( !rtv.second ) return;
         v.FastWriteTo( b );
     };
     template<typename T>
     typename std::enable_if<!HasFunc_FastWriteTo<T>::value, void>::type FastWriteSwitch( ByteBuffer& b, T const& v )
     {
-        //static_assert( std::is_pod<T>::value, "forget impl FastWriteTo func ?" );
+        static_assert( std::is_pod<T>::value, "forget impl FastWriteTo func ?" );
         ByteBuffer::WriteCore( b.buf + b.dataLen, v );
         b.dataLen += sizeof( v );
     };
@@ -168,6 +171,9 @@ namespace xxx
     template<typename T>
     typename std::enable_if<HasFunc_WriteTo<T>::value, void>::type WriteSwitch( ByteBuffer& b, T const& v )
     {
+        auto rtv = b.ptrStore->Insert( (void*)&v, b.offset );
+        b.VarWrite( (uint)rtv.first->value );
+        if( !rtv.second ) return;
         v.WriteTo( b );
     };
     template<typename T>
@@ -249,14 +255,41 @@ namespace xxx
 
 
     template<typename T>
-    void xxx::ByteBuffer::Read( T*& v )
+    bool xxx::ByteBuffer::Read( T*& v )
     {
-        // todo
+        bool b;
+        if( !Read( b ) ) return false;
+        if( b )
+        {
+            int _offset, _offset_bak = offset;
+            if( !VarRead( _offset ) ) return false;
+            if( _offset == _offset_bak )
+            {
+                v = new T();
+                if( !Read( *v ) )
+                {
+                    delete v;
+                    v = nullptr;
+                    return false;
+                }
+                idxStore->Insert( _offset, v );   // todo: check
+            }
+            else
+            {
+                v = (T*)idxStore->At( _offset );
+            }
+        }
+        else
+        {
+            v = nullptr;
+        }
+        return true;
     }
     template<typename T>
-    void xxx::ByteBuffer::RootRead( T& v )
+    bool xxx::ByteBuffer::RootRead( T& v )
     {
-        // todo
+        IdxStoreInit();
+        return Read( v );
     }
 
 
@@ -266,6 +299,9 @@ namespace xxx
     template<typename T>
     typename std::enable_if<HasFunc_ReadFrom<T>::value, bool>::type ReadSwitch( ByteBuffer& b, T& v )
     {
+        int _offset, _offset_bak = b.offset;
+        if( !b.VarRead( _offset ) ) return false;
+        b.idxStore->Insert( _offset, (void*)&v );   // todo: assert?
         return v.ReadFrom( b );
     };
     template<typename T>

@@ -10,20 +10,11 @@ public:
     // ByteBuffer interface
     inline void WriteTo( ByteBuffer& bb ) const
     {
-        // 看看自己有没有被序列化过
-        auto rtv = bb.ptrStore->Insert( ( void* )this, bb.offset );
-
-        // 写入当前或查到的 offset( 有没有序列化, 反正都要写的 )
-        bb.Write( rtv.first->value );
-
-        // 如果非首次序列化，就不序列化类成员了
-        if( !rtv.second ) return;
-
-        bb.WriteMulti( parent, childs );
+        bb.WriteMulti( this->parent, this->childs );
     }
     inline bool ReadFrom( ByteBuffer& bb )
     {
-        return true;
+        return bb.ReadMulti( this->parent, this->childs );
     }
 };
 
@@ -42,7 +33,7 @@ public:
         auto rtv = bb.ptrStore->Insert( ( void* )this, bb.offset );
 
         // 写入当前或查到的 offset
-        bb.Write( rtv.first->value );       
+        bb.Write( rtv.first->value );
 
         // 如果是首次序列化，需要接着序列化内容
         if( rtv.second )
@@ -64,15 +55,31 @@ public:
 
 int main()
 {
-    Foo f;
-    f.parent = &f;
-    f.childs.Push( &f );
-    f.childs.Push( &f );
-    f.childs.Push( &f );
-
     ByteBuffer bb;
-    bb.RootWrite( f );
-    CoutLine( bb.Dump() );
+
+    {
+        Foo f;
+        f.parent = &f;
+        f.childs.Push( &f );
+        f.childs.Push( &f );
+        f.childs.Push( &f );
+
+        bb.RootWrite( f );
+        CoutLine( bb.Dump() );
+    }
+
+    {
+        Foo f;
+        if( bb.RootRead( f ) )
+        {
+            CoutLine( (uint64)f.parent );
+            for( auto i = 0; i < f.childs.Size(); ++i )
+            {
+                CoutLine( (uint64)f.childs[ i ] );
+            }
+        }
+    }
+
 
     return 0;
 }
