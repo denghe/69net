@@ -72,7 +72,7 @@ namespace xxx
     template<typename T>
     typename std::enable_if<HasFunc_FastWriteTo<T>::value, void>::type FastWriteSwitch( ByteBuffer& b, T const& v )
     {
-        auto rtv = ptrStore->Insert( &v, offset );
+        auto rtv = ptrStore->Insert( &v, dataLen );
         VarWrite( (uint)rtv.first->value );
         if( !rtv.second ) return;
         v.FastWriteTo( b );
@@ -171,9 +171,12 @@ namespace xxx
     template<typename T>
     typename std::enable_if<HasFunc_WriteTo<T>::value, void>::type WriteSwitch( ByteBuffer& b, T const& v )
     {
-        auto rtv = b.ptrStore->Insert( (void*)&v, b.offset );
-        b.VarWrite( (uint)rtv.first->value );
-        if( !rtv.second ) return;
+        if( b.ptrStore )
+        {
+            auto rtv = b.ptrStore->Insert( (void*)&v, b.dataLen );
+            b.VarWrite( (uint)rtv.first->value );
+            if( !rtv.second ) return;
+        }
         v.WriteTo( b );
     };
     template<typename T>
@@ -299,9 +302,12 @@ namespace xxx
     template<typename T>
     typename std::enable_if<HasFunc_ReadFrom<T>::value, bool>::type ReadSwitch( ByteBuffer& b, T& v )
     {
-        int _offset, _offset_bak = b.offset;
-        if( !b.VarRead( _offset ) ) return false;
-        b.idxStore->Insert( _offset, (void*)&v );   // todo: assert?
+        if( b.idxStore )
+        {
+            int _offset, _offset_bak = b.offset;
+            if( !b.VarRead( _offset ) ) return false;
+            b.idxStore->Insert( _offset, (void*)&v );   // todo: assert?
+        }
         return v.ReadFrom( b );
     };
     template<typename T>

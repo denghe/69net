@@ -18,41 +18,6 @@ public:
     }
 };
 
-class Bar
-{
-public:
-    Bar* parent = nullptr;
-    List<Bar*> childs;
-    int xxx = 0;
-    int xxxx = 0;
-
-    // ByteBuffer interface
-    inline void WriteTo( ByteBuffer& bb ) const
-    {
-        // 试将当前 this 指针和 offset 放入 ptr 容器
-        auto rtv = bb.ptrStore->Insert( ( void* )this, bb.offset );
-
-        // 写入当前或查到的 offset
-        bb.Write( rtv.first->value );
-
-        // 如果是首次序列化，需要接着序列化内容
-        if( rtv.second )
-        {
-            // 开始序列化内容
-            bb.Write( parent );
-            bb.Write( childs );
-            bb.Write( xxx );
-            bb.Write( xxxx );
-        }
-    }
-
-    inline bool ReadFrom( ByteBuffer& bb )
-    {
-        return true;
-    }
-};
-
-
 int main()
 {
     ByteBuffer bb;
@@ -80,6 +45,52 @@ int main()
         }
     }
 
-
     return 0;
 }
+
+
+
+//
+//
+//class Bar
+//{
+//public:
+//    int a = 1;
+//    int b = 2;
+//
+//    // ByteBuffer interface
+//    inline void WriteTo( ByteBuffer& bb ) const
+//    {
+//        bb.VarWrite( a );
+//        bb.VarWrite( b );
+//    }
+//
+//    inline bool ReadFrom( ByteBuffer& bb )
+//    {
+//        if( !bb.VarRead( a ) ) return false;
+//        if( !bb.VarRead( b ) ) return false;
+//        return true;
+//    }
+//};
+//
+//
+//int main()
+//{
+//    ByteBuffer bb;
+//    {
+//        Bar b;
+//        b.a = 3;
+//        b.b = 4;
+//        bb.Write( b );
+//        CoutLine( bb.Dump() );
+//    }
+//    {
+//        Bar b;
+//        if( bb.Read( b ) )
+//        {
+//            CoutLine( "b.a = ", b.a, ", b.b = ", b.b );
+//        }
+//    }
+//    
+//    return 0;
+//}
