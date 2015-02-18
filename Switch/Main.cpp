@@ -71,7 +71,7 @@ using namespace std;
 using namespace xxx;
 int main()
 {
-    FlatBuffer fb;
+    ByteBuffer fb;
     uint count = 0xFFFFFFFF;
 
     char buf[ 16 ];

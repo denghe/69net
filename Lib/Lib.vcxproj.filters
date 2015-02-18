@@ -11,10 +11,7 @@
     <ClInclude Include="Dict.h" />
     <ClInclude Include="LRUCache.h" />
     <ClInclude Include="LRUCache.hpp" />
-    <ClInclude Include="FlatBuffer.h" />
-    <ClInclude Include="FlatBuffer.hpp" />
     <ClInclude Include="BufferUtils.h" />
-    <ClInclude Include="BufferUtils.hpp" />
     <ClInclude Include="Utils.hpp" />
     <ClInclude Include="BlockBuffer.h" />
     <ClInclude Include="ClassAttributes.h" />
@@ -49,7 +46,6 @@
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="List.cpp" />
-    <ClCompile Include="FlatBuffer.cpp" />
     <ClCompile Include="BufferUtils.cpp" />
     <ClCompile Include="BlockBuffer.cpp" />
     <ClCompile Include="ScopeGuard.cpp" />

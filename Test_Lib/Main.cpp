@@ -2,8 +2,10 @@
 using namespace xxx;
 
 
-// todo: ByteBuffer ptrStore idxStore 改数据类型
-// 各种容器的支持
+// todo:
+// 分配器 for ByteBuffer ?
+// Nullable 的序列化支持?
+// 简化各种 Size()
 // 指针是否为空的 byte 的功能利用：比如可存序列化类型，
 // 类型可能指的是 是否逐个序列化，还是说  index : value 部分列化， 或是 bit 标记
 // 部分序列化，指成员变量的值与默认值不等的那些。
@@ -29,6 +31,33 @@ public:
 int main()
 {
     ByteBuffer bb;
+    {
+        List<bool> bs;
+        bs.Push( true );
+        bs.Push( false );
+        bs.Push( false );
+        bs.Push( false );
+        bs.Push( true );
+        bs.Push( false );
+        bs.Push( false );
+        bs.Push( false );
+        bs.Push( true );
+        bs.Push( false );
+        bs.Push( false );
+        bs.Push( false );
+
+        bb.Write( bs );
+        CoutLine( bb.Dump() );
+    }
+    {
+        List<bool> bs;
+        bb.Read( bs );
+        for( int i = 0; i < bs.Size(); ++i )
+        {
+            CoutLine( bs[ i ] ? "true " : "false " );
+        }
+    }
+    return 0;
 
     {
         Foo f;

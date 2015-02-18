@@ -18,7 +18,7 @@ int test()
     if( !peer ) return -2;
 
     int sendLen = 1024;
-    FlatBuffer buf( sendLen );
+    ByteBuffer buf( sendLen );
     buf.Resize( sendLen );
     for( int i = 0; i < sendLen; ++i )
     {
@@ -51,7 +51,7 @@ int test()
                 // todo: check
                 enet_packet_destroy( event.packet );
 
-                auto packet = enet_packet_create( buf.Data(), buf.Size(), ENET_PACKET_FLAG_RELIABLE );
+                auto packet = enet_packet_create( buf.buf, buf.dataLen, ENET_PACKET_FLAG_RELIABLE );
                 enet_peer_send( peer, 0, packet );
                 break;
             }

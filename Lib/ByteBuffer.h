@@ -14,8 +14,8 @@ namespace xxx
         int         dataLen;
         int         offset;
         bool        isRef;
-        Dict<void*, int>* ptrStore = nullptr;
-        Dict<int, void*>* idxStore = nullptr;
+        Dict<void*, uint>* ptrStore = nullptr;                                      // for 序列化含指针的类实例
+        Dict<uint, void*>* idxStore = nullptr;                                      // for 反序列化含指针的类实例
 
         explicit ByteBuffer( int capacity = 1024 );                                 // prepare
         ByteBuffer( char* _buf, int _bufLen, int _dataLen = 0, bool isRef = false );   // Copy or ref
@@ -38,10 +38,10 @@ namespace xxx
         String Dump();                                                              // return buf string for display memory
 
         // ptrStore, idxStore 相关
-        void PtrStoreInit();
+        void PtrStoreInit();                                                        // RootWrite 时自动调用 
         void PtrStoreDestroy();
 
-        void IdxStoreInit();
+        void IdxStoreInit();                                                        // RootRead 时自动调用
         void IdxStoreDestroy();
 
 
@@ -64,6 +64,7 @@ namespace xxx
         static bool Read7Core( uint64& v, char* buf, int len, int& offset );
 
         // negative -> ZegZag positive
+        // 效果：负数变正，正数 *= 2
         static uint32 ZegZagEncode( int32  i ) { return ( i << 1 ) ^ ( i >> 31 ); }
         static uint64 ZegZagEncode( int64  i ) { return ( i << 1 ) ^ ( i >> 63 ); }
 

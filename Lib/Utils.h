@@ -71,6 +71,7 @@ namespace xxx
     int ToHexString( char * dstBuf, uint    v );
     int ToHexString( char * dstBuf, uint64  v );
     // todo: byte[], string to hex
+    int ToHexString( char * dstBuf, char   v );
     int ToHexString( char * dstBuf, int8   v );
     int ToHexString( char * dstBuf, int16  v );
     int ToHexString( char * dstBuf, int    v );

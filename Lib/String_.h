@@ -131,13 +131,6 @@ namespace xxx
 
 
 
-        // for FlatBuffer
-        int GetWriteBufferSize() const;
-        void WriteBuffer( FlatBuffer& fb ) const;
-        void WriteBufferDirect( FlatBuffer& fb ) const;
-        bool ReadBuffer( FlatBuffer& fb );
-
-
         // for ByteBuffer
         void WriteTo( ByteBuffer& fb ) const;
         void FastWriteTo( ByteBuffer& fb ) const;

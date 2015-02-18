@@ -40,12 +40,10 @@ namespace xxx
         TV& At( TK const& k );                           // same as operator[]
 
 
-
-        // for FlatBuffer Write
-        int GetWriteBufferSize() const;
-        void WriteBuffer( FlatBuffer& fb ) const;
-        void WriteBufferDirect( FlatBuffer& fb ) const;
-        bool ReadBuffer( FlatBuffer& fb );
+        // ByteBuffer interface
+        void WriteTo( ByteBuffer& bb ) const;
+        void FastWriteTo( ByteBuffer& bb ) const;
+        bool ReadFrom( ByteBuffer& bb );
     protected:
         void Dispose( Node* n );
         void Resize();

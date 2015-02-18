@@ -21,8 +21,8 @@ namespace xxx
         Hash& operator=( Hash&& o );
         Hash& operator=( Hash const& o );
         ~Hash();
-        std::pair<Node*, bool> Insert( TK const& k );      // if exists, return Node* + false. else add and return Node* + true
-        Node* Find( TK const& k );                                                  // if exists, return Node*. else return nullptr
+        std::pair<Node*, bool> Insert( TK const& k );           // if exists, return Node* + false. else add and return Node* + true
+        Node* Find( TK const& k );                              // if exists, return Node*. else return nullptr
         void Erase( TK const& k );
         void Erase( Node* n );
         void Clear();
@@ -32,12 +32,6 @@ namespace xxx
         int Size() const;
         Node* operator[]( int idx ) const;
 
-
-        // for FlatBuffer Write
-        int GetWriteBufferSize() const;
-        void WriteBuffer( FlatBuffer& fb ) const;
-        void WriteBufferDirect( FlatBuffer& fb ) const;
-        bool ReadBuffer( FlatBuffer& fb );
     protected:
         void Dispose( Node* n );
         void Resize();

@@ -3,9 +3,6 @@
 
 namespace xxx
 {
-
-
-    class FlatBuffer;
     class ByteBuffer;
 
     template<typename T>
@@ -52,18 +49,10 @@ namespace xxx
         template<typename VT>
         void Set( int idx, VT&& v );
 
-        // for FlatBuffer Write
-        int GetWriteBufferSize() const;
-        void WriteBuffer( FlatBuffer& fb ) const;
-        void WriteBufferDirect( FlatBuffer& fb ) const;
-        bool ReadBuffer( FlatBuffer& fb );
-
-        // for ByteBuffer Write
+        // ByteBuffer interface
         void WriteTo( ByteBuffer& bb ) const;
         void FastWriteTo( ByteBuffer& bb ) const;
         bool ReadFrom( ByteBuffer& bb );
-
-
     private:
         T*          buf;
         int         size;
@@ -72,7 +61,7 @@ namespace xxx
 
 
 
-
+    // 2进制排列为 从右到左，由低到高位，即小尾机可 memcpy
     template<>
     class List<bool> : Memmoveable
     {
@@ -100,8 +89,12 @@ namespace xxx
         void FillFalse();
         void Fill( bool bit, int idxFrom = 0, int idxTo = 0 );
         void Resize( int capacity, bool init = true );
-        // todo: more functions
-        // todo: // for ByteBuffer Write
+        void CleanUp() const;   // clear last byte's unused bits
+
+        // ByteBuffer interface
+        void WriteTo( ByteBuffer& bb ) const;
+        void FastWriteTo( ByteBuffer& bb ) const;
+        bool ReadFrom( ByteBuffer& bb );
     private:
         char*       buf;
         int         size;

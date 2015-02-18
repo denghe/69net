@@ -4,10 +4,8 @@
 namespace xxx
 {
 
-
     // 直接由 Hash 去 buckets 简化而来
     // 特点是 Insert 返回的 Node* 值不会变化，对象可存储该值以实现高速 Erase
-
     template <typename T>
     struct Links : Memmoveable
     {
@@ -34,12 +32,6 @@ namespace xxx
         int Size() const;
         Node* operator[]( int idx ) const;
 
-
-        // for FlatBuffer Write
-        int GetWriteBufferSize() const;
-        void WriteBuffer( FlatBuffer& fb ) const;
-        void WriteBufferDirect( FlatBuffer& fb ) const;
-        bool ReadBuffer( FlatBuffer& fb );
     protected:
         void Dispose( Node* n );
         List<Node*>         nodes;

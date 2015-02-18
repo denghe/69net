@@ -234,15 +234,19 @@ namespace xxx
 
 
 
+
+
     void ByteBuffer::WriteTo( ByteBuffer& fb ) const
     {
         fb.Write( dataLen );
+        if( !dataLen ) return;
         fb.Write( buf, dataLen );
     }
 
     void ByteBuffer::FastWriteTo( ByteBuffer& fb ) const
     {
         fb.FastWrite( dataLen );
+        if( !dataLen ) return;
         fb.FastWrite( buf, dataLen );
     }
 
@@ -260,10 +264,18 @@ namespace xxx
         return true;
     }
 
+
+
+
+
+
+
+
+
     void ByteBuffer::PtrStoreInit()
     {
         if( ptrStore ) ptrStore->Clear();
-        else ptrStore = new Dict<void*, int>();
+        else ptrStore = new Dict<void*, uint>();
     }
     void ByteBuffer::PtrStoreDestroy()
     {
@@ -273,7 +285,7 @@ namespace xxx
     void ByteBuffer::IdxStoreInit()
     {
         if( idxStore ) idxStore->Clear();
-        else idxStore = new Dict<int, void*>();
+        else idxStore = new Dict<uint, void*>();
     }
     void ByteBuffer::IdxStoreDestroy()
     {
@@ -338,7 +350,7 @@ Lab1:
         if( offset >= dataLen ) return false;// ReadStatus::NotEnoughData;
         auto p = buf + offset;
         uint64 i = 0, b7;
-        uint lshift = 0, idx = 0;
+        int lshift = 0, idx = 0;
         dataLen -= offset;
 Lab1:
         b7 = p[ idx++ ];
@@ -363,7 +375,8 @@ Lab1:
     {
         if( offset >= len ) return false;// ReadStatus::NotEnoughData;
         auto p = buf + offset;
-        uint i = 0, b7, lshift = 0, idx = 0;
+        uint i = 0, b7;
+        int lshift = 0, idx = 0;
         len -= offset;
 Lab1:
         b7 = p[ idx++ ];

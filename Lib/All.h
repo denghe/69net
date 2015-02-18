@@ -192,26 +192,6 @@ public:                                                                         
 }
 
 
-#define PACKET_CLASS_HEADER_POD( TN )       \
-public:                                     \
-static ushort GetTypeID();                  \
-void WriteBuffer( FlatBuffer& fb ) const;   \
-bool ReadBuffer( FlatBuffer& fb );          \
-int GetWriteBufferSize() const;             \
-void WriteBufferDirect( FlatBuffer& fb ) const;
-
-
-#define PACKET_CLASS_HEADER( TN )           \
-PACKET_CLASS_HEADER_POD( TN );              \
-TN() = default;                             \
-TN( TN const& other );                      \
-TN( TN&& other );                           \
-TN& operator=( TN const& other );           \
-TN& operator=( TN&& other );
-
-
-
-
 
 
 // _countof
@@ -359,7 +339,6 @@ inline void aligned_free( void* p )
 #include "Links.h"
 #include "BlockBuffer.h"
 #include "LRUCache.h"
-#include "FlatBuffer.h"
 #include "ByteBuffer.h"
 #include "BufferUtils.h"
 #include "Utils.h"
@@ -376,8 +355,6 @@ inline void aligned_free( void* p )
 
 
 #include "Nullable.hpp"
-#include "BufferUtils.hpp"
-#include "FlatBuffer.hpp"
 #include "ByteBuffer.hpp"
 #include "List.hpp"
 #include "LRUCache.hpp"

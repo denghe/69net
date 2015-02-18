@@ -345,6 +345,11 @@ namespace xxx
         return ToHexString( dstBuf, (uint8)v );
     }
 
+    int ToHexString( char * dstBuf, char v )
+    {
+        return ToHexString( dstBuf, (uint8)v );
+    }
+
     int ToHexString( char * dstBuf, int16 v )
     {
         return ToHexString( dstBuf, (uint16)v );

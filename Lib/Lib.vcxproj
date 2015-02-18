@@ -23,7 +23,6 @@
     <ClInclude Include="AutoIDPool.h" />
     <ClInclude Include="Buf.h" />
     <ClInclude Include="BufferUtils.h" />
-    <ClInclude Include="BufferUtils.hpp" />
     <ClInclude Include="BlockBuffer.h" />
     <ClInclude Include="ByteBuffer.h" />
     <ClInclude Include="ByteBuffer.hpp" />
@@ -38,8 +37,6 @@
     <ClInclude Include="Nullable.h" />
     <ClInclude Include="Nullable.hpp" />
     <ClInclude Include="Pool.h" />
-    <ClInclude Include="FlatBuffer.h" />
-    <ClInclude Include="FlatBuffer.hpp" />
     <ClInclude Include="FlatQueue.h" />
     <ClInclude Include="FlatQueue.hpp" />
     <ClInclude Include="List.h" />
@@ -72,7 +69,6 @@
     <ClCompile Include="BlockBuffer.cpp" />
     <ClCompile Include="ByteBuffer.cpp" />
     <ClCompile Include="Pool.cpp" />
-    <ClCompile Include="FlatBuffer.cpp" />
     <ClCompile Include="ftoa.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>

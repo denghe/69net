@@ -277,86 +277,46 @@ namespace xxx
 
 
 
-
-
-
     template <typename TK, typename TV>
-    int Dict<TK, TV>::GetWriteBufferSize() const
+    void Dict<TK, TV>::WriteTo( ByteBuffer& bb ) const
     {
-        int siz = sizeof( int );
-        if( !std::is_pod<TK>::value && !std::is_pod<TV>::value )
-        {
-            for( int i = 0; i < nodes.Size(); ++i )
-            {
-                siz += nodes[ i ]->key.GetWriteBufferSize();
-                siz += nodes[ i ]->value.GetWriteBufferSize();
-            }
-            return siz;
-        }
-        if( std::is_pod<TK>::value )
-        {
-            siz += sizeof( TK ) * nodes.Size();
-        }
-        else
-        {
-            for( int i = 0; i < nodes.Size(); ++i )
-            {
-                siz += nodes[ i ]->value.GetWriteBufferSize();
-            }
-        }
-        if( std::is_pod<TV>::value )
-        {
-            siz += sizeof( TV ) * nodes.Size();
-        }
-        else
-        {
-            for( int i = 0; i < nodes.Size(); ++i )
-            {
-                siz += nodes[ i ]->key.GetWriteBufferSize();
-            }
-        }
-        return siz;
-    }
-    template <typename TK, typename TV>
-    void Dict<TK, TV>::WriteBuffer( FlatBuffer& fb ) const
-    {
-        fb.Write( nodes.Size() );
+        bb.VarWrite( (uint)nodes.Size() );
         for( int i = 0; i < nodes.Size(); ++i )
         {
-            fb.Write( nodes[ i ]->key );
-            fb.Write( nodes[ i ]->value );
+            bb.Write( nodes[ i ]->key );
+            bb.Write( nodes[ i ]->value );
         }
     }
     template <typename TK, typename TV>
-    void Dict<TK, TV>::WriteBufferDirect( FlatBuffer& fb ) const
+    void Dict<TK, TV>::FastWriteTo( ByteBuffer& bb ) const
     {
-        fb.WriteDirect( nodes.Size() );
+        bb.FastVarWrite( (uint)nodes.Size() );
         for( int i = 0; i < nodes.Size(); ++i )
         {
-            fb.WriteDirect( nodes[ i ]->key );
-            fb.WriteDirect( nodes[ i ]->value );
+            bb.FastWrite( nodes[ i ]->key );
+            bb.FastWrite( nodes[ i ]->value );
         }
     }
 
     template <typename TK, typename TV>
-    bool Dict<TK, TV>::ReadBuffer( FlatBuffer& fb )
+    bool Dict<TK, TV>::ReadFrom( ByteBuffer& bb )
     {
         int len;
-        if( !fb.Read( len ) || len < 0 ) return false;
+        if( !bb.VarRead( *(uint*)&len ) || len < 0 ) return false;
         Clear();
         Reserve( len );
         for( int i = 0; i < len; ++i )
         {
             auto n = (Node*)pool.Alloc();                              // malloc
             if( !std::is_pod<TK>::value ) new ( &n->key ) TK();         // new key
-            if( !fb.Read( n->key ) )
+            if( !bb.Read( n->key ) )
             {
                 if( !std::is_pod<TK>::value ) n->key.~TK();             // delete key
                 pool.Free( n );                                        // free
                 return false;
             }
             if( !std::is_pod<TV>::value ) new ( &n->value ) TV();       // new value
-            if( !fb.Read( n->value ) )
+            if( !bb.Read( n->value ) )
             {
                 if( !std::is_pod<TV>::value ) n->value.~TV();           // delete value
                 pool.Free( n );                                        // free

@@ -422,50 +422,26 @@ namespace xxx
 
 
 
-    int String::GetWriteBufferSize() const
-    {
-        return sizeof( int ) + dataLen;
-    }
-
-    void String::WriteBuffer( FlatBuffer& fb ) const
-    {
-        fb.Write( dataLen );
-        fb.Write( buf, dataLen );
-    }
-    void String::WriteBufferDirect( FlatBuffer& fb ) const
-    {
-        fb.WriteDirect( dataLen );
-        fb.WriteDirect( buf, dataLen );
-    }
-
-    bool String::ReadBuffer( FlatBuffer& fb )
-    {
-        int len;
-        if( !fb.Read( len ) || len < 0
-            || fb.Offset() + len > fb.Size() ) return false;
-        Assign( fb.Data() + fb.Offset(), 0, len, false );
-        fb.Offset() += len;
-        return true;
-    }
-
 
 
 
     void String::WriteTo( ByteBuffer& bb ) const
     {
-        bb.Write( dataLen );
+        bb.VarWrite( (uint)dataLen );
+        if( !dataLen ) return;
         bb.Write( buf, dataLen );
     }
     void String::FastWriteTo( ByteBuffer& bb ) const
     {
-        bb.FastWrite( dataLen );
+        bb.FastVarWrite( (uint)dataLen );
+        if( !dataLen ) return;
         bb.FastWrite( buf, dataLen );
     }
 
     bool String::ReadFrom( ByteBuffer& bb )
     {
         int len;
-        if( !bb.Read( len )
+        if( !bb.Read( *(uint*)&len )
             || len < 0
             || bb.offset + len > bb.dataLen )
         {
