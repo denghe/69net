@@ -1,6 +1,10 @@
 #ifndef __SQLITE___H__
 #define __SQLITE___H__
 
+// todo: 变参 support
+// todo: 换成自己的容器
+// todo: 同步部分注释
+
 #include "sqlite3.h"
 #include <string>
 #include <vector>

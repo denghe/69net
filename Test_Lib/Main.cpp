@@ -3,131 +3,23 @@ using namespace xxx;
 
 
 // todo:
+// 整理 Sqlite 类相关
+// 以类似 Sqlite 类的长相，提供 Mysql 的支持
+// 设计 Mysql 数据库操作层的长相
+
 // 分配器 for ByteBuffer ?
 // Nullable 的序列化支持?
+// Any 类型的引入? ( 可以是 c++ 内置数据类型 以及常用常见的集合啥的 )
 // 简化各种 Size()
 // 指针是否为空的 byte 的功能利用：比如可存序列化类型，
 // 类型可能指的是 是否逐个序列化，还是说  index : value 部分列化， 或是 bit 标记
 // 部分序列化，指成员变量的值与默认值不等的那些。
 // 极端需求下，可对比两种方式的序列化后长度差，选出最省的方式
 
-class Foo
-{
-public:
-    Foo* parent = nullptr;
-    List<Foo*> childs;
-
-    // ByteBuffer interface
-    inline void WriteTo( ByteBuffer& bb ) const
-    {
-        bb.WriteMulti( this->parent, this->childs );
-    }
-    inline bool ReadFrom( ByteBuffer& bb )
-    {
-        return bb.ReadMulti( this->parent, this->childs );
-    }
-};
 
 int main()
 {
-    ByteBuffer bb;
-    {
-        List<bool> bs;
-        bs.Push( true );
-        bs.Push( false );
-        bs.Push( false );
-        bs.Push( false );
-        bs.Push( true );
-        bs.Push( false );
-        bs.Push( false );
-        bs.Push( false );
-        bs.Push( true );
-        bs.Push( false );
-        bs.Push( false );
-        bs.Push( false );
 
-        bb.Write( bs );
-        CoutLine( bb.Dump() );
-    }
-    {
-        List<bool> bs;
-        bb.Read( bs );
-        for( int i = 0; i < bs.Size(); ++i )
-        {
-            CoutLine( bs[ i ] ? "true " : "false " );
-        }
-    }
-    return 0;
-
-    {
-        Foo f;
-        f.parent = &f;
-        f.childs.Push( &f );
-        f.childs.Push( &f );
-        f.childs.Push( &f );
-
-        bb.RootWrite( f );
-        CoutLine( bb.Dump() );
-    }
-
-    {
-        Foo f;
-        if( bb.RootRead( f ) )
-        {
-            CoutLine( (uint64)f.parent );
-            for( auto i = 0; i < f.childs.Size(); ++i )
-            {
-                CoutLine( (uint64)f.childs[ i ] );
-            }
-        }
-    }
 
     return 0;
 }
-
-
-
-//
-//
-//class Bar
-//{
-//public:
-//    int a = 1;
-//    int b = 2;
-//
-//    // ByteBuffer interface
-//    inline void WriteTo( ByteBuffer& bb ) const
-//    {
-//        bb.VarWrite( a );
-//        bb.VarWrite( b );
-//    }
-//
-//    inline bool ReadFrom( ByteBuffer& bb )
-//    {
-//        if( !bb.VarRead( a ) ) return false;
-//        if( !bb.VarRead( b ) ) return false;
-//        return true;
-//    }
-//};
-//
-//
-//int main()
-//{
-//    ByteBuffer bb;
-//    {
-//        Bar b;
-//        b.a = 3;
-//        b.b = 4;
-//        bb.Write( b );
-//        CoutLine( bb.Dump() );
-//    }
-//    {
-//        Bar b;
-//        if( bb.Read( b ) )
-//        {
-//            CoutLine( "b.a = ", b.a, ", b.b = ", b.b );
-//        }
-//    }
-//    
-//    return 0;
-//}
