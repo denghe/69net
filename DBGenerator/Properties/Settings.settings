@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DBGenerator.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="database" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">test</Value>
+    </Setting>
+    <Setting Name="server" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">192.168.0.109</Value>
+    </Setting>
+    <Setting Name="port" Type="System.UInt16" Scope="Application">
+      <Value Profile="(Default)">3306</Value>
+    </Setting>
+    <Setting Name="userId" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">sa</Value>
+    </Setting>
+    <Setting Name="password" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">1111</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

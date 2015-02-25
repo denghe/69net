@@ -10,6 +10,8 @@ namespace DBGenerator
     {
         static void Main( string[] args )
         {
+            var info = MyInfo.GetInfo();
+
         }
     }
 }
