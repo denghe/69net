@@ -4,131 +4,131 @@ namespace Sqlite
 {
 
     Connection::Connection()
-        : _db( nullptr )
-        , _writeable( false )
-        , _existsQuery( nullptr )
+        : db( nullptr )
+        , writeable( false )
+        , qExists( nullptr )
     {
     }
 
-    Connection::Connection( std::string const & fn, bool writeable )
-        : _db( nullptr )
-        , _fn( fn )
-        , _writeable( writeable )
-        , _existsQuery( nullptr )
+    Connection::Connection( std::string const& fn, bool writeable )
+        : db( nullptr )
+        , fileName( fn )
+        , writeable( writeable )
+        , qExists( nullptr )
     {
     }
 
     Connection::~Connection()
     {
-        close();
+        Close();
     }
 
-    void Connection::assign( std::string const & fn, bool writeable )
+    void Connection::assign( std::string const& fn, bool writeable )
     {
-        close();
-        _fn = fn;
-        _writeable = writeable;
+        Close();
+        fileName = fn;
+        writeable = writeable;
     }
 
-    bool Connection::open()
+    bool Connection::Open()
     {
-        if( _db ) return false;
+        if( db ) return false;
         int r = 0;
-        if( _writeable )
+        if( writeable )
         {
-            r = sqlite3_open_v2( _fn.c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr );
+            r = sqlite3_open_v2( fileName.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr );
         }
         else
         {
-            r = sqlite3_open_v2( _fn.c_str(), &_db, SQLITE_OPEN_READONLY, nullptr );
+            r = sqlite3_open_v2( fileName.c_str(), &db, SQLITE_OPEN_READONLY, nullptr );
         }
         if( r != SQLITE_OK )
         {
-            close();
+            Close();
             return false;
         }
         return true;
     }
 
-    void Connection::close()
+    void Connection::Close()
     {
-        if( !_db ) return;
-        clearQueries();
-        sqlite3_close( _db );
-        _db = nullptr;
+        if( !db ) return;
+        ReleaseQueries();
+        sqlite3_close( db );
+        db = nullptr;
     }
 
 
-    Query * Connection::newQuery( std::string const & sql, int parameterCount /*= 0 */ )
+    Query * Connection::CreateQuery( std::string const& sql, int parameterCount /*= 0 */ )
     {
         Query * rtv = nullptr;
-        if( !_db ) return rtv;
+        if( !db ) return rtv;
         rtv = new Query( this, sql, parameterCount );
-        _qs.push_back( rtv );
+        queries.push_back( rtv );
         return rtv;
     }
 
-    void Connection::deleteQuery( Query * q )
+    void Connection::ReleaseQuery( Query * q )
     {
         if( !q ) return;
         delete q;
-        auto it = find( _qs.begin(), _qs.end(), q );
-        if( it != _qs.end() )
+        auto it = find( queries.begin(), queries.end(), q );
+        if( it != queries.end() )
         {
-            _qs.erase( it );
+            queries.erase( it );
         }
     }
 
-    void Connection::clearQueries()
+    void Connection::ReleaseQueries()
     {
-        for( auto& q : _qs ) delete q;
-        _qs.clear();
-        _existsQuery = nullptr;
+        for( auto& q : queries ) delete q;
+        queries.clear();
+        qExists = nullptr;
     }
 
 
 
 
 
-    void Connection::beginTransaction()
+    void Connection::BeginTransaction()
     {
-        execute( "BEGIN TRANSACTION" );
+        Execute( "BEGIN TRANSACTION" );
     }
 
-    void Connection::commit()
+    void Connection::Commit()
     {
-        execute( "COMMIT TRANSACTION" );
+        Execute( "COMMIT TRANSACTION" );
     }
 
-    void Connection::rollback()
+    void Connection::Rollback()
     {
-        execute( "ROLLBACK TRANSACTION" );
+        Execute( "ROLLBACK TRANSACTION" );
     }
 
-    void Connection::endTransaction()
+    void Connection::EndTransaction()
     {
-        execute( "END TRANSACTION" );
+        Execute( "END TRANSACTION" );
     }
 
-    bool Connection::exists( std::string const & tn )
+    bool Connection::Exists( std::string const& tn )
     {
         bool rtv = false;
-        if( !_existsQuery )
+        if( !qExists )
         {
-            _existsQuery = newQuery( "SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?" );
+            qExists = CreateQuery( "SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?" );
         }
-        ( *_existsQuery ).add( tn );
-        _existsQuery->execute( [ &]( Sqlite::DataReader& dr )
+        ( *qExists ).Add( tn );
+        qExists->Execute( [ &]( Sqlite::DataReader& dr )
         {
-            rtv = dr.readInt32() > 0;
+            rtv = dr.ReadInt32() > 0;
         } );
         return rtv;
     }
 
-    bool Connection::execute( std::string const & sql )
+    bool Connection::Execute( std::string const& sql )
     {
-        if( !_db ) return false;
-        return sqlite3_exec( _db, sql.c_str(), nullptr, nullptr, nullptr ) == SQLITE_OK;
+        if( !db ) return false;
+        return sqlite3_exec( db, sql.c_str(), nullptr, nullptr, nullptr ) == SQLITE_OK;
     }
 
 
@@ -151,128 +151,126 @@ namespace Sqlite
 
 
     Query::Query()
-        : _conn( nullptr )
-        , _stmt( nullptr )
-        , _vc( 0 )
-        , _vi( 0 )
+        : conn( nullptr )
+        , stmt( nullptr )
+        , vc( 0 )
+        , vi( 0 )
     {
     }
 
-    Query::Query( Connection * conn, std::string const & sql, int parameterCount )
-        : _conn( conn )
-        , _stmt( nullptr )
-        , _vi( 0 )
+    Query::Query( Connection* conn, std::string const& sql, int parameterCount )
+        : conn( conn )
+        , stmt( nullptr )
+        , vi( 0 )
     {
-        assign( sql, parameterCount );
+        Assign( sql, parameterCount );
     }
 
     Query::~Query()
     {
-        if( _stmt ) sqlite3_finalize( _stmt );
+        if( stmt ) sqlite3_finalize( stmt );
     }
 
-    bool Query::assign( std::string const & sql, int n )
+    bool Query::Assign( std::string const& sql, int n )
     {
-        _sql = sql;
-
-        if( _stmt )
+        if( stmt )
         {
-            sqlite3_finalize( _stmt );
-            _stmt = nullptr;
-            _vi = 0;
+            sqlite3_finalize( stmt );
+            stmt = nullptr;
+            vi = 0;
         }
 
-        if( sqlite3_prepare_v2( _conn->_db, sql.c_str(), (int)sql.size(), &_stmt, nullptr ) != SQLITE_OK )
+        if( sqlite3_prepare_v2( conn->db, sql.c_str(), (int)sql.size(), &stmt, nullptr ) != SQLITE_OK )
         {
-            if( _stmt )
+            if( stmt )
             {
-                sqlite3_finalize( _stmt );
-                _stmt = nullptr;
+                sqlite3_finalize( stmt );
+                stmt = nullptr;
             }
             return false;
         }
 
         if( n )
         {
-            _vc = n;
+            vc = n;
         }
         else
         {
             // 数 sql 串里有多少个 ?, 当前先这样实现.
-            _vc = 0;
-            for( auto& c : _sql )
+            vc = 0;
+            for( auto& c : sql )
             {
-                if( c == '?' ) ++_vc;
+                if( c == '?' ) ++vc;
             }
         }
 
         return true;
     }
 
-    bool Query::execute( RowReaderType rr )
+    bool Query::Execute( RowReaderType rr )
     {
-        if( !_stmt )
+        if( !stmt )
         {
             printf( "Query::execute failed. _stmt = nullptr" );
             return false;
         }
-        if( _vc != _vi )
+        if( vc != vi )
         {
-            printf( "Query::execute failed. parameter count is not valid. _vc = %d, _vi = %d", _vc, _vi );
+            printf( "Query::execute failed. parameter count is not valid. _vc = %d, _vi = %d", vc, vi );
             return false;
         }
-        _vi = 0;
-        int ok = sqlite3_step( _stmt );
+        vi = 0;
+        int ok = sqlite3_step( stmt );
         if( !( ok == SQLITE_OK || ok == SQLITE_DONE || ok == SQLITE_ROW ) )
         {
-            printf( "Query::execute sqlite3_step failed. code = %d, errmsg = %s", ok, sqlite3_errmsg( _conn->_db ) );
+            printf( "Query::execute sqlite3_step failed. code = %d, errmsg = %s", ok, sqlite3_errmsg( conn->db ) );
             return false;
         }
         if( rr )
         {
-            DataReader dr( _stmt );
+            DataReader dr( stmt );
             while( ok == SQLITE_ROW )
             {
-                dr.reset();
+                dr.Reset();
                 rr( dr );
-                ok = sqlite3_step( _stmt );
+                ok = sqlite3_step( stmt );
             }
         }
-        ok = sqlite3_reset( _stmt );
+        ok = sqlite3_reset( stmt );
         if( ok == SQLITE_OK || ok == SQLITE_DONE ) return true;
         printf( "Query::execute sqlite3_reset failed. code = %d", ok );
         return false;
     }
 
-    bool Query::add( int v )
+    bool Query::Add( int v )
     {
-        return sqlite3_bind_int( _stmt, ++_vi, v ) == SQLITE_OK;
+        return sqlite3_bind_int( stmt, ++vi, v ) == SQLITE_OK;
     }
 
-    bool Query::add( long long v )
+    bool Query::Add( long long v )
     {
-        return sqlite3_bind_int64( _stmt, ++_vi, v ) == SQLITE_OK;
+        return sqlite3_bind_int64( stmt, ++vi, v ) == SQLITE_OK;
     }
 
-    bool Query::add( double v )
+    bool Query::Add( double v )
     {
-        return sqlite3_bind_double( _stmt, ++_vi, v ) == SQLITE_OK;
+        return sqlite3_bind_double( stmt, ++vi, v ) == SQLITE_OK;
     }
 
-    bool Query::add( std::string const & v )
+    bool Query::Add( std::string const& v )
     {
-        return sqlite3_bind_text( _stmt, ++_vi, v.c_str(), (int)v.size(), SQLITE_STATIC ) == SQLITE_OK;
+        return sqlite3_bind_text( stmt, ++vi, v.c_str(), (int)v.size(), SQLITE_STATIC ) == SQLITE_OK;
     }
 
-    bool Query::add( char const * s )
+    bool Query::Add( char const* s )
     {
-        if( s ) return sqlite3_bind_text( _stmt, ++_vi, s, (int)strlen( s ), SQLITE_STATIC ) == SQLITE_OK;
-        return sqlite3_bind_null( _stmt, ++_vi ) == SQLITE_OK;
+        if( s ) return sqlite3_bind_text( stmt, ++vi, s, (int)strlen( s ), SQLITE_STATIC ) == SQLITE_OK;
+        return sqlite3_bind_null( stmt, ++vi ) == SQLITE_OK;
     }
 
-    bool Query::add( unsigned char const * buf, size_t len )
+    bool Query::Add( unsigned char const* buf, size_t len )
     {
-        return sqlite3_bind_blob( _stmt, ++_vi, buf, (int)len, SQLITE_STATIC ) == SQLITE_OK;
+        return sqlite3_bind_blob( stmt, ++vi, buf, (int)len, SQLITE_STATIC ) == SQLITE_OK;
     }
 
 
@@ -283,148 +281,148 @@ namespace Sqlite
 
 
 
-    DataReader::DataReader( sqlite3_stmt * stmt )
-        : _stmt( stmt )
-        , _index( 0 )
+    DataReader::DataReader( sqlite3_stmt* stmt )
+        : stmt( stmt )
+        , currentIndex( 0 )
     {
     }
 
-    bool DataReader::readAt( int columnIndex, char const * & v )
+    bool DataReader::ReadAt( int columnIndex, char const*& v )
     {
-        if( sqlite3_column_type( _stmt, columnIndex ) == SQLITE_NULL ) return false;
-        v = (char const *)sqlite3_column_text( _stmt, columnIndex );
+        if( sqlite3_column_type( stmt, columnIndex ) == SQLITE_NULL ) return false;
+        v = (char const*)sqlite3_column_text( stmt, columnIndex );
         return true;
     }
 
-    bool DataReader::readAt( int columnIndex, std::string & v )
+    bool DataReader::ReadAt( int columnIndex, std::string& v )
     {
-        if( sqlite3_column_type( _stmt, columnIndex ) == SQLITE_NULL ) return false;
-        v.assign( (char const *)sqlite3_column_text( _stmt, columnIndex ) );
+        if( sqlite3_column_type( stmt, columnIndex ) == SQLITE_NULL ) return false;
+        v.assign( (char const*)sqlite3_column_text( stmt, columnIndex ) );
         return true;
     }
 
-    bool DataReader::readAt( int columnIndex, int & v )
+    bool DataReader::ReadAt( int columnIndex, int& v )
     {
-        if( sqlite3_column_type( _stmt, columnIndex ) == SQLITE_NULL ) return false;
-        v = sqlite3_column_int( _stmt, columnIndex );
+        if( sqlite3_column_type( stmt, columnIndex ) == SQLITE_NULL ) return false;
+        v = sqlite3_column_int( stmt, columnIndex );
         return true;
     }
 
-    bool DataReader::readAt( int columnIndex, long long & v )
+    bool DataReader::ReadAt( int columnIndex, long long& v )
     {
-        if( sqlite3_column_type( _stmt, columnIndex ) == SQLITE_NULL ) return false;
-        v = sqlite3_column_int64( _stmt, columnIndex );
+        if( sqlite3_column_type( stmt, columnIndex ) == SQLITE_NULL ) return false;
+        v = sqlite3_column_int64( stmt, columnIndex );
         return true;
     }
 
-    bool DataReader::readAt( int columnIndex, double & v )
+    bool DataReader::ReadAt( int columnIndex, double& v )
     {
-        if( sqlite3_column_type( _stmt, columnIndex ) == SQLITE_NULL ) return false;
-        v = sqlite3_column_double( _stmt, columnIndex );
+        if( sqlite3_column_type( stmt, columnIndex ) == SQLITE_NULL ) return false;
+        v = sqlite3_column_double( stmt, columnIndex );
         return true;
     }
 
-    char const * DataReader::readCString()
+    char const* DataReader::ReadCString()
     {
-        char const * v = nullptr;
-        readAt( _index++, v );
+        char const* v = nullptr;
+        ReadAt( currentIndex++, v );
         return v;
     }
 
-    std::string DataReader::readString()
+    std::string DataReader::ReadString()
     {
         std::string v;
-        readAt( _index++, v );
+        ReadAt( currentIndex++, v );
         return v;
     }
 
-    int DataReader::readInt32()
+    int DataReader::ReadInt32()
     {
         int v = 0;
-        readAt( _index++, v );
+        ReadAt( currentIndex++, v );
         return v;
     }
 
-    long long DataReader::readInt64()
+    long long DataReader::ReadInt64()
     {
         long long v = 0;
-        readAt( _index++, v );
+        ReadAt( currentIndex++, v );
         return v;
     }
 
-    double DataReader::readDouble()
+    double DataReader::ReadDouble()
     {
         double v = 0;
-        readAt( _index++, v );
+        ReadAt( currentIndex++, v );
         return v;
     }
 
 
-    char const * DataReader::readCStringAt( int columnIndex )
+    char const* DataReader::ReadCStringAt( int columnIndex )
     {
-        char const * v = nullptr;
-        readAt( columnIndex, v );
+        char const* v = nullptr;
+        ReadAt( columnIndex, v );
         return v;
     }
 
-    std::string DataReader::readStringAt( int columnIndex )
+    std::string DataReader::ReadStringAt( int columnIndex )
     {
         std::string v;
-        readAt( columnIndex, v );
+        ReadAt( columnIndex, v );
         return v;
     }
 
-    int DataReader::readInt32At( int columnIndex )
+    int DataReader::ReadInt32At( int columnIndex )
     {
         int v = 0;
-        readAt( columnIndex, v );
+        ReadAt( columnIndex, v );
         return v;
     }
 
-    long long DataReader::readInt64At( int columnIndex )
+    long long DataReader::ReadInt64At( int columnIndex )
     {
         long long v = 0;
-        readAt( columnIndex, v );
+        ReadAt( columnIndex, v );
         return v;
     }
 
-    double DataReader::readDoubleAt( int columnIndex )
+    double DataReader::ReadDoubleAt( int columnIndex )
     {
         double v = 0;
-        readAt( columnIndex, v );
+        ReadAt( columnIndex, v );
         return v;
     }
 
 
 
-    bool DataReader::read( char const * & v )
+    bool DataReader::Read( char const*& v )
     {
-        return readAt( _index++, v );
+        return ReadAt( currentIndex++, v );
     }
 
-    bool DataReader::read( std::string & v )
+    bool DataReader::Read( std::string & v )
     {
-        return readAt( _index++, v );
+        return ReadAt( currentIndex++, v );
     }
 
-    bool DataReader::read( int & v )
+    bool DataReader::Read( int& v )
     {
-        return readAt( _index++, v );
+        return ReadAt( currentIndex++, v );
     }
 
-    bool DataReader::read( long long & v )
+    bool DataReader::Read( long long& v )
     {
-        return readAt( _index++, v );
+        return ReadAt( currentIndex++, v );
     }
 
-    bool DataReader::read( double & v )
+    bool DataReader::Read( double& v )
     {
-        return readAt( _index++, v );
+        return ReadAt( currentIndex++, v );
     }
 
-    void DataReader::reset()
+    void DataReader::Reset()
     {
-        _index = 0;
+        currentIndex = 0;
     }
 
 

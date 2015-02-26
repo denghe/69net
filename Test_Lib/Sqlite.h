@@ -32,88 +32,88 @@ namespace Sqlite
         void assign( std::string const & fn, bool writeable = true );
 
         // open db, success return true
-        bool open();
+        bool Open();
 
         // clear stmts, close db
-        void close();
+        void Close();
 
-        // create stmt
-        Query * newQuery( std::string const & sql, int n = 0 );  // 可传入参数个数
+        // new stmt
+        Query* CreateQuery( std::string const & sql, int n = 0 );  // n: 参数个数, 不传将扫 ? 号个数
 
         // delete stmt
-        void deleteQuery( Query * q );
+        void ReleaseQuery( Query * q );
 
-        // clear stmts
-        virtual void clearQueries();
+        // delete all stmts
+        virtual void ReleaseQueries();
 
         // execute BEGIN TRANSACTION
-        void beginTransaction();
+        void BeginTransaction();
 
         // execute COMMIT TRANSACTION
-        void commit();
+        void Commit();
 
         // execute ROLLBACK TRANSACTION
-        void rollback();
+        void Rollback();
 
         // execute END TRANSACTION
-        void endTransaction();
+        void EndTransaction();
 
         // execute SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?
-        bool exists( std::string const & tn );
+        bool Exists( std::string const & tn );
 
         // simple exec
-        bool execute( std::string const & sql );
+        bool Execute( std::string const & sql );
 
 
         friend Query;
     protected:
-        sqlite3 *           _db;
-        std::string         _fn;
-        bool                _writeable;
-        std::vector<Query*> _qs;
-        Query*              _existsQuery;
+        sqlite3*            db;
+        std::string         fileName;
+        bool                writeable;
+        std::vector<Query*> queries;
+        Query*              qExists;
 
         // = delete
-        Connection( Connection const & other );
-        Connection & operator=( Connection const & other );
+        Connection( Connection const& other );
+        Connection & operator=( Connection const& other );
     };
 
     class DataReader
     {
     public:
-        DataReader( sqlite3_stmt * stmt );
+        DataReader( sqlite3_stmt* stmt );
 
         // fill mode, if value is null, return false
-        bool readAt( int columnIndex, char const * & v );
-        bool readAt( int columnIndex, std::string & v );
-        bool readAt( int columnIndex, int & v );
-        bool readAt( int columnIndex, long long & v );
-        bool readAt( int columnIndex, double & v );
+        bool ReadAt( int columnIndex, char const*& v );
+        bool ReadAt( int columnIndex, std::string& v );
+        bool ReadAt( int columnIndex, int& v );
+        bool ReadAt( int columnIndex, long long& v );
+        bool ReadAt( int columnIndex, double& v );
 
         // return mode
-        char const * readCStringAt( int columnIndex );
-        std::string readStringAt( int columnIndex );
-        int readInt32At( int columnIndex );
-        long long readInt64At( int columnIndex );
-        double readDoubleAt( int columnIndex );
+        char const* ReadCStringAt( int columnIndex );
+        std::string ReadStringAt( int columnIndex );
+        int ReadInt32At( int columnIndex );
+        long long ReadInt64At( int columnIndex );
+        double ReadDoubleAt( int columnIndex );
 
-        // _index++
-        bool read( char const * & v );
-        bool read( std::string & v );
-        bool read( int & v );
-        bool read( long long & v );
-        bool read( double & v );
+        // index++
+        bool Read( char const*& v );
+        bool Read( std::string& v );
+        bool Read( int& v );
+        bool Read( long long& v );
+        bool Read( double& v );
 
-        char const * readCString();
-        std::string readString();
-        int readInt32();
-        long long readInt64();
-        double readDouble();
-        void reset();
+        char const* ReadCString();
+        std::string ReadString();
+        int ReadInt32();
+        long long ReadInt64();
+        double ReadDouble();
+        void Reset();
 
     private:
-        sqlite3_stmt * _stmt;
-        int _index;
+        sqlite3_stmt* stmt;
+        int currentIndex;
     };
 
     struct Query
@@ -135,39 +135,38 @@ namespace Sqlite
             dr >> o.xxx >> o.eee >> o.fff ...
         } );
         */
-        bool execute( RowReaderType rr = nullptr );
+        bool Execute( RowReaderType rr = nullptr );
 
         // reset sql query
-        bool assign( std::string const & sql, int parameterCount = 0 );
+        bool Assign( std::string const & sql, int parameterCount = 0 );
 
         // push parameter values
         //
 
-        bool add( int v );
-        bool add( long long v );
-        bool add( double v );
-        bool add( std::string const & v );
-        bool add( char const * v );                 // nullptr = NULL
-        bool add( unsigned char const * buf, size_t len );
+        bool Add( int v );
+        bool Add( long long v );
+        bool Add( double v );
+        bool Add( std::string const& v );
+        bool Add( char const* v );                 // nullptr = NULL
+        bool Add( unsigned char const* buf, size_t len );
         template<typename T>
-        bool add( T const & v )
+        bool Add( T const& v )
         {
             static_assert( std::is_enum<T>::value, "must be enum type" );
-            if( sizeof( T ) <= 4 ) return add( (int)v );
-            else return add( (long long)v );
+            if( sizeof( T ) <= 4 ) return Add( (int)v );
+            else return Add( (long long)v );
         }
 
         friend Connection;
     private:
         Query();
-        Query( Connection * conn, std::string const & sql, int parameterCount = 0 );
+        Query( Connection* conn, std::string const& sql, int parameterCount = 0 );
         ~Query();
 
-        Connection *        _conn;
-        sqlite3_stmt *      _stmt;
-        std::string              _sql;
-        int                 _vc;    // value count
-        int                 _vi;    // value index
+        Connection*         conn;
+        sqlite3_stmt*       stmt;
+        int                 vc;    // value count
+        int                 vi;    // value index
 
         // = delete
         Query( Query const & other );
