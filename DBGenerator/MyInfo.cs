@@ -27,6 +27,7 @@ namespace DBGenerator
                 var _tables = result._tables;
 
                 result._schema = _cfg.database;
+                result._affectedRows = 0;
 
                 var q = new MyQuery( "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = ", MyParameterDataTypes.String );
                 q[ 0 ].Assign( _cfg.database );
