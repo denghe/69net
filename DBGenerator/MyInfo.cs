@@ -25,6 +25,7 @@ namespace DBGenerator
                 conn.Open();
                 var result = new DbQueryResult();
                 var _tables = result.tables;
+                result.affectedRows = 0;
 
                 result.schema = cfg.database;
 
