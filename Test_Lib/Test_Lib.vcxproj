@@ -36,6 +36,7 @@
     <Text Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Main.h" />
     <ClInclude Include="ME\AStar.h" />
     <ClInclude Include="ME\OpenCloseMap.h" />
     <ClInclude Include="ME\Map.h" />

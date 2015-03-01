@@ -31,5 +31,6 @@
     <ClInclude Include="Sqlite.h" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="sqlite3ext.h" />
+    <ClInclude Include="Main.h" />
   </ItemGroup>
 </Project>
