@@ -250,13 +250,13 @@ namespace MyHelper
             {
                 using( var r = cmd.ExecuteReader() )
                 {
-                    rtv._affectedRows = r.RecordsAffected;   // 这个值于多段查询来讲看上去是累计的结果
+                    rtv.affectedRows = r.RecordsAffected;   // 这个值于多段查询来讲看上去是累计的结果
 LabBegin:
                     var dt = NewDbTable( r.GetSchemaTable() );
                     if( dt != null )
                     {
                         FillDbTable( dt, r );
-                        rtv._tables.Add( dt );
+                        rtv.tables.Add( dt );
                     }
                     if( r.NextResult() ) goto LabBegin;
                 }
@@ -284,11 +284,11 @@ LabBegin:
 
                 if( ct.Name == "UInt64" && (int)row[ column_ColumnSize ] == 1 )
                 {
-                    dt.AddColumn( new DbColumn { _name = cn, _dataType = DbDataTypes.Boolean, _nullable = ca, _columnIndex = idx } );
+                    dt.AddColumn( new DbColumn { name = cn, dataType = DbDataTypes.Boolean, nullable = ca, columnIndex = idx } );
                 }
                 else
                 {
-                    dt.AddColumn( new DbColumn { _name = cn, _dataType = GetDbType( ct ), _nullable = ca, _columnIndex = idx } );
+                    dt.AddColumn( new DbColumn { name = cn, dataType = GetDbType( ct ), nullable = ca, columnIndex = idx } );
                 }
             }
             return dt;
@@ -302,7 +302,7 @@ LabBegin:
                 var dr = dt.AddRow();
                 for( int i = 0; i < r.FieldCount; ++i )
                 {
-                    if( dt._columns[ i ]._nullable && r.IsDBNull( i ) )
+                    if( dt.columns[ i ].nullable && r.IsDBNull( i ) )
                     {
                         dr[ i ].SetNull();
                     }
@@ -317,7 +317,7 @@ LabBegin:
         // 往 dr 填充 r 于 i 索引的值
         public static void FillValue( DbRow dr, MySqlDataReader r, int i )
         {
-            switch( dr._parent._columns[ i ]._dataType )
+            switch( dr.parent.columns[ i ].dataType )
             {
             case DbDataTypes.Boolean:
                 dr[ i ].Assign( r.GetBoolean( i ) ); break;
@@ -389,7 +389,7 @@ LabBegin:
         // 取 dr 中某字段的数据并返回
         public static object GetValue( DbColumn col, MySqlDataReader r, int idx )
         {
-            switch( col._dataType )
+            switch( col.dataType )
             {
             case DbDataTypes.Boolean:
                 return r.GetBoolean( idx );

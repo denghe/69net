@@ -64,7 +64,7 @@ namespace MyHelper
                 var p = ps[ i ];
                 if( _lastAppend == 'c' ) _content.Append( ", " );
                 else _lastAppend = 'c';
-                _content.Append( "`" + p._name + "`" );
+                _content.Append( "`" + p.name + "`" );
             }
             return this;
         }
@@ -79,13 +79,13 @@ namespace MyHelper
                 {
                     if( _lastAppend == 't' ) _content.Append( ", " );
                     else _lastAppend = 't';
-                    _content.Append( "`" + ( (DbTable)p )._name + "`" );
+                    _content.Append( "`" + ( (DbTable)p ).name + "`" );
                 }
                 else if( p is DbColumn )
                 {
                     if( _lastAppend == 'c' ) _content.Append( ", " );
                     else _lastAppend = 'c';
-                    _content.Append( "`" + ( (DbColumn)p )._parent._name + "`.`" + ( (DbColumn)p )._name + "`" );
+                    _content.Append( "`" + ( (DbColumn)p ).parent.name + "`.`" + ( (DbColumn)p ).name + "`" );
                 }
                 else if( p is MyParameterDataTypes )
                 {

@@ -6,8 +6,8 @@ namespace DBContainer
 {
     public class DbQueryResult
     {
-        public int              _affectedRows   = -1;
-        public List<DbTable>    _tables         = new List<DbTable>();
-        public string           _schema         = "";
+        public int              affectedRows    = -1;
+        public List<DbTable>    tables          = new List<DbTable>();
+        public string           schema          = "";
     }
 }

@@ -88,6 +88,7 @@
     <Compile Include="DbContainer\DbColumn.cs" />
     <Compile Include="DbContainer\DbQueryResult.cs" />
     <Compile Include="DbContainer\DbDataTypes.cs" />
+    <Compile Include="DbContainer\DbValue.cs" />
     <Compile Include="DbContainer\DbRow.cs" />
     <Compile Include="MyHelper\MyParameter.cs" />
     <Compile Include="MyHelper\MyParameterDataTypes.cs" />

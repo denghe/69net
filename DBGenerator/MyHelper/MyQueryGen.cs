@@ -11,7 +11,7 @@ namespace MyHelper
     {
         public static MyParameterDataTypes GetParmType( this DbColumn c )
         {
-            switch( c._dataType )
+            switch( c.dataType )
             {
             case DbDataTypes.Boolean: return MyParameterDataTypes.Boolean;
             case DbDataTypes.Int8: return MyParameterDataTypes.Numeric;
@@ -28,7 +28,7 @@ namespace MyHelper
             case DbDataTypes.String: return MyParameterDataTypes.String;
             case DbDataTypes.Bytes: return MyParameterDataTypes.Binary;
             default:
-                throw new Exception( "unknown data type: " + c._dataType );
+                throw new Exception( "unknown data type: " + c.dataType );
             }
         }
 
@@ -46,16 +46,16 @@ namespace MyHelper
         public static MyQuery Select( bool calcFoundRows, DbTable t, IEnumerable<DbColumn> selectCols = null, MyQuery sq = null, Nullable<KeyValuePair<int, int>> limit = null )
         {
             var q = new MyQuery( "select " + ( calcFoundRows ? "SQL_CALC_FOUND_ROWS " : "" ) );
-            if( selectCols == null ) selectCols = t._columns;
+            if( selectCols == null ) selectCols = t.columns;
             foreach( var c in selectCols ) q.Append( c );
             q.Append( " from ", t );
             if( sq == null )
             {
-                if( t._primaryKeys.Count > 0 )
+                if( t.primaryKeys.Count > 0 )
                 {
-                    for( int i = 0; i < t._primaryKeys.Count; ++i )
+                    for( int i = 0; i < t.primaryKeys.Count; ++i )
                     {
-                        q.Append( ( i == 0 ? " where " : " and " ), t._primaryKeys[ i ], " = ", t._primaryKeys[ i ].GetParmType() );
+                        q.Append( ( i == 0 ? " where " : " and " ), t.primaryKeys[ i ], " = ", t.primaryKeys[ i ].GetParmType() );
                     }
                 }
             }
@@ -83,10 +83,10 @@ namespace MyHelper
         {
             var q = new MyQuery( ( replace ? "replace" : "insert" ) + " into ", t, " ( " );
             var sq = new MyQuery( " ) values ( " );
-            if( insertCols == null ) insertCols = t._columns;
+            if( insertCols == null ) insertCols = t.columns;
             foreach( var c in insertCols )         // 跳过 AutoIncrease 字段（指定要插入哪些字段，将无视数据库默认值，除了自增不应该无视）
             {
-                if( c._readonly ) continue; //throw new Exception( "只读字段无法插入" );
+                if( c.isReadonly ) continue; //throw new Exception( "只读字段无法插入" );
                 q.AppendExceptTableName( c );
                 sq.Append( c.GetParmType() );
             }
@@ -94,23 +94,23 @@ namespace MyHelper
             q.Append( " )" );
             if( selectCols != null )
             {
-                if( t._primaryKeys.Count == 0 ) throw new Exception( "无主键的表无法于 insert 后 select 回插入行的数据" );
+                if( t.primaryKeys.Count == 0 ) throw new Exception( "无主键的表无法于 insert 后 select 回插入行的数据" );
 
                 q.Append( ";" );
-                if( t._primaryKeys.Count( a => a._autoIncrement ) == 0 )  // 如果主键中不含自增字段，可直接使用 Select 的拼接物来做读回
+                if( t.primaryKeys.Count( a => a.autoIncrement ) == 0 )  // 如果主键中不含自增字段，可直接使用 Select 的拼接物来做读回
                 {
                     q.Append( Select( false, t, selectCols ) );
                 }
                 else
                 {
                     sq.Clear();
-                    if( t._primaryKeys.Count > 0 )
+                    if( t.primaryKeys.Count > 0 )
                     {
-                        for( int i = 0; i < t._primaryKeys.Count; ++i )
+                        for( int i = 0; i < t.primaryKeys.Count; ++i )
                         {
-                            var pk = t._primaryKeys[ i ];
+                            var pk = t.primaryKeys[ i ];
                             sq.Append( ( i == 0 ? " where " : " and " ), pk, " = " );
-                            if( pk._autoIncrement ) sq.Append( "LAST_INSERT_ID()" );
+                            if( pk.autoIncrement ) sq.Append( "LAST_INSERT_ID()" );
                             else sq.Append( pk.GetParmType() );
                         }
                     }
@@ -131,10 +131,10 @@ namespace MyHelper
         public static MyQuery Inserts( bool replace, DbTable t, int rowCount, IEnumerable<DbColumn> insertCols = null )
         {
             var q = new MyQuery( ( replace ? "replace" : "insert" ) + " into ", t, " ( " );
-            if( insertCols == null ) insertCols = t._columns;
+            if( insertCols == null ) insertCols = t.columns;
             foreach( var c in insertCols )
             {
-                if( c._readonly ) continue;          // 跳过 AutoIncrease 字段
+                if( c.isReadonly ) continue;          // 跳过 AutoIncrease 字段
                 q.AppendExceptTableName( c );
             }
             q.Append( " ) values " );
@@ -144,7 +144,7 @@ namespace MyHelper
                 q.Append( "( " );
                 foreach( var c in insertCols )
                 {
-                    if( c._readonly ) continue;          // 跳过 AutoIncrease 字段
+                    if( c.isReadonly ) continue;          // 跳过 AutoIncrease 字段
                     q.Append( c.GetParmType() );
                 }
                 q.Append( " )" );
@@ -164,21 +164,21 @@ namespace MyHelper
         public static MyQuery Update( DbTable t, IEnumerable<DbColumn> updateCols = null, MyQuery sq = null )
         {
             var q = new MyQuery( "update ", t, " set " );
-            if( updateCols == null ) updateCols = t._columns;
+            if( updateCols == null ) updateCols = t.columns;
             int i = 0;
             foreach( var c in updateCols )     // 跳过 AutoIncrease 字段
             {
-                if( c._autoIncrement ) continue;
+                if( c.autoIncrement ) continue;
                 if( i++ > 0 ) q.Append( ", " );
                 q.Append( c, " = ", c.GetParmType() );
             }
             if( sq == null )
             {
-                if( t._primaryKeys.Count == 0 ) throw new Exception( "无主键表无法生成更新条件" );
+                if( t.primaryKeys.Count == 0 ) throw new Exception( "无主键表无法生成更新条件" );
                 i = 0;
-                for( ; i < t._primaryKeys.Count; ++i )
+                for( ; i < t.primaryKeys.Count; ++i )
                 {
-                    q.Append( ( i == 0 ? " where " : " and " ), t._primaryKeys[ i ], " = ", t._primaryKeys[ i ].GetParmType() );
+                    q.Append( ( i == 0 ? " where " : " and " ), t.primaryKeys[ i ], " = ", t.primaryKeys[ i ].GetParmType() );
                 }
             }
             else if( !sq._empty ) q.Append( sq );
@@ -196,11 +196,11 @@ namespace MyHelper
             var q = new MyQuery( "delete from ", t );
             if( sq == null )
             {
-                if( t._primaryKeys.Count == 0 ) throw new Exception( "无主键表无法生成删除条件" );
+                if( t.primaryKeys.Count == 0 ) throw new Exception( "无主键表无法生成删除条件" );
 
-                for( int i = 0; i < t._primaryKeys.Count; ++i )
+                for( int i = 0; i < t.primaryKeys.Count; ++i )
                 {
-                    q.Append( ( i == 0 ? " where " : " and " ), t._primaryKeys[ i ], " = ", t._primaryKeys[ i ].GetParmType() );
+                    q.Append( ( i == 0 ? " where " : " and " ), t.primaryKeys[ i ], " = ", t.primaryKeys[ i ].GetParmType() );
                 }
             }
             else if( !sq._empty ) q.Append( sq );
@@ -221,8 +221,8 @@ namespace MyHelper
         /// <returns></returns>
         public static MyQuery Count( DbTable t, DbColumn col = null, bool distinct = false, MyQuery sq = null )
         {
-            if( col != null && col._parent != t ) throw new Exception( "参数2: 字段 不属于 参数1: 表" );
-            var q = new MyQuery( "select count(" + ( distinct ? " distinct" : "" ) + @" " + ( col == null ? "*" : col._name ) + @" ) from ", t );
+            if( col != null && col.parent != t ) throw new Exception( "参数2: 字段 不属于 参数1: 表" );
+            var q = new MyQuery( "select count(" + ( distinct ? " distinct" : "" ) + @" " + ( col == null ? "*" : col.name ) + @" ) from ", t );
             if( sq != null ) q.Append( sq );
             return q;
         }
@@ -232,7 +232,7 @@ namespace MyHelper
         /// </summary>
         public static MyQuery Min( DbColumn col, MyQuery sq = null )
         {
-            var q = new MyQuery( "select min( ", col._name, " ) from ", col._parent );
+            var q = new MyQuery( "select min( ", col.name, " ) from ", col.parent );
             if( sq != null ) q.Append( sq );
             return q;
         }
@@ -241,7 +241,7 @@ namespace MyHelper
         /// </summary>
         public static MyQuery Max( DbColumn col, MyQuery sq = null )
         {
-            var q = new MyQuery( "select max( ", col._name, " ) from ", col._parent );
+            var q = new MyQuery( "select max( ", col.name, " ) from ", col.parent );
             if( sq != null ) q.Append( sq );
             return q;
         }
@@ -250,7 +250,7 @@ namespace MyHelper
         /// </summary>
         public static MyQuery Avg( DbColumn col, MyQuery sq = null )
         {
-            var q = new MyQuery( "select avg( ", col._name, " ) from ", col._parent );
+            var q = new MyQuery( "select avg( ", col.name, " ) from ", col.parent );
             if( sq != null ) q.Append( sq );
             return q;
         }

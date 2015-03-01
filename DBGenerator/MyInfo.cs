@@ -8,61 +8,61 @@ namespace DBGenerator
 {
     public static class MyInfo
     {
-        static Settings _cfg = Settings.Default;
-        static string _connStr = new MySqlConnectionStringBuilder
+        static Settings cfg = Settings.Default;
+        static string connStr = new MySqlConnectionStringBuilder
         {
-            Server = _cfg.server,
-            Port = _cfg.port,
-            UserID = _cfg.userId,
-            Password = _cfg.password,
-            Database = _cfg.database,
+            Server = cfg.server,
+            Port = cfg.port,
+            UserID = cfg.userId,
+            Password = cfg.password,
+            Database = cfg.database,
         }.ToString();
 
         public static DbQueryResult GetInfo()
         {
-            using( var conn = new MySqlConnection( _connStr ) )
+            using( var conn = new MySqlConnection( connStr ) )
             {
                 conn.Open();
                 var result = new DbQueryResult();
-                var _tables = result._tables;
+                var _tables = result.tables;
 
-                result._schema = _cfg.database;
+                result.schema = cfg.database;
 
                 var q = new MyQuery( "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = ", MyParameterDataTypes.String );
-                q[ 0 ].Assign( _cfg.database );
+                q[ 0 ].Assign( cfg.database );
                 var dt = MyUtils.ExecuteDbTable( conn, q.ToSql() );
 
-                for( int i = 0; i < dt._rowCount; ++i )
+                for( int i = 0; i < dt.rowCount; ++i )
                 {
                     var dr = dt[ i ];
                     _tables.Add( new DbTable
                     {
-                        _name = dr[ "TABLE_NAME" ].ToString(),
-                        _comment = dr[ "TABLE_COMMENT" ].ToString()
+                        name = dr[ "TABLE_NAME" ].ToString(),
+                        comment = dr[ "TABLE_COMMENT" ].ToString()
                     } );
                 }
 
                 q.Assign( "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ", MyParameterDataTypes.String, " AND TABLE_NAME = ", MyParameterDataTypes.String );
-                q[ 0 ].Assign( _cfg.database );
+                q[ 0 ].Assign( cfg.database );
                 foreach( var t in _tables )
                 {
-                    q[ 1 ].Assign( t._name );
+                    q[ 1 ].Assign( t.name );
                     dt = MyUtils.ExecuteDbTable( conn, q.ToSql() );
 
-                    for( int i = 0; i < dt._rowCount; ++i )
+                    for( int i = 0; i < dt.rowCount; ++i )
                     {
                         var dr = dt[ i ];
                         var c = new DbColumn
                         {
-                            _name = (string)dr[ "COLUMN_NAME" ].ToString(),
-                            _columnIndex = i,
-                            _dataType = GetDataType( (string)dr[ "DATA_TYPE" ], (string)dr[ "COLUMN_TYPE" ] ),
-                            _nullable = (string)dr[ "IS_NULLABLE" ] == "YES",
-                            _comment = (string)dr[ "COLUMN_COMMENT" ],
-                            _autoIncrement = (string)dr[ "EXTRA" ] == "auto_increment",
-                            _timestamp = (string)dr[ "DATA_TYPE" ] == "timestamp" && (string)dr[ "COLUMN_DEFAULT" ] == "CURRENT_TIMESTAMP",
-                            _primaryKey = (string)dr[ "COLUMN_KEY" ] == "PRI",
-                            _parent = t
+                            name = (string)dr[ "COLUMN_NAME" ].ToString(),
+                            columnIndex = i,
+                            dataType = GetDataType( (string)dr[ "DATA_TYPE" ], (string)dr[ "COLUMN_TYPE" ] ),
+                            nullable = (string)dr[ "IS_NULLABLE" ] == "YES",
+                            comment = (string)dr[ "COLUMN_COMMENT" ],
+                            autoIncrement = (string)dr[ "EXTRA" ] == "auto_increment",
+                            timestamp = (string)dr[ "DATA_TYPE" ] == "timestamp" && (string)dr[ "COLUMN_DEFAULT" ] == "CURRENT_TIMESTAMP",
+                            primaryKey = (string)dr[ "COLUMN_KEY" ] == "PRI",
+                            parent = t
                         };
                         t.AddColumn( c );
                     }
