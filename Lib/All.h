@@ -271,6 +271,9 @@ int _countof( T const ( &arr )[ N ] ) { return N; }
 #include <random>
 #include <memory>
 #include <new>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
 #include <type_traits>
 #include <array>
@@ -297,6 +300,8 @@ typedef uint64_t uint64;
 
 typedef unsigned long ulong;    // x64: vc 32bit, gcc 64bit
 typedef wchar_t wchar;          // win/ios: 16bit, linux, android 32bit
+
+typedef std::chrono::system_clock::time_point DateTime;
 
 
 
@@ -350,6 +355,13 @@ inline void aligned_free( void* p )
 #include "AutoIDPool.h"
 #include "Cor.h"
 #include "Buf.h"
+
+#include "DbDataTypes.h"
+#include "DbArray.h"
+#include "DbColumn.h"
+#include "DbValue.h"
+#include "DbRow.h"
+#include "DbTable.h"
 
 // ... more
 

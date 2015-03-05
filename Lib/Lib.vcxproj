@@ -30,6 +30,12 @@
     <ClInclude Include="Cor.h" />
     <ClInclude Include="Cout.h" />
     <ClInclude Include="Cout.hpp" />
+    <ClInclude Include="DbArray.h" />
+    <ClInclude Include="DbColumn.h" />
+    <ClInclude Include="DbDataTypes.h" />
+    <ClInclude Include="DbRow.h" />
+    <ClInclude Include="DbTable.h" />
+    <ClInclude Include="DbValue.h" />
     <ClInclude Include="Dict.h" />
     <ClInclude Include="Dict.hpp" />
     <ClInclude Include="Links.h" />
@@ -68,6 +74,10 @@
     <ClCompile Include="BufferUtils.cpp" />
     <ClCompile Include="BlockBuffer.cpp" />
     <ClCompile Include="ByteBuffer.cpp" />
+    <ClCompile Include="DbArray.cpp" />
+    <ClCompile Include="DbTable.cpp" />
+    <ClCompile Include="DbRow.cpp" />
+    <ClCompile Include="DbValue.cpp" />
     <ClCompile Include="Pool.cpp" />
     <ClCompile Include="ftoa.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

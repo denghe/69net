@@ -39,6 +39,12 @@
     <ClInclude Include="AutoIDPool.h" />
     <ClInclude Include="ByteBuffer.h" />
     <ClInclude Include="ByteBuffer.hpp" />
+    <ClInclude Include="DbDataTypes.h" />
+    <ClInclude Include="DbArray.h" />
+    <ClInclude Include="DbColumn.h" />
+    <ClInclude Include="DbValue.h" />
+    <ClInclude Include="DbRow.h" />
+    <ClInclude Include="DbTable.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
@@ -54,5 +60,9 @@
     <ClCompile Include="OldPool.cpp" />
     <ClCompile Include="Pool.cpp" />
     <ClCompile Include="ByteBuffer.cpp" />
+    <ClCompile Include="DbArray.cpp" />
+    <ClCompile Include="DbValue.cpp" />
+    <ClCompile Include="DbRow.cpp" />
+    <ClCompile Include="DbTable.cpp" />
   </ItemGroup>
 </Project>
