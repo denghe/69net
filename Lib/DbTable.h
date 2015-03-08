@@ -12,6 +12,25 @@ namespace xxx
         List<List<bool>> nullflags;
         int              rowCount = 0;
 
+
+        // todo: AddColumn Var Template Version
+
+        DbColumn& AddColumn( DbDataTypes dataType )
+        {
+            auto& col = columns.Emplace();
+            col.dataType = dataType;
+            nullflags.Emplace();
+            col.parent = this;
+            col.columnIndex = columns.Size();
+            columnDatas.Emplace( col.dataType );
+            return col;
+        }
+        DbColumn& AddColumn( String const& name, DbDataTypes dataType )
+        {
+            auto& col = AddColumn( dataType );
+            col.name = name;
+            return col;
+        }
         template<typename T>
         DbColumn& AddColumn( T&& c )
         {

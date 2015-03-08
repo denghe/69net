@@ -20,16 +20,10 @@ using namespace xxx;
 int main()
 {
     DbTable dt;
-    DbColumn c;
-    c.dataType = DbDataTypes::Boolean;
-    dt.AddColumn( c );
-    c.dataType = DbDataTypes::Int32;
-    dt.AddColumn( c );
-    c.dataType = DbDataTypes::String;
-    dt.AddColumn( c );
-    c.dataType = DbDataTypes::DateTime;
-    c.nullable = true;
-    dt.AddColumn( c );
+    dt.AddColumn( DbDataTypes::Boolean );
+    dt.AddColumn( DbDataTypes::Int32 );
+    dt.AddColumn( DbDataTypes::String );
+    dt.AddColumn( DbDataTypes::DateTime ).nullable = true;
 
     dt.AddRow( true, 1, "zzz", std::chrono::system_clock::now() );
     dt.AddRow( false, 234, "qwer", DbNull );
