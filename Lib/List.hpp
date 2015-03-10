@@ -14,7 +14,8 @@ namespace xxx
     template<typename T>
     List<T>::List( int capacity )
     {
-        assert( capacity > 0 );
+        assert( capacity >= 0 );
+        if( !capacity ) capacity = 8;
         auto byteLen = int( capacity * sizeof( T ) );
         if( byteLen < 64 ) byteLen = 64;
         else byteLen = (int)Round2n( byteLen );

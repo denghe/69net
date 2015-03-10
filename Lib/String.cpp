@@ -240,7 +240,7 @@ namespace xxx
 
     void String::Push( char c )
     {
-        if( dataLen == bufLen ) Reserve( dataLen + 1 );
+        if( dataLen + 1 == bufLen ) Reserve( dataLen + 1 );
         buf[ dataLen ] = c;
         buf[ dataLen + 1 ] = '\0';
         ++dataLen;
