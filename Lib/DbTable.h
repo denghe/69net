@@ -12,25 +12,9 @@ namespace xxx
         List<List<bool>> nullflags;
         int              rowCount = 0;
 
+        DbColumn& AddColumn( DbDataTypes dataType );
+        DbColumn& AddColumn( String const& name, DbDataTypes dataType );
 
-        // todo: AddColumn Var Template Version
-
-        DbColumn& AddColumn( DbDataTypes dataType )
-        {
-            auto& col = columns.Emplace();
-            col.dataType = dataType;
-            nullflags.Emplace();
-            col.parent = this;
-            col.columnIndex = columns.Size();
-            columnDatas.Emplace( col.dataType );
-            return col;
-        }
-        DbColumn& AddColumn( String const& name, DbDataTypes dataType )
-        {
-            auto& col = AddColumn( dataType );
-            col.name = name;
-            return col;
-        }
         template<typename T>
         DbColumn& AddColumn( T&& c )
         {
@@ -42,36 +26,33 @@ namespace xxx
             columnDatas.Emplace( col.dataType );
             return col;
         }
-        DbRow AddRow();
 
-        void ToString( String& output ) const
+        template<typename T>
+        void AddColumnsCore( T&& v )
         {
-            for( int j = 0; j < columns.Size(); ++j )
-            {
-                if( j ) output.Append( "\t" );
-                if( columns[ j ].name.Size() )
-                {
-                    output.Append( columns[ j ].name );
-                }
-                else
-                {
-                    output.Append( "col_", j );
-                }
-            }
-            output.Append( '\n' );
-            for( int i = 0; i < rowCount; ++i )
-            {
-                if( i ) output.Append( '\n' );
-                auto row = operator[]( i );
-                for( int j = 0; j < columns.Size(); ++j )
-                {
-                    if( j ) output.Append( ",\t" );
-                    row[ j ].ToString( output );
-                }
-            }
+            AddColumn( std::forward<T>( v ) );
+        }
+        template<typename T, typename ...TS>
+        void AddColumnsCore( T&& v, TS&& ...vs )
+        {
+            AddColumnsCore( std::forward<T>( v ) );
+            AddColumnsCore( std::forward<TS>( vs )... );
+        }
+        template<typename ...TS>
+        List<DbColumn>& AddColumns( TS&& ...vs )
+        {
+            AddColumnsCore( std::forward<TS>( vs )... );
+            return columns;
         }
 
+
+        DbRow AddRow();
+
+        void Dump( String& output ) const;
+
     private:
+        void AddRowCore( int& i, DbNull_t v );
+
         template<typename T>
         void AddRowCore( int& i, T&& v )
         {
@@ -81,17 +62,7 @@ namespace xxx
                 nullflags[ i ].Push( false );
             }
         }
-        void AddRowCore( int& i, DbNull_t v )
-        {
-#if __DEBUG
-            if( !columns[ i ].nullable )
-            {
-                throw std::exception( "column is not nullable" );
-            }
-#endif
-            columnDatas[ i ].Grow();
-            nullflags[ i ].Push( true );
-        }
+
         template<typename T, typename ...TS>
         void AddRowCore( int& i, T&& v, TS&& ...vs )
         {
@@ -99,6 +70,7 @@ namespace xxx
             ++i;
             AddRowCore( i, std::forward<TS>( vs )... );
         }
+
     public:
         template<typename ...TS>
         DbRow AddRow( TS&& ...vs )

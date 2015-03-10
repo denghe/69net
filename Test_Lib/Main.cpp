@@ -2,6 +2,9 @@
 
 // todo:
 
+// 库结构 -> 代码
+
+
 // 整理 Sqlite 类相关
 // 以类似 Sqlite 类的长相，提供 Mysql 的支持
 // 设计 Mysql 数据库操作层的长相
@@ -17,26 +20,19 @@
 
 
 using namespace xxx;
+using namespace std::chrono;
 int main()
 {
     DbTable dt;
-    dt.AddColumn( DbDataTypes::Boolean );
-    dt.AddColumn( DbDataTypes::Int32 );
-    dt.AddColumn( DbDataTypes::String );
+    dt.AddColumns(
+        DbDataTypes::Boolean,
+        DbDataTypes::Int32,
+        DbDataTypes::String );
     dt.AddColumn( DbDataTypes::DateTime ).nullable = true;
-
-    dt.AddRow( true, 1, "zzz", std::chrono::system_clock::now() );
+    dt.AddRow( true, 1, "zzz", system_clock::now() );
     dt.AddRow( false, 234, "qwer", DbNull );
 
-    String s;
-    dt.ToString( s );
-    CoutLine( s );
-    //dt.
-    //auto row = dt.AddRow();
-    //row[ c0 ].SetValue<bool>( true );
-    //row[ c1 ].SetValue<int>( 123 );
-    //row[ c2 ].SetValue<String>( "asdf" );
-
+    Dump( dt );
 
     return 0;
 }

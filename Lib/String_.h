@@ -139,6 +139,25 @@ namespace xxx
 
 
 
+        // 这部分还要再思考。理论上讲可以直接加 ToString 函数来做到。
+        //// 带 ToString( String& ) const 函数的都可以 被正常 Append
+        //HAS_FUNC( HasFunc_ToString, ToString, void ( T::* )( String& ) const );
+        //template<typename T>
+        //typename std::enable_if<HasFunc_ToString<T>::value, void>::type AppendCoreSwitch( String& s, T const& v )
+        //{
+        //    v.ToString( s );
+        //};
+        //template<typename T>
+        //typename std::enable_if<!HasFunc_ToString<T>::value, void>::type AppendCoreSwitch( String& s, T const& v )
+        //{
+        //    s.Append( v );
+        //};
+        //template<typename T>
+        //void AppendCore( String& s, T const& v )
+        //{
+        //    AppendCoreSwitch( *this, v );
+        //}
+
 
 
 

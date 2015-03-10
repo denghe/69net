@@ -9,14 +9,16 @@ namespace xxx
         int              columnIndex;
 
     private:
-        bool Nullable();
+        bool Nullable() const;
         List<bool>& GetNullflag();
+        List<bool> const& GetNullflag() const;
         DbArray& GetColumnData();
         DbArray const& GetColumnData() const;
         DbColumn& GetColumn();
+        DbColumn const& GetColumn() const;
 
     public:
-        bool IsNull();
+        bool IsNull() const;
         void SetNull();
 
         template<typename T>
@@ -69,7 +71,7 @@ namespace xxx
         inline explicit operator String() { return GetValue<String>(); }
 
 
-        void ToString( String& output );
+        void Dump( String& output ) const;
     };
 
 }

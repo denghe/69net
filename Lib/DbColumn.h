@@ -8,15 +8,15 @@ namespace xxx
 
     struct DbColumn
     {
-        DbTable*            parent = nullptr;  // 喇 DbTable 野割
-        int                 columnIndex = 0;        // 喇 DbTable 野割
         String              name = "";
-        bool                nullable = false;
         DbDataTypes         dataType = DbDataTypes::Unknown;
+        bool                nullable = false;
         bool                autoIncrement = false;
         bool                primaryKey = false;
         bool                timestamp = false;
         String              comment = "";
+        DbTable*            parent = nullptr;       // 喇 DbTable 野割
+        int                 columnIndex = 0;        // 喇 DbTable 野割
         inline bool isReadonly()
         {
             return autoIncrement | timestamp;

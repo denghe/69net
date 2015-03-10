@@ -2,12 +2,17 @@
 
 namespace xxx
 {
-    bool DbValue::Nullable()
+    bool DbValue::Nullable() const
     {
         return parent->parent->columns[ columnIndex ].nullable;
     }
 
     List<bool>& DbValue::GetNullflag()
+    {
+        return parent->parent->nullflags[ columnIndex ];
+    }
+
+    List<bool> const& DbValue::GetNullflag() const
     {
         return parent->parent->nullflags[ columnIndex ];
     }
@@ -27,7 +32,12 @@ namespace xxx
         return parent->parent->columns[ columnIndex ];
     }
 
-    bool DbValue::IsNull()
+    DbColumn const& DbValue::GetColumn() const
+    {
+        return parent->parent->columns[ columnIndex ];
+    }
+
+    bool DbValue::IsNull() const
     {
 #if __DEBUG
         if( !Nullable() ) return false;
@@ -48,7 +58,7 @@ namespace xxx
         return GetColumnData().GetBoolValue( parent->rowIndex );
     }
 
-    void DbValue::ToString( String& output )
+    void DbValue::Dump( String& output ) const
     {
         if( IsNull() )
         {
@@ -89,5 +99,6 @@ namespace xxx
             throw std::exception( "unknown data type" );
         }
     }
+
 }
 
