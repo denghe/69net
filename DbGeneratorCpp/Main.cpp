@@ -30,7 +30,6 @@ int main()
     {
         return -3;
     }
-
     String s;
     s.AppendFormat( R"(
 SELECT
@@ -48,20 +47,21 @@ WHERE
         return -4;
     }
 
-    auto res = mysql_store_result( pConn );
-    if( !res )
     {
-        return -5;
-    }
-    ScopeGuard sgResult( [ &] { mysql_free_result( res ); } );
+        auto res = mysql_store_result( pConn );
+        if( !res )
+        {
+            return -5;
+        }
+        ScopeGuard sgResult( [ &] { mysql_free_result( res ); } );
 
-    while( auto row = mysql_fetch_row( res ) )
-    {
-        auto& t = tables.Emplace();
-        t.name = row[ 0 ];
-        t.comment = row[ 1 ];
+        while( auto row = mysql_fetch_row( res ) )
+        {
+            auto& t = tables.Emplace();
+            t.name = row[ 0 ];
+            t.comment = row[ 1 ];
+        }
     }
-    sgResult.RunAndCancel();
 
     for( int i = 0; i < tables.Size(); ++i )
     {
@@ -82,26 +82,23 @@ FROM
 WHERE
     TABLE_SCHEMA = '{0}' AND TABLE_NAME = '{1}'
 )"
-, dbname, t.name );
+, dbname, t.name);
 
         int n = mysql_query( pConn, s.C_str() );
         if( n )
         {
             return -6;
         }
-        res = mysql_store_result( pConn );
+        auto res = mysql_store_result( pConn );
         if( !res )
         {
             return -7;
         }
-        sgResult.Set( [ &] { mysql_free_result( res ); } );
+        ScopeGuard sgResult_sub( [ &] { mysql_free_result( res ); } );
 
         // ...
-
-        sgResult.RunAndCancel();
     }
 
-    sgConn.RunAndCancel();
 
     //Dump( tables );
     Cout( tables[ 0 ].name );
