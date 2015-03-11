@@ -42,10 +42,7 @@ namespace xxx
 
 #ifdef __DEBUG
         template<typename T>
-        static bool IsType( DbDataTypes t )
-        {
-            return false;
-        }
+        static bool IsType( DbDataTypes t );
         template<> static bool IsType<bool>( DbDataTypes t ) { return t == DbDataTypes::Boolean; }
         template<> static bool IsType<int8>( DbDataTypes t ) { return t == DbDataTypes::Int8; }
         template<> static bool IsType<int16>( DbDataTypes t ) { return t == DbDataTypes::Int16; }
@@ -62,9 +59,8 @@ namespace xxx
         template<> static bool IsType<ByteBuffer>( DbDataTypes t ) { return t == DbDataTypes::Bytes; }
 #endif
 
-
         template<typename T>
-        void SetValue( int idx, T&& v )
+        void SetValue( int idx, T v )
         {
 #ifdef __DEBUG
             if( !IsType<T>( dataType ) )
@@ -72,12 +68,35 @@ namespace xxx
                 throw std::exception( "wrong data type!!" );
             }
 #endif
-            ( ( List<T>* )list )->Set( idx, std::forward<T>( v ) );
+            ( ( List<T>* )list )->Set( idx, v );
         }
 
-        // 注：bool 类型不行
+
+        inline void SetValue( int idx, String&& v )
+        {
+#ifdef __DEBUG
+            if( !IsType<String>( dataType ) )
+            {
+                throw std::exception( "wrong data type!!" );
+            }
+#endif
+            ( ( List<String>* )list )->Set( idx, std::move( v ) );
+        }
+
+        inline void SetValue( int idx, bool v )
+        {
+#ifdef __DEBUG
+            if( !IsType<bool>( dataType ) )
+            {
+                throw std::exception( "wrong data type!!" );
+            }
+#endif
+            ( ( List<bool>* )list )->Set( idx, v );
+        }
+
+
         template<typename T>
-        T const& GetValue( int idx ) const
+        T GetValue( int idx ) const
         {
 #ifdef __DEBUG
             if( !IsType<T>( dataType ) )
@@ -88,7 +107,6 @@ namespace xxx
             return ( ( List<T>* )list )->At( idx );
         }
 
-        bool GetBoolValue( int idx ) const;
 
         // 注：bool 类型不行
         template<typename T>
@@ -98,7 +116,6 @@ namespace xxx
             if( !IsType<T>( dataType ) )
             {
                 throw std::exception( "wrong data type!!" );
-                return false;
             }
 #endif
             return ( ( List<T>* )list )->At( idx );

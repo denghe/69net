@@ -62,16 +62,6 @@ namespace xxx
         }
     }
 
-    bool DbArray::GetBoolValue( int idx ) const
-    {
-#ifdef __DEBUG
-        if( !IsType<bool>( dataType ) )
-        {
-            throw std::exception( "wrong data type!!" );
-        }
-#endif
-        return ( ( List<bool>* )list )->At( idx );
-    }
 
     void DbArray::Destroy()
     {

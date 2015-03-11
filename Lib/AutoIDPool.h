@@ -64,8 +64,8 @@ namespace xxx
         }
         inline PoolPtr& operator=( T* const o )
         {
-            pointer = o.pointer;
-            versionNumber = o.versionNumber;
+            pointer = o;
+            if( o ) versionNumber = o->versionNumber;
             return *this;
         }
         inline PoolPtr& operator=( PoolPtr const& o )

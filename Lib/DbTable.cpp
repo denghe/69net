@@ -9,7 +9,7 @@ namespace xxx
         col.dataType = dataType;
         nullflags.Emplace();
         col.parent = this;
-        col.columnIndex = columns.Size();
+        col.columnIndex = columns.Size() - 1;
         columnDatas.Emplace( col.dataType );
         return col;
     }

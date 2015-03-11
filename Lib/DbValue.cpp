@@ -53,10 +53,6 @@ namespace xxx
         GetNullflag().SetTrue( parent->rowIndex );
     }
 
-    bool DbValue::GetBoolValue() const
-    {
-        return GetColumnData().GetBoolValue( parent->rowIndex );
-    }
 
     void DbValue::Dump( String& output ) const
     {
@@ -68,7 +64,7 @@ namespace xxx
         auto dt = GetColumn().dataType;
         switch( dt )
         {
-        case DbDataTypes::Boolean:  output.Append( GetBoolValue() ); break;
+        case DbDataTypes::Boolean:  output.Append( GetValue<bool>() ); break;
         case DbDataTypes::Int8:     output.Append( GetValue<int8>() ); break;
         case DbDataTypes::Int16:    output.Append( GetValue<int16>() ); break;
         case DbDataTypes::Int32:    output.Append( GetValue<int32>() ); break;

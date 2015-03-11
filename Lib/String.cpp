@@ -371,6 +371,14 @@ namespace xxx
         for( ; i < dataLen; ++i ) buf[ i ] |= 0x20;
     }
 
+
+    bool String::operator==( char const* o ) const
+    {
+        if( !o ) return false;
+        String tmp( o, true );
+        return operator==( tmp );
+    }
+
     bool String::operator==( String const& o ) const
     {
         if( this == &o ) return true;

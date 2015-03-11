@@ -56,6 +56,16 @@ namespace xxx
         bool operator<=( String const& o ) const;
         bool operator>=( String const& o ) const;
 
+        bool operator==( char const* o ) const;
+
+        template<size_t sLen>
+        bool operator==( char const( &s )[ sLen ] ) const
+        {
+            if( sLen != dataLen ) return false;
+            return memcmp( buf, s, dataLen ) == 0;
+        }
+
+
 
         void ToLower();
         void ToUpper();
