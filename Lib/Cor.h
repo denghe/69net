@@ -3,9 +3,9 @@
 
 namespace xxx
 {
-    // ×îÏÂÃæÓĞ½ÏÎªÈ«ÃæµÄÊ¾Àı
+    // æœ€ä¸‹é¢æœ‰è¾ƒä¸ºå…¨é¢çš„ç¤ºä¾‹
 
-    // ÏÂÃæÊÇ¿ÉÓÃÓÚ coroutine ±à³ÌµÄÊµÓÃºê
+    // ä¸‹é¢æ˜¯å¯ç”¨äº coroutine ç¼–ç¨‹çš„å®ç”¨å®
     // sample:
     /*
     bool FooState1::Process( int _ticks )
@@ -36,7 +36,7 @@ namespace xxx
 
     struct CorManager;
 
-    // coroutine »ùÀà, ÅÉÉúÀàĞëÊµÏÖ×Ô¼ºµÄ Init( .... ) ÒÔ¼° Process º¯Êı
+    // coroutine åŸºç±», æ´¾ç”Ÿç±»é¡»å®ç°è‡ªå·±çš„ Init( .... ) ä»¥åŠ Process å‡½æ•°
     // sample:
     /*
     struct Foo : public CorBase, public AutoIDAttacher<Foo, CorBase>
@@ -50,12 +50,12 @@ namespace xxx
     */
     struct CorBase
     {
-        CorBase() = default;                            // Ä¬ÈÏµÄ¹¹ÔìºÍÎö¹¹, ÅÉÉúÀàÍ¨³£²»ĞèÒªÊµÏÖ¡£³ı·ÇÓÃÓÚÉúÃüÖÜÆÚÄÚ²»±äµÄ³õÊ¼»¯´«Öµ
+        CorBase() = default;                            // é»˜è®¤çš„æ„é€ å’Œææ„, æ´¾ç”Ÿç±»é€šå¸¸ä¸éœ€è¦å®ç°ã€‚é™¤éç”¨äºç”Ÿå‘½å‘¨æœŸå†…ä¸å˜çš„åˆå§‹åŒ–ä¼ å€¼
         virtual ~CorBase() {}
 
-        // void Init( ... );                            // Ïàµ±ÓÚ new 
-        inline virtual void EnsureRefs() {}             // for manager compress( µ÷ËùÓĞ PoolPtr Àà³ÉÔ± Ensure() )
-        inline virtual void Destroy() {}                // Ïàµ±ÓÚ Îö¹¹
+        // void Init( ... );                            // ç›¸å½“äº new 
+        inline virtual void EnsureRefs() {}             // for manager compress( è°ƒæ‰€æœ‰ PoolPtr ç±»æˆå‘˜ Ensure() )
+        inline virtual void Destroy() {}                // ç›¸å½“äº ææ„
 
         int typeId = 0, versionNumber = 0;              // for pool
         int corIdx = 0, corLn = 0, corSleeps = 0;       // for coroutine
@@ -65,7 +65,7 @@ namespace xxx
     };
 
 
-    // ÓÃÓÚ×´Ì¬ÀàµÄĞ­³Ì»ùÀà( ÉÏÃæµÄ¼ò»¯°æ, ×Ô¼º´¦Àí Process )
+    // ç”¨äºçŠ¶æ€ç±»çš„åç¨‹åŸºç±»( ä¸Šé¢çš„ç®€åŒ–ç‰ˆ, è‡ªå·±å¤„ç† Process )
     struct CorStateBase
     {
         virtual ~CorStateBase() {}
@@ -76,7 +76,7 @@ namespace xxx
 
 
 
-    // coroutine ¶ÔÏó³Ø / ¹ÜÀíÆ÷
+    // coroutine å¯¹è±¡æ±  / ç®¡ç†å™¨
     // sample:
     /*
         CorManager<CorBase> cm;

@@ -58,7 +58,7 @@ HAS_FUNC
 #define __LE 1
 #endif
 
-/* OS - windows, ios, android, linux ÕâÀïÍêÈ«²»¿¼ÂÇ mac osx */
+/* OS - windows, ios, android, linux è¿™é‡Œå®Œå…¨ä¸è€ƒè™‘ mac osx */
 #ifdef _WIN32
 #define __WIN 1
 #define __WIN32 1
@@ -157,7 +157,7 @@ HAS_FUNC
 /*
 
 SFINAE check menber function exists
-sample£º
+sampleï¼š
 
 HAS_FUNC( FUNC_NAME_checker, T_MEMBER_FUNC_NAME, RETURN_TYPE ( T::* )( T_MEMBER_FUNC_PARMS ) const );
 

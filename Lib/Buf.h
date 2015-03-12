@@ -3,57 +3,57 @@
 
 namespace xxx
 {
-    // sample ÔÚ×îÏÂÃæ
+    // sample åœ¨æœ€ä¸‹é¢
 
     struct BufBase
     {
-        // bufs: µ½´ïÕâ¸ö ticks ½« Destroy
-        // dots: µ½´ïÕâ¸ö ticks ½« Process
+        // bufs: åˆ°è¾¾è¿™ä¸ª ticks å°† Destroy
+        // dots: åˆ°è¾¾è¿™ä¸ª ticks å°† Process
         int activeTicks = 0;
 
         int typeId = 0, versionNumber = 0;                  // for Pool
 
-        // Î»ÓÚÈİÆ÷ÖĞÊ±µÄÎ»ÖÃ for ËÙÉ¾
+        // ä½äºå®¹å™¨ä¸­æ—¶çš„ä½ç½® for é€Ÿåˆ 
         int bufIdx = 0;
 
-        // ²»Ó¦·ÅÖÃÂß¼­Ïà¹Ø´úÂë
+        // ä¸åº”æ”¾ç½®é€»è¾‘ç›¸å…³ä»£ç 
         BufBase() = default;
 
-        // ÉúÃüÖÜÆÚ -- ³õÊ¼»¯/ ´´½¨( ÅÉÉúÀà×Ô¼ºÊµÏÖ )
+        // ç”Ÿå‘½å‘¨æœŸ -- åˆå§‹åŒ–/ åˆ›å»º( æ´¾ç”Ÿç±»è‡ªå·±å®ç° )
         // void Init( ... );
 
-        // ÉúÃüÖÜÆÚ -- Ö´ĞĞ
+        // ç”Ÿå‘½å‘¨æœŸ -- æ‰§è¡Œ
         inline virtual bool Process( int ticks ) = 0;
 
-        // ÉúÃüÖÜÆÚ -- Ïú»Ù
+        // ç”Ÿå‘½å‘¨æœŸ -- é”€æ¯
         inline virtual void Destroy() {}
 
-        // ²»Ó¦·ÅÖÃÂß¼­Ïà¹Ø´úÂë
+        // ä¸åº”æ”¾ç½®é€»è¾‘ç›¸å…³ä»£ç 
         virtual ~BufBase() {};
     };
 
 
     struct BufContainer
     {
-        // Ö¸Ïò¹«ÓÃµÄ buf ³Ø
+        // æŒ‡å‘å…¬ç”¨çš„ buf æ± 
         AutoIDPool<BufBase>* pool;
 
-        // ´æ buf/dot ×îĞ¡µÄËÀÍö ticks for ·ÖÊ±¶ÎÅúÁ¿Ìø¹ı Process µÄ¹ı³Ì
+        // å­˜ buf/dot æœ€å°çš„æ­»äº¡ ticks for åˆ†æ—¶æ®µæ‰¹é‡è·³è¿‡ Process çš„è¿‡ç¨‹
         int bufActiveTicks;
         int dotActiveTicks;
 
-        // bufsDirty Îª true Ê±½« call ËüÔÙ ±éÀú´¦Àí bufs
+        // bufsDirty ä¸º true æ—¶å°† call å®ƒå† éå†å¤„ç† bufs
         std::function<void()> BeforeBufProcess;
 
-        // bufsDirty Îª true Ê± ±éÀú´¦Àí bufs ºó½« call Ëü
+        // bufsDirty ä¸º true æ—¶ éå†å¤„ç† bufs åå°† call å®ƒ
         std::function<void()> AfterBufProcess;
 
-        // ³ÖĞøÉúĞ§µÄ£¬ÒÔ¸Ä Properties buf ÏµÊıÎªÖ÷µÄ buf
-        // µ±³ÉÔ±¹¹³É( ÓĞÔöÉ¾ )±ä»¯( lazyDirty Îª true )Ê±£¬±éÀú´¦Àí
+        // æŒç»­ç”Ÿæ•ˆçš„ï¼Œä»¥æ”¹ Properties buf ç³»æ•°ä¸ºä¸»çš„ buf
+        // å½“æˆå‘˜æ„æˆ( æœ‰å¢åˆ  )å˜åŒ–( lazyDirty ä¸º true )æ—¶ï¼Œéå†å¤„ç†
         List<BufBase*> bufs;
 
-        // ÖÜÆÚĞÔÉúĞ§µÄ£¬ÒÔ call ËŞÖ÷º¯Êı( ĞÎ³ÉÖ¸ÁîÁ÷, Process ½áÊøºóÒÀ´ÎÖ´ĞĞ ) ÎªÖ÷µÄ( dot Ïµ )
-        // Ã¿´Î Process ¶¼±éÀú´¦Àí
+        // å‘¨æœŸæ€§ç”Ÿæ•ˆçš„ï¼Œä»¥ call å®¿ä¸»å‡½æ•°( å½¢æˆæŒ‡ä»¤æµ, Process ç»“æŸåä¾æ¬¡æ‰§è¡Œ ) ä¸ºä¸»çš„( dot ç³» )
+        // æ¯æ¬¡ Process éƒ½éå†å¤„ç†
         List<BufBase*> dots;
 
         BufContainer( AutoIDPool<BufBase>* pool )
@@ -73,7 +73,7 @@ namespace xxx
             auto rtv = pool->Alloc<T>( std::forward<PTS>( ps )... );
             rtv->bufIdx = bufs.Size();
             bufs.Push( rtv );
-            bufActiveTicks = 0;     // Ïàµ±ÓÚ±êÔà£¬È«ÃæÖØËã
+            bufActiveTicks = 0;     // ç›¸å½“äºæ ‡è„ï¼Œå…¨é¢é‡ç®—
             return rtv;
         }
 
@@ -95,7 +95,7 @@ namespace xxx
             bufs.Top()->bufIdx = buf->bufIdx;
             bufs.EraseFast( buf->bufIdx );
             pool->Free( buf );
-            bufActiveTicks = 0;     // Ïàµ±ÓÚ±êÔà£¬È«ÃæÖØËã
+            bufActiveTicks = 0;     // ç›¸å½“äºæ ‡è„ï¼Œå…¨é¢é‡ç®—
         }
 
         inline void DestroyDot( BufBase* buf )
@@ -107,7 +107,7 @@ namespace xxx
 
         inline void Clear()
         {
-            // ÓĞ¿ÉÄÜ´æÔÚÇå²»ÍêµÄÇé¿ö£¬±ÈÈç Destroy µÄÊ±ºòÓÖ´´½¨ÁËĞÂµÄ
+            // æœ‰å¯èƒ½å­˜åœ¨æ¸…ä¸å®Œçš„æƒ…å†µï¼Œæ¯”å¦‚ Destroy çš„æ—¶å€™åˆåˆ›å»ºäº†æ–°çš„
             while( bufs.Size() )
             {
                 for( int i = bufs.Size() - 1; i >= 0; --i )
@@ -144,7 +144,7 @@ namespace xxx
                     }
                     else
                     {
-                        // Ö»É¨³ö»¹»î×ÅµÄ buf µÄÏÂ´ÎÖ´ĞĞ ticks
+                        // åªæ‰«å‡ºè¿˜æ´»ç€çš„ buf çš„ä¸‹æ¬¡æ‰§è¡Œ ticks
                         if( o->activeTicks < bufActiveTicks )
                         {
                             bufActiveTicks = o->activeTicks;
@@ -163,9 +163,9 @@ namespace xxx
                 for( int i = dots.Size() - 1; i >= 0; --i )
                 {
                     auto& o = dots[ i ];
-                    // ÊÔÉ¨³öÏÂ´ÎÖ´ĞĞµÄ×îĞ¡¼ä¸ô
-                    // Èç¹û±»É±µôµÄ¸ÕºÃÊÇ×îĞ¡¼ä¸ô Ò²Ã»¹ØÏµ ²»ÑÏ¸ñ, µ½ÄÇ¸ö ticks »áÔÙÉ¨³öÕıÈ·Öµ
-                    // ¸Ğ¾õÂÔÈßÓà£¬µ«Ê¡µôÁË ´æ·Å »òÁ¢¼´É¨³ö ×îĞ¡¼ä¸ôµÄÏûºÄ
+                    // è¯•æ‰«å‡ºä¸‹æ¬¡æ‰§è¡Œçš„æœ€å°é—´éš”
+                    // å¦‚æœè¢«æ€æ‰çš„åˆšå¥½æ˜¯æœ€å°é—´éš” ä¹Ÿæ²¡å…³ç³» ä¸ä¸¥æ ¼, åˆ°é‚£ä¸ª ticks ä¼šå†æ‰«å‡ºæ­£ç¡®å€¼
+                    // æ„Ÿè§‰ç•¥å†—ä½™ï¼Œä½†çœæ‰äº† å­˜æ”¾ æˆ–ç«‹å³æ‰«å‡º æœ€å°é—´éš”çš„æ¶ˆè€—
                     if( o->activeTicks < dotActiveTicks )
                     {
                         dotActiveTicks = o->activeTicks;
@@ -178,9 +178,9 @@ namespace xxx
                         }
                     }
                 }
-                // µ±Ç°Ëã·¨£ºÃ¿µ½Ò»¸öÖ´ĞĞµã£¬¾ÍÓ²É¨£¬ÊÊºÏ¶ÔÏóÊı½ÏÉÙµÄÇé¿ö( ãĞÖµ²»Ã÷È·£¬²Â²âÊÇ 10 ¸öÒÔÄÚ )¡£
-                // Èç¹ûÔªËØÔÙ¶àµã£¬ÔòĞèÒªÔÚÉ¨µÄÍ¬Ê±½«ÏÂ´ÎÖ´ĞĞµãµÄ dot ·Å¶ÓÁĞÁË
-                // Èç¹ûÓÖ¼ÌĞøÉ¨µ½¸üĞ¡µÄ¼ä¸ô£¬Ôò½«ÏÈÇ°µÄ¶ÓÁĞÖĞµÄÔªËØÇåÁË£¬ÔÙ·ÅÈë¶ÓÁĞ
+                // å½“å‰ç®—æ³•ï¼šæ¯åˆ°ä¸€ä¸ªæ‰§è¡Œç‚¹ï¼Œå°±ç¡¬æ‰«ï¼Œé€‚åˆå¯¹è±¡æ•°è¾ƒå°‘çš„æƒ…å†µ( é˜ˆå€¼ä¸æ˜ç¡®ï¼ŒçŒœæµ‹æ˜¯ 10 ä¸ªä»¥å†… )ã€‚
+                // å¦‚æœå…ƒç´ å†å¤šç‚¹ï¼Œåˆ™éœ€è¦åœ¨æ‰«çš„åŒæ—¶å°†ä¸‹æ¬¡æ‰§è¡Œç‚¹çš„ dot æ”¾é˜Ÿåˆ—äº†
+                // å¦‚æœåˆç»§ç»­æ‰«åˆ°æ›´å°çš„é—´éš”ï¼Œåˆ™å°†å…ˆå‰çš„é˜Ÿåˆ—ä¸­çš„å…ƒç´ æ¸…äº†ï¼Œå†æ”¾å…¥é˜Ÿåˆ—
             }
 
             return true;
@@ -203,25 +203,25 @@ struct Dot_HP_Recover1PointPerTicks;
 
 struct Foo
 {
-    // Ô­ĞÍÏµÁĞ( ÀíÂÛÉÏ½²´æÔÚÒ»¸öÔ­ĞÍÀà )
-    int ori_maxHP;                  // Ô­Ê¼×î´óÑªÁ¿
-    float ori_maxHPMultiple;        // Ô­Ê¼×î´óÑªÁ¿°Ù·Ö±È buf Öµ
-    int ori_maxHPIncrease;          // Ô­Ê¼×î´óÑªÁ¿µãÊı buf Öµ
+    // åŸå‹ç³»åˆ—( ç†è®ºä¸Šè®²å­˜åœ¨ä¸€ä¸ªåŸå‹ç±» )
+    int ori_maxHP;                  // åŸå§‹æœ€å¤§è¡€é‡
+    float ori_maxHPMultiple;        // åŸå§‹æœ€å¤§è¡€é‡ç™¾åˆ†æ¯” buf å€¼
+    int ori_maxHPIncrease;          // åŸå§‹æœ€å¤§è¡€é‡ç‚¹æ•° buf å€¼
     int ori_HP;
 
-    // µ±Ç°ÏµÁĞ( Ô­Ê¼ÖµÓë buf ÏµÊı )
+    // å½“å‰ç³»åˆ—( åŸå§‹å€¼ä¸ buf ç³»æ•° )
     int cur_maxHP;
     float cur_maxHPMultiple;
     int cur_maxHPIncrease;
     int cur_HP;
 
-    // buf ºóÏµÁĞ
+    // buf åç³»åˆ—
     int buf_maxHP;
 
-    // Process ºóĞèÒªÒÀ´ÎÖ´ĞĞµÄº¯Êı, Ö´ĞĞÍêºó clear
+    // Process åéœ€è¦ä¾æ¬¡æ‰§è¡Œçš„å‡½æ•°, æ‰§è¡Œå®Œå clear
     List<std::function<void()>> funcs;
 
-    // ³õÊ¼»¯Ô­ĞÍÊı¾İ
+    // åˆå§‹åŒ–åŸå‹æ•°æ®
     inline void InitOriginal()
     {
         ori_maxHP = 100;
@@ -236,14 +236,14 @@ struct Foo
         cur_HP = ori_HP;
     }
 
-    // Îª¼ÆËã buf ¶øÖØÖÃ buf ÏµÊı
+    // ä¸ºè®¡ç®— buf è€Œé‡ç½® buf ç³»æ•°
     inline void ResetBufProperties()
     {
         cur_maxHPMultiple = ori_maxHPMultiple;
         cur_maxHPIncrease = ori_maxHPIncrease;
     }
 
-    // ËãÊÜ buf Ó°ÏìµÄÊôĞÔ( ÓÅÏÈ¼¶¹«Ê½ÔÚ´Ë )
+    // ç®—å— buf å½±å“çš„å±æ€§( ä¼˜å…ˆçº§å…¬å¼åœ¨æ­¤ )
     inline void CalcBufProperties()
     {
         buf_maxHP = int( ori_maxHP * cur_maxHPMultiple ) + cur_maxHPIncrease;
@@ -258,7 +258,7 @@ struct Foo
         funcs.Clear();
     }
 
-    // ×ÛºÏ³õÊ¼»¯
+    // ç»¼åˆåˆå§‹åŒ–
     inline void Init()
     {
         InitOriginal();
@@ -281,9 +281,9 @@ struct Foo
         // todo: foreach call funcs
     }
 
-    void CreateBuf_×î´óÑªÁ¿¼Ó10µã( int ticks, int life );
-    void CreateBuf_×î´óÑªÁ¿¼Ó°Ù·ÖÖ®100( int ticks, int life );
-    void CreateDot_ÑªÁ¿»Ö¸´1µã( int ticks, int cd );
+    void CreateBuf_æœ€å¤§è¡€é‡åŠ 10ç‚¹( int ticks, int life );
+    void CreateBuf_æœ€å¤§è¡€é‡åŠ ç™¾åˆ†ä¹‹100( int ticks, int life );
+    void CreateDot_è¡€é‡æ¢å¤1ç‚¹( int ticks, int cd );
 };
 
 struct Buf_MaxHP_Enhance100Percent : Buf<Buf_MaxHP_Enhance100Percent>
@@ -328,9 +328,9 @@ struct Dot_HP_Recover1PointPerTicks : Buf<Dot_HP_Recover1PointPerTicks>
     }
     inline bool Process( int ticks ) override
     {
-        // ÀíÂÛÉÏ½²£¬²»ÉÙ dot ĞèÒªÒÔÕâÖÖ·½Ê½À´ÔË×÷: owner->funcs.Push( .... )
-        // ¼´Ïàµ±ÓÚ°ÑÊÂÇé·Åµ½ Process Ö®ºóÀ´×ö. 
-        // Ö´ĞĞ¹ı³ÌÖĞ£¬ÓĞ¿ÉÄÜÄ¿±êÒÑËÀÉ¶µÄ£¬¶¼ĞèÒª×öÏàÓ¦´¦Àí
+        // ç†è®ºä¸Šè®²ï¼Œä¸å°‘ dot éœ€è¦ä»¥è¿™ç§æ–¹å¼æ¥è¿ä½œ: owner->funcs.Push( .... )
+        // å³ç›¸å½“äºæŠŠäº‹æƒ…æ”¾åˆ° Process ä¹‹åæ¥åš. 
+        // æ‰§è¡Œè¿‡ç¨‹ä¸­ï¼Œæœ‰å¯èƒ½ç›®æ ‡å·²æ­»å•¥çš„ï¼Œéƒ½éœ€è¦åšç›¸åº”å¤„ç†
         owner->cur_HP += 1;
         if( owner->cur_HP > owner->buf_maxHP )
         {
@@ -342,15 +342,15 @@ struct Dot_HP_Recover1PointPerTicks : Buf<Dot_HP_Recover1PointPerTicks>
     }
 };
 
-void Foo::CreateBuf_×î´óÑªÁ¿¼Ó10µã( int ticks, int life )
+void Foo::CreateBuf_æœ€å¤§è¡€é‡åŠ 10ç‚¹( int ticks, int life )
 {
     bc.CreateBuf<Buf_MaxHP_Enhance10Point>( this, ticks, life );
 }
-void Foo::CreateBuf_×î´óÑªÁ¿¼Ó°Ù·ÖÖ®100( int ticks, int life )
+void Foo::CreateBuf_æœ€å¤§è¡€é‡åŠ ç™¾åˆ†ä¹‹100( int ticks, int life )
 {
     bc.CreateBuf<Buf_MaxHP_Enhance100Percent>( this, ticks, life );
 }
-void Foo::CreateDot_ÑªÁ¿»Ö¸´1µã( int ticks, int cd )
+void Foo::CreateDot_è¡€é‡æ¢å¤1ç‚¹( int ticks, int cd )
 {
     bc.CreateDot<Dot_HP_Recover1PointPerTicks>( this, ticks, cd );
 }
@@ -366,20 +366,20 @@ int main()
     {
         Foo foo( FooBufPool::GetInstance() );
 
-        // ·ÂÒ»¸öÖ¡²½½øÖµ
+        // ä»¿ä¸€ä¸ªå¸§æ­¥è¿›å€¼
         int ticks = 123;
 
-        // À´¼¸¸ö buf( ¼Ó ÑªÉÏÏŞ °Ù·Ö±ÈºÍµãÊı, ´æ»îÊ±³¤²»Í¬ )
-        foo.CreateBuf_×î´óÑªÁ¿¼Ó10µã( ticks, 10 );
-        foo.CreateBuf_×î´óÑªÁ¿¼Ó°Ù·ÖÖ®100( ticks, 9 );
-        foo.CreateBuf_×î´óÑªÁ¿¼Ó10µã( ticks, 8 );
-        foo.CreateBuf_×î´óÑªÁ¿¼Ó°Ù·ÖÖ®100( ticks, 7 );
-        foo.CreateBuf_×î´óÑªÁ¿¼Ó10µã( ticks, 6 );
+        // æ¥å‡ ä¸ª buf( åŠ  è¡€ä¸Šé™ ç™¾åˆ†æ¯”å’Œç‚¹æ•°, å­˜æ´»æ—¶é•¿ä¸åŒ )
+        foo.CreateBuf_æœ€å¤§è¡€é‡åŠ 10ç‚¹( ticks, 10 );
+        foo.CreateBuf_æœ€å¤§è¡€é‡åŠ ç™¾åˆ†ä¹‹100( ticks, 9 );
+        foo.CreateBuf_æœ€å¤§è¡€é‡åŠ 10ç‚¹( ticks, 8 );
+        foo.CreateBuf_æœ€å¤§è¡€é‡åŠ ç™¾åˆ†ä¹‹100( ticks, 7 );
+        foo.CreateBuf_æœ€å¤§è¡€é‡åŠ 10ç‚¹( ticks, 6 );
 
-        // À´¼¸¸ö dot( ²»¶ÏµÄ»Ö¸´Ñª, Ã¿Ìø¼ä¸ôÊ±³¤²»Í¬ )
-        foo.CreateDot_ÑªÁ¿»Ö¸´1µã( ticks, 1 );
-        foo.CreateDot_ÑªÁ¿»Ö¸´1µã( ticks, 2 );
-        foo.CreateDot_ÑªÁ¿»Ö¸´1µã( ticks, 3 );
+        // æ¥å‡ ä¸ª dot( ä¸æ–­çš„æ¢å¤è¡€, æ¯è·³é—´éš”æ—¶é•¿ä¸åŒ )
+        foo.CreateDot_è¡€é‡æ¢å¤1ç‚¹( ticks, 1 );
+        foo.CreateDot_è¡€é‡æ¢å¤1ç‚¹( ticks, 2 );
+        foo.CreateDot_è¡€é‡æ¢å¤1ç‚¹( ticks, 3 );
 
         for( int i = 0; i < 11; ++i )
         {

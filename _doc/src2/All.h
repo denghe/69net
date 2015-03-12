@@ -1,7 +1,7 @@
 #ifndef __ALL_H__
 #define __ALL_H__
 
-// ÕâÊÇÔ¤±àÒëÍ·
+// è¿™æ˜¯é¢„ç¼–è¯‘å¤´
 
 #include "cocos2d.h"
 #include <algorithm>

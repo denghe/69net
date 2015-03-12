@@ -35,7 +35,7 @@ bool Bullet::Update()
     node.dirty = true;
     cditem->Update( { G::scene->size.w + pos.x, G::scene->size.h + pos.y } );
 
-    // Èç¹ûÓĞÅöµ½ÈÎÒâ¹Ö
+    // å¦‚æœæœ‰ç¢°åˆ°ä»»æ„æ€ª
     if( auto tar = cditem->GetCollisionItem() )
     {
         auto m = (Monster*)tar->userData;

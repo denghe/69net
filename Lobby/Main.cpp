@@ -1,15 +1,15 @@
 #include "Lib/All.h"
 
 
-// �̰߳�ȫ�涨���ڴ��( �ޱ�����һ�������꣬��ѭ��������ѷ�����ĵ�Ԫ ��
-// �ڴ���������ڴ�ų��ȣ����䡢�ͷ�ָ�룬ָ�����飬ǰ������������
-// ֱ�ӽ� SM �ڴ�ָ��Ӳת��������. ��������� init()
+// 线程安全版定长内存池( 无保护，一旦分配完，将循环分配出已分配过的单元 ）
+// 内存最后面用于存放长度，分配、释放指针，指针数组，前面是数据区块
+// 直接将 SM 内存指针硬转成类来用. 创建者须调 init()
 template<int _itemSize, int _capacity>
 class SMPool
 {
     char _buf[ _capacity ][ _itemSize ];
-    int _os[ _capacity ];       // o �� offset
-    std::atomic<uint> _ao, _fo; // alloc �ں� free ��ǰ
+    int _os[ _capacity ];       // o 即 offset
+    std::atomic<uint> _ao, _fo; // alloc 在后， free 在前
 
 public:
     void init()

@@ -36,7 +36,7 @@ namespace xxx
     //T* Singleton<T>::instance = nullptr;
 
 
-    // ÕâÊÇ»áÔÚ³ÌĞòÍË³öÊ±×Ô¶¯Îö¹¹µÄÊµÏÖ( ÓÃ unique_ptr °üÁËÒ»ÏÂ instance )
+    // è¿™æ˜¯ä¼šåœ¨ç¨‹åºé€€å‡ºæ—¶è‡ªåŠ¨ææ„çš„å®ç°( ç”¨ unique_ptr åŒ…äº†ä¸€ä¸‹ instance )
     template<typename T>
     struct Singleton
     {
@@ -61,7 +61,7 @@ namespace xxx
         static void InitInstance( PTS&& ... ps )
         {
             assert( GetInstanceCore() == nullptr );
-            GetInstanceCore().reset( new T( std::forward<PTS>( ps )... ) ); // todo: new T{} ÕâÑùĞ´¿É¼æÈİ³õÊ¼»¯ÁĞ±í ?
+            GetInstanceCore().reset( new T( std::forward<PTS>( ps )... ) ); // todo: new T{} è¿™æ ·å†™å¯å…¼å®¹åˆå§‹åŒ–åˆ—è¡¨ ?
         }
         static void DestroyInstance()
         {

@@ -2,7 +2,7 @@
 #define __XYA_H__
 
 
-// Ìî³ä²é±íÓÃ½á¹¹
+// å¡«å……æŸ¥è¡¨ç”¨ç»“æ„
 struct Xya
 {
     signed char x;

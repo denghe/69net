@@ -1,12 +1,12 @@
 #include "Precompile.h"
 
 /*
-Éè¼Æ³ß´ç£º    768 * 1024
-¸ñ×Ó»®·Ö£º    24 * 32
-Ã¿¸ñ³ß´ç£º    32 * 32
-Ï¸°û³ß´ç£º    16 * 16
+è®¾è®¡å°ºå¯¸ï¼š    768 * 1024
+æ ¼å­åˆ’åˆ†ï¼š    24 * 32
+æ¯æ ¼å°ºå¯¸ï¼š    32 * 32
+ç»†èƒå°ºå¯¸ï¼š    16 * 16
 
-// Êó±ê°´×¡²»·Å£¬Í¶·Å¹Ö½ø³¡¡£Èç¹û¹Ö¼äÖØµş£¬»á×ÔĞĞ×ß¿ª¡£³¬³öÆÁµÄÉ±
+// é¼ æ ‡æŒ‰ä½ä¸æ”¾ï¼ŒæŠ•æ”¾æ€ªè¿›åœºã€‚å¦‚æœæ€ªé—´é‡å ï¼Œä¼šè‡ªè¡Œèµ°å¼€ã€‚è¶…å‡ºå±çš„æ€
 
 */
 
@@ -73,7 +73,7 @@ bool Monster4::Update()
     if( pos.x < -size.w || pos.x > G::scene->size.w + size.w
         || pos.y < -size.h || pos.y > G::scene->size.h + size.h ) return false;
 
-    // ÕÒ¸½½üµÄ¹Ö£¬Ô¶ÀëËü
+    // æ‰¾é™„è¿‘çš„æ€ªï¼Œè¿œç¦»å®ƒ
     if( auto o = cditem->GetCollisionItem() )
     {
         auto other = (Monster4*)o->userData;
@@ -162,7 +162,7 @@ Game4::Game4()
     G::window->Init( L"Game4", dw, dh );
     //G::window->setVsync( false );
 
-    cdgrid.Init( { dw * 3, dh * 3 }, rowCount * 3, columnCount * 3 );  // 3*3 Çø¿é£¬ÕıÖĞ¼äÎªÆÁÄ»Ó³Éä
+    cdgrid.Init( { dw * 3, dh * 3 }, rowCount * 3, columnCount * 3 );  // 3*3 åŒºå—ï¼Œæ­£ä¸­é—´ä¸ºå±å¹•æ˜ å°„
 }
 
 static Node* createPlane()
@@ -196,14 +196,14 @@ void Game4::Update()
     input.touchEvents.Clear();
     if( input.touching )
     {
-        // ²úÉú¹Ö
+        // äº§ç”Ÿæ€ª
         for( int i = 0; i < 1000; ++i )
         {
             auto monster = Monster4::Create( &scene, &cdgrid, input.touchPos );
         }
     }
 
-    // ¹ÖÒÆ¶¯
+    // æ€ªç§»åŠ¨
     for( int i = Monster4::objs.Size() - 1; i >= 0; --i )
     {
         auto& o = Monster4::objs[ i ];
@@ -213,7 +213,7 @@ void Game4::Update()
         }
     }
 
-    // Ã¿¼¸ÃëÏÔÊ¾Ò»´Î×ÜµÄ¹ÖÊı
+    // æ¯å‡ ç§’æ˜¾ç¤ºä¸€æ¬¡æ€»çš„æ€ªæ•°
     static int counter = 0;
     if( ++counter >= 60 )
     {

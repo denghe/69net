@@ -5,26 +5,26 @@ using namespace xxx;
 #include <enet/enet.h>
 int test()
 {
-    // Õâ¸ö±ØĞëÓÃÇ°ÓÃºóÕûÌå³õÊ¼»¯ºÍ·´³õÊ¼»¯£¬·Åµ½Õâ¸öº¯ÊıÕâÀï²»Ò»¶¨ºÏÊÊ£¬ÀíÂÛÉÏ½²Ó¦¸ÃÊÇÔÚ³ÌĞòµÄ¿ªÊ¼ºÍ½áÊøÊ±·Ö±ğ¸ãÒ»°Ñ
+    // è¿™ä¸ªå¿…é¡»ç”¨å‰ç”¨åæ•´ä½“åˆå§‹åŒ–å’Œååˆå§‹åŒ–ï¼Œæ”¾åˆ°è¿™ä¸ªå‡½æ•°è¿™é‡Œä¸ä¸€å®šåˆé€‚ï¼Œç†è®ºä¸Šè®²åº”è¯¥æ˜¯åœ¨ç¨‹åºçš„å¼€å§‹å’Œç»“æŸæ—¶åˆ†åˆ«æä¸€æŠŠ
     if( auto rtv = enet_initialize() ) return rtv;
     ScopeGuard sg_enet_deinitialize( [] 
     {
         enet_deinitialize();
     } );
 
-    // ´´½¨Ò»¸öµØÖ·¶ÔÏó, ´òËãÔÚËùÓĞ IP µÄ 1234 ÉÏ½ÓÊÜÊı¾İ
+    // åˆ›å»ºä¸€ä¸ªåœ°å€å¯¹è±¡, æ‰“ç®—åœ¨æ‰€æœ‰ IP çš„ 1234 ä¸Šæ¥å—æ•°æ®
     ENetAddress address = { ENET_HOST_ANY, 1234 };
-    // ¿ÉÒÔÓÃÏÂÃæÕâĞĞ¾ßÌåµÄÖ¸¶¨ IP
+    // å¯ä»¥ç”¨ä¸‹é¢è¿™è¡Œå…·ä½“çš„æŒ‡å®š IP
     // enet_address_set_host( &address, "x.x.x.x" );
 
-    // ´´½¨ host ¶ÔÏó( ³öº¯ÊıÊ±Îö¹¹ )
+    // åˆ›å»º host å¯¹è±¡( å‡ºå‡½æ•°æ—¶ææ„ )
     auto server = enet_host_create( &address, 64, 2, 0, 0 );    // num of clients, num of channels, incoming bandwidth, outgoing bandwidth
     if( !server ) return -1;
     ScopeGuard sg_server( [ = ] { enet_host_destroy( server ); } );
 
-    // À´¸ö counter ÓÃÓÚÏÔÊ¾ ÒÔÌåÏÖ Ñ­»·ËÙ¶È
+    // æ¥ä¸ª counter ç”¨äºæ˜¾ç¤º ä»¥ä½“ç° å¾ªç¯é€Ÿåº¦
     size_t counter = 0;
-    // timer Ïà¹Ø
+    // timer ç›¸å…³
     std::chrono::milliseconds refreshDuration( 200 );
     std::chrono::seconds durationSec1( 1 );
     std::chrono::time_point<std::chrono::system_clock> lastTime;
@@ -74,10 +74,10 @@ int test()
             }
         }
         //else std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
-        //++counter;    // counter Ö±½ÓÓÃÓÚ¼ÓÊÕµ½µÄ×Ö½ÚÊı
+        //++counter;    // counter ç›´æ¥ç”¨äºåŠ æ”¶åˆ°çš„å­—èŠ‚æ•°
 
 
-        // µÍÆµÊä³ö now ÃâµÃ¿ØÖÆÌ¨Êä³öºÄ cpu Ì«¶à
+        // ä½é¢‘è¾“å‡º now å…å¾—æ§åˆ¶å°è¾“å‡ºè€— cpu å¤ªå¤š
         auto now = std::chrono::system_clock::now();
         if( now - lastTime >= refreshDuration )
         {

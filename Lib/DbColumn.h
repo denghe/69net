@@ -15,8 +15,8 @@ namespace xxx
         bool                primaryKey = false;
         bool                timestamp = false;
         String              comment = "";
-        DbTable*            parent = nullptr;       // ÓÉ DbTable Ìî³ä
-        int                 columnIndex = 0;        // ÓÉ DbTable Ìî³ä
+        DbTable*            parent = nullptr;       // ç”± DbTable å¡«å……
+        int                 columnIndex = 0;        // ç”± DbTable å¡«å……
         inline bool isReadonly()
         {
             return autoIncrement | timestamp;

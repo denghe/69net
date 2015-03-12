@@ -64,30 +64,24 @@ namespace UtilCodeGb2312ToUtf8
                     || extName == ".hpp"
                     || extName == ".inc" )
                 {
-                    ++n;
-                    Console.WriteLine( "reading file: " + fn );
                     var bytes = File.ReadAllBytes( fn );
                     if( !IsUtf8( bytes ) )
                     {
+                        Console.WriteLine( "convert to utf8..." + fn );
+                        ++n;
                         var txt = gb2312encoding.GetString( bytes );
                         bytes = Encoding.UTF8.GetBytes( txt );
-                        Console.WriteLine( "convert to utf8..." + fn );
                         File.WriteAllBytes( fn, bytes );
                     }
-                    else
-                    {
-                        Console.WriteLine( "skiped...." );
-                    }
-
                 }
             }
             if( n > 0 )
             {
-                Console.WriteLine( "total handled file count: " + n );
+                Console.WriteLine( "count: " + n );
             }
             else
             {
-                Console.WriteLine( "no cpp source code file found." );
+                Console.WriteLine( "no gb2312 code file found." );
             }
 
             Console.WriteLine( "press any to continue..." );

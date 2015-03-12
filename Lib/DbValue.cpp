@@ -78,7 +78,7 @@ namespace xxx
         case DbDataTypes::String:   output.Append( GetValue<String>() ); break;
         case DbDataTypes::DateTime:
         {
-            // todo: ÓÅ»¯
+            // todo: ä¼˜åŒ–
             std::ostringstream ss;
             auto t = std::chrono::system_clock::to_time_t( GetValue<DateTime>() );
 #if __WIN

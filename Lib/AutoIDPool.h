@@ -3,7 +3,7 @@
 
 namespace xxx
 {
-    // ×÷Îª¾²Ì¬³ÉÔ±ÖÃÈë class, Ìá¹©×ÔÔö type id µÄÉú³É¹¦ÄÜ
+    // ä½œä¸ºé™æ€æˆå‘˜ç½®å…¥ class, æä¾›è‡ªå¢ type id çš„ç”ŸæˆåŠŸèƒ½
     template<typename T>
     struct AutoID
     {
@@ -17,7 +17,7 @@ namespace xxx
 
 
 
-    // ÎªÀà¸½¼Ó×ÔÔöID
+    // ä¸ºç±»é™„åŠ è‡ªå¢ID
     // sample:
     /*
     struct Foo : public XxxBase, public AutoIDAttacher<Foo, XxxBase>
@@ -38,7 +38,7 @@ namespace xxx
 
 
 
-    // ³Ø¶ÔÏóµÄ ´ø°æ±¾¿ØÖÆĞèÇóµÄÖ¸Õë ÈİÆ÷
+    // æ± å¯¹è±¡çš„ å¸¦ç‰ˆæœ¬æ§åˆ¶éœ€æ±‚çš„æŒ‡é’ˆ å®¹å™¨
     // sample: 
     /*
     PoolPtr<Foo> foo;
@@ -74,7 +74,7 @@ namespace xxx
             versionNumber = o.versionNumber;
             return *this;
         }
-        // Ã»ÓĞÊı¾İ¹ÜÀíĞèÇó, ²»ĞèÒªÊµÏÖÓÒÖµ°æ¸´ÖÆ¹¹Ôì
+        // æ²¡æœ‰æ•°æ®ç®¡ç†éœ€æ±‚, ä¸éœ€è¦å®ç°å³å€¼ç‰ˆå¤åˆ¶æ„é€ 
 
         inline void Ensure()
         {
@@ -94,8 +94,8 @@ namespace xxx
     };
 
 
-    // ¶ÔÏó³Ø£¬Ìá¹©´´½¨ / ·ÖÅä / »ØÊÕ, °æ±¾¹ÜÀí
-    // T µÄ½Ó¿ÚĞèÇó²Î¿´ Buf.h
+    // å¯¹è±¡æ± ï¼Œæä¾›åˆ›å»º / åˆ†é… / å›æ”¶, ç‰ˆæœ¬ç®¡ç†
+    // T çš„æ¥å£éœ€æ±‚å‚çœ‹ Buf.h
     template<typename T>
     struct AutoIDPool
     {

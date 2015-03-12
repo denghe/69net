@@ -332,7 +332,7 @@ namespace xxx
     T& List<T>::EmplaceAt( int idx, PTS&& ...ps )
     {
         assert( idx >= 0 && idx <= size );
-        Reserve( size + 1 );                       // todo: 理论上讲这句可以展开，于扩容时直接将 Insert 的元素的内存位置留出来
+        Reserve( size + 1 );                       // todo: 鐞嗚涓婅杩欏彞鍙互灞曞紑锛屼簬鎵╁鏃剁洿鎺ュ皢 Insert 鐨勫厓绱犵殑鍐呭瓨浣嶇疆鐣欏嚭鏉?
 
         if( std::is_pod<T>::value
             || std::is_base_of<Memmoveable, T>::value )

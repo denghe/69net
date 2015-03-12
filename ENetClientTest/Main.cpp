@@ -68,7 +68,7 @@ int test()
         //gets( message );
         //if( strlen( message ) > 0 )
         //{
-        //    // Õâ¶«Î÷ËÆºõÊÇÓÚ service() »ò flush() µÄÊ±ºò²Å·¢³öÇÒ»á×Ô¶¯É¾µô£¿£¿
+        //    // è¿™ä¸œè¥¿ä¼¼ä¹æ˜¯äº service() æˆ– flush() çš„æ—¶å€™æ‰å‘å‡ºä¸”ä¼šè‡ªåŠ¨åˆ æ‰ï¼Ÿï¼Ÿ
         //    auto packet = enet_packet_create( message, strlen( message ) + 1, ENET_PACKET_FLAG_RELIABLE );
         //    enet_peer_send( peer, 0, packet );
         //}

@@ -100,7 +100,7 @@ namespace xxx
     {
         for( int i = 0; i < columns.Size(); ++i )
         {
-            if( columns[ i ].name == name ) return i;       // todo: hash ÓÅ»¯£¿
+            if( columns[ i ].name == name ) return i;       // todo: hash ä¼˜åŒ–ï¼Ÿ
         }
         return -1;
     }

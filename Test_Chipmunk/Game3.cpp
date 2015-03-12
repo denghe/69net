@@ -1,10 +1,10 @@
 #include "Precompile.h"
 
 /*
-Éè¼Æ³ß´ç£º    768 * 1024
-¸ñ×Ó»®·Ö£º    24 * 32
-Ã¿¸ñ³ß´ç£º    32 * 32
-Ï¸°û³ß´ç£º    16 * 16
+è®¾è®¡å°ºå¯¸ï¼š    768 * 1024
+æ ¼å­åˆ’åˆ†ï¼š    24 * 32
+æ¯æ ¼å°ºå¯¸ï¼š    32 * 32
+ç»†èƒå°ºå¯¸ï¼š    16 * 16
 
 */
 
@@ -17,7 +17,7 @@ Game3::Game3()
     //G::window->SetVsync( false );
 
     cdgrid = new CdGrid();
-    cdgrid->Init( { dw * 3, dh * 3 }, rowCount * 3, columnCount * 3 );  // 3*3 Çø¿é£¬ÕıÖĞ¼äÎªÆÁÄ»Ó³Éä
+    cdgrid->Init( { dw * 3, dh * 3 }, rowCount * 3, columnCount * 3 );  // 3*3 åŒºå—ï¼Œæ­£ä¸­é—´ä¸ºå±å¹•æ˜ å°„
 }
 
 static Node* createPlane()
@@ -54,7 +54,7 @@ void Game3::Update()
     input.touchEvents.Clear();
     if( input.touching )
     {
-        // ¸úÊó±êÒÆ
+        // è·Ÿé¼ æ ‡ç§»
         auto xya = getxya( plane->pos, input.touchPos );
         auto xi = xya->x / _xyam * 15;
         auto yi = xya->y / _xyam * 15;
@@ -69,19 +69,19 @@ void Game3::Update()
         plane->dirty = true;
     }
 
-    // ·¢Éä×Óµ¯
+    // å‘å°„å­å¼¹
     for( int i = 0; i < 100; ++i )
     {
         auto bullet = Bullet::Create( &scene, cdgrid, { plane->pos.x, plane->pos.y + 16 * 2 } );
     }
 
-    // ²úÉú¹Ö
+    // äº§ç”Ÿæ€ª
     for( int i = 0; i < 40; ++i )
     {
         auto monster = Monster::Create( &scene, cdgrid, { rand() % dw, dh } );
     }
 
-    // ¹ÖÇ°½ø
+    // æ€ªå‰è¿›
     for( int i = Monster::objs.Size() - 1; i >= 0; --i )
     {
         auto& o = Monster::objs[ i ];
@@ -91,7 +91,7 @@ void Game3::Update()
         }
     }
 
-    // ×Óµ¯Ç°½ø
+    // å­å¼¹å‰è¿›
     for( int i = Bullet::objs.Size() - 1; i >= 0; --i )
     {
         auto& o = Bullet::objs[ i ];
@@ -101,7 +101,7 @@ void Game3::Update()
         }
     }
 
-    // Ã¿¼¸ÃëÏÔÊ¾Ò»´Î×ÜµÄ¹ÖºÍµ¯Êı
+    // æ¯å‡ ç§’æ˜¾ç¤ºä¸€æ¬¡æ€»çš„æ€ªå’Œå¼¹æ•°
     static int counter = 0;
     if( ++counter >= 60 )
     {

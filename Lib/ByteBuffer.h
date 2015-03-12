@@ -14,8 +14,8 @@ namespace xxx
         int         dataLen;
         int         offset;
         bool        isRef;
-        Dict<void*, uint>* ptrStore = nullptr;                                      // for ĞòÁĞ»¯º¬Ö¸ÕëµÄÀàÊµÀı
-        Dict<uint, void*>* idxStore = nullptr;                                      // for ·´ĞòÁĞ»¯º¬Ö¸ÕëµÄÀàÊµÀı
+        Dict<void*, uint>* ptrStore = nullptr;                                      // for åºåˆ—åŒ–å«æŒ‡é’ˆçš„ç±»å®ä¾‹
+        Dict<uint, void*>* idxStore = nullptr;                                      // for ååºåˆ—åŒ–å«æŒ‡é’ˆçš„ç±»å®ä¾‹
 
         explicit ByteBuffer( int capacity = 1024 );                                 // prepare
         ByteBuffer( char* _buf, int _bufLen, int _dataLen = 0, bool isRef = false );   // Copy or ref
@@ -37,34 +37,34 @@ namespace xxx
         char& At( int idx );                                                        // buf[ idx ]
         String Dump();                                                              // return buf string for display memory
 
-        // ptrStore, idxStore Ïà¹Ø
-        void PtrStoreInit();                                                        // RootWrite Ê±×Ô¶¯µ÷ÓÃ 
+        // ptrStore, idxStore ç›¸å…³
+        void PtrStoreInit();                                                        // RootWrite æ—¶è‡ªåŠ¨è°ƒç”¨ 
         void PtrStoreDestroy();
 
-        void IdxStoreInit();                                                        // RootRead Ê±×Ô¶¯µ÷ÓÃ
+        void IdxStoreInit();                                                        // RootRead æ—¶è‡ªåŠ¨è°ƒç”¨
         void IdxStoreDestroy();
 
 
-        // ×î»ù´¡µÄ¶ÁĞ´º¯ÊıÊµÏÖÌå
+        // æœ€åŸºç¡€çš„è¯»å†™å‡½æ•°å®ç°ä½“
 
-        // »ù±¾¶ÁĞ´ÏµÁĞ
+        // åŸºæœ¬è¯»å†™ç³»åˆ—
         template<typename T>
         static void WriteCore( char* dest, T const& src );
         template<typename T>
         static void ReadCore( T& dest, char const* src );
 
-        // ±ä³¤¶ÁĞ´ÏµÁĞ
+        // å˜é•¿è¯»å†™ç³»åˆ—
         static void Write7Core( char* buf, int& offset, uint v );                   // need ensure 7 space
         static void FastRead7Core( uint& v, char* buf, int& offset );
         static bool Read7Core( uint& v, char* buf, int len, int& offset );
 
-        // 64 Î»³¤°æ
+        // 64 ä½é•¿ç‰ˆ
         static void Write7Core( char* buf, int & offset, uint64 v );                // need ensure 9 space
         static void FastRead7Core( uint64& v, char* buf, int& offset );
         static bool Read7Core( uint64& v, char* buf, int len, int& offset );
 
         // negative -> ZegZag positive
-        // Ğ§¹û£º¸ºÊı±äÕı£¬ÕıÊı *= 2
+        // æ•ˆæœï¼šè´Ÿæ•°å˜æ­£ï¼Œæ­£æ•° *= 2
         static uint32 ZegZagEncode( int32  i ) { return ( i << 1 ) ^ ( i >> 31 ); }
         static uint64 ZegZagEncode( int64  i ) { return ( i << 1 ) ^ ( i >> 63 ); }
 
@@ -74,7 +74,7 @@ namespace xxx
 
 
 
-        // ¿ìËÙĞ´ÈëÏµÁĞ£º²»Ô¤ÉêÇëÄÚ´æ£¨Î£ÏÕ£¬Ö÷¹©Éú³ÉÎï´úÂëµ÷ÓÃ£©
+        // å¿«é€Ÿå†™å…¥ç³»åˆ—ï¼šä¸é¢„ç”³è¯·å†…å­˜ï¼ˆå±é™©ï¼Œä¸»ä¾›ç”Ÿæˆç‰©ä»£ç è°ƒç”¨ï¼‰
         void FastWrite( char const* _buf, int _dataLen );                           // do not Write _dataLen
         template<int len>
         void FastWrite( char const( &s )[ len ] );                                  // same as String( len + _buf )
@@ -82,19 +82,19 @@ namespace xxx
         void FastWrite( T const( &a )[ len ] );
         template<typename T>
         void FastWrite( T const& v );
-        // ¶àÖµ±ä²Î°æ
+        // å¤šå€¼å˜å‚ç‰ˆ
         template<typename ...TS>
         void FastWriteMulti( TS const& ...vs );
 
 
-        // ¿ìËÙ¶Á³öÏµÁĞ£¬²»ÅĞ¶ÏÊı¾İ³¤¶ÈÊÇ·ñ×ã¹»Âú×ã¶ÁÈ¡²Ù×÷£¨Î£ÏÕ£¬°²È«»·½Ú²ÅÓÃ£©
+        // å¿«é€Ÿè¯»å‡ºç³»åˆ—ï¼Œä¸åˆ¤æ–­æ•°æ®é•¿åº¦æ˜¯å¦è¶³å¤Ÿæ»¡è¶³è¯»å–æ“ä½œï¼ˆå±é™©ï¼Œå®‰å…¨ç¯èŠ‚æ‰ç”¨ï¼‰
         template<typename T>
         void FastRead( T& v );
         template<typename ...TS>
         void FastReadMulti( TS& ...vs );
 
 
-        // Õı³£Ğ´ÈëÏµÁĞ£º»áÔ¤ÉêÇëÄÚ´æ
+        // æ­£å¸¸å†™å…¥ç³»åˆ—ï¼šä¼šé¢„ç”³è¯·å†…å­˜
         void Write( char const* _buf, int _dataLen );
         template<int len>
         void Write( char const( &s )[ len ] );
@@ -102,25 +102,25 @@ namespace xxx
         void Write( T const( &a )[ len ] );
         template<typename T>
         void Write( T const& v );
-        // ¶àÖµ±ä²Î°æ
+        // å¤šå€¼å˜å‚ç‰ˆ
         template<typename ...TS>
         void WriteMulti( TS const& ...vs );
 
 
-        // ´øÖ¸ÕëĞ´ÈëÏµÁĞ
+        // å¸¦æŒ‡é’ˆå†™å…¥ç³»åˆ—
         template<typename T>
         void Write( T* v );
         template<typename T>
         void RootWrite( T const& v );
 
-        // ´øÖ¸Õë¶Á³öÏµÁĞ
+        // å¸¦æŒ‡é’ˆè¯»å‡ºç³»åˆ—
         template<typename T>
         bool Read( T*& v );
         template<typename T>
         bool RootRead( T& v );
 
 
-        // ±ä³¤Ğ´ÈëÏµÁĞ£º»áÔ¤ÉêÇëÄÚ´æ
+        // å˜é•¿å†™å…¥ç³»åˆ—ï¼šä¼šé¢„ç”³è¯·å†…å­˜
         void VarWrite( int v );
         void VarWrite( uint v );
         void VarWrite( int64 v );
@@ -143,7 +143,7 @@ namespace xxx
 
 
 
-        // Õı³£¶Á³öÏµÁĞ£º·µ»Ø true ±íÊ¾¶Á³ö³É¹¦
+        // æ­£å¸¸è¯»å‡ºç³»åˆ—ï¼šè¿”å› true è¡¨ç¤ºè¯»å‡ºæˆåŠŸ
         template<typename T>
         bool Read( T& v );
         bool Read( char* _buf, int _dataLen );
