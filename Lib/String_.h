@@ -69,6 +69,7 @@ namespace xxx
 
         void ToLower();
         void ToUpper();
+        void ToUpperFirstChar();
         void ToLowerUnsafe();                                       // 2x faster than ToLower(). bad chars£º   @[\]^_` 
 
         int GetHashCode() const;

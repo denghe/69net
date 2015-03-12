@@ -249,6 +249,28 @@ DbDataTypes GetDataType( char const* dataType, char const* columnType )
     return DbDataTypes::Unknown;
 }
 
+char* GetCppTypeName( DbDataTypes t )
+{
+    switch( t )
+    {
+    case DbDataTypes::Boolean: return "bool";
+    case DbDataTypes::Int8: return "int8";
+    case DbDataTypes::Int16: return "int16";
+    case DbDataTypes::Int32: return "int";
+    case DbDataTypes::Int64: return "int64";
+    case DbDataTypes::UInt8: return "uint8";
+    case DbDataTypes::UInt16: return "uint16";
+    case DbDataTypes::UInt32: return "uint";
+    case DbDataTypes::UInt64: return "uint64";
+    case DbDataTypes::Float: return "float";
+    case DbDataTypes::Double: return "double";
+    case DbDataTypes::DateTime: return "xxx::DateTime";
+    case DbDataTypes::String: return "xxx::String";
+    case DbDataTypes::Bytes: return "xxx::ByteBuffer";
+    default: return "unknown";
+    }
+}
+
 
 bool IsEnum( DbTable const& t )
 {
@@ -258,6 +280,20 @@ bool IsEnum( DbTable const& t )
         if( txt_enum_name == c.name || txt_enum_desc == c.name ) return true;
     }
     return false;
+}
+
+bool IsEmpty( String const& s )
+{
+    if( !s.Size() ) return true;
+    for( int i = 0; i < s.Size(); ++i )
+    {
+        auto c = s[ i ];
+        if( c != ' ' &&
+            c != '\r' &&
+            c != '\t' &&
+            c != '\n' ) return false;
+    }
+    return true;
 }
 
 int main()
@@ -368,19 +404,30 @@ WHERE
     }
 
 
-    // 开始扫表容器，生成
+    // 开始扫表容器，生成 DbTypes.h
     s.Clear();
 
-    // todo: 生成头文件 头部
+    // 头文件 头部
+    s.Append( R"#(#ifndef __DBTYPES_H__
+#define __DBTYPES_H__
 
+namespace DbTypes
+{
+)#" );
+
+
+    String upperName;
     for( int i = 0; i < tables.Size(); ++i )
     {
         auto& t = tables[ i ];
+        upperName = t.name;
+        upperName.ToUpperFirstChar();
+
         if( IsEnum( t ) )
         {
-            // todo: 生成枚举代码段
+            // 生成枚举代码段
             s.Append( R"#(
-enum class )#", t.name, R"#(
+enum class )#", upperName, R"#(
 {)#" );
             DbColumn* c_id = nullptr, *c_name = nullptr, *c_desc = nullptr;
             for( int j = 0; j < t.columns.Size(); ++j )
@@ -395,15 +442,16 @@ enum class )#", t.name, R"#(
             {
                 auto r = t[ k ];
                 auto& id = r[ *c_id ].RefValue<int>();
-                auto& name = r[ *c_name ].RefValue<String>();
+                upperName = r[ *c_name ].RefValue<String>();
+                upperName.ToUpperFirstChar();
                 s.Append( R"#(
-    )#",name , " = ",id , "," );
+    )#", upperName, " = ", id, "," );
                 if( c_desc )
                 {
                     auto& desc = r[ *c_desc ].RefValue<String>();
-                    if( desc.Size() )
+                    if( !IsEmpty( desc ) )
                     {
-                        s.Append( " // ", desc );
+                        s.Append( " // ", desc );       // todo: 备注换行的处理啥的
                     }
                 }
             }
@@ -412,18 +460,212 @@ enum class )#", t.name, R"#(
         }
         else
         {
-            // todo: 生成类代码段
+            // 生成类代码段
+            s.Append( R"#(
+struct )#", upperName, R"#(
+{)#" );
+            DbColumn* c_id = nullptr, *c_name = nullptr, *c_desc = nullptr;
+            for( int j = 0; j < t.columns.Size(); ++j )
+            {
+                auto& c = t.columns[ j ];
+                s.Append( R"#(
+    )#", GetCppTypeName( c.dataType ), " ", c.name, ";" );
+                if( !IsEmpty( c.comment ) )
+                {
+                    s.Append( " // ", c.comment );      // todo: 备注换行的处理啥的
+                }
+            }
+            s.Append( R"#(
+};)#" );
         }
     }
 
-    // todo: 生成头文件 尾部
+    // 头文件 尾部
+    s.Append( R"#(
+}
+)#" );
 
 
     Cout( s );
-    // todo: 将 s 存为 GB2312
+
+    // todo: 存盘
     //Dump( tables[ 0 ] );
 
 
-    
+
+
+
+
+
+
+    // 开始扫表容器，生成 DbIds.h
+    s.Clear();
+
+    // 头文件 头部
+    s.Append( R"#(#ifndef __DBIDS_H__
+#define __DBIDS_H__
+
+namespace DbIds
+{)#" );
+
+    for( int i = 0; i < tables.Size(); ++i )
+    {
+        auto& t = tables[ i ];
+        upperName = t.name;
+        upperName.ToUpperFirstChar();
+
+        if( !IsEnum( t ) )
+        {
+            s.Append( R"#(
+    int )#", upperName, ";" );
+        }
+    }
+
+    // 头文件 尾部
+    s.Append( R"#(
+}
+)#" );
+
+
+    Cout( s );
+
+
+
+
+
+
+
+
+
+
+
+    // 开始扫表容器，生成 DbData.h
+    s.Clear();
+
+    // 头文件 头部
+    s.Append( R"#(#ifndef __DBDATA_H__
+#define __DBDATA_H__
+
+namespace DbData
+{)#" );
+
+    for( int i = 0; i < tables.Size(); ++i )
+    {
+        auto& t = tables[ i ];
+        upperName = t.name;
+        upperName.ToUpperFirstChar();
+
+        if( !IsEnum( t ) )
+        {
+            s.Append( R"#(
+    xxx::Dict<int, ::DbTypes::)#", upperName, "*> ", t.name, ";" );
+        }
+    }
+
+    // 头文件 尾部
+    s.Append( R"#(
+}
+)#" );
+
+
+    Cout( s );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // 开始扫表容器，生成 DbUtils.h( 先不分 cpp 文件出来 )
+    s.Clear();
+
+    // 头文件 头部
+    s.Append( R"#(#ifndef __DBUTILS_H__
+#define __DBUTILS_H__
+
+namespace DbUtils
+{)#" );
+
+    // 生成 Fill 系列
+    for( int i = 0; i < tables.Size(); ++i )
+    {
+        auto& t = tables[ i ];
+        upperName = t.name;
+        upperName.ToUpperFirstChar();
+
+        if( !IsEnum( t ) )
+        {
+            // 拼字段名列表
+            String cols;
+            String codes;
+            for( int j = 0; j < t.columns.Size(); ++j )
+            {
+                auto& c = t.columns[ j ];
+
+                if( j ) cols.Append( ", " );
+                cols.Append( c.name );
+
+                codes.AppendFormat( R"#(
+            xxx::FromString( p->{0}, row[ {1} ] );)#", c.name, j );
+            }
+
+            // 参数0: 表名
+            // 参数1: 字段名1,字段名2,字段名3,...
+            // 参数2: 首字大写表名
+            // 参数3: p->id = std::stoi( row[ 0 ] ); 多行拼接
+            s.AppendFormat( R"#(
+    bool Fill_{0}( MYSQL* conn )
+    {{
+        static char const* sql = "select {1} from {0}";
+        if( mysql_real_query( conn, sql, strlen( sql ) ) )
+        {{
+            return false;
+        }
+
+        auto res = mysql_store_result( conn );
+        if( !res )
+        {{
+            return false;
+        }
+        xxx::ScopeGuard sgRes( [ &] {{ mysql_free_result( res ); } );
+
+        while( auto row = mysql_fetch_row( res ) )
+        {{
+            auto p = new DbTypes::{2}();{3}
+            DbData::{0}.Push( p->id, p );
+            if( p->id > DbIds::{0} ) DbIds::{0} = p->id;
+        }
+
+        return true;
+    }
+)#", t.name, cols, upperName, codes );
+
+            // todo: insert, update gen
+
+        }
+    }
+
+    // 头文件 尾部
+    s.Append( R"#(
+}
+)#" );
+
+
+    Cout( s );
+
+
+
+
+
+
+
+
     return 0;
 }

@@ -354,6 +354,11 @@ namespace xxx
         for( int i = 0; i < dataLen; ++i ) buf[ i ] = upperchars[ buf[ i ] ];
     }
 
+    void String::ToUpperFirstChar()
+    {
+        if( dataLen ) buf[ 0 ] = upperchars[ buf[ 0 ] ];
+    }
+
     void String::ToLowerUnsafe()
     {
         int i = 0;
