@@ -15,7 +15,7 @@ char* charset = "utf8";
 
 int FillData( DbTable& t, MYSQL* conn )
 {
-    // todo: ¸÷ÖÖ×ªÒå
+    // todo: å„ç§è½¬ä¹‰
     String s;
     s.Append( "select " );
     for( int i = 0; i < t.columns.Size(); ++i )
@@ -262,7 +262,7 @@ bool IsEnum( DbTable const& t )
 
 int main()
 {
-    // ±íÈİÆ÷
+    // è¡¨å®¹å™¨
     List<DbTable> tables;
 
     MYSQL conn, *pConn = &conn;
@@ -360,7 +360,7 @@ WHERE
             c.primaryKey = ( txt_PRI == ck );
         }
 
-        // Èç¹ûÊÇÃ¶¾Ù±í£¬ĞèÒª¶Á³ö±íµÄÊı¾İ£¬Ìî³äµ½ table
+        // å¦‚æœæ˜¯æšä¸¾è¡¨ï¼Œéœ€è¦è¯»å‡ºè¡¨çš„æ•°æ®ï¼Œå¡«å……åˆ° table
         if( IsEnum( t ) )
         {
             FillData( t, pConn );
@@ -368,17 +368,17 @@ WHERE
     }
 
 
-    // ¿ªÊ¼É¨±íÈİÆ÷£¬Éú³É
+    // å¼€å§‹æ‰«è¡¨å®¹å™¨ï¼Œç”Ÿæˆ
     s.Clear();
 
-    // todo: Éú³ÉÍ·ÎÄ¼ş Í·²¿
+    // todo: ç”Ÿæˆå¤´æ–‡ä»¶ å¤´éƒ¨
 
     for( int i = 0; i < tables.Size(); ++i )
     {
         auto& t = tables[ i ];
         if( IsEnum( t ) )
         {
-            // todo: Éú³ÉÃ¶¾Ù´úÂë¶Î
+            // todo: ç”Ÿæˆæšä¸¾ä»£ç æ®µ
             s.Append( R"#(
 enum class )#", t.name, R"#(
 {)#" );
@@ -412,15 +412,15 @@ enum class )#", t.name, R"#(
         }
         else
         {
-            // todo: Éú³ÉÀà´úÂë¶Î
+            // todo: ç”Ÿæˆç±»ä»£ç æ®µ
         }
     }
 
-    // todo: Éú³ÉÍ·ÎÄ¼ş Î²²¿
+    // todo: ç”Ÿæˆå¤´æ–‡ä»¶ å°¾éƒ¨
 
 
     Cout( s );
-    // todo: ½« s ´æÎª GB2312
+    // todo: å°† s å­˜ä¸º GB2312
     //Dump( tables[ 0 ] );
 
 
