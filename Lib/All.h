@@ -378,6 +378,7 @@ inline void aligned_free( void* p )
 #include "FlatQueue.hpp"
 #include "Cout.hpp"
 #include "SharedMemory.hpp"
+#include "DbValue.hpp"
 
 // ... more
 

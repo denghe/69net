@@ -11,20 +11,20 @@ namespace xxx
     {
         return false;
     }
-    template<> bool IsType<bool>( DbDataTypes t ) { return t == DbDataTypes::Boolean; }
-    template<> bool IsType<int8>( DbDataTypes t ) { return t == DbDataTypes::Int8; }
-    template<> bool IsType<int16>( DbDataTypes t ) { return t == DbDataTypes::Int16; }
-    template<> bool IsType<int32>( DbDataTypes t ) { return t == DbDataTypes::Int32; }
-    template<> bool IsType<int64>( DbDataTypes t ) { return t == DbDataTypes::Int64; }
-    template<> bool IsType<uint8>( DbDataTypes t ) { return t == DbDataTypes::UInt8; }
-    template<> bool IsType<uint16>( DbDataTypes t ) { return t == DbDataTypes::UInt16; }
-    template<> bool IsType<uint32>( DbDataTypes t ) { return t == DbDataTypes::UInt32; }
-    template<> bool IsType<uint64>( DbDataTypes t ) { return t == DbDataTypes::UInt64; }
-    template<> bool IsType<float>( DbDataTypes t ) { return t == DbDataTypes::Float; }
-    template<> bool IsType<double>( DbDataTypes t ) { return t == DbDataTypes::Double; }
-    template<> bool IsType<DateTime>( DbDataTypes t ) { return t == DbDataTypes::DateTime; }
-    template<> bool IsType<String>( DbDataTypes t ) { return t == DbDataTypes::String; }
-    template<> bool IsType<ByteBuffer>( DbDataTypes t ) { return t == DbDataTypes::Bytes; }
+    template<> inline bool IsType<bool>( DbDataTypes t ) { return t == DbDataTypes::Boolean; }
+    template<> inline bool IsType<int8>( DbDataTypes t ) { return t == DbDataTypes::Int8; }
+    template<> inline bool IsType<int16>( DbDataTypes t ) { return t == DbDataTypes::Int16; }
+    template<> inline bool IsType<int32>( DbDataTypes t ) { return t == DbDataTypes::Int32; }
+    template<> inline bool IsType<int64>( DbDataTypes t ) { return t == DbDataTypes::Int64; }
+    template<> inline bool IsType<uint8>( DbDataTypes t ) { return t == DbDataTypes::UInt8; }
+    template<> inline bool IsType<uint16>( DbDataTypes t ) { return t == DbDataTypes::UInt16; }
+    template<> inline bool IsType<uint32>( DbDataTypes t ) { return t == DbDataTypes::UInt32; }
+    template<> inline bool IsType<uint64>( DbDataTypes t ) { return t == DbDataTypes::UInt64; }
+    template<> inline bool IsType<float>( DbDataTypes t ) { return t == DbDataTypes::Float; }
+    template<> inline bool IsType<double>( DbDataTypes t ) { return t == DbDataTypes::Double; }
+    template<> inline bool IsType<DateTime>( DbDataTypes t ) { return t == DbDataTypes::DateTime; }
+    template<> inline bool IsType<String>( DbDataTypes t ) { return t == DbDataTypes::String; }
+    template<> inline bool IsType<ByteBuffer>( DbDataTypes t ) { return t == DbDataTypes::Bytes; }
 #endif
     
     struct DbArray
