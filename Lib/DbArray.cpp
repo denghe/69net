@@ -22,6 +22,7 @@ namespace xxx
         case DbDataTypes::DateTime: list = new List<DateTime>( *( List<DateTime>* )other.list ); break;
         case DbDataTypes::String:   list = new List<String>( *( List<String>* )other.list ); break;
         case DbDataTypes::Bytes:    list = new List<ByteBuffer>( *( List<ByteBuffer>* )other.list ); break;
+            default: throw std::exception();// "unknown data type" );
         }
         return *this;
     }
@@ -59,6 +60,7 @@ namespace xxx
         case DbDataTypes::DateTime: ( ( List<DateTime>* )list )->Emplace(); break;
         case DbDataTypes::String:   ( ( List<String>* )list )->Emplace(); break;
         case DbDataTypes::Bytes:    ( ( List<ByteBuffer>* )list )->Emplace(); break;
+            default: throw std::exception();// "unknown data type" );
         }
     }
 
@@ -82,6 +84,7 @@ namespace xxx
         case DbDataTypes::DateTime: delete ( List<DateTime>* )list; break;
         case DbDataTypes::String:   delete ( List<String>* )list; break;
         case DbDataTypes::Bytes:    delete ( List<ByteBuffer>* )list; break;
+            default: throw std::exception();// "unknown data type" );
         }
         list = nullptr;
     }
@@ -110,7 +113,7 @@ namespace xxx
         case DbDataTypes::DateTime: list = new List<DateTime>(); break;
         case DbDataTypes::String:   list = new List<String>(); break;
         case DbDataTypes::Bytes:    list = new List<ByteBuffer>(); break;
-        default: throw std::exception( "unknown data type" );
+            default: throw std::exception();// "unknown data type" );
         }
     }
 

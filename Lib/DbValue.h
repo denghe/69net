@@ -22,36 +22,16 @@ namespace xxx
         void SetNull();
 
         template<typename T>
-        void Assign( T v )
-        {
-            GetColumnData().SetValue( parent->rowIndex, v );
-#if __DEBUG
-            if( Nullable() )
-            {
-#endif
-                GetNullflag().SetFalse( parent->rowIndex );
-#if __DEBUG
-            }
-#endif
-        }
+        void Assign( T v );
 
         template<typename T>
-        T GetValue() const
-        {
-            return GetColumnData().GetValue<T>( parent->rowIndex );
-        }
+        T GetValue() const;
 
         template<typename T>
-        T& RefValue()
-        {
-            return GetColumnData().RefValue<T>( parent->rowIndex );
-        }
+        T& RefValue();
 
         template<typename T>
-        void SetValue( T&& v )
-        {
-            return GetColumnData().SetValue( parent->rowIndex, std::forward<T>( v ) );
-        }
+        void SetValue( T&& v );
 
         inline explicit operator uint8() { return GetValue<uint8>(); }
         inline explicit operator uint16() { return GetValue<uint16>(); }

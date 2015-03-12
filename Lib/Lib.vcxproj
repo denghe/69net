@@ -36,6 +36,7 @@
     <ClInclude Include="DbRow.h" />
     <ClInclude Include="DbTable.h" />
     <ClInclude Include="DbValue.h" />
+    <ClInclude Include="DbValue.hpp" />
     <ClInclude Include="Dict.h" />
     <ClInclude Include="Dict.hpp" />
     <ClInclude Include="Links.h" />

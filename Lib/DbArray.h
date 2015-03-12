@@ -3,6 +3,30 @@
 
 namespace xxx
 {
+    
+    
+#ifdef __DEBUG
+    template<typename T>
+    static bool IsType( DbDataTypes t )
+    {
+        return false;
+    }
+    template<> bool IsType<bool>( DbDataTypes t ) { return t == DbDataTypes::Boolean; }
+    template<> bool IsType<int8>( DbDataTypes t ) { return t == DbDataTypes::Int8; }
+    template<> bool IsType<int16>( DbDataTypes t ) { return t == DbDataTypes::Int16; }
+    template<> bool IsType<int32>( DbDataTypes t ) { return t == DbDataTypes::Int32; }
+    template<> bool IsType<int64>( DbDataTypes t ) { return t == DbDataTypes::Int64; }
+    template<> bool IsType<uint8>( DbDataTypes t ) { return t == DbDataTypes::UInt8; }
+    template<> bool IsType<uint16>( DbDataTypes t ) { return t == DbDataTypes::UInt16; }
+    template<> bool IsType<uint32>( DbDataTypes t ) { return t == DbDataTypes::UInt32; }
+    template<> bool IsType<uint64>( DbDataTypes t ) { return t == DbDataTypes::UInt64; }
+    template<> bool IsType<float>( DbDataTypes t ) { return t == DbDataTypes::Float; }
+    template<> bool IsType<double>( DbDataTypes t ) { return t == DbDataTypes::Double; }
+    template<> bool IsType<DateTime>( DbDataTypes t ) { return t == DbDataTypes::DateTime; }
+    template<> bool IsType<String>( DbDataTypes t ) { return t == DbDataTypes::String; }
+    template<> bool IsType<ByteBuffer>( DbDataTypes t ) { return t == DbDataTypes::Bytes; }
+#endif
+    
     struct DbArray
     {
         DbDataTypes     dataType;
@@ -40,24 +64,7 @@ namespace xxx
 
         // todo: Reserve
 
-#ifdef __DEBUG
-        template<typename T>
-        static bool IsType( DbDataTypes t );
-        template<> static bool IsType<bool>( DbDataTypes t ) { return t == DbDataTypes::Boolean; }
-        template<> static bool IsType<int8>( DbDataTypes t ) { return t == DbDataTypes::Int8; }
-        template<> static bool IsType<int16>( DbDataTypes t ) { return t == DbDataTypes::Int16; }
-        template<> static bool IsType<int32>( DbDataTypes t ) { return t == DbDataTypes::Int32; }
-        template<> static bool IsType<int64>( DbDataTypes t ) { return t == DbDataTypes::Int64; }
-        template<> static bool IsType<uint8>( DbDataTypes t ) { return t == DbDataTypes::UInt8; }
-        template<> static bool IsType<uint16>( DbDataTypes t ) { return t == DbDataTypes::UInt16; }
-        template<> static bool IsType<uint32>( DbDataTypes t ) { return t == DbDataTypes::UInt32; }
-        template<> static bool IsType<uint64>( DbDataTypes t ) { return t == DbDataTypes::UInt64; }
-        template<> static bool IsType<float>( DbDataTypes t ) { return t == DbDataTypes::Float; }
-        template<> static bool IsType<double>( DbDataTypes t ) { return t == DbDataTypes::Double; }
-        template<> static bool IsType<DateTime>( DbDataTypes t ) { return t == DbDataTypes::DateTime; }
-        template<> static bool IsType<String>( DbDataTypes t ) { return t == DbDataTypes::String; }
-        template<> static bool IsType<ByteBuffer>( DbDataTypes t ) { return t == DbDataTypes::Bytes; }
-#endif
+
 
         template<typename T>
         void SetValue( int idx, T v )
@@ -65,7 +72,7 @@ namespace xxx
 #ifdef __DEBUG
             if( !IsType<T>( dataType ) )
             {
-                throw std::exception( "wrong data type!!" );
+                throw std::exception();// "wrong data type!!" );
             }
 #endif
             ( ( List<T>* )list )->Set( idx, v );
@@ -77,7 +84,7 @@ namespace xxx
 #ifdef __DEBUG
             if( !IsType<String>( dataType ) )
             {
-                throw std::exception( "wrong data type!!" );
+                throw std::exception();// "wrong data type!!" );
             }
 #endif
             ( ( List<String>* )list )->Set( idx, std::move( v ) );
@@ -88,7 +95,7 @@ namespace xxx
 #ifdef __DEBUG
             if( !IsType<bool>( dataType ) )
             {
-                throw std::exception( "wrong data type!!" );
+                throw std::exception();// "wrong data type!!" );
             }
 #endif
             ( ( List<bool>* )list )->Set( idx, v );
@@ -101,7 +108,7 @@ namespace xxx
 #ifdef __DEBUG
             if( !IsType<T>( dataType ) )
             {
-                throw std::exception( "wrong data type!!" );
+                throw std::exception();// "wrong data type!!" );
             }
 #endif
             return ( ( List<T>* )list )->At( idx );
@@ -115,7 +122,7 @@ namespace xxx
 #ifdef __DEBUG
             if( !IsType<T>( dataType ) )
             {
-                throw std::exception( "wrong data type!!" );
+                throw std::exception();// "wrong data type!!" );
             }
 #endif
             return ( ( List<T>* )list )->At( idx );

@@ -26,7 +26,7 @@ namespace xxx
 #if __DEBUG
         if( !columns[ i ].nullable )
         {
-            throw std::exception( "column is not nullable" );
+            throw std::exception();// "column is not nullable" );
         }
 #endif
         columnDatas[ i ].Grow();
@@ -80,7 +80,7 @@ namespace xxx
 #if __DEBUG
         if( rowIdx > rowCount )
         {
-            throw std::exception( "out of range: rowIdx" );
+            throw std::exception();// "out of range: rowIdx" );
         }
 #endif
         return DbRow{ this, rowIdx };
@@ -90,7 +90,7 @@ namespace xxx
 #if __DEBUG
         if( rowIdx > rowCount )
         {
-            throw std::exception( "out of range: rowIdx" );
+            throw std::exception();// "out of range: rowIdx" );
         }
 #endif
         return DbRow{ const_cast<DbTable*>( this ), rowIdx };

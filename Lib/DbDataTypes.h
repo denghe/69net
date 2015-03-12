@@ -21,7 +21,7 @@ namespace xxx
         Bytes,
         Unknown                 // for default value/ max value
     };
-    const struct DbNull_t {} DbNull;
+    const struct DbNull_t { DbNull_t(){} } DbNull;
 
 }
 

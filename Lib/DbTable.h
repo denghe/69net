@@ -78,7 +78,7 @@ namespace xxx
 #if __DEBUG
             if( sizeof...( vs ) != columns.Size() )
             {
-                throw std::exception( "the parameters count is not match the columns count" );
+                throw std::exception();// "the parameters count is not match the columns count" );
             }
 #endif
             int i = 0;

@@ -72,7 +72,7 @@ namespace xxx
     template<typename T>
     typename std::enable_if<HasFunc_FastWriteTo<T>::value, void>::type FastWriteSwitch( ByteBuffer& b, T const& v )
     {
-        auto rtv = ptrStore->Insert( &v, (uint)dataLen );
+        auto rtv = b.ptrStore->Insert( &v, (uint)b.dataLen );
         VarWrite( rtv.first->value );
         if( !rtv.second ) return;
         v.FastWriteTo( b );
@@ -305,7 +305,7 @@ namespace xxx
     {
         if( b.idxStore )
         {
-            uint _offset, _offset_bak = b.offset;
+            uint _offset;
             if( !b.VarRead( _offset ) ) return false;
             b.idxStore->Insert( _offset, (void*)&v );   // todo: assert?
         }

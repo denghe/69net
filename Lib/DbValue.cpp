@@ -92,7 +92,7 @@ namespace xxx
         } break;
         case DbDataTypes::Bytes:    output.Append( "ByteBuffer ToString todo" ); break; // GetValue<ByteBuffer>() ); break;
         default:
-            throw std::exception( "unknown data type" );
+                throw std::exception();// "unknown data type" );
         }
     }
 
