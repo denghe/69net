@@ -355,6 +355,7 @@ inline void aligned_free( void* p )
 #include "AutoIDPool.h"
 #include "Cor.h"
 #include "Buf.h"
+#include "CD.h"
 
 #include "DbDataTypes.h"
 #include "DbArray.h"

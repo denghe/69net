@@ -46,6 +46,7 @@
     <ClInclude Include="DbRow.h" />
     <ClInclude Include="DbTable.h" />
     <ClInclude Include="DbValue.hpp" />
+    <ClInclude Include="CD.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
@@ -65,5 +66,6 @@
     <ClCompile Include="DbValue.cpp" />
     <ClCompile Include="DbRow.cpp" />
     <ClCompile Include="DbTable.cpp" />
+    <ClCompile Include="CD.cpp" />
   </ItemGroup>
 </Project>

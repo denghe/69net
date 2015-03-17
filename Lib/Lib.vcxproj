@@ -26,6 +26,7 @@
     <ClInclude Include="BlockBuffer.h" />
     <ClInclude Include="ByteBuffer.h" />
     <ClInclude Include="ByteBuffer.hpp" />
+    <ClInclude Include="CD.h" />
     <ClInclude Include="ClassAttributes.h" />
     <ClInclude Include="Cor.h" />
     <ClInclude Include="Cout.h" />
@@ -75,6 +76,7 @@
     <ClCompile Include="BufferUtils.cpp" />
     <ClCompile Include="BlockBuffer.cpp" />
     <ClCompile Include="ByteBuffer.cpp" />
+    <ClCompile Include="CD.cpp" />
     <ClCompile Include="DbArray.cpp" />
     <ClCompile Include="DbTable.cpp" />
     <ClCompile Include="DbRow.cpp" />
