@@ -454,7 +454,7 @@ namespace xxx
     bool String::ReadFrom( ByteBuffer& bb )
     {
         int len;
-        if( !bb.Read( *(uint*)&len )
+        if( !bb.VarRead( *(uint*)&len )
             || len < 0
             || bb.offset + len > bb.dataLen )
         {
