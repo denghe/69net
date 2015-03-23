@@ -21,23 +21,25 @@ namespace PacketGenerator
             var template = new Template();
 
             // 扫项目列表
-            var r_enums = from t in asm.GetTypes() where ( t.IsEnum ) && t.Namespace != libNS && t.Name == projEnum select t;
-            if( r_enums.Count() > 0 )
-            {
-                var e = r_enums.First();
-                var r_fields = e.GetFields( BindingFlags.Static | BindingFlags.Public );
-                foreach( var r_field in r_fields )
-                {
-                    var p = new Project { Name = r_field.Name };
-                    foreach( var a in r_field.GetCustomAttributes( false ) )
-                    {
-                        if( a is LIB.Desc ) p.Desc = ( (LIB.Desc)a ).Value;
-                    }
-                    template.Projects.Add( p );
-                }
-            }
+            //var r_projenums = from t in asm.GetTypes() where ( t.IsEnum ) && t.Namespace != libNS && t.Name == projEnum select t;
+            //if( r_projenums.Count() > 0 )
+            //{
+            //    var e = r_projenums.First();
+            //    var r_fields = e.GetFields( BindingFlags.Static | BindingFlags.Public );
+            //    foreach( var r_field in r_fields )
+            //    {
+            //        var p = new Project { Name = r_field.Name };
+            //        foreach( var a in r_field.GetCustomAttributes( false ) )
+            //        {
+            //            if( a is LIB.Desc ) p.Desc = ( (LIB.Desc)a ).Value;
+            //        }
+            //        template.Projects.Add( p );
+            //    }
+            //}
+
 
             // 扫枚举
+            var r_enums = ( from t in asm.GetTypes() where ( t.IsEnum ) select t ).ToList(); ;
             foreach( var r_enum in r_enums )
             {
                 var e = new Enum();
@@ -125,7 +127,7 @@ namespace PacketGenerator
                     var f = new ClassField { Class = c };
                     f.Name = r_field.Name;
                     c.Fields.Add( f );
-                    fillDeclare( template.Classes, f.Declare, r_field.FieldType );
+                    fillDeclare( template, f.Declare, r_field.FieldType );
                 }
 
                 // 继续扫字段
@@ -211,7 +213,7 @@ namespace PacketGenerator
             }
         }
 
-        public static void fillDeclare( List<Class> cs, Declare d, Type t )
+        public static void fillDeclare( Template template, Declare d, Type t )
         {
             var tn = t.Name;
             if( t.IsArray )
@@ -221,20 +223,20 @@ namespace PacketGenerator
                 d.Name = "[]";
                 var cd = new Declare();
                 d.Childs.Add( cd );
-                fillDeclare( cs, cd, t.GetElementType() );
+                fillDeclare( template, cd, t.GetElementType() );
             }
             else if( t.IsGenericType )
             {
                 if( t.Namespace != libNS )
                     throw new Exception( "unknown data type." );
                 d.DataType = DataTypes.Generic;
-                d.Name = tn.Substring( 0, tn.LastIndexOf('`') );
+                d.Name = tn.Substring( 0, tn.LastIndexOf( '`' ) );
                 d.Namespace = "";
                 foreach( var ct in t.GenericTypeArguments )
                 {
                     var cd = new Declare();
                     d.Childs.Add( cd );
-                    fillDeclare( cs, cd, ct );
+                    fillDeclare( template, cd, ct );
                 }
             }
             else if( t.Namespace == "System" )
@@ -270,7 +272,11 @@ namespace PacketGenerator
                 d.DataType = DataTypes.Custom;
                 d.Name = t.Name;
                 d.Namespace = "";
-                d.Class = cs.Find( a => a.Name == t.Name && a.Namespace == "" );
+                d.Class = template.Classes.Find( a => a.Name == t.Name && a.Namespace == "" );
+                if( d.Class == null )
+                {
+                    d.Class = template.Enums.Find( a => a.Name == t.Name && a.Namespace == "" );
+                }
             }
         }
 

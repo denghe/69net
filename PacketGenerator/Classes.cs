@@ -20,6 +20,7 @@ public class ClassBase
 {
     public string Namespace = "";
     public string Name = "";
+    public string Desc = "";
     public bool IsEnum = true;
     //public List<Project> Enable = new List<Project>();    // 这个并不直接来源于属性，一但被某个属于某个 __project 的类引用到，则须生成到该 project
 }
@@ -27,7 +28,6 @@ public class ClassBase
 public class Class : ClassBase
 {
     public List<ClassField> Fields = new List<ClassField>();
-    public string Desc = "";
     public ushort TypeID = 0;                               // 该值将自增填充
     //public List<Project> Decode = new List<Project>();    // 被引用到的类 即便没有直接设置 Attribute，也会继承引用类的设置
     //public List<Project> Encode = new List<Project>();    // 同上
@@ -60,7 +60,6 @@ public class Enum : ClassBase
     public int Size = 0;        // numBytes
     public bool Unsigned = false;
     // ...
-    public string Desc = "";
 }
 
 public class EnumField
