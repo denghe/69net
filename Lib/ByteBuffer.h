@@ -154,9 +154,9 @@ namespace xxx
 
 
         // interface for ByteBuffer
-        void WriteTo( ByteBuffer& fb ) const;
-        void FastWriteTo( ByteBuffer& fb ) const;
-        bool ReadFrom( ByteBuffer& fb );
+        void WriteTo( ByteBuffer& bb ) const;
+        void FastWriteTo( ByteBuffer& bb ) const;
+        bool ReadFrom( ByteBuffer& bb );
 
     protected:
         template<typename T>
