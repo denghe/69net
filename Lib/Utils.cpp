@@ -489,17 +489,18 @@ namespace xxx
         out = ( in[ 0 ] == '1' || in[ 0 ] == 'T' || in[ 0 ] == 't' );
     }
 
-    void FromString( uint8   & dstVar, char const * s ) { return FromStringCore( s, dstVar ); }
-    void FromString( uint16  & dstVar, char const * s ) { return FromStringCore( s, dstVar ); }
-    void FromString( uint32  & dstVar, char const * s ) { return FromStringCore( s, dstVar ); }
-    void FromString( uint64  & dstVar, char const * s ) { return FromStringCore( s, dstVar ); }
-    void FromString( int8    & dstVar, char const * s ) { return FromStringCore( s, dstVar ); }
-    void FromString( int16   & dstVar, char const * s ) { return FromStringCore( s, dstVar ); }
-    void FromString( int     & dstVar, char const * s ) { return FromStringCore( s, dstVar ); }
-    void FromString( int64   & dstVar, char const * s ) { return FromStringCore( s, dstVar ); }
-    void FromString( double  & dstVar, char const * s ) { return FromStringCore( s, dstVar ); }
-    void FromString( float   & dstVar, char const * s ) { return FromStringCore( s, dstVar ); }
-    void FromString( bool    & dstVar, char const * s ) { return FromStringCore( s, dstVar ); }
+    void FromString( uint8   & dstVar, char const * s ) { FromStringCore( s, dstVar ); }
+    void FromString( uint16  & dstVar, char const * s ) { FromStringCore( s, dstVar ); }
+    void FromString( uint32  & dstVar, char const * s ) { FromStringCore( s, dstVar ); }
+    void FromString( uint64  & dstVar, char const * s ) { FromStringCore( s, dstVar ); }
+    void FromString( int8    & dstVar, char const * s ) { FromStringCore( s, dstVar ); }
+    void FromString( int16   & dstVar, char const * s ) { FromStringCore( s, dstVar ); }
+    void FromString( int     & dstVar, char const * s ) { FromStringCore( s, dstVar ); }
+    void FromString( int64   & dstVar, char const * s ) { FromStringCore( s, dstVar ); }
+    void FromString( double  & dstVar, char const * s ) { FromStringCore( s, dstVar ); }
+    void FromString( float   & dstVar, char const * s ) { FromStringCore( s, dstVar ); }
+    void FromString( bool    & dstVar, char const * s ) { FromStringCore( s, dstVar ); }
+	void FromString( String  & dstVar, char const * s ) { dstVar = s; }
 
 
 

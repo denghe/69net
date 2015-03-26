@@ -79,17 +79,38 @@ namespace xxx
     // coroutine 对象池 / 管理器
     // sample:
     /*
-        CorManager<CorBase> cm;
+        CorManager cm;
         auto foo = cm.CreateItem<Foo>( ...... );
+        ...
+        foreach( o in RefItems<Xxxx>() ) ((Xxxx)o)->Xxxxxx;
         ...
         while( cm.Process( i ) {}
         ...
     */
     struct CorManager
     {
-        List<CorBase*> items;
+        List<List<CorBase*>> itemss;
         AutoIDPool<CorBase> pool;
-        int versionNumber = 0;
+
+        template<typename T>
+        List<CorBase*>& RefItems()
+        {
+#if __WIN
+            auto& tid = CT::AutoIDAttacher<CT, CorBase>::autoTypeId.value;
+#else
+            auto& tid = CT::template AutoIDAttacher<CT, CorBase>::autoTypeId.value;
+#endif
+            return itemss[ tid ];
+        }
+        List<CorBase*>& RefItems( CorBase* o )
+        {
+            return itemss[ o->typeId ];
+        }
+        List<CorBase*>& RefItems( int typeId )
+        {
+            return itemss[ typeId ];
+        }
+
 
         ~CorManager()
         {
@@ -99,6 +120,7 @@ namespace xxx
         template<typename CT, typename ...PTS>
         CT* CreateItem( PTS&& ...ps )
         {
+            auto& items = RefItems<CT>();
             auto rtv = pool.Alloc<CT>( std::forward<PTS>( ps )... );
             rtv->CorBase::corIdx = items.Size();
             rtv->CorBase::corLn = 0;
@@ -110,6 +132,7 @@ namespace xxx
 
         void DestroyItem( CorBase* o )
         {
+            auto& items = RefItems( o );
             items.Top()->corIdx = o->corIdx;
             items.EraseFast( o->corIdx );
             pool.Free( o );
@@ -117,22 +140,30 @@ namespace xxx
 
         bool Process( int ticks = 0 )
         {
-            if( !items.Size() ) return false;
-            for( int i = items.Size() - 1; i >= 0; --i )
+            for( int j = 0; j < itemss.Size(); ++j )
             {
-                auto& o = items[ i ];
-                if( !o->Process( ticks ) ) DestroyItem( o );
+                auto& items = itemss[ j ];
+                for( int i = items.Size() - 1; i >= 0; --i )
+                {
+                    auto& o = items[ i ];
+                    if( !o->Process( ticks ) ) DestroyItem( o );
+                }
             }
             return true;
         }
 
+
         void Clear()
         {
-            while( items.Size() )
+            for( int j = 0; j < itemss.Size(); ++j )
             {
-                for( int i = items.Size() - 1; i >= 0; --i )
+                auto& items = itemss[ j ];
+                while( items.Size() )
                 {
-                    DestroyItem( items[ i ] );
+                    for( int i = items.Size() - 1; i >= 0; --i )
+                    {
+                        DestroyItem( items[ i ] );
+                    }
                 }
             }
             pool.versionNumber = 0;
@@ -140,9 +171,13 @@ namespace xxx
 
         void Compress()
         {
-            for( int i = 0; i < items.Size(); ++i )
+            for( int j = 0; j < itemss.Size(); ++j )
             {
-                items[ i ]->EnsureRefs();
+                auto& items = itemss[ j ];
+                for( int i = 0; i < items.Size(); ++i )
+                {
+                    items[ i ]->EnsureRefs();
+                }
             }
             pool.Clear();
         }
