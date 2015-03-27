@@ -138,7 +138,7 @@ namespace xxx
     {
         if( !std::is_pod<T>::value )
         {
-            if( head <= tail )
+            if( head < tail )
             {
                 for( int i = 0; i < head; ++i ) buf[ i ].~T();
                 for( int i = 0; i < maxSize - tail; ++i ) buf[ tail + i ].~T();

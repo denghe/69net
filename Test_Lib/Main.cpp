@@ -23,16 +23,23 @@ using namespace xxx;
 using namespace std::chrono;
 int main()
 {
-    DbTable dt;
-    dt.AddColumns(
-        DbDataTypes::Boolean,
-        DbDataTypes::Int32,
-        DbDataTypes::String );
-    dt.AddColumn( DbDataTypes::DateTime ).nullable = true;
-    dt.AddRow( true, 1, "zzz", system_clock::now() );
-    dt.AddRow( false, 234, "qwer", DbNull );
+    FlatQueue<String> fq;
+    //fq.Push( "asdf" );
 
-    Dump( dt );
+
+
+
+
+    //DbTable dt;
+    //dt.AddColumns(
+    //    DbDataTypes::Boolean,
+    //    DbDataTypes::Int32,
+    //    DbDataTypes::String );
+    //dt.AddColumn( DbDataTypes::DateTime ).nullable = true;
+    //dt.AddRow( true, 1, "zzz", system_clock::now() );
+    //dt.AddRow( false, 234, "qwer", DbNull );
+
+    //Dump( dt );
 
     return 0;
 }
