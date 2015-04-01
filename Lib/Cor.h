@@ -92,7 +92,7 @@ namespace xxx
         List<List<CorBase*>> itemss;
         AutoIDPool<CorBase> pool;
 
-        template<typename T>
+        template<typename CT>
         List<CorBase*>& RefItems()
         {
 #if __WIN
@@ -111,7 +111,10 @@ namespace xxx
             return itemss[ typeId ];
         }
 
-
+        CorManager()
+        {
+            itemss.Resize( AutoID<CorBase>::maxValue );
+        }
         ~CorManager()
         {
             Clear();

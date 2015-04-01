@@ -26,7 +26,7 @@ namespace xxx
         T& EmplaceAt( int idx, PTS&& ...ps );
         template<typename VT>
         void InsertAt( int idx, VT&& v );
-        int Find( T const& v );
+        int Find( T const& v ) const;
         void Erase( int idx );
         void EraseFast( int idx );
         void Pop();
