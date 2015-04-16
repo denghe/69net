@@ -33,7 +33,6 @@ namespace xxx
         T& Top();
         T const& Top() const;
         T& TopPop();
-        T const& TopPop() const;
         void Clear();
         void Reserve( int capacity );
         void Resize( int capacity, bool init = true );

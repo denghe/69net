@@ -143,12 +143,6 @@ namespace xxx
         assert( size > 0 );
         return buf[ --size ];
     }
-    template<typename T>
-    T const& List<T>::TopPop() const
-    {
-        assert( size > 0 );
-        return buf[ --size ];
-    }
 
     template<typename T>
     void List<T>::Clear()
