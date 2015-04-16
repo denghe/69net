@@ -99,6 +99,7 @@ namespace xxx
     void FromString( double  & dstVar, char const * s );
     void FromString( float   & dstVar, char const * s );
     void FromString( bool    & dstVar, char const * s );
+    void FromString( String  & dstVar, char const * s );
 
 
 
