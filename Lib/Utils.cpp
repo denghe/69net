@@ -1,5 +1,5 @@
 #include "All.h"
-#include "ftoa.c"
+#pragma warning( disable : 4996)
 
 namespace xxx
 {
@@ -14,8 +14,8 @@ namespace xxx
     int GetToStringMaxLength( int16   v ) { return 6; }
     int GetToStringMaxLength( int     v ) { return 11; }
     int GetToStringMaxLength( int64   v ) { return 20; }
-    int GetToStringMaxLength( double  v ) { return 20; }
-    int GetToStringMaxLength( float   v ) { return 20; }
+    int GetToStringMaxLength( double  v ) { return 19; }
+    int GetToStringMaxLength( float   v ) { return 10; }
     int GetToStringMaxLength( bool    v ) { return 5; }
     int GetToStringMaxLength( char    v ) { return 1; }
     int GetToStringMaxLength( std::string const & v ) { return (int)v.size(); }
@@ -221,32 +221,15 @@ namespace xxx
         }
     }
 
-    int ToStringCore( double in, char * out, int maxlen, int precision, bool delEndZeros )
+    int ToStringCore( double in, char* out )
     {
-        int ret = lftoa( in, out, maxlen, precision );
-        if( !delEndZeros ) return ret;
-        auto lastPos = out + ret;
-        auto dotPos = std::find( out, lastPos, '.' );
-        if( dotPos == lastPos ) return ret;
-        auto p = lastPos - 1;
-        for( ; p > dotPos; --p ) if( *p != '0' ) break;
-        ret -= int( lastPos - 1 - p );
-        if( out[ ret - 1 ] == '.' ) --ret;
-        return ret;
+        _gcvt( in, 16, out );
+        return (int)strlen( out );
     }
 
-    int ToStringCore( float in, char * out, int maxlen, int precision, bool delEndZeros )
+    int ToStringCore( float in, char* out )
     {
-        int ret = ftoa( in, out, maxlen, precision );
-        if( !delEndZeros ) return ret;
-        auto lastPos = out + ret;
-        auto dotPos = std::find( out, lastPos, '.' );
-        if( dotPos == lastPos ) return ret;
-        auto p = lastPos - 1;
-        for( ; p > dotPos; --p ) if( *p != '0' ) break;
-        ret -= int( lastPos - 1 - p );
-        if( out[ ret - 1 ] == '.' ) --ret;
-        return ret;
+        return sprintf( out, "%f", in );
     }
 
     int ToString( char * dstBuf, uint8   v ) { return ToStringCore( v, dstBuf ); }
@@ -267,8 +250,8 @@ namespace xxx
     int ToString( char * dstBuf, int16   v ) { return ToStringCore( v, dstBuf ); }
     int ToString( char * dstBuf, int     v ) { return ToStringCore( v, dstBuf ); }
     int ToString( char * dstBuf, int64   v ) { return ToStringCore( v, dstBuf ); }
-    int ToString( char * dstBuf, double  v, int maxlen, int precision, bool delEndZeros ) { return ToStringCore( v, dstBuf, maxlen, precision, delEndZeros ); }
-    int ToString( char * dstBuf, float   v, int maxlen, int precision, bool delEndZeros ) { return ToStringCore( v, dstBuf, maxlen, precision, delEndZeros ); }
+    int ToString( char * dstBuf, double  v ) { return ToStringCore( v, dstBuf ); }
+    int ToString( char * dstBuf, float   v ) { return ToStringCore( v, dstBuf ); }
     int ToString( char * dstBuf, bool    v ) { return ToStringCore( v, dstBuf ); }
 
     int ToString( char * dstBuf, char const* v )

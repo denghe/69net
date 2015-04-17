@@ -50,7 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />
-    <ClCompile Include="ftoa.c" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="List.cpp" />

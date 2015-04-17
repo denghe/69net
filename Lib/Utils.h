@@ -42,8 +42,8 @@ namespace xxx
     int ToString( char * dstBuf, int16   v );
     int ToString( char * dstBuf, int     v );
     int ToString( char * dstBuf, int64   v );
-    int ToString( char * dstBuf, double  v, int maxlen = 20, int precision = 10, bool delEndZeros = true );
-    int ToString( char * dstBuf, float   v, int maxlen = 20, int precision = 10, bool delEndZeros = true );
+    int ToString( char * dstBuf, double  v );
+    int ToString( char * dstBuf, float   v );
     int ToString( char * dstBuf, bool    v );
     int ToString( char * dstBuf, char    v );
 

@@ -1,4 +1,4 @@
-#include "Main.h"
+#include "Lib/All.h"
 
 // todo:
 
@@ -19,16 +19,20 @@
 // 极端需求下，可对比两种方式的序列化后长度差，选出最省的方式
 
 
+#include <stdio.h>
+#include <stdlib.h>
 using namespace xxx;
-using namespace std::chrono;
+//using namespace std::chrono;
 int main()
 {
-    FlatQueue<String> fq;
+    //FlatQueue<String> fq;
     //fq.Push( "asdf" );
 
-
-
-
+    char buf[ 256 ];
+    double d = 1.23456789;
+    float f = d;
+    
+    Cout( d, " ", f );
 
     //DbTable dt;
     //dt.AddColumns(

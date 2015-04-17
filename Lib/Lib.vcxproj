@@ -82,12 +82,6 @@
     <ClCompile Include="DbRow.cpp" />
     <ClCompile Include="DbValue.cpp" />
     <ClCompile Include="Pool.cpp" />
-    <ClCompile Include="ftoa.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="List.cpp" />
     <ClCompile Include="OldPool.cpp" />
     <ClCompile Include="ScopeGuard.cpp" />
