@@ -47,6 +47,7 @@
     <ClInclude Include="DbTable.h" />
     <ClInclude Include="DbValue.hpp" />
     <ClInclude Include="CD.h" />
+    <ClInclude Include="dtoa_milo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />

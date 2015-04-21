@@ -2,9 +2,6 @@
 
 // todo:
 
-// 库结构 -> 代码
-
-
 // 整理 Sqlite 类相关
 // 以类似 Sqlite 类的长相，提供 Mysql 的支持
 // 设计 Mysql 数据库操作层的长相
@@ -21,18 +18,60 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 using namespace xxx;
 //using namespace std::chrono;
 int main()
 {
+    char buf[ 256 ];
+    Stopwatch sw;
+
+    // 预热
+    sw.Reset();
+    for( int i = -10000000; i < 10000000; ++i )
+    {
+        double d = (double)i + 0.12345678;
+        buf[ ToString( buf, d ) ] = 0;
+    }
+    CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
+
+
+    sw.Reset();
+    for( int i = -10000000; i < 10000000; ++i )
+    {
+        int d = i;
+        buf[ ToString( buf, d ) ] = 0;
+    }
+    CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
+
+    sw.Reset();
+    for( int i = -10000000; i < 10000000; ++i )
+    {
+        int d = i;
+        buf[ sprintf( buf, "%d", d ) ] = 0;
+    }
+    CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
+
+
+
+    sw.Reset();
+    for( int i = -10000000; i < 10000000; ++i )
+    {
+        double d = (double)i + 0.12345678;
+        buf[ ToString( buf, d ) ] = 0;
+    }
+    CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
+
+    sw.Reset();
+    for( int i = -10000000; i < 10000000; ++i )
+    {
+        double d = (double)i + 0.12345678;
+        buf[ sprintf( buf, "%lf", d ) ] = 0;
+    }
+    CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
+
     //FlatQueue<String> fq;
     //fq.Push( "asdf" );
-
-    char buf[ 256 ];
-    double d = 1.23456789;
-    float f = d;
-    
-    Cout( d, " ", f );
 
     //DbTable dt;
     //dt.AddColumns(
