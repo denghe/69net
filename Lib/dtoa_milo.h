@@ -395,6 +395,9 @@ inline int dtoa_milo(double value, char* buffer) {
         //>
 	}
 	else {
+        //<
+        bool isNegative = value < 0;
+        //>
 		if (value < 0) {
 			*buffer++ = '-';
 			value = -value;
@@ -403,7 +406,7 @@ inline int dtoa_milo(double value, char* buffer) {
 		Grisu2(value, buffer, &length, &K);
 		Prettify(buffer, length, K);
         //<
-        return length + ( K ? 1 : 0 );
+        return length + ( K ? 1 : 0 ) + ( isNegative ? 1 : 0 );
         //>
 	}
 }
