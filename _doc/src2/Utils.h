@@ -5,7 +5,7 @@
 namespace Utils
 {
 
-    // ½«ÖµÀàĞÍ×ª»»Îª×Ö·û´® ·µ»Ø×ª»»ºóµÄ´®³¤ (Ö÷ÒªÎª Append, Write µÈº¯Êı·şÎñ)
+    // å°†å€¼ç±»å‹è½¬æ¢ä¸ºå­—ç¬¦ä¸² è¿”å›è½¬æ¢åçš„ä¸²é•¿ (ä¸»è¦ä¸º Append, Write ç­‰å‡½æ•°æœåŠ¡)
     int toString( char * dstBuf, uint8   v );
     int toString( char * dstBuf, uint16  v );
     int toString( char * dstBuf, uint    v );
@@ -18,7 +18,7 @@ namespace Utils
     int toString( char * dstBuf, float   v, int maxlen = 20, int precision = 10, bool delEndZeros = true );
     int toString( char * dstBuf, bool    v );
 
-    // ×Ö´®×ªÖµ£¨ÖµºóÃæĞèÒªÒÔ 0 Îª½áÎ²ÇÒ²»ÄÜÓĞÂÒÆß°ËÔãµÄ ¿Õ¸ñ, TAB µÈÅÅ°æ·û£©
+    // å­—ä¸²è½¬å€¼ï¼ˆå€¼åé¢éœ€è¦ä»¥ 0 ä¸ºç»“å°¾ä¸”ä¸èƒ½æœ‰ä¹±ä¸ƒå…«ç³Ÿçš„ ç©ºæ ¼, TAB ç­‰æ’ç‰ˆç¬¦ï¼‰
     void fromString( uint8   & dstVar, char const * s );
     void fromString( uint16  & dstVar, char const * s );
     void fromString( uint32  & dstVar, char const * s );
@@ -31,7 +31,7 @@ namespace Utils
     void fromString( float   & dstVar, char const * s );
     void fromString( bool    & dstVar, char const * s );
 
-    // Ò»Ğ©±ãÓÚĞ´Ä£°åµÄ²¹³ä
+    // ä¸€äº›ä¾¿äºå†™æ¨¡æ¿çš„è¡¥å……
     int toString( char * dstBuf, string const & v );
     template<int len>
     int toString( char * dstBuf, char const ( &v )[ len ] )
@@ -55,7 +55,7 @@ namespace Utils
         fillCore( buf, offset, vs... );
     }
 
-    // fill Ö÷ÓÃÓÚ¸ßËÙÌî³ä char * buffer Æ´×Ö´®, µ«ĞëÌáÇ°Ô¤¹À×ã³¤¶È. ¿É assert ·µ»ØÖµ < len
+    // fill ä¸»ç”¨äºé«˜é€Ÿå¡«å…… char * buffer æ‹¼å­—ä¸², ä½†é¡»æå‰é¢„ä¼°è¶³é•¿åº¦. å¯ assert è¿”å›å€¼ < len
     template<typename ...TS>
     int fill( char * buf, TS const & ...vs )
     {

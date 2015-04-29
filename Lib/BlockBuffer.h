@@ -4,18 +4,18 @@
 namespace xxx
 {
 
-    // ¿éÊ½À©ÈİµÄÏÈ½øÏÈ³öÑ­»·¶ÁĞ´Á÷( Ö÷ÓÃÓÚ·¢Êı¾İÉ¶µÄ )
+    // å—å¼æ‰©å®¹çš„å…ˆè¿›å…ˆå‡ºå¾ªç¯è¯»å†™æµ( ä¸»ç”¨äºå‘æ•°æ®å•¥çš„ )
     class BlockBuffer : Memmoveable
     {
     public:
         explicit BlockBuffer( Pool& p );
         ~BlockBuffer();
         void Write( char const* buf, int len );
-        int Read( char* buf, int len );             // ÊÔ¸´ÖÆÖ¸¶¨³¤¶Èµ½ buf ²¢ÒÆ¶¯¶ÁÖ¸Õë. ·µ»ØÊµ¼Ê¸´ÖÆµÄ³¤¶È
-        void Copy( char* buf, int len );            // ¸´ÖÆÖ¸¶¨³¤¶Èµ½ buf, Èç¹û size ²»×ã»á³ö´í
+        int Read( char* buf, int len );             // è¯•å¤åˆ¶æŒ‡å®šé•¿åº¦åˆ° buf å¹¶ç§»åŠ¨è¯»æŒ‡é’ˆ. è¿”å›å®é™…å¤åˆ¶çš„é•¿åº¦
+        void Copy( char* buf, int len );            // å¤åˆ¶æŒ‡å®šé•¿åº¦åˆ° buf, å¦‚æœ size ä¸è¶³ä¼šå‡ºé”™
         void Clear();
         bool Empty() const;
-        int Size() const;                           // Î´¶ÁÖ®Êı¾İ³¤
+        int Size() const;                           // æœªè¯»ä¹‹æ•°æ®é•¿
     private:
         BlockBuffer( BlockBuffer const& o ) = delete;
         BlockBuffer& operator=( BlockBuffer const& o ) = delete;
@@ -24,11 +24,11 @@ namespace xxx
             Page*   next;
             char    data[ 1 ];
         };
-        Page*       wp;                             // ÕıÓÃÓÚĞ´µÄÒ³
-        Page*       rp;                             // ÕıÓÃÓÚ¶ÁµÄÒ³
-        int         wpLen;                          // ÕıÓÃÓÚĞ´µÄÒ³µÄÒÑĞ´³¤¶È
-        int         rpLen;                          // ÕıÓÃÓÚ¶ÁµÄÒ³µÄÒÑ¶Á³¤¶È
-        int         size;                           // Õı¶ÁÒ³Ê£Óà³¤¶È + ÕıĞ´Ò³ÒÑĞ´³¤¶È + ÖĞ¼ä¿ç¹ıµÄÒ³Êı * Ò³size
+        Page*       wp;                             // æ­£ç”¨äºå†™çš„é¡µ
+        Page*       rp;                             // æ­£ç”¨äºè¯»çš„é¡µ
+        int         wpLen;                          // æ­£ç”¨äºå†™çš„é¡µçš„å·²å†™é•¿åº¦
+        int         rpLen;                          // æ­£ç”¨äºè¯»çš„é¡µçš„å·²è¯»é•¿åº¦
+        int         size;                           // æ­£è¯»é¡µå‰©ä½™é•¿åº¦ + æ­£å†™é¡µå·²å†™é•¿åº¦ + ä¸­é—´è·¨è¿‡çš„é¡µæ•° * é¡µsize
         Pool*       pool;
     };
 

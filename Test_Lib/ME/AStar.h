@@ -16,8 +16,8 @@ struct AStar
     typedef PathNode<T*>    PNT;
     typedef PathNode<T*>*   PPNT;
 
-    std::vector<PPNT>       searchResults;              // Search º¯ÊıµÄÖ´ĞĞ½á¹û
-    Map<PNT>                pathNodeMap;                // Í¨¹ıÔ­µØÍ¼Êı¾İÌî³ä£¬À©Õ¹³ö¼ÆËã×Ö¶Î
+    std::vector<PPNT>       searchResults;              // Search å‡½æ•°çš„æ‰§è¡Œç»“æœ
+    Map<PNT>                pathNodeMap;                // é€šè¿‡åŸåœ°å›¾æ•°æ®å¡«å……ï¼Œæ‰©å±•å‡ºè®¡ç®—å­—æ®µ
     PriorityQueue<PPNT>     orderedOpenSet;
     Map<PPNT>               cameFrom;
     OpenCloseMap        closedSet;

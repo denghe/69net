@@ -5,18 +5,18 @@ namespace xxx
 {
 
 
-    // ½«½á¹¹Ìå¼°ÄÚ´æÈ«²¿¹¹½¨ÔÚ SharedMemory ÉÏµÄÒ»¸öÑ­»· buffer
-    // Ê¹ÓÃ·½·¨£ºÖ±½Ó½« SM ÄÚ´æÖ¸Õë Ó²×ª³ÉÕâ¸öÀàµÄÖ¸Õë
-    // SM ´´½¨Õß»¹Ğëµ÷ÓÃ Init º¯Êı³õÊ¼»¯
-    // ½öÏŞÒ»¶ÁÒ»Ğ´Á½¸ö½ø³Ì/Ïß³ÌÍ¬Ê±Ê¹ÓÃ
+    // å°†ç»“æ„ä½“åŠå†…å­˜å…¨éƒ¨æ„å»ºåœ¨ SharedMemory ä¸Šçš„ä¸€ä¸ªå¾ªç¯ buffer
+    // ä½¿ç”¨æ–¹æ³•ï¼šç›´æ¥å°† SM å†…å­˜æŒ‡é’ˆ ç¡¬è½¬æˆè¿™ä¸ªç±»çš„æŒ‡é’ˆ
+    // SM åˆ›å»ºè€…è¿˜é¡»è°ƒç”¨ Init å‡½æ•°åˆå§‹åŒ–
+    // ä»…é™ä¸€è¯»ä¸€å†™ä¸¤ä¸ªè¿›ç¨‹/çº¿ç¨‹åŒæ—¶ä½¿ç”¨
     class SMBuffer
     {
     public:
         void Init( int _bufLen );
-        int Write( char const* _buf, int len );     // ·µ»ØÊµ¼ÊĞ´Èë³¤¶È
-        int Read( char* _buf, int len );            // ·µ»ØÊµ¼Ê¶ÁÈ¡³¤¶È
-        int Copy( char* _buf, int len );            // ·µ»ØÊµ¼Ê¸´ÖÆ³¤¶È
-        int Skip( int len );                        // ·µ»ØÊµ¼ÊÌø¹ı³¤¶È
+        int Write( char const* _buf, int len );     // è¿”å›å®é™…å†™å…¥é•¿åº¦
+        int Read( char* _buf, int len );            // è¿”å›å®é™…è¯»å–é•¿åº¦
+        int Copy( char* _buf, int len );            // è¿”å›å®é™…å¤åˆ¶é•¿åº¦
+        int Skip( int len );                        // è¿”å›å®é™…è·³è¿‡é•¿åº¦
         void Clear();
         bool Empty() const;
         int Size() const;

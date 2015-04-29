@@ -90,11 +90,11 @@ int main()
 {
     vector<wstring> words =
     {
-        L"²ÙÄã",
-        L"²ÙÄã´óÒ¯",
-        L"²ÙÄãÂè",
+        L"æ“ä½ ",
+        L"æ“ä½ å¤§çˆ·",
+        L"æ“ä½ å¦ˆ",
     };
-    wstring s = L"ÎÒ²ÙÄã´óÒ¯,²ÙÄãÈ«¼Ò!²Ù";
+    wstring s = L"æˆ‘æ“ä½ å¤§çˆ·,æ“ä½ å…¨å®¶!æ“";
     FastDW fdw( words );
     auto o = fdw.calc( s );
 

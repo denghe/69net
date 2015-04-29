@@ -4,7 +4,7 @@
 namespace xxx
 {
 
-    //// ´ø Dump( String& ) const º¯ÊıµÄ¶¼¿ÉÒÔ ±»Õı³£ Dump
+    //// å¸¦ Dump( String& ) const å‡½æ•°çš„éƒ½å¯ä»¥ è¢«æ­£å¸¸ Dump
     HAS_FUNC( HasFunc_Dump, Dump, void ( T::* )( String& ) const );
     template<typename T>
     typename std::enable_if<HasFunc_Dump<T>::value, void>::type DumpCoreSwitch( String& s, T const& v )

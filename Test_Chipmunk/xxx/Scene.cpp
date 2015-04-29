@@ -28,7 +28,7 @@ namespace xxx
             glMatrixMode( GL_PROJECTION );
             glLoadIdentity();
 
-            // 等比修正 size( 存实际布局尺寸, 短边撑满: 即短边等于设计尺寸短边，长边变长 )
+            // 绛夋瘮淇 size( 瀛樺疄闄呭竷灞�灏哄, 鐭竟鎾戞弧: 鍗崇煭杈圭瓑浜庤璁″昂瀵哥煭杈癸紝闀胯竟鍙橀暱 )
             if( designSize.w > designSize.h )
             {
                 size.w = designSize.h * size.w / size.h;
@@ -52,6 +52,6 @@ namespace xxx
             o->Draw( _durationTicks );
             o = o->next;
         }
-        dirty = false;                // resize 的时候会标脏
+        dirty = false;                // resize 鐨勬椂鍊欎細鏍囪剰
     }
 }

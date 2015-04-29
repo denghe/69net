@@ -70,7 +70,7 @@ namespace xxx
         void ToLower();
         void ToUpper();
         void ToUpperFirstChar();
-        void ToLowerUnsafe();                                       // 2x faster than ToLower(). bad chars£º   @[\]^_` 
+        void ToLowerUnsafe();                                       // 2x faster than ToLower(). bad charsï¼š   @[\]^_` 
 
         int GetHashCode() const;
 
@@ -150,8 +150,8 @@ namespace xxx
 
 
 
-        // Õâ²¿·Ö»¹ÒªÔÙË¼¿¼¡£ÀíÂÛÉÏ½²¿ÉÒÔÖ±½Ó¼Ó ToString º¯ÊıÀ´×öµ½¡£
-        //// ´ø ToString( String& ) const º¯ÊıµÄ¶¼¿ÉÒÔ ±»Õı³£ Append
+        // è¿™éƒ¨åˆ†è¿˜è¦å†æ€è€ƒã€‚ç†è®ºä¸Šè®²å¯ä»¥ç›´æ¥åŠ  ToString å‡½æ•°æ¥åšåˆ°ã€‚
+        //// å¸¦ ToString( String& ) const å‡½æ•°çš„éƒ½å¯ä»¥ è¢«æ­£å¸¸ Append
         //HAS_FUNC( HasFunc_ToString, ToString, void ( T::* )( String& ) const );
         //template<typename T>
         //typename std::enable_if<HasFunc_ToString<T>::value, void>::type AppendCoreSwitch( String& s, T const& v )

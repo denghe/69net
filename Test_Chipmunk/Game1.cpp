@@ -8,17 +8,17 @@ Game1::Game1()
     //G::window->setVsync( false );
 }
 
-static Point angleXyIncs[ 360 ];           // ´æ·Å¶ÈÊı¶ÔÓ¦µÄ xy ÔöÁ¿
+static Point angleXyIncs[ 360 ];           // å­˜æ”¾åº¦æ•°å¯¹åº”çš„ xy å¢é‡
 
 void Game1::Loaded()
 {
-    for( int i = 0; i < 360; ++i )  // Ìî³ä 360 ¶ÈµÄ xy ÔöÁ¿±í
+    for( int i = 0; i < 360; ++i )  // å¡«å…… 360 åº¦çš„ xy å¢é‡è¡¨
     {
         auto a = M_PI * 2 / 360 * i;
         angleXyIncs[ i ] = { sin( a ), cos( a ) };
     }
 
-    mb = Create<MarginBox>();       // »­¸öÀë windows ±ßÔµ 5 µÄ±ß¿ò
+    mb = Create<MarginBox>();       // ç”»ä¸ªç¦» windows è¾¹ç¼˜ 5 çš„è¾¹æ¡†
     mb->margin = { 5, 5, 5, 5 };
     mb->size = { scene.size.w - 10, scene.size.h - 10 };
     scene.Add( mb );
@@ -26,7 +26,7 @@ void Game1::Loaded()
 
 void Game1::Update()
 {
-    input.touchEvents.Clear();      // ÕâÀïÏÈÎŞÊÓÊó±êÊÂ¼ş£¬Ö»¹Ø×¢×´Ì¬
+    input.touchEvents.Clear();      // è¿™é‡Œå…ˆæ— è§†é¼ æ ‡äº‹ä»¶ï¼Œåªå…³æ³¨çŠ¶æ€
     if( input.touching )
     {
         createObj( input.touchPos.x - mb->pos.x, input.touchPos.y - mb->pos.y );
@@ -36,7 +36,7 @@ void Game1::Update()
     {
         auto n = objs[ i ];
         auto& o = n->key;
-        if( !o->Update() )     // ¸üĞÂËùÓĞ object, ËÀµôµÄ¼Ó kill list
+        if( !o->Update() )     // æ›´æ–°æ‰€æœ‰ object, æ­»æ‰çš„åŠ  kill list
         {
             o->RemoveFromParent();      // ref = 1
             o->Release();               // ref = 0 ( delete )
@@ -50,7 +50,7 @@ Game1::~Game1()
     for( int i = 0; i < objs.Size(); ++i )
     {
         auto& o = objs[ i ]->key;       // ref = 2
-        o->Release();                   // ref = 1 ( scene.childs »áÉ± )
+        o->Release();                   // ref = 1 ( scene.childs ä¼šæ€ )
     }
 }
 

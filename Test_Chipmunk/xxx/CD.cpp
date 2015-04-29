@@ -293,7 +293,7 @@ namespace xxx
     {
         parent->IncreaseFlag();
         _container.Clear();
-        flag = parent->autoFlag;     // ·ÀÖ¹Ä¿±ê item ±»¼ÓÈë¼¯ºÏ
+        flag = parent->autoFlag;     // é˜²æ­¢ç›®æ ‡ item è¢«åŠ å…¥é›†åˆ
         for( int i = 0; i < cells.Size(); ++i )
         {
             auto& cis = cells[ i ].first->items;
@@ -311,7 +311,7 @@ namespace xxx
     {
         parent->IncreaseFlag();
         _container.Clear();
-        flag = parent->autoFlag;     // ·ÀÖ¹Ä¿±ê item ±»¼ÓÈë¼¯ºÏ
+        flag = parent->autoFlag;     // é˜²æ­¢ç›®æ ‡ item è¢«åŠ å…¥é›†åˆ
         for( int i = 0; i < cells.Size(); ++i )
         {
             auto& cis = cells[ i ].first->items;
@@ -335,7 +335,7 @@ namespace xxx
         return _container.Size();
     }
 
-    // ´ÓÉÏÃæµÄº¯Êı¾«¼ò¶øÀ´
+    // ä»ä¸Šé¢çš„å‡½æ•°ç²¾ç®€è€Œæ¥
     CdItem* CdItem::GetCollisionItem()
     {
         for( int i = 0; i < cells.Size(); ++i )

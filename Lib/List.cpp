@@ -173,7 +173,7 @@ namespace xxx
 
         if( byteIdxFrom == byteIdxTo )
         {
-            // ¸ãÒ»¸ö ÖÐ¼äÒ»¶ÎÊÇ v µÄ byte ³öÀ´
+            // æžä¸€ä¸ª ä¸­é—´ä¸€æ®µæ˜¯ v çš„ byte å‡ºæ¥
             if( v )
             {
                 buf[ byteIdxFrom ] |= (byte)0xFFu >> ( 7 - ( idxTo - idxFrom ) ) << ( idxFrom & 7 );
@@ -185,7 +185,7 @@ namespace xxx
         }
         else
         {
-            // ·Ö±ð¸ãÒ»Í·Ò»Î², ÔÙ memset ÖÐ¼ä
+            // åˆ†åˆ«æžä¸€å¤´ä¸€å°¾, å† memset ä¸­é—´
             auto idxFrom7 = idxFrom & 7;
             auto idxTo7 = idxTo & 7;
             if( v )
@@ -305,73 +305,73 @@ CoutLine();
 
 bs.Push( false );
 bs.Push( true );
-bs.Resize( 9, false );  // Ö»À©ÈÝ²»³õÊ¼»¯
-dump();                 // ½«Êä³ö false true ....Ëæ»ú
+bs.Resize( 9, false );  // åªæ‰©å®¹ä¸åˆå§‹åŒ–
+dump();                 // å°†è¾“å‡º false true ....éšæœº
 bs.Fill( false, 2, 8 );
-dump();                 // Êä³ö false true false Ò»´®
+dump();                 // è¾“å‡º false true false ä¸€ä¸²
 bs.Fill( true, 8, 7 );
-dump();                 // ×îºó 2 Î»Ó¦¸ÃÊä³ö true
+dump();                 // æœ€åŽ 2 ä½åº”è¯¥è¾“å‡º true
 bs.Resize( 12, true );
-dump();                 // ×îºó 3 Î»Ó¦¸ÃÊä³ö false
+dump();                 // æœ€åŽ 3 ä½åº”è¯¥è¾“å‡º false
 bs.Resize( 16 );
 bs.Fill( true, 12, 15 );
-dump();                 // ×îºó 3 Î»Ó¦¸ÃÊä³ö true
+dump();                 // æœ€åŽ 3 ä½åº”è¯¥è¾“å‡º true
 bs.Fill( true, 0, 0 );
-dump();                 // µÚ 1 Î»Ó¦¸ÃÊä³ö true
+dump();                 // ç¬¬ 1 ä½åº”è¯¥è¾“å‡º true
 bs.Fill( false, 1, 0 );
-dump();                 // µÚ 2 Î»Ó¦¸ÃÊä³ö false
+dump();                 // ç¬¬ 2 ä½åº”è¯¥è¾“å‡º false
 bs.Resize( 24 );
 bs.FillFalse();
-dump();                 // È«²¿Êä³ö false
+dump();                 // å…¨éƒ¨è¾“å‡º false
 bs.FillFalse();
 bs.Fill( true, 7, 7 );
-dump();                 // µÚ 8 Î»Êä³ö true
+dump();                 // ç¬¬ 8 ä½è¾“å‡º true
 bs.FillFalse();
 bs.Fill( true, 7, 8 );
-dump();                 // µÚ 8, 9 Î»Êä³ö true
+dump();                 // ç¬¬ 8, 9 ä½è¾“å‡º true
 bs.FillFalse();
 bs.Fill( true, 0, 8 );
-dump();                 // µÚ 1 ~ 9 Î»Êä³ö true
+dump();                 // ç¬¬ 1 ~ 9 ä½è¾“å‡º true
 bs.FillFalse();
 bs.Fill( true, 8, 8 );
-dump();                 // µÚ 9 Î»Êä³ö true
+dump();                 // ç¬¬ 9 ä½è¾“å‡º true
 bs.FillFalse();
 bs.Fill( true, 23, 23 );
-dump();                 // µÚ 24 Î»Êä³ö true
+dump();                 // ç¬¬ 24 ä½è¾“å‡º true
 bs.FillFalse();
 bs.Fill( true, 15, 23 );
-dump();                 // µÚ 16 ~ 24 Î»Êä³ö true
+dump();                 // ç¬¬ 16 ~ 24 ä½è¾“å‡º true
 bs.FillFalse();
 bs.Fill( true, 16, 23 );
-dump();                 // µÚ 17 ~ 24 Î»Êä³ö true
+dump();                 // ç¬¬ 17 ~ 24 ä½è¾“å‡º true
 bs.FillFalse();
 bs.Fill( true, 8, 15 );
-dump();                 // µÚ 9 ~ 16 Î»Êä³ö true
+dump();                 // ç¬¬ 9 ~ 16 ä½è¾“å‡º true
 
 bs.FillTrue();
 bs.Fill( false, 7, 7 );
-dump();                 // µÚ 8 Î»Êä³ö false
+dump();                 // ç¬¬ 8 ä½è¾“å‡º false
 bs.FillTrue();
 bs.Fill( false, 7, 8 );
-dump();                 // µÚ 8, 9 Î»Êä³ö false
+dump();                 // ç¬¬ 8, 9 ä½è¾“å‡º false
 bs.FillTrue();
 bs.Fill( false, 0, 8 );
-dump();                 // µÚ 1 ~ 9 Î»Êä³ö false
+dump();                 // ç¬¬ 1 ~ 9 ä½è¾“å‡º false
 bs.FillTrue();
 bs.Fill( false, 8, 8 );
-dump();                 // µÚ 9 Î»Êä³ö false
+dump();                 // ç¬¬ 9 ä½è¾“å‡º false
 bs.FillTrue();
 bs.Fill( false, 23, 23 );
-dump();                 // µÚ 24 Î»Êä³ö false
+dump();                 // ç¬¬ 24 ä½è¾“å‡º false
 bs.FillTrue();
 bs.Fill( false, 15, 23 );
-dump();                 // µÚ 16 ~ 24 Î»Êä³ö false
+dump();                 // ç¬¬ 16 ~ 24 ä½è¾“å‡º false
 bs.FillTrue();
 bs.Fill( false, 16, 23 );
-dump();                 // µÚ 17 ~ 24 Î»Êä³ö false
+dump();                 // ç¬¬ 17 ~ 24 ä½è¾“å‡º false
 bs.FillTrue();
 bs.Fill( false, 8, 15 );
-dump();                 // µÚ 9 ~ 16 Î»Êä³ö false
+dump();                 // ç¬¬ 9 ~ 16 ä½è¾“å‡º false
 
 
 return 0;

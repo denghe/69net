@@ -23,30 +23,30 @@ namespace xxx
 
     struct Node : public Ref
     {
-        Size    size;                               // ³¤¿í( Âß¼­¸ÅÄî£¬ÅÉÉúÀà¾ßÌåÔÓÓÃÒª¿´Çé¿ö )
-        Point   dock;                               // Ğü¿¿µã( 0 ~ 1 °Ù·Ö±È£¬Ïà¶ÔÓÚ parent size )
-        Point   anchor;                             // Ãªµã( 0 ~ 1 °Ù·Ö±È, Ïà¶ÔÓÚ size )
-        Point   pos;                                // Ïà¶ÔÓÚĞü¿¿µãµÄÃªµãÆ«ÒÆ×ø±ê
+        Size    size;                               // é•¿å®½( é€»è¾‘æ¦‚å¿µï¼Œæ´¾ç”Ÿç±»å…·ä½“æ‚ç”¨è¦çœ‹æƒ…å†µ )
+        Point   dock;                               // æ‚¬é ç‚¹( 0 ~ 1 ç™¾åˆ†æ¯”ï¼Œç›¸å¯¹äº parent size )
+        Point   anchor;                             // é”šç‚¹( 0 ~ 1 ç™¾åˆ†æ¯”, ç›¸å¯¹äº size )
+        Point   pos;                                // ç›¸å¯¹äºæ‚¬é ç‚¹çš„é”šç‚¹åç§»åæ ‡
         Color4b color;
         // todo: scale, angle  (matrix?) shader? blend?
         void*   userData;
 
-        bool    dirty;                              // Ôà±ê¼Ç( Ä¬ÈÏ»áÓ°Ïìµ½×Ó )
-        Point   worldPos;                           // Êµ¼Ê»æÖÆÓÃµÄÈ«¾Ö×ø±ê( draw Ê± dirty Ìî³ä )
+        bool    dirty;                              // è„æ ‡è®°( é»˜è®¤ä¼šå½±å“åˆ°å­ )
+        Point   worldPos;                           // å®é™…ç»˜åˆ¶ç”¨çš„å…¨å±€åæ ‡( draw æ—¶ dirty å¡«å…… )
 
         Node*   parent;
-        int     idx;                                // Î»ÓÚ childs µÄË÷Òı¡£ÓÃÓÚ¿ìËÙ Remove
-        Node    *prev, *next, *first, *last;        // Ë«ÏòÁ´±í¡£ÓÃÓÚÎ¬³Ö Draw µÄË³Ğò
+        int     idx;                                // ä½äº childs çš„ç´¢å¼•ã€‚ç”¨äºå¿«é€Ÿ Remove
+        Node    *prev, *next, *first, *last;        // åŒå‘é“¾è¡¨ã€‚ç”¨äºç»´æŒ Draw çš„é¡ºåº
         List<Node*> childs;
 
         virtual void Draw( int _durationTicks );
-        virtual void Drawing( int _durationTicks ); // Draw µÄ¹ı³ÌÖĞ»áµ÷ÓÃ( ËãÍê×ø±êÉ¶µÄÖ®ºó, ±éÀú×ÓÖ®Ç° )
+        virtual void Drawing( int _durationTicks ); // Draw çš„è¿‡ç¨‹ä¸­ä¼šè°ƒç”¨( ç®—å®Œåæ ‡å•¥çš„ä¹‹å, éå†å­ä¹‹å‰ )
 
         virtual void Add( Node* _child );
-        virtual void Added();                       // ±» parent Add ºó»áµ÷ÓÃ¸Ãº¯Êı
+        virtual void Added();                       // è¢« parent Add åä¼šè°ƒç”¨è¯¥å‡½æ•°
 
         virtual void Remove( Node* _child );
-        virtual void Removed();                     // ±» parent Remove ºó»áµ÷ÓÃ¸Ãº¯Êı( Èç¹û»¹ÓĞÒıÓÃ¼ÆÊıµÄ»° )
+        virtual void Removed();                     // è¢« parent Remove åä¼šè°ƒç”¨è¯¥å‡½æ•°( å¦‚æœè¿˜æœ‰å¼•ç”¨è®¡æ•°çš„è¯ )
         void RemoveFromParent();
         virtual void Clear();                       // remove all childs
 

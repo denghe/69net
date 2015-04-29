@@ -66,7 +66,7 @@ namespace xxx
         _child->parent = this;
         _child->idx = childs.Size();
 
-        if( !childs.Size() )            // µÚ 1 ¸ö±»¼Ó½ø¼¯ºÏµÄ
+        if( !childs.Size() )            // ç¬¬ 1 ä¸ªè¢«åŠ è¿›é›†åˆçš„
         {
             first = last = _child;
             _child->prev = _child->next = nullptr;
@@ -108,8 +108,8 @@ namespace xxx
                 _child->next->prev = _child->prev;
             }
 
-            childs.Top()->idx = _child->idx;    // ÐÞÕýË÷Òý
-            childs.EraseFast( _child->idx );    // ½«×îºó¸öÔªËØÒÆµ½µ±Ç°Òª erase µÄÎ»ÖÃ, --size
+            childs.Top()->idx = _child->idx;    // ä¿®æ­£ç´¢å¼•
+            childs.EraseFast( _child->idx );    // å°†æœ€åŽä¸ªå…ƒç´ ç§»åˆ°å½“å‰è¦ erase çš„ä½ç½®, --size
         }
 
         _child->parent = nullptr;

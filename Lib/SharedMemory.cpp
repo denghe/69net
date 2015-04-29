@@ -13,9 +13,9 @@ namespace xxx
         return 0;
     }
 
-    // ´´½¨¹²ÏíÄÚ´æ
-    // ¾«¼ò MS º¯Êı£¬²»×ö´íÎó CHECK. pDACL ´« NULL, °²È«¼¶±ğ×îµÍ, Ä¬ÈÏ
-    // ²Î¿¼×ÊÁÏ£º
+    // åˆ›å»ºå…±äº«å†…å­˜
+    // ç²¾ç®€ MS å‡½æ•°ï¼Œä¸åšé”™è¯¯ CHECK. pDACL ä¼  NULL, å®‰å…¨çº§åˆ«æœ€ä½, é»˜è®¤
+    // å‚è€ƒèµ„æ–™ï¼š
     // http://support.microsoft.com/kb/106387/zh-cn
     // http://blog.csdn.net/paradise_lx/article/details/5939988
     char* SharedMemory::Create( int key, int bufLen )

@@ -38,7 +38,7 @@ namespace xxx
             ReleaseCapture();
     }
 
-    // ·´Ïò£¬×ªÎªÉè¼Æ×ø±ê
+    // åå‘ï¼Œè½¬ä¸ºè®¾è®¡åæ ‡
     TouchEvent getTouchEvent( TouchEventType t, short x, short y )
     {
         auto& s = G::scene->size;
@@ -58,7 +58,7 @@ namespace xxx
         {
             y = G::window->height - 1;
         }
-        y = G::window->height - y;              // ÉÏÏÂ·­×ªÎª gl ×ø±ê
+        y = G::window->height - y;              // ä¸Šä¸‹ç¿»è½¬ä¸º gl åæ ‡
         return
         {
             t,
@@ -112,7 +112,7 @@ namespace xxx
             G::window->update();
             return 0;
 
-            // ÕâÑùĞ§¹ûÆäÊµÒ²²»´óºÃ¡£Êó±êÓÚ±êÌâÀ¸°´ÏÂ²»¶¯µÄ 0.5 Ãë×óÓÒÊ±³¤ÄÚ»á¶¨×¡
+            // è¿™æ ·æ•ˆæœå…¶å®ä¹Ÿä¸å¤§å¥½ã€‚é¼ æ ‡äºæ ‡é¢˜æ æŒ‰ä¸‹ä¸åŠ¨çš„ 0.5 ç§’å·¦å³æ—¶é•¿å†…ä¼šå®šä½
         case WM_ENTERMENULOOP:
         case WM_ENTERSIZEMOVE:
             // http://stackoverflow.com/questions/3102074/win32-my-application-freezes-while-the-user-resizes-the-window
@@ -151,7 +151,7 @@ namespace xxx
 
     bool Window::Init( wchar_t* _className, int _width, int _height, int _x /*= 0*/, int _y /*= 0*/, bool _doubleBuffer /*= true*/, wchar_t* _title /*= L""*/, WNDPROC _wndProc /*= &defaultProc*/ )
     {
-        assert( !wnd );    // ·ÀÖØ¸´µ÷ÓÃ
+        assert( !wnd );    // é˜²é‡å¤è°ƒç”¨
 
         className = _className;
         wndProc = _wndProc;

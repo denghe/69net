@@ -15,7 +15,7 @@ namespace xxx
         static_assert( std::is_pod<T>::value, "forget impl GetHashCode func ?" );
         if( std::is_pointer<T>::value )
         {
-            return (int)(uint)( (size_t)(void*)v / ( sizeof(size_t) * 2 ) );    // ¾­ÑéÊı¾İ. ¾­²âÊÔ·¢ÏÖ x64 ÏÂ vc new ÖÁÉÙÊÇ 16 µÄ±¶Êı, x86 ÖÁÉÙÊÇ 8 µÄ±¶Êı
+            return (int)(uint)( (size_t)(void*)v / ( sizeof(size_t) * 2 ) );    // ç»éªŒæ•°æ®. ç»æµ‹è¯•å‘ç° x64 ä¸‹ vc new è‡³å°‘æ˜¯ 16 çš„å€æ•°, x86 è‡³å°‘æ˜¯ 8 çš„å€æ•°
         }
         if( sizeof( T ) == 8 )
         {

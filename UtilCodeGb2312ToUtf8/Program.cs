@@ -26,9 +26,8 @@ namespace UtilCodeGb2312ToUtf8
                 if( c > 0x7Fu )
                 {
                     int len = 0;
-                    if( c.Bit( 8 ) ) len++; // 10xxxxxx
                     if( c.Bit( 7 ) ) len++; // 110xxxxx
-                    else goto Calc;
+                    else return false;
                     if( c.Bit( 6 ) ) len++; // 1110xxxx
                     else goto Calc;
                     if( c.Bit( 5 ) ) len++; // 11110xxx
@@ -39,7 +38,7 @@ namespace UtilCodeGb2312ToUtf8
                     if( c.Bit( 2 ) ) return false;
                 Calc:
                     if( i >= bytes.Length - len ) return false;
-                    for( int j = i + 1; j < i + len; j++ )
+                    for( int j = i + 1; j <= i + len; j++ )
                     {
                         c = bytes[ j ];
                         if( !( c.Bit( 8 ) && !c.Bit( 7 ) ) ) return false;

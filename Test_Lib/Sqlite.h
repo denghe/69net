@@ -1,9 +1,9 @@
 #ifndef __SQLITE___H__
 #define __SQLITE___H__
 
-// todo: ±ä²Î support
-// todo: »»³É×Ô¼ºµÄÈİÆ÷
-// todo: Í¬²½²¿·Ö×¢ÊÍ
+// todo: å˜å‚ support
+// todo: æ¢æˆè‡ªå·±çš„å®¹å™¨
+// todo: åŒæ­¥éƒ¨åˆ†æ³¨é‡Š
 
 #include "sqlite3.h"
 #include <string>
@@ -38,7 +38,7 @@ namespace Sqlite
         void Close();
 
         // new stmt
-        Query* CreateQuery( std::string const & sql, int n = 0 );  // n: ²ÎÊı¸öÊı, ²»´«½«É¨ ? ºÅ¸öÊı
+        Query* CreateQuery( std::string const & sql, int n = 0 );  // n: å‚æ•°ä¸ªæ•°, ä¸ä¼ å°†æ‰« ? å·ä¸ªæ•°
 
         // delete stmt
         void ReleaseQuery( Query * q );

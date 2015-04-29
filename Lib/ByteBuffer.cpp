@@ -54,7 +54,7 @@ namespace xxx
         //other.bufLen = 0;
         //other.dataLen = 0;
         //other.offset = 0;
-        other.isRef = true;     // ·À»ØÊÕ
+        other.isRef = true;     // é˜²å›žæ”¶
     }
 
     void ByteBuffer::Destroy()

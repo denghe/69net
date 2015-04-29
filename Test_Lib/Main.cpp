@@ -2,87 +2,176 @@
 
 // todo:
 
-// ÕûÀí Sqlite ÀàÏà¹Ø
-// ÒÔÀàËÆ Sqlite ÀàµÄ³¤Ïà£¬Ìá¹© Mysql µÄÖ§³Ö
-// Éè¼Æ Mysql Êı¾İ¿â²Ù×÷²ãµÄ³¤Ïà
+// æ•´ç† Sqlite ç±»ç›¸å…³
+// ä»¥ç±»ä¼¼ Sqlite ç±»çš„é•¿ç›¸ï¼Œæä¾› Mysql çš„æ”¯æŒ
+// è®¾è®¡ Mysql æ•°æ®åº“æ“ä½œå±‚çš„é•¿ç›¸
 
-// ·ÖÅäÆ÷ for ByteBuffer ?
-// Nullable µÄĞòÁĞ»¯Ö§³Ö?
-// Any ÀàĞÍµÄÒıÈë? ( ¿ÉÒÔÊÇ c++ ÄÚÖÃÊı¾İÀàĞÍ ÒÔ¼°³£ÓÃ³£¼ûµÄ¼¯ºÏÉ¶µÄ )
-// ¼ò»¯¸÷ÖÖ Size()
-// Ö¸ÕëÊÇ·ñÎª¿ÕµÄ byte µÄ¹¦ÄÜÀûÓÃ£º±ÈÈç¿É´æĞòÁĞ»¯ÀàĞÍ£¬
-// ÀàĞÍ¿ÉÄÜÖ¸µÄÊÇ ÊÇ·ñÖğ¸öĞòÁĞ»¯£¬»¹ÊÇËµ  index : value ²¿·ÖÁĞ»¯£¬ »òÊÇ bit ±ê¼Ç
-// ²¿·ÖĞòÁĞ»¯£¬Ö¸³ÉÔ±±äÁ¿µÄÖµÓëÄ¬ÈÏÖµ²»µÈµÄÄÇĞ©¡£
-// ¼«¶ËĞèÇóÏÂ£¬¿É¶Ô±ÈÁ½ÖÖ·½Ê½µÄĞòÁĞ»¯ºó³¤¶È²î£¬Ñ¡³ö×îÊ¡µÄ·½Ê½
+// åˆ†é…å™¨ for ByteBuffer ?
+// Nullable çš„åºåˆ—åŒ–æ”¯æŒ?
+// Any ç±»å‹çš„å¼•å…¥? ( å¯ä»¥æ˜¯ c++ å†…ç½®æ•°æ®ç±»å‹ ä»¥åŠå¸¸ç”¨å¸¸è§çš„é›†åˆå•¥çš„ )
+// ç®€åŒ–å„ç§ Size()
+// æŒ‡é’ˆæ˜¯å¦ä¸ºç©ºçš„ byte çš„åŠŸèƒ½åˆ©ç”¨ï¼šæ¯”å¦‚å¯å­˜åºåˆ—åŒ–ç±»å‹ï¼Œ
+// ç±»å‹å¯èƒ½æŒ‡çš„æ˜¯ æ˜¯å¦é€ä¸ªåºåˆ—åŒ–ï¼Œè¿˜æ˜¯è¯´  index : value éƒ¨åˆ†åˆ—åŒ–ï¼Œ æˆ–æ˜¯ bit æ ‡è®°
+// éƒ¨åˆ†åºåˆ—åŒ–ï¼ŒæŒ‡æˆå‘˜å˜é‡çš„å€¼ä¸é»˜è®¤å€¼ä¸ç­‰çš„é‚£äº›ã€‚
+// æç«¯éœ€æ±‚ä¸‹ï¼Œå¯å¯¹æ¯”ä¸¤ç§æ–¹å¼çš„åºåˆ—åŒ–åé•¿åº¦å·®ï¼Œé€‰å‡ºæœ€çœçš„æ–¹å¼
 
 
 #include <stdio.h>
 #include <stdlib.h>
-
+using namespace std;
 using namespace xxx;
-//using namespace std::chrono;
+
+//struct Player
+//{
+//    string name;
+//    int gold;
+//};
+//
+//struct GoldMaker1
+//{
+//    GoldMaker1( Player& p ) : p( &p ) {}
+//    Player* p;
+//    NOINLINE void Increase() { p->gold++; }
+//    void Dump() { cout << p->name << "'s gold = " << p->gold << endl; }
+//};
+//
+//struct GoldMaker2
+//{
+//    GoldMaker2( Player& p ) : p_gold( &p.gold ) {}
+//    int* p_gold;
+//    NOINLINE void Increase() { ( *p_gold )++; }
+//    void Dump()
+//    {
+//        auto p = (Player*)( (size_t)p_gold - (size_t)( &( (Player*)0 )->gold ) );
+//        cout << p->name << "'s gold = " << p->gold << endl;
+//    }
+//};
+
 int main()
 {
-    char buf[ 256 ];
-    Stopwatch sw;
 
-    // Ô¤ÈÈ
-    sw.Reset();
-    for( int i = -10000000; i < 10000000; ++i )
-    {
-        double d = (double)i + 0.12345678;
-        buf[ ToString( buf, d ) ] = 0;
-    }
-    CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
+    Cout( (float)123, " ", (float)-123 );
+
+//    Player p1 = { "p1", 0 }, p2 = { "p2", 0 };
+//    GoldMaker1 gm1( p1 );
+//    GoldMaker2 gm2( p2 );
+//    Stopwatch sw;
+//    // é¢„çƒ­
+//    p1.gold = 0;    sw.Reset();
+//    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
+//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
+//
+//    p1.gold = 0;    sw.Reset();
+//    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
+//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
+//
+//    p2.gold = 0;    sw.Reset();
+//    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
+//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
+//
+//    p1.gold = 0;    sw.Reset();
+//    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
+//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
+//
+//    p2.gold = 0;    sw.Reset();
+//    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
+//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
+//
+//    p1.gold = 0;    sw.Reset();
+//    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
+//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
+//
+//    p2.gold = 0;    sw.Reset();
+//    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
+//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
+//
+//    p1.gold = 0;    sw.Reset();
+//    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
+//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
+//
+//    p2.gold = 0;    sw.Reset();
+//    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
+//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
 
 
-    sw.Reset();
-    for( int i = -10000000; i < 10000000; ++i )
-    {
-        int d = i;
-        buf[ ToString( buf, d ) ] = 0;
-    }
-    CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
+    //char buf[ 256 ];
+    //Stopwatch sw;
 
-    sw.Reset();
-    for( int i = -10000000; i < 10000000; ++i )
-    {
-        int d = i;
-        buf[ sprintf( buf, "%d", d ) ] = 0;
-    }
-    CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
+    //// é¢„çƒ­
+    //sw.Reset();
+    //for( int i = -10000000; i < 10000000; ++i )
+    //{
+    //    double d = (double)i + 0.12345678;
+    //    buf[ ToString( buf, d ) ] = 0;
+    //}
+    //CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
 
 
+    //sw.Reset();
+    //for( int i = -10000000; i < 10000000; ++i )
+    //{
+    //    int d = i;
+    //    buf[ ToString( buf, d ) ] = 0;
+    //}
+    //CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
 
-    sw.Reset();
-    for( int i = -10000000; i < 10000000; ++i )
-    {
-        double d = (double)i + 0.12345678;
-        buf[ ToString( buf, d ) ] = 0;
-    }
-    CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
+    //sw.Reset();
+    //for( int i = -10000000; i < 10000000; ++i )
+    //{
+    //    int d = i;
+    //    buf[ sprintf( buf, "%d", d ) ] = 0;
+    //}
+    //CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
 
-    sw.Reset();
-    for( int i = -10000000; i < 10000000; ++i )
-    {
-        double d = (double)i + 0.12345678;
-        buf[ sprintf( buf, "%lf", d ) ] = 0;
-    }
-    CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
 
-    //FlatQueue<String> fq;
-    //fq.Push( "asdf" );
 
-    //DbTable dt;
-    //dt.AddColumns(
-    //    DbDataTypes::Boolean,
-    //    DbDataTypes::Int32,
-    //    DbDataTypes::String );
-    //dt.AddColumn( DbDataTypes::DateTime ).nullable = true;
-    //dt.AddRow( true, 1, "zzz", system_clock::now() );
-    //dt.AddRow( false, 234, "qwer", DbNull );
+    //sw.Reset();
+    //for( int i = -10000000; i < 10000000; ++i )
+    //{
+    //    double d = (double)i + 0.12345678;
+    //    buf[ ToString( buf, d ) ] = 0;
+    //}
+    //CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
 
-    //Dump( dt );
+    //sw.Reset();
+    //for( int i = -10000000; i < 10000000; ++i )
+    //{
+    //    double d = (double)i + 0.12345678;
+    //    buf[ sprintf( buf, "%lf", d ) ] = 0;
+    //}
+    //CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
+
+
+
+
+
+
+
+
+
+
+
+    ////FlatQueue<String> fq;
+    ////fq.Push( "asdf" );
+
+    ////DbTable dt;
+    ////dt.AddColumns(
+    ////    DbDataTypes::Boolean,
+    ////    DbDataTypes::Int32,
+    ////    DbDataTypes::String );
+    ////dt.AddColumn( DbDataTypes::DateTime ).nullable = true;
+    ////dt.AddRow( true, 1, "zzz", system_clock::now() );
+    ////dt.AddRow( false, 234, "qwer", DbNull );
+
+    ////Dump( dt );
+
+
+
+
+
+
+
+
 
     return 0;
 }

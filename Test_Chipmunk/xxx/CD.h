@@ -4,7 +4,7 @@
 namespace xxx
 {
     // CD = collision detection
-    // µ±Ç°Ö»Ö§³Ö¾ØĞÎ AABB( Èç¹ûÒ»¸öÏÔÊ¾¶ÔÏó½ÏÎª¸´ÔÓ£¬¶à×¢²á¼¸¸öItem¼´¿É )
+    // å½“å‰åªæ”¯æŒçŸ©å½¢ AABB( å¦‚æœä¸€ä¸ªæ˜¾ç¤ºå¯¹è±¡è¾ƒä¸ºå¤æ‚ï¼Œå¤šæ³¨å†Œå‡ ä¸ªItemå³å¯ )
 
     struct CdPoint
     {
@@ -19,37 +19,37 @@ namespace xxx
     struct CdGrid;
     struct CdItem
     {
-        CdSize radius;                                                      // °ë¾¶
-        CdPoint pos;                                                        // ÖĞĞÄµã×ø±ê
-        int groupId;                                                        // 0 ×éºÅ½«ºÍÆäËû×éºÅ·¢ÉúÅö×²£¬ÏàÍ¬×éºÅ²»·¢Éú
-        uint layerMask;                                                     // maskA & maskB ²»Îª 0 µÄ·¢ÉúÅö×²
-        uint flag;                                                          // ×ÔÔöÁ÷Ë®ºÅ£¬ÓÃÓÚÈ¥ÖØ
-        int ci1, ri1, ci2, ri2;                                             // »º´æ Index ²Ù×÷½á¹ûÖ® ×óÏÂ ÓÒÉÏ Î»ÓÚµÄ cell ÒÔ¼ÓËÙ Update
-        int idx;                                                            // Î»ÓÚ CdGrid.items µÄË÷Òı for ¿ìËÙ erase
+        CdSize radius;                                                      // åŠå¾„
+        CdPoint pos;                                                        // ä¸­å¿ƒç‚¹åæ ‡
+        int groupId;                                                        // 0 ç»„å·å°†å’Œå…¶ä»–ç»„å·å‘ç”Ÿç¢°æ’ï¼Œç›¸åŒç»„å·ä¸å‘ç”Ÿ
+        uint layerMask;                                                     // maskA & maskB ä¸ä¸º 0 çš„å‘ç”Ÿç¢°æ’
+        uint flag;                                                          // è‡ªå¢æµæ°´å·ï¼Œç”¨äºå»é‡
+        int ci1, ri1, ci2, ri2;                                             // ç¼“å­˜ Index æ“ä½œç»“æœä¹‹ å·¦ä¸‹ å³ä¸Š ä½äºçš„ cell ä»¥åŠ é€Ÿ Update
+        int idx;                                                            // ä½äº CdGrid.items çš„ç´¢å¼• for å¿«é€Ÿ erase
         void* userData;
-        CdGrid* parent;                                                     // ËùÔÚ CdGrid ¸¸ÈİÆ÷( Í¬Ê±Ò²ÊÇ Init, Destroy µÄÊ¶±ğ flag )
-        List<std::pair<CdCell*, Links<CdItem*>::Node*>> cells;              // Õ¼¾İÁËÄÄĞ©¸ñ×ÓÒÔ¼°Î»ÓÚÕâĞ©¸ñ×ÓÖĞµÄ½Úµã
+        CdGrid* parent;                                                     // æ‰€åœ¨ CdGrid çˆ¶å®¹å™¨( åŒæ—¶ä¹Ÿæ˜¯ Init, Destroy çš„è¯†åˆ« flag )
+        List<std::pair<CdCell*, Links<CdItem*>::Node*>> cells;              // å æ®äº†å“ªäº›æ ¼å­ä»¥åŠä½äºè¿™äº›æ ¼å­ä¸­çš„èŠ‚ç‚¹
 
         CdItem();
         ~CdItem();
         void Init( CdSize const& _radius, CdPoint const& _pos, int _groupId = 0, uint _layerMask = 0xFFFFFFFFu, void* _userData = nullptr );
-        void Destroy();                                                     // Îö¹¹ item ²¢´Ó items ÒÆ¶¯ÖÁ freeItems
+        void Destroy();                                                     // ææ„ item å¹¶ä» items ç§»åŠ¨è‡³ freeItems
 
-        void Index();                                                       // ´´½¨Ë÷ÒıĞÅÏ¢
-        void Update( CdPoint const& _pos );                                 // ¸üĞÂÎ»ÖÃ¼°Ë÷ÒıĞÅÏ¢
-        int GetNearItems( List<CdItem*>& _container );                      // Ìî³ä _item ËùÕ¼¸ñ×ÓÁıÕÖµÄ items, ·µ»Ø¸öÊı
-        int GetCollisionItems( List<CdItem*>& _container );                 // Ìî³äÓë _item Åö×²µÄ items, ·µ»Ø¸öÊı
-        CdItem* GetCollisionItem();                                         // ·µ»ØÊ×¸ö¼ì²âµ½µÄ Óë _item Åö×²µÄ item
-        // todo: ÕÒÀëÄ¿±êÇøÓò ×î½üµÄ item ? µÃµ½·¶Î§ÄÚÓÉ½üµ½Ô¶ÅÅÁĞµÄ items list?
+        void Index();                                                       // åˆ›å»ºç´¢å¼•ä¿¡æ¯
+        void Update( CdPoint const& _pos );                                 // æ›´æ–°ä½ç½®åŠç´¢å¼•ä¿¡æ¯
+        int GetNearItems( List<CdItem*>& _container );                      // å¡«å…… _item æ‰€å æ ¼å­ç¬¼ç½©çš„ items, è¿”å›ä¸ªæ•°
+        int GetCollisionItems( List<CdItem*>& _container );                 // å¡«å……ä¸ _item ç¢°æ’çš„ items, è¿”å›ä¸ªæ•°
+        CdItem* GetCollisionItem();                                         // è¿”å›é¦–ä¸ªæ£€æµ‹åˆ°çš„ ä¸ _item ç¢°æ’çš„ item
+        // todo: æ‰¾ç¦»ç›®æ ‡åŒºåŸŸ æœ€è¿‘çš„ item ? å¾—åˆ°èŒƒå›´å†…ç”±è¿‘åˆ°è¿œæ’åˆ—çš„ items list?
     };
 
     struct CdCell
     {
         int ci, ri;
-        Links<CdItem*> items;                                               // ¸ñÄÚÓĞÄÄĞ© item
+        Links<CdItem*> items;                                               // æ ¼å†…æœ‰å“ªäº› item
     };
 
-    // ¸ñ×ÓÕóÁĞ( ·Ö¸îÏÔÊ¾ÇøÓò£¬×Û¿Ø )
+    // æ ¼å­é˜µåˆ—( åˆ†å‰²æ˜¾ç¤ºåŒºåŸŸï¼Œç»¼æ§ )
     struct CdGrid
     {
         List<CdItem*> items;
@@ -62,22 +62,22 @@ namespace xxx
         int rowCount;
         int columnCount;
 
-        uint autoFlag;                                                      // ×ÔÔöÁ÷Ë®ºÅ£¬ÓÃÓÚÈ¥ÖØ
-        void IncreaseFlag();                                                // ++autoFlag; Ñ­»·ºóÖØÖÃËùÓĞ²¢Ìø¹ı 0
+        uint autoFlag;                                                      // è‡ªå¢æµæ°´å·ï¼Œç”¨äºå»é‡
+        void IncreaseFlag();                                                // ++autoFlag; å¾ªç¯åé‡ç½®æ‰€æœ‰å¹¶è·³è¿‡ 0
 
         CdGrid();
         ~CdGrid();
 
-        void Init( CdSize _gridDiameter, int _rowCount, int _columnCount ); // °´Ò»¸ö×Ü³ß´ç»®·Ö¸ñ×Ó²¢ Clear
-        void Reserve( int _capacity );                                      // ÓÚ freeItems ÖĞÔ¤´´½¨ capacity ¸ö items
-        void Clear();                                                       // Destroy items, Çå cells µÄ items
+        void Init( CdSize _gridDiameter, int _rowCount, int _columnCount ); // æŒ‰ä¸€ä¸ªæ€»å°ºå¯¸åˆ’åˆ†æ ¼å­å¹¶ Clear
+        void Reserve( int _capacity );                                      // äº freeItems ä¸­é¢„åˆ›å»º capacity ä¸ª items
+        void Clear();                                                       // Destroy items, æ¸… cells çš„ items
 
-        CdItem* CreateItem();                                               // ´´½¨ CdItem ¶ÔÏó( ÓÅÏÈ´Ó freeItems ÄÃ )£¬²¢·µ»Ø( ĞèÒª×Ô¼º Init )
+        CdItem* CreateItem();                                               // åˆ›å»º CdItem å¯¹è±¡( ä¼˜å…ˆä» freeItems æ‹¿ )ï¼Œå¹¶è¿”å›( éœ€è¦è‡ªå·± Init )
 
-        int GetItems( List<CdItem*>& _container, CdPoint const& _pos );     // Ìî³ä¸²¸Ç×ÅÄ³×ø±êµÄ items£¬·µ»Ø¸öÊı
-        CdItem* GetItem( CdPoint const& _pos );                             // ·µ»Ø¸²¸Ç×ÅÄ³×ø±êµÄ£¬µÚ1¸öÉ¨µ½µÄ item
-        static bool CheckCollision( CdItem* _a, CdItem* _b );               // ¼ì²éÁ½¸ö item ÊÇ·ñÏà½»
-        static bool CheckCollision( CdItem* _a, CdPoint _pos );             // ¼ì²é pos ÊÇ·ñÎ»ÓÚ item ÄÚ
+        int GetItems( List<CdItem*>& _container, CdPoint const& _pos );     // å¡«å……è¦†ç›–ç€æŸåæ ‡çš„ itemsï¼Œè¿”å›ä¸ªæ•°
+        CdItem* GetItem( CdPoint const& _pos );                             // è¿”å›è¦†ç›–ç€æŸåæ ‡çš„ï¼Œç¬¬1ä¸ªæ‰«åˆ°çš„ item
+        static bool CheckCollision( CdItem* _a, CdItem* _b );               // æ£€æŸ¥ä¸¤ä¸ª item æ˜¯å¦ç›¸äº¤
+        static bool CheckCollision( CdItem* _a, CdPoint _pos );             // æ£€æŸ¥ pos æ˜¯å¦ä½äº item å†…
     };
 }
 
