@@ -1,4 +1,102 @@
 
+// 人气网游《魔兽世界》共有10个职业：战士、死亡骑士、圣骑士、德鲁伊、萨满、牧师、法师、潜行者、猎人、、术士。其中，战士、死亡骑士、圣骑士、德鲁伊可以做坦克，圣骑士、德鲁伊、萨满和牧师可以治疗，所有的职业都可以输出。现组一个5人队伍去下副本，要求1坦克、1治疗和3输出，问总共能组成多少种不同的队伍？
+
+int main()
+{
+    // T: 0 战士  1 死亡骑士  2 圣骑士  3 德鲁伊
+    // N: 4 萨满  5 牧师    23
+
+    // 得到所有排列（去重的）
+    set<string> ss;
+    for( int i = 0; i <= 99999; ++i )
+    {
+        char buf[ 6 ];
+        sprintf( buf, "%05d", i );
+        std::sort( buf, buf + 5 );
+        ss.insert( buf );
+    }
+
+    set<string> result;
+
+    // 匹配扫描1: 先抽T
+    for( auto& s : ss )
+    {
+        auto tmp = s;
+        // 抽掉 1T
+        for( auto it = tmp.cbegin(); it != tmp.cend(); it++ )
+        {
+            if( *it >= '0' && *it <= '3' )
+            {
+                tmp.erase( it );
+                break;
+            }
+        }
+        if( tmp.size() == 5 ) continue;
+
+        // 抽掉 1奶
+        for( auto it = tmp.cbegin(); it != tmp.cend(); it++ )
+        {
+            if( *it >= '2' && *it <= '5' )
+            {
+                tmp.erase( it );
+                break;
+            }
+        }
+        if( tmp.size() == 4 ) continue;
+
+        // 剩三人，成功匹配
+        result.insert( s );
+    }
+
+    // 匹配扫描2: 先抽奶
+    for( auto& s : ss )
+    {
+        auto tmp = s;
+        // 抽掉 1奶
+        for( auto it = tmp.cbegin(); it != tmp.cend(); it++ )
+        {
+            if( *it >= '2' && *it <= '5' )
+            {
+                tmp.erase( it );
+                break;
+            }
+        }
+        if( tmp.size() == 5 ) continue;
+
+        // 抽掉 1T
+        for( auto it = tmp.cbegin(); it != tmp.cend(); it++ )
+        {
+            if( *it >= '0' && *it <= '3' )
+            {
+                tmp.erase( it );
+                break;
+            }
+        }
+        if( tmp.size() == 4 ) continue;
+
+        // 剩三人，成功匹配
+        result.insert( s );
+    }
+    cout << result.size() << endl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Foo
 {
 public:

@@ -315,7 +315,10 @@ inline const char* GetDigitsLut() {
 	return cDigitsLut;
 }
 
-inline void WriteExponent(int K, char* buffer) {
+inline int WriteExponent(int K, char* buffer) {
+    //<
+    auto bak = buffer;
+    //>
 	if (K < 0) {
 		*buffer++ = '-';
 		K = -K;
@@ -337,9 +340,12 @@ inline void WriteExponent(int K, char* buffer) {
 		*buffer++ = '0' + static_cast<char>(K);
 
 	*buffer = '\0';
+    //<
+    return buffer - bak;
+    //>
 }
 
-inline void Prettify(char* buffer, int length, int k) {
+inline int Prettify(char* buffer, int length, int k) {
 	const int kk = length + k;	// 10^(kk-1) <= v < 10^kk
 
 	if (length <= kk && kk <= 21) {
@@ -349,12 +355,18 @@ inline void Prettify(char* buffer, int length, int k) {
 		buffer[kk] = '.';
 		buffer[kk + 1] = '0';
 		buffer[kk + 2] = '\0';
+        //<
+        return kk + 2;
+        //>
 	}
 	else if (0 < kk && kk <= 21) {
 		// 1234e-2 -> 12.34
 		memmove(&buffer[kk + 1], &buffer[kk], length - kk);
 		buffer[kk] = '.';
 		buffer[length + 1] = '\0';
+        //<
+        return length + 1;
+        //>
 	}
 	else if (-6 < kk && kk <= 0) {
 		// 1234e-6 -> 0.001234
@@ -365,18 +377,27 @@ inline void Prettify(char* buffer, int length, int k) {
 		for (int i = 2; i < offset; i++)
 			buffer[i] = '0';
 		buffer[length + offset] = '\0';
+        //<
+        return length + offset;
+        //>
 	}
 	else if (length == 1) {
 		// 1e30
 		buffer[1] = 'e';
-		WriteExponent(kk - 1, &buffer[2]);
+        //<
+        auto tmp = WriteExponent( kk - 1, &buffer[ 2 ] );
+        return 2 + tmp;
+        //>
 	}
 	else {
 		// 1234e30 -> 1.234e33
 		memmove(&buffer[2], &buffer[1], length - 1);
 		buffer[1] = '.';
 		buffer[length + 1] = 'e';
-		WriteExponent(kk - 1, &buffer[0 + length + 2]);
+        //<
+        auto tmp = WriteExponent( kk - 1, &buffer[ 0 + length + 2 ] );
+        return 0 + length + 2 + tmp;
+        //>
 	}
 }
 
@@ -387,26 +408,20 @@ inline int dtoa_milo(double value, char* buffer) {
 
 	if (value == 0) {
 		buffer[0] = '0';
+		buffer[1] = '.';
+		buffer[2] = '0';
+		buffer[3] = '\0';
         //<
-		//buffer[1] = '.';
-		//buffer[2] = '0';
-		//buffer[3] = '\0';
-        return 1;
+        return 3;
         //>
 	}
 	else {
-        //<
-        bool isNegative = value < 0;
-        //>
 		if (value < 0) {
 			*buffer++ = '-';
 			value = -value;
 		}
 		int length, K;
 		Grisu2(value, buffer, &length, &K);
-		Prettify(buffer, length, K);
-        //<
-        return length + ( K ? 1 : 0 ) + ( isNegative ? 1 : 0 );
-        //>
+		return Prettify(buffer, length, K);
 	}
 }

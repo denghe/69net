@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <algorithm>
 using namespace std;
 using namespace xxx;
 
@@ -49,49 +50,56 @@ using namespace xxx;
 
 int main()
 {
+    CoutLine( 0.01f );
+    CoutLine( -0.01f );
+    CoutLine( 0.1 );
+    CoutLine( 0.0 );
+    CoutLine( 0 );
+    CoutLine( 1 );
+    CoutLine( 100 );
+    CoutLine( -100 );
 
-    Cout( (float)123, " ", (float)-123 );
 
-//    Player p1 = { "p1", 0 }, p2 = { "p2", 0 };
-//    GoldMaker1 gm1( p1 );
-//    GoldMaker2 gm2( p2 );
-//    Stopwatch sw;
-//    // 预热
-//    p1.gold = 0;    sw.Reset();
-//    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
-//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
-//
-//    p1.gold = 0;    sw.Reset();
-//    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
-//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
-//
-//    p2.gold = 0;    sw.Reset();
-//    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
-//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
-//
-//    p1.gold = 0;    sw.Reset();
-//    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
-//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
-//
-//    p2.gold = 0;    sw.Reset();
-//    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
-//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
-//
-//    p1.gold = 0;    sw.Reset();
-//    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
-//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
-//
-//    p2.gold = 0;    sw.Reset();
-//    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
-//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
-//
-//    p1.gold = 0;    sw.Reset();
-//    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
-//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
-//
-//    p2.gold = 0;    sw.Reset();
-//    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
-//    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
+    //    Player p1 = { "p1", 0 }, p2 = { "p2", 0 };
+    //    GoldMaker1 gm1( p1 );
+    //    GoldMaker2 gm2( p2 );
+    //    Stopwatch sw;
+    //    // 预热
+    //    p1.gold = 0;    sw.Reset();
+    //    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
+    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
+    //
+    //    p1.gold = 0;    sw.Reset();
+    //    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
+    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
+    //
+    //    p2.gold = 0;    sw.Reset();
+    //    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
+    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
+    //
+    //    p1.gold = 0;    sw.Reset();
+    //    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
+    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
+    //
+    //    p2.gold = 0;    sw.Reset();
+    //    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
+    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
+    //
+    //    p1.gold = 0;    sw.Reset();
+    //    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
+    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
+    //
+    //    p2.gold = 0;    sw.Reset();
+    //    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
+    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
+    //
+    //    p1.gold = 0;    sw.Reset();
+    //    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
+    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
+    //
+    //    p2.gold = 0;    sw.Reset();
+    //    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
+    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
 
 
     //char buf[ 256 ];
