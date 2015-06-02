@@ -71,7 +71,7 @@ namespace xxx
         virtual ~CorStateBase() {}
         int corIdx = 0, corLn = 0, corSleeps = 0;       // for coroutine
         virtual bool Process( int ticks ) = 0;
-        virtual void Destroy() = 0;
+        virtual void Destroy() {};
         inline virtual bool Sleeping() { --corSleeps; return true; }
     };
 

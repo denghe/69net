@@ -72,9 +72,14 @@ namespace xxx
     template<typename T>
     typename std::enable_if<HasFunc_FastWriteTo<T>::value, void>::type FastWriteSwitch( ByteBuffer& b, T const& v )
     {
-        auto rtv = b.ptrStore->Insert( &v, (uint)b.dataLen );
-        VarWrite( rtv.first->value );
-        if( !rtv.second ) return;
+#if ENABLE_BYTEBUFFER_PTR_SUPPORT
+        if( b.ptrStore )
+        {
+            auto rtv = b.ptrStore->Insert( (void*)&v, (uint)b.dataLen );
+            b.VarWrite( rtv.first->value );
+            if( !rtv.second ) return;
+        }
+#endif
         v.FastWriteTo( b );
     };
     template<typename T>
@@ -122,7 +127,7 @@ namespace xxx
     void ByteBuffer::FastWriteMultiCore( T const& v, TS const& ...vs )
     {
         FastWrite( v );
-        WriteMultiCore( vs... );
+        FastWriteMultiCore( vs... );
     }
     template<typename ...TS>
     void ByteBuffer::FastWriteMulti( TS const& ...vs )
@@ -171,12 +176,14 @@ namespace xxx
     template<typename T>
     typename std::enable_if<HasFunc_WriteTo<T>::value, void>::type WriteSwitch( ByteBuffer& b, T const& v )
     {
+#if ENABLE_BYTEBUFFER_PTR_SUPPORT
         if( b.ptrStore )
         {
             auto rtv = b.ptrStore->Insert( (void*)&v, (uint)b.dataLen );
             b.VarWrite( rtv.first->value );
             if( !rtv.second ) return;
         }
+#endif
         v.WriteTo( b );
     };
     template<typename T>
@@ -236,6 +243,8 @@ namespace xxx
         WriteMultiCore( vs... );
     }
 
+
+#if ENABLE_BYTEBUFFER_PTR_SUPPORT
     template<typename T>
     void ByteBuffer::Write( T* v )
     {
@@ -295,7 +304,7 @@ namespace xxx
         IdxStoreInit();
         return Read( v );
     }
-
+#endif
 
 
 

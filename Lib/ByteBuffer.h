@@ -6,6 +6,8 @@ namespace xxx
     template <typename TK, typename TV>
     struct Dict;
 
+#define ENABLE_BYTEBUFFER_PTR_SUPPORT 0
+
     class ByteBuffer : Memmoveable
     {
     public:
@@ -37,13 +39,14 @@ namespace xxx
         char& At( int idx );                                                        // buf[ idx ]
         String Dump();                                                              // return buf string for display memory
 
+#if ENABLE_BYTEBUFFER_PTR_SUPPORT
         // ptrStore, idxStore 相关
         void PtrStoreInit();                                                        // RootWrite 时自动调用 
         void PtrStoreDestroy();
 
         void IdxStoreInit();                                                        // RootRead 时自动调用
         void IdxStoreDestroy();
-
+#endif
 
         // 最基础的读写函数实现体
 
@@ -106,7 +109,7 @@ namespace xxx
         template<typename ...TS>
         void WriteMulti( TS const& ...vs );
 
-
+#if ENABLE_BYTEBUFFER_PTR_SUPPORT
         // 带指针写入系列
         template<typename T>
         void Write( T* v );
@@ -118,7 +121,7 @@ namespace xxx
         bool Read( T*& v );
         template<typename T>
         bool RootRead( T& v );
-
+#endif
 
         // 变长写入系列：会预申请内存
         void VarWrite( int v );

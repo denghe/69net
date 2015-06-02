@@ -69,8 +69,10 @@ namespace xxx
     ByteBuffer::~ByteBuffer()
     {
         Destroy();
+#if ENABLE_BYTEBUFFER_PTR_SUPPORT
         PtrStoreDestroy();
         IdxStoreDestroy();
+#endif
     }
 
     void ByteBuffer::Clear()
@@ -271,7 +273,7 @@ namespace xxx
 
 
 
-
+#if ENABLE_BYTEBUFFER_PTR_SUPPORT
     void ByteBuffer::PtrStoreInit()
     {
         if( ptrStore ) ptrStore->Clear();
@@ -291,6 +293,8 @@ namespace xxx
     {
         if( idxStore ) delete idxStore;
     }
+
+#endif
 
     void ByteBuffer::Write7Core( char* buf, int& offset, uint32 v )
     {

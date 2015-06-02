@@ -245,6 +245,8 @@ int _countof( T const ( &arr )[ N ] ) { return N; }
 #define WIN32_LEAN_AND_MEAN
 #include <WinSock2.h>
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 
 
@@ -326,6 +328,18 @@ inline void aligned_free( void* p )
     free( static_cast<void**>( p )[ -1 ] );
 }
 #endif
+
+
+
+
+// this_thread sleep_for will be create a new thread for sleep, so ....
+#ifdef __WIN
+#define msleep( x ) Sleep( x )
+#else
+#define msleep( x ) usleep( ( x ) / 1000 )
+#endif 
+
+
 
 
 
