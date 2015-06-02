@@ -137,7 +137,7 @@ namespace xxx
         Dispose();
     }
 
-    void String::Assign( char const* _buf, int _bufLen, int _dataLen /*= 0*/, bool isRef )
+    void String::Assign( char const* _buf, int _bufLen, int _dataLen, bool isRef )
     {
         assert( buf != _buf );
         if( isRef )
@@ -164,11 +164,6 @@ namespace xxx
     void String::Assign( char const* s, int sLen, bool isRef )
     {
         if( !sLen ) sLen = (int)strlen( s );
-        Assign( s, sLen + 1, sLen, isRef );
-    }
-    void String::Assign( char const* s, bool isRef /*= false */ )
-    {
-        auto sLen = (int)strlen( s );
         Assign( s, sLen + 1, sLen, isRef );
     }
 
@@ -291,6 +286,7 @@ namespace xxx
         if( idx >= dataLen )
         {
             Append( String( s, sLen, sLen, true ) );
+            return;
         }
         if( !sLen )
         {

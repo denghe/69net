@@ -25,7 +25,6 @@ namespace xxx
         ~String();                                                  // Dispose _buf
         void Assign( char const* _buf, int _bufLen, int _dataLen, bool isRef );     // ref or Copy
         void Assign( char const* s, int sLen, bool isRef );         // Copy or ref
-        void Assign( char const* s, bool isRef = false );           // Copy or ref
         void Reserve( int capacity );                               // prepare memory
         void Resize( int len, bool fillZero = true );               // cut( maybe damage utf8 ) or grow up
         void Clear();                                               // Set dataLen to 0
