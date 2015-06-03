@@ -98,7 +98,7 @@ namespace xxx
     template<int len>
     void ByteBuffer::FastWrite( char const( &s )[ len ] )
     {
-        FastWrite( len - 1 );
+        FastVarWrite( uint(len - 1) );
         FastWrite( s, len - 1 );
     }
 
@@ -204,7 +204,7 @@ namespace xxx
     template<int len>
     void ByteBuffer::Write( char const( &s )[ len ] )
     {
-        Reserve( dataLen + sizeof( int ) + len - 1 );
+        Reserve( dataLen + 5 + len - 1 );   // 5: varWrite, -1: except \0
         FastWrite( s );
     }
 
