@@ -238,31 +238,31 @@ namespace xxx
 
 
 
-    void ByteBuffer::WriteTo( ByteBuffer& fb ) const
+    void ByteBuffer::WriteTo( ByteBuffer& bb ) const
     {
-        fb.Write( dataLen );
+        bb.VarWrite( (uint)dataLen );
         if( !dataLen ) return;
-        fb.Write( buf, dataLen );
+        bb.Write( buf, dataLen );
     }
 
-    void ByteBuffer::FastWriteTo( ByteBuffer& fb ) const
+    void ByteBuffer::FastWriteTo( ByteBuffer& bb ) const
     {
-        fb.FastWrite( dataLen );
+        bb.FastVarWrite( (uint)dataLen );
         if( !dataLen ) return;
-        fb.FastWrite( buf, dataLen );
+        bb.FastWrite( buf, dataLen );
     }
 
-    bool ByteBuffer::ReadFrom( ByteBuffer& fb )
+    bool ByteBuffer::ReadFrom( ByteBuffer& bb )
     {
         int len;
-        if( !fb.Read( len )
+        if( !bb.VarRead( *(uint*)&len )
             || len < 0
-            || fb.offset + len > fb.dataLen ) return false;
+            || bb.offset + len > bb.dataLen ) return false;
         Clear();
         Reserve( len );
         dataLen = len;
-        memcpy( buf, fb.buf + fb.offset, len );
-        fb.offset += len;
+        memcpy( buf, bb.buf + bb.offset, len );
+        bb.offset += len;
         return true;
     }
 
