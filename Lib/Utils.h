@@ -9,9 +9,6 @@ namespace xxx
     int GetToStringMaxLength( uint16  v );
     int GetToStringMaxLength( uint    v );
     int GetToStringMaxLength( uint64  v );
-#if __LINUX
-    int GetToStringMaxLength( size_t   v );
-#endif
     int GetToStringMaxLength( int8    v );
     int GetToStringMaxLength( int16   v );
     int GetToStringMaxLength( int     v );
@@ -35,9 +32,6 @@ namespace xxx
     int ToString( char * dstBuf, uint16  v );
     int ToString( char * dstBuf, uint    v );
     int ToString( char * dstBuf, uint64  v );
-#if __LINUX
-    int ToString( char * dstBuf, size_t  v );
-#endif
     int ToString( char * dstBuf, int8    v );
     int ToString( char * dstBuf, int16   v );
     int ToString( char * dstBuf, int     v );

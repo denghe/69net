@@ -7,9 +7,6 @@ namespace xxx
     int GetToStringMaxLength( uint16  v ) { return 5; }
     int GetToStringMaxLength( uint    v ) { return 10; }
     int GetToStringMaxLength( uint64  v ) { return 19; }
-#if __LINUX
-    int GetToStringMaxLength( size_t  v ) { return 19; }
-#endif
     int GetToStringMaxLength( int8    v ) { return 4; }
     int GetToStringMaxLength( int16   v ) { return 6; }
     int GetToStringMaxLength( int     v ) { return 11; }
@@ -538,16 +535,6 @@ namespace xxx
     int ToString( char * dstBuf, uint16  v ) { return u32toa_branchlut( v, dstBuf ); }
     int ToString( char * dstBuf, uint    v ) { return u32toa_branchlut( v, dstBuf ); }
     int ToString( char * dstBuf, uint64  v ) { return u64toa_branchlut( v, dstBuf ); }
-#if __LINUX
-    int ToString( char * dstBuf, size_t  v ) 
-    {
-#if __X64
-        return ToStringCore( (uint64)v, dstBuf );
-#else
-        return ToStringCore( (uint32)v, dstBuf );
-#endif
-    }
-#endif
     int ToString( char * dstBuf, int8    v ) { return i32toa_branchlut( v, dstBuf ); }
     int ToString( char * dstBuf, int16   v ) { return i32toa_branchlut( v, dstBuf ); }
     int ToString( char * dstBuf, int     v ) { return i32toa_branchlut( v, dstBuf ); }

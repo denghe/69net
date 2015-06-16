@@ -78,17 +78,19 @@ namespace xxx
         case DbDataTypes::String:   output.Append( GetValue<String>() ); break;
         case DbDataTypes::DateTime:
         {
-            // todo: 优化
+#if __WIN
             std::ostringstream ss;
             auto t = std::chrono::system_clock::to_time_t( GetValue<DateTime>() );
-#if __WIN
             tm tim;
             localtime_s( &tim, &t );
             ss << std::put_time( &tim, "%Y-%m-%d %X" );
-#else
-            ss << std::put_time( std::localtime( &t ), "%Y-%m-%d %X" );
-#endif
             output.Append( ss.str() );
+#else
+            auto t = std::chrono::system_clock::to_time_t( GetValue<DateTime>() );
+            char buff[ 20 ];
+            strftime( buff, 20, "%Y-%m-%d %H:%M:%S", localtime( &t ) );
+            output.Append( buff );
+#endif
         } break;
         case DbDataTypes::Bytes:    output.Append( "ByteBuffer ToString todo" ); break; // GetValue<ByteBuffer>() ); break;
         default:

@@ -196,8 +196,11 @@ public:                                                                         
 
 // _countof
 #ifndef _countof
-template<typename T, size_t N>
-int _countof( T const ( &arr )[ N ] ) { return N; }
+#if __ANDROID
+	#define _countof(_Array) (sizeof(_Array) / sizeof(_Array[0]))
+#else
+	template<typename T, typename size_t N>
+	int _countof( T const ( &arr )[ N ] ) { return N; }
 #endif
 
 
@@ -286,7 +289,9 @@ int _countof( T const ( &arr )[ N ] ) { return N; }
 #include <functional>
 #include <chrono>
 #include <locale>
+#ifndef __ANDROID
 #include <codecvt>
+#endif
 
 
 /* Common types */

@@ -23,7 +23,7 @@ namespace xxx
         // void Init( ... );
 
         // 生命周期 -- 执行
-        inline virtual bool Process( int ticks ) = 0;
+        virtual bool Process( int ticks ) = 0;
 
         // 生命周期 -- 销毁
         inline virtual void Destroy() {}
