@@ -199,7 +199,7 @@ public:                                                                         
 #if __ANDROID
 	#define _countof(_Array) (sizeof(_Array) / sizeof(_Array[0]))
 #else
-	template<typename T, typename size_t N>
+	template<typename T, size_t N>
 	int _countof( T const ( &arr )[ N ] ) { return N; }
 #endif
 #endif
