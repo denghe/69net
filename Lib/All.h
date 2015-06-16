@@ -202,6 +202,7 @@ public:                                                                         
 	template<typename T, typename size_t N>
 	int _countof( T const ( &arr )[ N ] ) { return N; }
 #endif
+#endif
 
 
 
