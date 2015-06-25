@@ -113,7 +113,7 @@ struct Lua
     void PCall_PushParms( T const& p0, TS const&...parms )
     {
         Push( p0 );
-        PCall_Push( parms... );
+        PCall_PushParms( parms... );
     }
     template<typename ...TS>
     int PCall( String const& fn, TS const&...parms )
@@ -230,6 +230,7 @@ end
         CoutLine( "n = ", n );
         auto dump = [ &]( int idx )
         {
+            Cout( "data type = ", L.GetTypeName( idx ), "; value = " );
             switch( L.GetType( idx ) )
             {
             case LuaDataTypes::String:
@@ -249,9 +250,9 @@ end
                 CoutLine( "{to do}" );
             }
         };
-        for( int i = 1; i <= L.GetTop(); ++i )
+        int top = L.GetTop();
+        for( int i = top - n + 1; i <= top; ++i )
         {
-            Cout( "data type = ", L.GetTypeName( i ), "; value = " );
             dump( i );
         }
     };
