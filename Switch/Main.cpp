@@ -386,7 +386,7 @@ struct LuaGetterSetterBase
     {
         auto& dict = GetDict();
         dict.Insert( key, std::make_pair( getter, setter ) );
-        CoutLine( "getter = ", (uint64)(void*)&getter, "  setter = ", (uint64)(void*)&setter );
+        CoutLine( "key = ", key, " getter = ", (uint64)(void*)&getter, "  setter = ", (uint64)(void*)&setter );
     }
 };
 
@@ -517,7 +517,7 @@ struct LuaGetterSetter < Foo1 > : LuaGetterSetterBase < Foo1 >
     inline static void Init()
     {
         Register( "x", GetX, SetX );
-        Register( "x", GetY, SetY );
+        Register( "y", GetY, SetY );
     }
 };
 
@@ -549,8 +549,8 @@ int main()
     L.Register( &f1, "Foo1" );
     L.Register( &f2, "Foo2" );
 
-    printf( "%p\n", &LuaGetterSetter<Foo1>::GetDict() );
-    printf( "%p\n", &LuaGetterSetter<Foo2>::GetDict() );
+    printf( "dict = %p\n", &LuaGetterSetter<Foo1>::GetDict() );
+    printf( "dict = %p\n", &LuaGetterSetter<Foo2>::GetDict() );
 
     L.DoString( R"--(
 
