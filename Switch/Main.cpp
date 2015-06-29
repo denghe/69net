@@ -386,102 +386,8 @@ struct LuaGetterSetterBase
     {
         auto& dict = GetDict();
         dict.Insert( key, std::make_pair( getter, setter ) );
-        CoutLine( "key = ", key, " getter = ", (uint64)(void*)&getter, "  setter = ", (uint64)(void*)&setter );
     }
 };
-
-
-
-
-//
-//template<>
-//struct LuaGetterSetter < Foo >
-//{
-//    typedef LuaGetterSetter < Foo > MT;
-//    inline static void GetX( lua_State* ls, Foo* o )
-//    {
-//        lua_pushinteger( ls, o->x );
-//    }
-//    inline static void GetY( lua_State* ls, Foo* o )
-//    {
-//        lua_pushinteger( ls, o->y );
-//    }
-//    inline static void SetX( lua_State* ls, Foo* o )
-//    {
-//        o->x = (int)lua_tointeger( ls, -1 );
-//    }
-//    inline static void SetY( lua_State* ls, Foo* o )
-//    {
-//        o->y = (int)lua_tointeger( ls, -1 );
-//    }
-//
-//    static Dict < String, std::pair<void( *)( lua_State*, Foo* ), void( *)( lua_State*, Foo* )>> funcDict;
-//    inline static void Init()
-//    {
-//        if( funcDict.Size() ) return;
-//        funcDict.Insert( "x", std::make_pair( &MT::GetX, &MT::SetX ) );
-//        funcDict.Insert( "y", std::make_pair( &MT::GetY, &MT::SetY ) );
-//    }
-//
-//    inline static void GetField( lua_State* ls, Foo* o )
-//    {
-//        size_t len;
-//        auto p = lua_tolstring( ls, -1, &len );
-//        String key( p, len, len, true );
-//        funcDict[ key ].first( ls, o );
-//    }
-//    inline static void SetField( lua_State* ls, Foo* o )
-//    {
-//        size_t len;
-//        auto p = lua_tolstring( ls, -2, &len );
-//        String key( p, len, len, true );
-//        funcDict[ key ].second( ls, o );
-//    }
-//
-//};
-//Dict < String, std::pair<void( *)( lua_State*, Foo* ), void( *)( lua_State*, Foo* )>> LuaGetterSetter < Foo >::funcDict;
-//
-//
-
-
-
-//
-//template<>
-//struct LuaGetterSetter < Foo >
-//{
-//    inline static void Init() {}
-//    inline static void GetField( lua_State* ls, Foo* o )
-//    {
-//        auto key = lua_tostring( ls, -1 );
-//        if( strcmp( key, "x" ) == 0 )
-//        {
-//            lua_pushinteger( ls, o->x );
-//        }
-//        else if( strcmp( key, "y" ) == 0 )
-//        {
-//            lua_pushinteger( ls, o->y );
-//        }
-//        else
-//        {
-//            lua_pushnil( ls );
-//        }
-//    }
-//    inline static void SetField( lua_State* ls, Foo* o )
-//    {
-//        auto key = lua_tostring( ls, -2 );
-//        if( strcmp( key, "x" ) == 0 )
-//        {
-//            o->x = (int)lua_tointeger( ls, -1 );
-//        }
-//        if( strcmp( key, "y" ) == 0 )
-//        {
-//            o->y = (int)lua_tointeger( ls, -1 );
-//        }
-//    }
-//};
-
-
-
 
 struct Foo1
 {
@@ -496,28 +402,10 @@ struct Foo2
 template<>
 struct LuaGetterSetter < Foo1 > : LuaGetterSetterBase < Foo1 >
 {
-    inline static void GetX( lua_State* ls, Foo1* o )
-    {
-        lua_pushinteger( ls, o->x );
-    }
-    inline static void SetX( lua_State* ls, Foo1* o )
-    {
-        o->x = (int)lua_tointeger( ls, -1 );
-    }
-
-    inline static void GetY( lua_State* ls, Foo1* o )
-    {
-        lua_pushinteger( ls, o->y );
-    }
-    inline static void SetY( lua_State* ls, Foo1* o )
-    {
-        o->y = (int)lua_tointeger( ls, -1 );
-    }
-
     inline static void Init()
     {
-        Register( "x", GetX, SetX );
-        Register( "y", GetY, SetY );
+        Register( "x", []( lua_State* ls, Foo1* o ) { lua_pushinteger( ls, o->x ); }, []( lua_State* ls, Foo1* o ) { o->x = (int)lua_tointeger( ls, -1 ); } );
+        Register( "y", []( lua_State* ls, Foo1* o ) { lua_pushinteger( ls, o->y ); }, []( lua_State* ls, Foo1* o ) { o->y = (int)lua_tointeger( ls, -1 ); } );
     }
 };
 
@@ -557,7 +445,7 @@ int main()
 function f1( x, y, name )
     Foo1.x = x
     Foo1.y = y
-    Foo2.x = x
+    Foo2.x = name
 end
 
 function f2()
