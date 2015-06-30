@@ -1,5 +1,7 @@
 #include "Lib/All.h"
 
+// http://blog.codingnow.com/2015/05/lua_c_api.html
+
 using namespace std;
 using namespace xxx;
 
@@ -16,85 +18,236 @@ const LuaDataTypes map_lua_type_enums[] = {
     LuaDataTypes::Proto
 };
 
-// http://blog.codingnow.com/2015/05/lua_c_api.html
 struct Lua
 {
-    lua_State* ls;
-    bool needClose;
+    lua_State* L;
+    Lua( lua_State* L ) : L( L ) {}
+
+    inline void OpenLibs()
+    {
+        luaL_openlibs( L );
+    }
+    inline bool DoFile( String const& fn )
+    {
+        return luaL_dofile( L, fn.C_str() ) == LUA_OK;
+    }
+    inline bool CheckStack( int n )
+    {
+        return lua_checkstack( L, n ) != 0;
+    }
+    inline bool DoString( String const& code )
+    {
+        return luaL_dostring( L, code.C_str() ) == LUA_OK;
+    }
+    inline void Push( lua_Number v )
+    {
+        lua_pushnumber( L, v );
+    }
+    inline void Push( lua_Integer v )
+    {
+        lua_pushinteger( L, v );
+    }
+    inline void Push( int v )
+    {
+        lua_pushinteger( L, v );
+    }
+    inline void Push( String const& v )
+    {
+        lua_pushlstring( L, v.C_str(), v.Size() );
+    }
+    inline void Push( char const* v )
+    {
+        lua_pushstring( L, v );
+    }
+    inline void Push( std::nullptr_t v )
+    {
+        lua_pushnil( L );
+    }
+    inline void PushNil()
+    {
+        lua_pushnil( L );
+    }
+
+    void PushMulti() {}
+
+    template<typename T, typename...TS>
+    void PushMulti( T const& p0, TS const&...parms )
+    {
+        Push( p0 );
+        PushMulti( parms... );
+    }
+
+    inline void Pop( int n )
+    {
+        lua_pop( L, n );
+    }
+    inline int GetTop()
+    {
+        return lua_gettop( L );
+    }
+    inline void SetTop( int idx )
+    {
+        lua_settop( L, idx );
+    }
+
+    inline bool TopIs( int idx )
+    {
+        return GetTop() == idx;
+    }
+    inline LuaDataTypes GetType( int idx )
+    {
+        return map_lua_type_enums[ lua_type( L, idx ) + 1 ];
+    }
+    inline const char* GetTypeName( int idx )
+    {
+        return lua_typename( L, lua_type( L, idx ) );
+    }
+    inline bool IsInteger( int idx )
+    {
+        return lua_isinteger( L, idx ) == 1;
+    }
+    inline char const* ToCString( int idx )
+    {
+        return lua_tostring( L, idx );
+    }
+    inline String ToString( int idx, bool ref = false )
+    {
+        size_t len;
+        auto rtv = lua_tolstring( L, idx, &len );
+        return String( rtv, len, len, ref );
+    }
+    inline lua_Number ToNumber( int idx )
+    {
+        return lua_tonumber( L, idx );
+    }
+    inline lua_Integer ToInteger( int idx )
+    {
+        return lua_tointeger( L, idx );
+    }
+
+    inline void To( int32& v )
+    {
+        v = (int32)lua_tointeger( L, -1 );
+    }
+    inline void To( int64& v )
+    {
+        v = lua_tointeger( L, -1 );
+    }
+    inline void To( double& v )
+    {
+        v = lua_tonumber( L, -1 );
+    }
+    inline void To( String& v )
+    {
+        size_t len;
+        auto rtv = lua_tolstring( L, -1, &len );
+        v.Assign( rtv, len, false );
+    }
+    template<typename T, typename...TS>
+    void ToMulti( T& p0, TS&...parms )
+    {
+        To( p0 );
+        ToMulti( parms... );
+    }
+
+};
+
+
+template<typename T>
+struct LuaGetterSetter
+{
+    typedef std::function<void( Lua&, T& )> FuncType;
+    static Dict < String, std::pair<FuncType, FuncType>>& GetDict()
+    {
+        static Dict < String, std::pair<FuncType, FuncType>> dict;
+        return dict;
+    }
+    static void GetField( Lua& L, T& o )
+    {
+        auto& dict = GetDict();
+        auto key = L.ToString( -1, true );
+        if( auto node = dict.Find( key ) )
+        {
+            node->value.first( L, o );
+        }
+        else
+        {
+            L.PushNil();
+        }
+    }
+    static void SetField( Lua& L, T& o )
+    {
+        auto& dict = GetDict();
+        auto key = L.ToString( -2, true );
+        if( auto node = dict.Find( key ) )
+        {
+            node->value.second( L, o );
+        }
+    }
+    void Field( char const* key, FuncType getter, FuncType setter )
+    {
+        auto& dict = GetDict();
+        dict.Insert( key, std::make_pair( getter, setter ) );
+    }
+
+    template<typename FT>
+    LuaGetterSetter Field( char const* key, FT T::* fieldOffset )
+    {
+        GetDict().Insert( key, std::make_pair(
+            [ fieldOffset ]( Lua& L, T& o )
+        {
+            L.Push( o.*fieldOffset );
+        }, [ fieldOffset ]( Lua& L, T& o )
+        {
+            L.To( o.*fieldOffset );
+        } ) );
+        return *this;
+    }
+};
+
+
+struct LuaEx : public Lua
+{
+    bool createrIsMe;
     String err;
 
-    Lua()
-        : ls( luaL_newstate() )
-        , needClose( true )
+    LuaEx()
+        : Lua( luaL_newstate() )
+        , createrIsMe( true )
     {
     }
-    Lua( lua_State* L )
-        : ls( L )
-        , needClose( false )
+    LuaEx( lua_State* L )
+        : Lua( L )
+        , createrIsMe( false )
     {
     }
-    ~Lua()
+    ~LuaEx()
     {
-        if( needClose )
+        if( createrIsMe )
         {
-            lua_close( ls );
+            lua_close( L );
         }
     }
 
     void ToErrPop()
     {
         size_t len = 0;
-        err.Assign( lua_tolstring( ls, -1, &len ), (int)len, false );
-        lua_pop( ls, 1 );
-    }
-
-    inline void OpenLibs()
-    {
-        luaL_openlibs( ls );
+        err.Assign( lua_tolstring( L, -1, &len ), (int)len, false );
+        lua_pop( L, 1 );
     }
 
     inline bool DoFile( String const& fn )
     {
-        if( luaL_dofile( ls, fn.C_str() ) == LUA_OK ) return true;
+        if( Lua::DoFile( fn ) ) return true;
         ToErrPop();
         return false;
     }
 
     inline bool DoString( String const& code )
     {
-        if( luaL_dostring( ls, code.C_str() ) == LUA_OK ) return true;
+        if( Lua::DoString( code ) ) return true;
         ToErrPop();
         return false;
-    }
-
-    inline bool CheckStack( int n )
-    {
-        return lua_checkstack( ls, n ) != 0;
-    }
-
-    inline void Push( lua_Number v )
-    {
-        lua_pushnumber( ls, v );
-    }
-    inline void Push( lua_Integer v )
-    {
-        lua_pushinteger( ls, v );
-    }
-    inline void Push( int v )
-    {
-        lua_pushinteger( ls, v );
-    }
-    inline void Push( String const& v )
-    {
-        lua_pushlstring( ls, v.C_str(), v.Size() );
-    }
-    inline void Push( char const* v )
-    {
-        lua_pushstring( ls, v );
-    }
-    inline void PushNil()
-    {
-        lua_pushnil( ls );
     }
 
     inline bool SafePush( lua_Number v )
@@ -134,34 +287,21 @@ struct Lua
         return true;
     }
 
-    inline void PCall_PushParms()
-    {
-    }
-
-    template<typename T>
-    void PCall_PushParms( T const& p )
-    {
-        Push( p );
-    }
-    template<typename T, typename...TS>
-    void PCall_PushParms( T const& p0, TS const&...parms )
-    {
-        Push( p0 );
-        PCall_PushParms( parms... );
-    }
     template<typename ...TS>
-    int PCall( String const& fn, TS const&...parms )
+    int Pcall( String const& fn, TS const&...parms )
     {
         auto n = sizeof...( parms );
         if( !CheckStack( n + 1 ) ) return -1;
         int top = GetTop();
-        if( lua_getglobal( ls, fn.C_str() ) != LUA_TFUNCTION )   // stack +1: 1
+        if( lua_getglobal( L, fn.C_str() ) != LUA_TFUNCTION )   // stack +1: 1
         {
             Pop( 1 );                           // stack -1: 0
+            err.Clear();
+            err.Append( "can't find function by name `", fn, "`" );
             return -1;
         }
-        PCall_PushParms( parms... );                    // stack +n: 1+n
-        if( lua_pcall( ls, n, LUA_MULTRET, 0 ) != LUA_OK )       // stack -1-n: 0    T: stack +r: r    F: stack +e: e
+        PushMulti( parms... );                                  // stack +n: 1+n
+        if( lua_pcall( L, n, LUA_MULTRET, 0 ) != LUA_OK )       // stack -1-n: 0    T: stack +r: r    F: stack +e: e
         {
             ToErrPop();                        // stack -e: 0
             return -1;
@@ -170,64 +310,16 @@ struct Lua
     }
 
     template<typename ...TS>
-    bool PCallPop( String const& fn, std::function<void( int n )> handler, TS const&...parms )
+    bool PcallPop( String const& fn, std::function<void( int n )> handler, TS const&...parms )
     {
-        int rtv = PCall( fn, parms... );
+        int rtv = Pcall( fn, parms... );
         if( rtv < 0 ) return false;
         if( handler ) handler( rtv );
         Pop( rtv );
         return true;
     }
 
-    inline void Pop( int n )
-    {
-        lua_pop( ls, n );
-    }
 
-    //void GetGlobal
-
-    inline int GetTop()
-    {
-        return lua_gettop( ls );
-    }
-    inline void SetTop( int idx )
-    {
-        lua_settop( ls, idx );
-    }
-    inline bool TopIs( int idx )
-    {
-        return GetTop() == idx;
-    }
-    inline LuaDataTypes GetType( int idx )
-    {
-        return map_lua_type_enums[ lua_type( ls, idx ) + 1 ];
-    }
-    inline const char* GetTypeName( int idx )
-    {
-        return lua_typename( ls, lua_type( ls, idx ) );
-    }
-    inline bool IsInteger( int idx )
-    {
-        return lua_isinteger( ls, idx ) == 1;
-    }
-    inline char const* ToCString( int idx )
-    {
-        return lua_tostring( ls, idx );
-    }
-    inline String ToString( int idx, bool ref = false )
-    {
-        size_t len;
-        auto rtv = lua_tolstring( ls, idx, &len );
-        return String( rtv, len, len, ref );
-    }
-    inline lua_Number ToNumber( int idx )
-    {
-        return lua_tonumber( ls, idx );
-    }
-    inline lua_Integer ToInteger( int idx )
-    {
-        return lua_tointeger( ls, idx );
-    }
     inline char const* ToCStringPop()
     {
         auto rtv = ToCString( -1 );
@@ -254,33 +346,26 @@ struct Lua
     }
 
 
-
-
-
     template<typename T>
     static int __Index( lua_State* ls )
     {
-        assert( lua_gettop( ls ) == 2 );                        // 2            // ud, key
+        Lua L( ls );                                        // 2            // ud, key
         auto t = *(T**)lua_touserdata( ls, -2 );
-        LuaGetterSetter<T>::GetField( ls, t );
+        LuaGetterSetter<T>::GetField( L, *t );
         return 1;
     }
     template<typename T>
     static int __NewIndex( lua_State* ls )
     {
-        assert( lua_gettop( ls ) == 3 );                        // 3            // ud, key£¬value
+        Lua L( ls );                                        // 3            // ud, key£¬value
         auto t = *(T**)lua_touserdata( ls, -3 );
-        LuaGetterSetter<T>::SetField( ls, t );
+        LuaGetterSetter<T>::SetField( L, *t );
         return 0;
     }
 
     template<typename T>
-    void Register( T* t, char const* typeName )
+    LuaGetterSetter<T> Struct( T* t, char const* typeName )
     {
-        if( !LuaGetterSetter<T>::GetDict().Size() )
-        {
-            LuaGetterSetter<T>::Init();
-        }
         static luaL_Reg reg[] =
         {
             // __gc
@@ -288,13 +373,14 @@ struct Lua
             { "__newindex", __NewIndex < T > },
             { nullptr, nullptr }
         };
-        *(T**)lua_newuserdata( ls, sizeof( T* ) ) = t;          // +1   1       // ud for store t
-        if( luaL_newmetatable( ls, typeName ) )                 // +1   2
+        *(T**)lua_newuserdata( L, sizeof( T* ) ) = t;          // +1   1       // ud for store t
+        if( luaL_newmetatable( L, typeName ) )                 // +1   2
         {
-            luaL_setfuncs( ls, reg, 0 );                        // -0   2       // bind funcs to metatable
+            luaL_setfuncs( L, reg, 0 );                        // -0   2       // bind funcs to metatable
         }
-        lua_setmetatable( ls, -2 );                             // -1   1       // bind metatable to ud
-        lua_setglobal( ls, typeName );                          // -1   0       // set ud to global
+        lua_setmetatable( L, -2 );                             // -1   1       // bind metatable to ud
+        lua_setglobal( L, typeName );                          // -1   0       // set ud to global
+        return LuaGetterSetter<T>();
     }
 
 
@@ -326,7 +412,7 @@ struct Lua
 
     void DumpMulti( int n )
     {
-        int top = GetTop();
+        auto top = GetTop();
         for( int i = top - n + 1; i <= top; ++i )
         {
             Dump( i );
@@ -335,59 +421,14 @@ struct Lua
 
     void DumpTop()
     {
-        auto top = lua_gettop( ls );
+        auto top = GetTop();
         Cout( "top = ", top, " " );
         if( top ) Dump( -1 );
         else CoutLine();
     };
 };
 
-template<typename T>
-struct LuaGetterSetter {};
 
-template<typename T>
-struct LuaGetterSetterBase
-{
-    typedef void( *FuncType )( lua_State*, T* );
-    static Dict < String, std::pair<FuncType, FuncType>>& GetDict()
-    {
-        static Dict < String, std::pair<FuncType, FuncType>> dict;
-        return dict;
-    }
-    static void GetField( lua_State* ls, T* o )
-    {
-        auto& dict = GetDict();
-        size_t len;
-        auto p = lua_tolstring( ls, -1, &len );
-        String key( p, len, len, true );
-        auto node = dict.Find( key );
-        if( node )
-        {
-            dict[ key ].first( ls, o );
-        }
-        else
-        {
-            lua_pushnil( ls );
-        }
-    }
-    static void SetField( lua_State* ls, T* o )
-    {
-        auto& dict = GetDict();
-        size_t len;
-        auto p = lua_tolstring( ls, -2, &len );
-        String key( p, len, len, true );
-        auto node = dict.Find( key );
-        if( node )
-        {
-            dict[ key ].second( ls, o );
-        }
-    }
-    static void Register( char const* key, FuncType getter, FuncType setter )
-    {
-        auto& dict = GetDict();
-        dict.Insert( key, std::make_pair( getter, setter ) );
-    }
-};
 
 struct Foo1
 {
@@ -398,71 +439,28 @@ struct Foo2
 {
     String x;
 };
-
-template<>
-struct LuaGetterSetter < Foo1 > : LuaGetterSetterBase < Foo1 >
-{
-    inline static void Init()
-    {
-        Register( "x", []( lua_State* ls, Foo1* o ) { lua_pushinteger( ls, o->x ); }, []( lua_State* ls, Foo1* o ) { o->x = (int)lua_tointeger( ls, -1 ); } );
-        Register( "y", []( lua_State* ls, Foo1* o ) { lua_pushinteger( ls, o->y ); }, []( lua_State* ls, Foo1* o ) { o->y = (int)lua_tointeger( ls, -1 ); } );
-    }
-};
-
-template<>
-struct LuaGetterSetter < Foo2 > : LuaGetterSetterBase < Foo2 >
-{
-    inline static void GetX( lua_State* ls, Foo2* o )
-    {
-        lua_pushstring( ls, o->x.C_str() );
-    }
-    inline static void SetX( lua_State* ls, Foo2* o )
-    {
-        size_t len;
-        auto s = lua_tolstring( ls, -1, &len );
-        o->x.Assign( s, len, false );
-    }
-    inline static void Init()
-    {
-        Register( "x", GetX, SetX );
-    }
-};
-
 int main()
 {
-    Lua L;
+    LuaEx L;
     L.OpenLibs();
-
-    Foo1 f1; Foo2 f2;
-    L.Register( &f1, "Foo1" );
-    L.Register( &f2, "Foo2" );
-
-    printf( "dict = %p\n", &LuaGetterSetter<Foo1>::GetDict() );
-    printf( "dict = %p\n", &LuaGetterSetter<Foo2>::GetDict() );
-
+    Foo1 f1; Foo2 f2, f3;
+    L.Struct( &f1, "Foo1" ).Field( "x", &Foo1::x ).Field( "y", &Foo1::y );
+    L.Struct( &f2, "Foo2" ).Field( "x", &Foo2::x );
+    L.Struct( &f3, "Foo3" );
     L.DoString( R"--(
-
-function f1( x, y, name )
+function f1( x, y, name1, name2 )
     Foo1.x = x
     Foo1.y = y
-    Foo2.x = name
+    Foo2.x = name1
+    Foo3.x = name2
 end
-
 function f2()
-    return Foo1.x, Foo1.y, Foo2.x
+    return Foo1.x, Foo1.y, Foo2.x, Foo3.x
 end
-
 )--" );
-
-    if( !L.PCallPop( "f1", nullptr, 12, 34, "asdfqwer" ) )
-    {
-        CoutLine( "err: ", L.err );
-    }
-    if( !L.PCallPop( "f2", [ &]( int n ) { L.DumpMulti( n ); } ) )
-    {
-        CoutLine( "err: ", L.err );
-    }
-
+    L.PcallPop( "f1", nullptr, 12, 34, "asdfqwer", "eee" );
+    L.PcallPop( "f2", [ &]( int n ) { L.DumpMulti( n ); } );
+    CoutLine( "f1.x, f1.y, f2.x, f3.x = ", f1.x, " ", f1.y, " ", f2.x, " ", f3.x );
     system( "pause" );
     return 0;
 }
