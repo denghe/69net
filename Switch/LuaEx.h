@@ -369,13 +369,13 @@ namespace xxx
                 { "__newindex", __NewIndex < T > },
                 { nullptr, nullptr }
             };
-            *(T**)lua_newuserdata( L, sizeof( T* ) ) = t;          // +1   1       // ud for store t
+            *(T**)lua_newuserdata( L, sizeof( T* ) ) = t;           // +1   1       // ud for store t
             if( luaL_newmetatable( L, typeid( std::decay<T>::type ).name() ) )         // +1   2
             {
-                luaL_setfuncs( L, reg, 0 );                        // -0   2       // bind funcs to metatable
+                luaL_setfuncs( L, reg, 0 );                         // -0   2       // bind funcs to metatable
             }
-            lua_setmetatable( L, -2 );                             // -1   1       // bind metatable to ud
-            lua_setglobal( L, varName );                           // -1   0       // set ud to global
+            lua_setmetatable( L, -2 );                              // -1   1       // bind metatable to ud
+            lua_setglobal( L, varName );                            // -1   0       // set ud to global
             return LuaStruct<T>();
         }
 
