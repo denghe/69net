@@ -63,5 +63,6 @@
     <ClInclude Include="lundump.h" />
     <ClInclude Include="lvm.h" />
     <ClInclude Include="lzio.h" />
+    <ClInclude Include="LuaEx.h" />
   </ItemGroup>
 </Project>

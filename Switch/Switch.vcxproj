@@ -219,6 +219,7 @@
     <ClInclude Include="lua.h" />
     <ClInclude Include="lua.hpp" />
     <ClInclude Include="luaconf.h" />
+    <ClInclude Include="LuaEx.h" />
     <ClInclude Include="lualib.h" />
     <ClInclude Include="lundump.h" />
     <ClInclude Include="lvm.h" />
