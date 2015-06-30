@@ -150,7 +150,7 @@ namespace xxx
     };
 
     template<typename T>
-    struct LuaGetterSetter
+    struct LuaStruct
     {
         typedef std::function<void( Lua&, T& )> FuncType;
         static Dict < String, std::pair<FuncType, FuncType>>& GetDict()
@@ -187,7 +187,7 @@ namespace xxx
         }
 
         template<typename FT>
-        LuaGetterSetter Field( char const* key, FT T::* fieldOffset )
+        LuaStruct Field( char const* key, FT T::* fieldOffset )
         {
             GetDict().Insert( key, std::make_pair(
                 [ fieldOffset ]( Lua& L, T& o )
@@ -345,22 +345,22 @@ namespace xxx
         template<typename T>
         static int __Index( lua_State* ls )
         {
-            Lua L( ls );                                        // 2            // ud, key
+            Lua L( ls );                                            // 2            // ud, key
             auto t = *(T**)lua_touserdata( ls, -2 );
-            LuaGetterSetter<T>::GetField( L, *t );
+            LuaStruct<T>::GetField( L, *t );
             return 1;
         }
         template<typename T>
         static int __NewIndex( lua_State* ls )
         {
-            Lua L( ls );                                        // 3            // ud, key£¬value
+            Lua L( ls );                                            // 3            // ud, key£¬value
             auto t = *(T**)lua_touserdata( ls, -3 );
-            LuaGetterSetter<T>::SetField( L, *t );
+            LuaStruct<T>::SetField( L, *t );
             return 0;
         }
 
         template<typename T>
-        LuaGetterSetter<T> Struct( T* t, char const* varName )
+        LuaStruct<T> Struct( T* t, char const* varName )
         {
             static luaL_Reg reg[] =
             {
@@ -376,7 +376,7 @@ namespace xxx
             }
             lua_setmetatable( L, -2 );                             // -1   1       // bind metatable to ud
             lua_setglobal( L, varName );                           // -1   0       // set ud to global
-            return LuaGetterSetter<T>();
+            return LuaStruct<T>();
         }
 
 

@@ -19,7 +19,8 @@ int main()
     L.OpenLibs();
     Foo1 f1; Foo2 f2, f3;
     L.Struct( &f1, "Foo1" ).Field( "x", &Foo1::x ).Field( "y", &Foo1::y );
-    L.Struct( &f2, "Foo2" ).Field( "x", &Foo2::x );
+    LuaStruct<Foo2>().Field( "x", &Foo2::x );
+    L.Struct( &f2, "Foo2" );
     L.Struct( &f3, "Foo3" );
     L.DoString( R"--(
 function f1( x, y, name1, name2 )
