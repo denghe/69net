@@ -360,7 +360,7 @@ namespace xxx
         }
 
         template<typename T>
-        LuaGetterSetter<T> Struct( T* t, char const* typeName )
+        LuaGetterSetter<T> Struct( T* t, char const* varName )
         {
             static luaL_Reg reg[] =
             {
@@ -370,12 +370,12 @@ namespace xxx
                 { nullptr, nullptr }
             };
             *(T**)lua_newuserdata( L, sizeof( T* ) ) = t;          // +1   1       // ud for store t
-            if( luaL_newmetatable( L, typeName ) )                 // +1   2
+            if( luaL_newmetatable( L, typeid( std::decay<T>::type ).name() ) )         // +1   2
             {
                 luaL_setfuncs( L, reg, 0 );                        // -0   2       // bind funcs to metatable
             }
             lua_setmetatable( L, -2 );                             // -1   1       // bind metatable to ud
-            lua_setglobal( L, typeName );                          // -1   0       // set ud to global
+            lua_setglobal( L, varName );                           // -1   0       // set ud to global
             return LuaGetterSetter<T>();
         }
 
