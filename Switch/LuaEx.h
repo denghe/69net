@@ -24,6 +24,10 @@ namespace xxx
         {
             luaL_openlibs( L );
         }
+        inline void OpenLibBase()
+        {
+            luaopen_base( L );
+        }
         inline bool DoFile( String const& fn )
         {
             return luaL_dofile( L, fn.C_str() ) == LUA_OK;
@@ -164,7 +168,8 @@ namespace xxx
             auto key = L.ToString( -1, true );
             if( auto node = dict.Find( key ) )
             {
-                node->value.first( L, o );
+                if( node->value.first )
+                    node->value.first( L, o );
             }
             else
             {
@@ -177,15 +182,16 @@ namespace xxx
             auto key = L.ToString( -2, true );
             if( auto node = dict.Find( key ) )
             {
-                node->value.second( L, o );
+                if( node->value.second )
+                    node->value.second( L, o );
             }
         }
+
         void Field( char const* key, FuncType getter, FuncType setter )
         {
             auto& dict = GetDict();
             dict.Insert( key, std::make_pair( getter, setter ) );
         }
-
         template<typename FT>
         LuaStruct Field( char const* key, FT T::* fieldOffset )
         {
@@ -198,6 +204,11 @@ namespace xxx
                 L.To( o.*fieldOffset );
             } ) );
             return *this;
+        }
+
+        void Function( char const* key, FuncType caller )
+        {
+            Field( key, caller, nullptr );
         }
     };
 
@@ -224,6 +235,9 @@ namespace xxx
                 lua_close( L );
             }
         }
+
+        LuaEx( LuaEx const& o ) = delete;
+        LuaEx& operator=( LuaEx const& o ) = delete;
 
         inline void ToErrPop()
         {
@@ -358,7 +372,6 @@ namespace xxx
             LuaStruct<T>::SetField( L, *t );
             return 0;
         }
-
         template<typename T>
         LuaStruct<T> Struct( T* t, char const* varName )
         {
