@@ -64,19 +64,127 @@ namespace xxx
         {
             lua_pushnil( L );
         }
+
+        // for light user data
+        template<typename T>
+        inline void Push( T* v )
+        {
+            lua_pushlightuserdata( L, v );
+        }
+
+        inline void Push() {}
+
+        template<typename T, typename...TS>
+        void Push( T const& p0, TS const&...parms )
+        {
+            Push( p0 );
+            Push( parms... );
+        }
+
         inline void PushNil()
         {
             lua_pushnil( L );
         }
 
-        inline void PushMulti() {}
+
+        template<typename...TS>
+        void PushCClosure( lua_CFunction f, TS const&...parms )
+        {
+            Push( parms... );
+            lua_pushcclosure( L, f, sizeof...( parms ) );
+        }
+
+        template<typename T>
+        T* GetUpValue( int idx = 1 )
+        {
+            T* rtv;
+            lua_getupvalue( L, -lua_gettop( L ) - 1, idx );
+            To( rtv );
+            lua_pop( L, 1 );
+            return rtv;
+        }
+
+        template<typename T>
+        void GetUpValue( int idx, T& v )
+        {
+            lua_getupvalue( L, -lua_gettop( L ) - 1, idx );
+            To( v );
+            lua_pop( L, 1 );
+        }
 
         template<typename T, typename...TS>
-        void PushMulti( T const& p0, TS const&...parms )
+        void GetUpValue( int idx, T& p0, TS&...parms )
         {
-            Push( p0 );
-            PushMulti( parms... );
+            GetUpValue( idx, p0 );
+            GetUpValue( idx + 1, parms... );
         }
+
+
+
+        inline bool IsNumber( int idx )
+        {
+            return lua_isnumber( L, idx ) == 1;
+        }
+        inline bool IsInteger( int idx )
+        {
+            return lua_isinteger( L, idx ) == 1;
+        }
+        inline bool IsString( int idx )
+        {
+            return lua_isstring( L, idx ) == 1;
+        }
+        inline bool IsNil( int idx )
+        {
+            return lua_isnil( L, idx ) == 1;
+        }
+
+        template<typename T, typename...TS>
+        bool Is( int idx )
+        {
+            if( !Is<T>( idx ) ) return false;
+            return Is<TS...>( idx + 1 );
+        }
+        template<>
+        bool Is<int>( int idx )
+        {
+            return IsInteger( idx );
+        }
+        template<>
+        bool Is<int64>( int idx )
+        {
+            return IsInteger( idx );
+        }
+        template<>
+        bool Is<float>( int idx )
+        {
+            return IsNumber( idx );
+        }
+        template<>
+        bool Is<double>( int idx )
+        {
+            return IsNumber( idx );
+        }
+        template<>
+        bool Is<String>( int idx )
+        {
+            return IsString( idx );
+        }
+
+        template<typename T, typename...TS>
+        T* CheckAndGetUpValue()
+        {
+            auto top = GetTop();
+            if( top != sizeof...( TS ) )
+            {
+                return nullptr;
+            }
+            if( !Is<TS...>( -top ) )
+            {
+                return nullptr;
+            }
+            return GetUpValue<T>();
+        }
+
 
         inline void Pop( int n )
         {
@@ -103,10 +211,9 @@ namespace xxx
         {
             return lua_typename( L, lua_type( L, idx ) );
         }
-        inline bool IsInteger( int idx )
-        {
-            return lua_isinteger( L, idx ) == 1;
-        }
+
+
+
         inline char const* ToCString( int idx )
         {
             return lua_tostring( L, idx );
@@ -124,6 +231,10 @@ namespace xxx
         inline lua_Integer ToInteger( int idx )
         {
             return lua_tointeger( L, idx );
+        }
+        inline int ToInt( int idx )
+        {
+            return (int)lua_tointeger( L, idx );
         }
 
         inline void To( int32& v )
@@ -144,11 +255,19 @@ namespace xxx
             auto rtv = lua_tolstring( L, -1, &len );
             v.Assign( rtv, len, false );
         }
+
+        // for light user data
+        template<typename T>
+        inline void To( T*& v )
+        {
+            v = (T*)lua_touserdata( L, -1 );
+        }
+
         template<typename T, typename...TS>
-        void ToMulti( T& p0, TS&...parms )
+        void To( T& p0, TS&...parms )
         {
             To( p0 );
-            ToMulti( parms... );
+            To( parms... );
         }
 
     };
@@ -169,12 +288,12 @@ namespace xxx
             if( auto node = dict.Find( key ) )
             {
                 if( node->value.first )
+                {
                     node->value.first( L, o );
+                    return;
+                }
             }
-            else
-            {
-                L.PushNil();
-            }
+            L.PushNil();
         }
         static void SetField( Lua& L, T& o )
         {
@@ -183,32 +302,53 @@ namespace xxx
             if( auto node = dict.Find( key ) )
             {
                 if( node->value.second )
+                {
                     node->value.second( L, o );
+                    return;
+                }
             }
+            L.PushNil();
         }
 
-        void Field( char const* key, FuncType getter, FuncType setter )
+        LuaStruct Field( char const* key, FuncType getter, FuncType setter )
         {
             auto& dict = GetDict();
             dict.Insert( key, std::make_pair( getter, setter ) );
+            return *this;
         }
         template<typename FT>
-        LuaStruct Field( char const* key, FT T::* fieldOffset )
+        LuaStruct Field( char const* key, FT T::* fieldOffset, bool readonly = false )
         {
-            GetDict().Insert( key, std::make_pair(
-                [ fieldOffset ]( Lua& L, T& o )
+            if( readonly )
             {
-                L.Push( o.*fieldOffset );
-            }, [ fieldOffset ]( Lua& L, T& o )
+                GetDict().Insert( key, std::make_pair(
+                    [ fieldOffset ]( Lua& L, T& o )
+                {
+                    L.Push( o.*fieldOffset );
+                }, nullptr ));
+            }
+            else
             {
-                L.To( o.*fieldOffset );
-            } ) );
+                GetDict().Insert( key, std::make_pair(
+                    [ fieldOffset ]( Lua& L, T& o )
+                {
+                    L.Push( o.*fieldOffset );
+                }, [ fieldOffset ]( Lua& L, T& o )
+                {
+                    L.To( o.*fieldOffset );
+                } ) );
+            }
             return *this;
         }
 
-        void Function( char const* key, FuncType caller )
+        typedef int( *CFunction ) ( Lua L );
+        LuaStruct Function( char const* key, CFunction f )
         {
-            Field( key, caller, nullptr );
+            Field( key, [f]( Lua& L, Foo1& o )
+            {
+                L.PushCClosure( (lua_CFunction)f, &o );
+            }, nullptr );
+            return *this;
         }
     };
 
@@ -310,7 +450,7 @@ namespace xxx
                 err.Append( "can't find function by name `", fn, "`" );
                 return -1;
             }
-            PushMulti( parms... );                                  // stack +n: 1+n
+            Push( parms... );                                       // stack +n: 1+n
             if( lua_pcall( L, n, LUA_MULTRET, 0 ) != LUA_OK )       // stack -1-n: 0    T: stack +r: r    F: stack +e: e
             {
                 ToErrPop();                        // stack -e: 0

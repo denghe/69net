@@ -7,10 +7,9 @@ struct Foo1
 {
     int x = 0;
     int y = 0;
-    inline String SetXY( int x, int y )
+    inline void SetXY( int x, int y )
     {
         this->x = x; this->y = y;
-        return String::MakeFast( "f1.x = ", x, " f1.y = ", y );
     }
 };
 
@@ -21,38 +20,31 @@ int main()
     Foo1 f1;
     L.Struct( &f1, "Foo1" )
         .Field( "x", &Foo1::x )
-        .Field( "y", &Foo1::y )
-        .Function( "SetXY",
-        []( Lua& L, Foo1& o )
+        .Field( "y", &Foo1::y, true )
+        .Function( "SetXY", []( Lua L )
         {
-            auto callSetXY = []( lua_State* L )
+            if( auto o = L.CheckAndGetUpValue<Foo1, int, int>() )
             {
-                auto numArgs = lua_gettop( L );
-
-                // 参数个数 check
-                if( numArgs != 2 ) return 0;
-
-                // todo: 参数数据类型check
-
-                // 定位到类实例
-                lua_getupvalue( L, -lua_gettop( L ) - 1, 1 );
-                auto& o = *(Foo1*)lua_touserdata( L, -1 );
-                lua_pop( L, 1 );
-
-                // 调类函数
-                auto rtv = o.SetXY( (int)lua_tointeger( L, -2 ), (int)lua_tointeger( L, -1 ) );
-                lua_pushlstring( L, rtv.C_str(), rtv.Size() );
-
-                return 1;
-            };
-            lua_pushlightuserdata( L.L, &o );
-            lua_pushcclosure( L.L, callSetXY, 1 );
+                o->SetXY( L.ToInt( -2 ), L.ToInt( -1 ) );
+            }
+            return 0;
+        } )
+        .Function( "GetXY", []( Lua L )
+        {
+            if( auto o = L.GetUpValue<Foo1>() )
+            {
+                L.Push( o->x, o->y );
+                return 2;
+            }
+            return 0;
         } );
     L.DoString( R"--(
 function f1()
-    print( Foo1.SetXY( 123, 456 ) )
-    Foo1.x, Foo1.y = 1, 2
-    print( Foo1.x, Foo1.y )
+    Foo1.SetXY( 123, 456 )
+    print( Foo1.GetXY() )
+    Foo1.x = 0
+    Foo1.y = 0    -- readonly
+    print( Foo1.GetXY() )
 end
 )--" );
     L.PcallPop( "f1", nullptr );
