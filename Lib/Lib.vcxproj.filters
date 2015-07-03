@@ -48,6 +48,7 @@
     <ClInclude Include="DbValue.hpp" />
     <ClInclude Include="CD.h" />
     <ClInclude Include="dtoa_milo.h" />
+    <ClInclude Include="IndexSequence.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="All.cpp" />

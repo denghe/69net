@@ -40,6 +40,9 @@ namespace xxx
         {
             return luaL_dostring( L, code.C_str() ) == LUA_OK;
         }
+
+
+
         inline void Push( lua_Number v )
         {
             lua_pushnumber( L, v );
@@ -64,21 +67,23 @@ namespace xxx
         {
             lua_pushnil( L );
         }
-
-        // for light user data
-        template<typename T>
-        inline void Push( T* v )
+        inline void Push( void* v )
         {
             lua_pushlightuserdata( L, v );
         }
 
-        inline void Push() {}
+        inline void PushMulti() {}
 
-        template<typename T, typename...TS>
-        void Push( T const& p0, TS const&...parms )
+        template<typename T>
+        void PushMulti( T const& p0 )
         {
             Push( p0 );
-            Push( parms... );
+        }
+        template<typename T, typename...TS>
+        void PushMulti( T const& p0, TS const&...parms )
+        {
+            Push( p0 );
+            PushMulti( parms... );
         }
 
         inline void PushNil()
@@ -90,7 +95,7 @@ namespace xxx
         template<typename...TS>
         void PushCClosure( lua_CFunction f, TS const&...parms )
         {
-            Push( parms... );
+            PushMulti( parms... );
             lua_pushcclosure( L, f, sizeof...( parms ) );
         }
 
@@ -170,8 +175,10 @@ namespace xxx
             return IsString( idx );
         }
 
+
+
         template<typename T, typename...TS>
-        T* CheckAndGetUpValue()
+        typename std::enable_if<HasParms<TS...>::value, T*>::type CheckAndGetUpValue()
         {
             auto top = GetTop();
             if( top != sizeof...( TS ) )
@@ -184,6 +191,74 @@ namespace xxx
             }
             return GetUpValue<T>();
         }
+        template<typename T, typename...TS>
+        typename std::enable_if<!HasParms<TS...>::value, T*>::type CheckAndGetUpValue()
+        {
+            return GetUpValue<T>();
+        }
+
+        template<typename T, typename...TS>
+        T* ToInstance()
+        {
+            return CheckAndGetUpValue<T, TS...>();
+        }
+
+
+
+
+
+
+
+        template<typename T, typename...TS, size_t...I>
+        void FuncTupleCaller( T* o, void( T::*f )( TS... ), std::tuple<TS...>& tp, IndexSequence<I...> )
+        {
+            ( o->*f )( std::get<I>( tp )... );
+        }
+
+
+
+        template<class Tuple, std::size_t N>
+        struct TupleFiller
+        {
+            static void Fill( Lua& L, Tuple& t )
+            {
+                TupleFiller<Tuple, N - 1>::Fill( L, t );
+                L.To( std::get<N - 1>( t ) );
+            }
+        };
+        template<class Tuple>
+        struct TupleFiller < Tuple, 1 >
+        {
+            static void Fill( Lua& L, Tuple& t )
+            {
+                L.To( std::get<0>( t ) );
+            }
+        };
+
+
+        template<typename T>
+        bool CallInstanceFunc( void( T::*f )() )
+        {
+            auto o = GetUpValue<T>();
+            ( o->*f )();
+            return true;
+        }
+        template<typename T, typename...TS>
+        bool CallInstanceFunc( void( T::*f )( TS... ) )
+        {
+            auto top = GetTop();
+            if( top != sizeof...( TS ) ) return false;
+            if( !Is<TS...>( -top ) ) return false;
+
+            auto o = GetUpValue<T>();
+            std::tuple<TS...> tp;
+            TupleFiller<decltype(tp), sizeof...(TS)>::Fill( *this, tp );
+            typedef typename MakeIndexSequence<sizeof...( TS )>::type IST;
+            FuncTupleCaller( o, f, tp, IST() );
+            return true;
+        }
+
+
 
 
         inline void Pop( int n )
@@ -325,7 +400,7 @@ namespace xxx
                     [ fieldOffset ]( Lua& L, T& o )
                 {
                     L.Push( o.*fieldOffset );
-                }, nullptr ));
+                }, nullptr ) );
             }
             else
             {
@@ -344,7 +419,7 @@ namespace xxx
         typedef int( *CFunction ) ( Lua L );
         LuaStruct Function( char const* key, CFunction f )
         {
-            Field( key, [f]( Lua& L, Foo1& o )
+            Field( key, [ f ]( Lua& L, Foo1& o )
             {
                 L.PushCClosure( (lua_CFunction)f, &o );
             }, nullptr );
@@ -358,10 +433,11 @@ namespace xxx
         bool createrIsMe;
         String err;
 
-        LuaEx()
+        LuaEx( bool openLibBase = true )
             : Lua( luaL_newstate() )
             , createrIsMe( true )
         {
+            if( openLibBase ) OpenLibBase();
         }
         LuaEx( lua_State* L )
             : Lua( L )
@@ -450,7 +526,7 @@ namespace xxx
                 err.Append( "can't find function by name `", fn, "`" );
                 return -1;
             }
-            Push( parms... );                                       // stack +n: 1+n
+            PushMulti( parms... );                                  // stack +n: 1+n
             if( lua_pcall( L, n, LUA_MULTRET, 0 ) != LUA_OK )       // stack -1-n: 0    T: stack +r: r    F: stack +e: e
             {
                 ToErrPop();                        // stack -e: 0

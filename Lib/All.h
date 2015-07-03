@@ -349,7 +349,7 @@ inline void aligned_free( void* p )
 
 
 
-
+#include "IndexSequence.h"
 #include "Nullable.h"
 #include "Singleton.h"
 #include "ScopeGuard.h"

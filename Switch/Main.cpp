@@ -7,40 +7,48 @@ struct Foo1
 {
     int x = 0;
     int y = 0;
-    inline void SetXY( int x, int y )
+    inline void SetXY( int x = 0, int y = 0 )
     {
         this->x = x; this->y = y;
     }
 };
 
+
 int main()
 {
     LuaEx L;
-    L.OpenLibBase();
     Foo1 f1;
     L.Struct( &f1, "Foo1" )
         .Field( "x", &Foo1::x )
         .Field( "y", &Foo1::y, true )
         .Function( "SetXY", []( Lua L )
         {
-            if( auto o = L.CheckAndGetUpValue<Foo1, int, int>() )
+            if( L.CallInstanceFunc( &Foo1::SetXY ) )
             {
-                o->SetXY( L.ToInt( -2 ), L.ToInt( -1 ) );
             }
+            else if( auto o = L.ToInstance<Foo1, int>() )
+            {
+                o->SetXY( L.ToInt( -1 ) );
+            }
+            else if( auto o = L.ToInstance<Foo1>() )
+            {
+                o->SetXY();
+            }
+            else {}         // todo: throw exception to lua
             return 0;
         } )
         .Function( "GetXY", []( Lua L )
         {
-            if( auto o = L.GetUpValue<Foo1>() )
+            if( auto o = L.CheckAndGetUpValue<Foo1>() )
             {
-                L.Push( o->x, o->y );
+                L.PushMulti( o->x, o->y );
                 return 2;
             }
             return 0;
         } );
     L.DoString( R"--(
 function f1()
-    Foo1.SetXY( 123, 456 )
+    Foo1.SetXY( )
     print( Foo1.GetXY() )
     Foo1.x = 0
     Foo1.y = 0    -- readonly
