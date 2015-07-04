@@ -72,7 +72,9 @@ namespace xxx
             lua_pushlightuserdata( L, v );
         }
 
-        inline void PushMulti() {}
+        inline void PushMulti()
+        {
+        }
 
         template<typename T>
         void PushMulti( T const& p0 )
@@ -209,10 +211,10 @@ namespace xxx
 
 
 
-        template<typename T, typename...TS, size_t...I>
-        void FuncTupleCaller( T* o, void( T::*f )( TS... ), std::tuple<TS...>& tp, IndexSequence<I...> )
+        template<typename R, typename T, typename...TS, size_t...I>
+        R FuncTupleCaller( T* o, R( T::*f )( TS... ), std::tuple<TS...>& tp, IndexSequence<I...> )
         {
-            ( o->*f )( std::get<I>( tp )... );
+            return ( o->*f )( std::get<I>( tp )... );
         }
 
 
@@ -223,7 +225,7 @@ namespace xxx
             static void Fill( Lua& L, Tuple& t )
             {
                 TupleFiller<Tuple, N - 1>::Fill( L, t );
-                L.To( std::get<N - 1>( t ) );
+                L.To( std::get<N - 1>( t ), -(int)( std::tuple_size<Tuple>::value - N + 1 ) );
             }
         };
         template<class Tuple>
@@ -231,20 +233,23 @@ namespace xxx
         {
             static void Fill( Lua& L, Tuple& t )
             {
-                L.To( std::get<0>( t ) );
+                L.To( std::get<0>( t ), -(int)( std::tuple_size<Tuple>::value ) );
             }
         };
 
 
+
+
         template<typename T>
-        bool CallInstanceFunc( void( T::*f )() )
+        bool CallInstanceFunc( int& rc, void( T::*f )( ) )
         {
             auto o = GetUpValue<T>();
-            ( o->*f )();
+            ( o->*f )( );
+            rc = 0;
             return true;
         }
         template<typename T, typename...TS>
-        bool CallInstanceFunc( void( T::*f )( TS... ) )
+        bool CallInstanceFunc( int& rc, void( T::*f )( TS... ) )
         {
             auto top = GetTop();
             if( top != sizeof...( TS ) ) return false;
@@ -252,9 +257,35 @@ namespace xxx
 
             auto o = GetUpValue<T>();
             std::tuple<TS...> tp;
-            TupleFiller<decltype(tp), sizeof...(TS)>::Fill( *this, tp );
+            TupleFiller<decltype( tp ), sizeof...( TS )>::Fill( *this, tp );
             typedef typename MakeIndexSequence<sizeof...( TS )>::type IST;
             FuncTupleCaller( o, f, tp, IST() );
+            rc = 0;
+            return true;
+        }
+
+
+        template<typename R, typename T>
+        bool CallInstanceFunc( int& rc, R( T::*f )( ) )
+        {
+            auto o = GetUpValue<T>();
+            Push( ( o->*f )( ) );
+            rc = 1;
+            return true;
+        }
+        template<typename R, typename T, typename...TS>
+        bool CallInstanceFunc( int& rc, void( T::*f )( TS... ) )
+        {
+            auto top = GetTop();
+            if( top != sizeof...( TS ) ) return false;
+            if( !Is<TS...>( -top ) ) return false;
+
+            auto o = GetUpValue<T>();
+            std::tuple<TS...> tp;
+            TupleFiller<decltype( tp ), sizeof...( TS )>::Fill( *this, tp );
+            typedef typename MakeIndexSequence<sizeof...( TS )>::type IST;
+            Push( FuncTupleCaller( o, f, tp, IST() ) );
+            rc = 1;
             return true;
         }
 
@@ -297,7 +328,7 @@ namespace xxx
         {
             size_t len;
             auto rtv = lua_tolstring( L, idx, &len );
-            return String( rtv, len, len, ref );
+            return String( rtv, (int)len, (int)len, ref );
         }
         inline lua_Number ToNumber( int idx )
         {
@@ -312,38 +343,93 @@ namespace xxx
             return (int)lua_tointeger( L, idx );
         }
 
-        inline void To( int32& v )
+
+        inline void To( int32& v, int idx = -1 )
         {
-            v = (int32)lua_tointeger( L, -1 );
+            v = (int32)lua_tointeger( L, idx );
         }
-        inline void To( int64& v )
+        inline void To( int64& v, int idx = -1 )
         {
-            v = lua_tointeger( L, -1 );
+            v = lua_tointeger( L, idx );
         }
-        inline void To( double& v )
+        inline void To( double& v, int idx = -1 )
         {
-            v = lua_tonumber( L, -1 );
+            v = lua_tonumber( L, idx );
         }
-        inline void To( String& v )
+        inline void To( String& v, int idx = -1 )
         {
             size_t len;
-            auto rtv = lua_tolstring( L, -1, &len );
-            v.Assign( rtv, len, false );
+            auto rtv = lua_tolstring( L, idx, &len );
+            v.Assign( rtv, (int)len, false );
         }
 
         // for light user data
         template<typename T>
-        inline void To( T*& v )
+        inline void To( T*& v, int idx = -1 )
         {
-            v = (T*)lua_touserdata( L, -1 );
+            v = (T*)lua_touserdata( L, idx );
         }
 
-        template<typename T, typename...TS>
-        void To( T& p0, TS&...parms )
+
+        template<typename T>
+        void ToMultiCore( int idx, T& p0 )
         {
-            To( p0 );
-            To( parms... );
+            To( p0, idx );
         }
+        template<typename T, typename...TS>
+        void ToMultiCore( int idx, T& p0, TS&...parms )
+        {
+            To( p0, idx );
+            if( idx < -1 ) ToMultiCore( idx - 1, parms... );
+        }
+
+        template<typename...TS>
+        void ToMulti( TS&...parms )
+        {
+            auto n = -( int )sizeof...( parms );
+            ToMultiCore( n, parms... );
+        }
+
+
+        inline void Dump( int idx )
+        {
+            Cout( "data type = ", GetTypeName( idx ), "; value = " );
+            switch( GetType( idx ) )
+            {
+            case LuaDataTypes::String:
+                CoutLine( ToString( idx ) );
+                break;
+            case LuaDataTypes::Number:
+                if( IsInteger( idx ) )
+                {
+                    CoutLine( ToInteger( idx ) );
+                }
+                else
+                {
+                    CoutLine( ToNumber( idx ) );
+                }
+                break;
+            default:
+                CoutLine( "{ to do }" );
+            }
+        }
+
+        inline void DumpMulti( int count )
+        {
+            auto top = GetTop();
+            for( int i = top - count + 1; i <= top; ++i )
+            {
+                Dump( i );
+            }
+        }
+
+        inline void DumpTop()
+        {
+            auto top = GetTop();
+            Cout( "top = ", top, " " );
+            if( top ) Dump( -1 );
+            else CoutLine();
+        };
 
     };
 
@@ -351,6 +437,7 @@ namespace xxx
     struct LuaStruct
     {
         typedef std::function<void( Lua&, T& )> FuncType;
+
         static Dict < String, std::pair<FuncType, FuncType>>& GetDict()
         {
             static Dict < String, std::pair<FuncType, FuncType>> dict;
@@ -419,13 +506,43 @@ namespace xxx
         typedef int( *CFunction ) ( Lua L );
         LuaStruct Function( char const* key, CFunction f )
         {
-            Field( key, [ f ]( Lua& L, Foo1& o )
+            Field( key, [ f ]( Lua& L, T& o )
             {
                 L.PushCClosure( (lua_CFunction)f, &o );
             }, nullptr );
             return *this;
         }
+
+
+        template<typename R, typename ...PS>
+        LuaStruct Function( char const* key, R( T::* f )( PS... ) )
+        {
+            static List<std::function<void()>> Deleters;
+            typedef R( T::* FuncType )( PS... );
+            auto fp = new FuncType( f );
+            Deleters.Push( [fp] { delete fp; } );
+            Field( key, [ fp ]( Lua& L, T& o )
+            {
+                auto cf = []( lua_State* ls )
+                {
+                    Lua L( ls );
+                    FuncType* fp = nullptr;
+                    L.GetUpValue( 2, fp );
+                    int rtv = 0;
+                    if( !L.CallInstanceFunc( rtv, *fp ) )
+                    {
+                        // todo: throw error to lua ?
+                    }
+                    return rtv;
+                };
+                L.PushCClosure( cf, &o, fp );
+            }, nullptr );
+            return *this;
+        }
+
     };
+
+
 
 
     struct LuaEx : public Lua
@@ -516,7 +633,7 @@ namespace xxx
         template<typename ...TS>
         int Pcall( String const& fn, TS const&...parms )
         {
-            auto n = sizeof...( parms );
+            auto n = ( int )sizeof...( parms );
             if( !CheckStack( n + 1 ) ) return -1;
             int top = GetTop();
             if( lua_getglobal( L, fn.C_str() ) != LUA_TFUNCTION )   // stack +1: 1
@@ -612,45 +729,7 @@ namespace xxx
 
 
 
-        inline void Dump( int idx )
-        {
-            Cout( "data type = ", GetTypeName( idx ), "; value = " );
-            switch( GetType( idx ) )
-            {
-            case LuaDataTypes::String:
-                CoutLine( ToString( idx ) );
-                break;
-            case LuaDataTypes::Number:
-                if( IsInteger( idx ) )
-                {
-                    CoutLine( ToInteger( idx ) );
-                }
-                else
-                {
-                    CoutLine( ToNumber( idx ) );
-                }
-                break;
-            default:
-                CoutLine( "{ to do }" );
-            }
-        }
 
-        inline void DumpMulti( int n )
-        {
-            auto top = GetTop();
-            for( int i = top - n + 1; i <= top; ++i )
-            {
-                Dump( i );
-            }
-        }
-
-        inline void DumpTop()
-        {
-            auto top = GetTop();
-            Cout( "top = ", top, " " );
-            if( top ) Dump( -1 );
-            else CoutLine();
-        };
     };
 
 

@@ -11,8 +11,15 @@ struct Foo1
     {
         this->x = x; this->y = y;
     }
+    inline int GetX()
+    {
+        return x;
+    }
+    inline int GetY()
+    {
+        return y;
+    }
 };
-
 
 int main()
 {
@@ -20,46 +27,78 @@ int main()
     Foo1 f1;
     L.Struct( &f1, "Foo1" )
         .Field( "x", &Foo1::x )
-        .Field( "y", &Foo1::y, true )
-        .Function( "SetXY", []( Lua L )
-        {
-            if( L.CallInstanceFunc( &Foo1::SetXY ) )
-            {
-            }
-            else if( auto o = L.ToInstance<Foo1, int>() )
-            {
-                o->SetXY( L.ToInt( -1 ) );
-            }
-            else if( auto o = L.ToInstance<Foo1>() )
-            {
-                o->SetXY();
-            }
-            else {}         // todo: throw exception to lua
-            return 0;
-        } )
-        .Function( "GetXY", []( Lua L )
-        {
-            if( auto o = L.CheckAndGetUpValue<Foo1>() )
-            {
-                L.PushMulti( o->x, o->y );
-                return 2;
-            }
-            return 0;
-        } );
+        .Field( "y", &Foo1::y )
+        .Function( "SetXY", &Foo1::SetXY )
+        .Function( "GetX", &Foo1::GetX )
+        .Function( "GetY", &Foo1::GetY );
     L.DoString( R"--(
 function f1()
-    Foo1.SetXY( )
-    print( Foo1.GetXY() )
-    Foo1.x = 0
-    Foo1.y = 0    -- readonly
-    print( Foo1.GetXY() )
+    Foo1.SetXY( 123, 456 )
+    print( Foo1.x, Foo1.y )
+    Foo1.x, Foo1.y = 11, 22
+    print( Foo1.GetX(), Foo1.GetY() )
 end
 )--" );
-    L.PcallPop( "f1", nullptr );
+    if( L.PcallPop( "f1", nullptr ) )
+    {
+        CoutLine( "f1.x y = ", f1.x, " ", f1.y );
+    }
     system( "pause" );
     return 0;
 }
 
+//struct ER
+//{
+//    template<typename R, typename T, typename ...PS>
+//    static auto xxx(R(T::* f)( PS... ))->decltype( f )
+//    {
+//        typedef R( T::* FuncType )( PS... );
+//        auto v = (uint64)*(size_t*)&f;
+//        CoutLine( v );
+//        FuncType f2;
+//        (uint64)*(size_t*)&f2 = v;
+//        return f2;
+//    }
+//};
+
+//Foo1 f;
+//( f.*ER::xxx( &Foo1::SetXY ) )( 123, 456 );
+//CoutLine( "f.x y = ", f.x, f.y );
+
+
+//.Field( "x", &Foo1::x )
+//.Field( "y", &Foo1::y, true )
+//.Function( "SetXY", []( Lua L )
+//{
+//    if( L.CallInstanceFunc( &Foo1::SetXY ) )
+//    {
+//    }
+//    else if( auto o = L.ToInstance<Foo1, int>() )
+//    {
+//        o->SetXY( L.ToInt( -1 ) );
+//    }
+//    else if( auto o = L.ToInstance<Foo1>() )
+//    {
+//        o->SetXY();
+//    }
+//    else {}         // todo: throw exception to lua
+//    return 0;
+//} )
+//.Function( "GetXY", []( Lua L )
+//{
+//    if( auto o = L.CheckAndGetUpValue<Foo1>() )
+//    {
+//        L.PushMulti( o->x, o->y );
+//        return 2;
+//    }
+//    return 0;
+//} );
+
+
+//print( Foo1.GetXY() )
+//Foo1.x = 0
+//Foo1.y = 0    --readonly
+//print( Foo1.GetXY() )
 
 
 //struct Foo2
