@@ -43,11 +43,15 @@ namespace xxx
 
 
 
-        inline void Push( lua_Number v )
+        inline void Push( double v )
         {
             lua_pushnumber( L, v );
         }
-        inline void Push( lua_Integer v )
+        inline void Push( float v )
+        {
+            lua_pushnumber( L, v );
+        }
+        inline void Push( int64 v )
         {
             lua_pushinteger( L, v );
         }
@@ -102,9 +106,9 @@ namespace xxx
         }
 
         template<typename T>
-        T* GetUpValue( int idx = 1 )
+        T GetUpValue( int idx = 1 )
         {
-            T* rtv;
+            T rtv;
             lua_getupvalue( L, -lua_gettop( L ) - 1, idx );
             To( rtv );
             lua_pop( L, 1 );
@@ -243,7 +247,7 @@ namespace xxx
         template<typename T>
         bool CallInstanceFunc( int& rc, void( T::*f )( ) )
         {
-            auto o = GetUpValue<T>();
+            auto o = GetUpValue<T*>();
             ( o->*f )( );
             rc = 0;
             return true;
@@ -255,7 +259,7 @@ namespace xxx
             if( top != sizeof...( TS ) ) return false;
             if( !Is<TS...>( -top ) ) return false;
 
-            auto o = GetUpValue<T>();
+            auto o = GetUpValue<T*>();
             std::tuple<TS...> tp;
             TupleFiller<decltype( tp ), sizeof...( TS )>::Fill( *this, tp );
             typedef typename MakeIndexSequence<sizeof...( TS )>::type IST;
@@ -268,7 +272,7 @@ namespace xxx
         template<typename R, typename T>
         bool CallInstanceFunc( int& rc, R( T::*f )( ) )
         {
-            auto o = GetUpValue<T>();
+            auto o = GetUpValue<T*>();
             Push( ( o->*f )( ) );
             rc = 1;
             return true;
@@ -280,7 +284,7 @@ namespace xxx
             if( top != sizeof...( TS ) ) return false;
             if( !Is<TS...>( -top ) ) return false;
 
-            auto o = GetUpValue<T>();
+            auto o = GetUpValue<T*>();
             std::tuple<TS...> tp;
             TupleFiller<decltype( tp ), sizeof...( TS )>::Fill( *this, tp );
             typedef typename MakeIndexSequence<sizeof...( TS )>::type IST;
@@ -330,11 +334,15 @@ namespace xxx
             auto rtv = lua_tolstring( L, idx, &len );
             return String( rtv, (int)len, (int)len, ref );
         }
-        inline lua_Number ToNumber( int idx )
+        inline double ToDouble( int idx )
         {
             return lua_tonumber( L, idx );
         }
-        inline lua_Integer ToInteger( int idx )
+        inline float ToFloat( int idx )
+        {
+            return (float)lua_tonumber( L, idx );
+        }
+        inline int64 ToInt64( int idx )
         {
             return lua_tointeger( L, idx );
         }
@@ -344,17 +352,21 @@ namespace xxx
         }
 
 
-        inline void To( int32& v, int idx = -1 )
-        {
-            v = (int32)lua_tointeger( L, idx );
-        }
         inline void To( int64& v, int idx = -1 )
         {
             v = lua_tointeger( L, idx );
         }
+        inline void To( int32& v, int idx = -1 )
+        {
+            v = (int32)lua_tointeger( L, idx );
+        }
         inline void To( double& v, int idx = -1 )
         {
             v = lua_tonumber( L, idx );
+        }
+        inline void To( float& v, int idx = -1 )
+        {
+            v = (float)lua_tonumber( L, idx );
         }
         inline void To( String& v, int idx = -1 )
         {
@@ -402,11 +414,11 @@ namespace xxx
             case LuaDataTypes::Number:
                 if( IsInteger( idx ) )
                 {
-                    CoutLine( ToInteger( idx ) );
+                    CoutLine( ToInt64( idx ) );
                 }
                 else
                 {
-                    CoutLine( ToNumber( idx ) );
+                    CoutLine( ToDouble( idx ) );
                 }
                 break;
             default:
@@ -434,7 +446,7 @@ namespace xxx
     };
 
     template<typename T>
-    struct LuaStruct
+    struct LuaEx_Struct
     {
         typedef std::function<void( Lua&, T& )> FuncType;
 
@@ -472,14 +484,14 @@ namespace xxx
             L.PushNil();
         }
 
-        LuaStruct Field( char const* key, FuncType getter, FuncType setter )
+        LuaEx_Struct Field( char const* key, FuncType getter, FuncType setter )
         {
             auto& dict = GetDict();
             dict.Insert( key, std::make_pair( getter, setter ) );
             return *this;
         }
         template<typename FT>
-        LuaStruct Field( char const* key, FT T::* fieldOffset, bool readonly = false )
+        LuaEx_Struct Field( char const* key, FT T::* fieldOffset, bool readonly = false )
         {
             if( readonly )
             {
@@ -504,7 +516,7 @@ namespace xxx
         }
 
         typedef int( *CFunction ) ( Lua L );
-        LuaStruct Function( char const* key, CFunction f )
+        LuaEx_Struct Function( char const* key, CFunction f )
         {
             Field( key, [ f ]( Lua& L, T& o )
             {
@@ -515,7 +527,7 @@ namespace xxx
 
 
         template<typename R, typename ...PS>
-        LuaStruct Function( char const* key, R( T::* f )( PS... ) )
+        LuaEx_Struct Function( char const* key, R( T::* f )( PS... ) )
         {
             static List<std::function<void()>> Deleters;
             typedef R( T::* FuncType )( PS... );
@@ -653,7 +665,7 @@ namespace xxx
         }
 
         template<typename ...TS>
-        bool PcallPop( String const& fn, std::function<void( int n )> handler, TS const&...parms )
+        bool CallFunc( String const& fn, std::function<void( int n )> handler = nullptr, TS const&...parms )
         {
             int rtv = Pcall( fn, parms... );
             if( rtv < 0 ) return false;
@@ -675,15 +687,27 @@ namespace xxx
             Pop( 1 );
             return rtv;
         }
-        inline lua_Number ToNumberPop()
+        inline double ToDoublePop()
         {
-            auto rtv = ToNumber( -1 );
+            auto rtv = ToDouble( -1 );
             Pop( 1 );
             return rtv;
         }
-        inline lua_Integer ToIntegerPop()
+        inline float ToFloatPop()
         {
-            auto rtv = ToInteger( -1 );
+            auto rtv = ToFloat( -1 );
+            Pop( 1 );
+            return rtv;
+        }
+        inline int64 ToInt64Pop()
+        {
+            auto rtv = ToInt64( -1 );
+            Pop( 1 );
+            return rtv;
+        }
+        inline int ToIntPop()
+        {
+            auto rtv = ToInt( -1 );
             Pop( 1 );
             return rtv;
         }
@@ -694,7 +718,7 @@ namespace xxx
         {
             Lua L( ls );                                            // 2            // ud, key
             auto t = *(T**)lua_touserdata( ls, -2 );
-            LuaStruct<T>::GetField( L, *t );
+            LuaEx_Struct<T>::GetField( L, *t );
             return 1;
         }
         template<typename T>
@@ -702,11 +726,32 @@ namespace xxx
         {
             Lua L( ls );                                            // 3            // ud, key£¬value
             auto t = *(T**)lua_touserdata( ls, -3 );
-            LuaStruct<T>::SetField( L, *t );
+            LuaEx_Struct<T>::SetField( L, *t );
             return 0;
         }
+
         template<typename T>
-        LuaStruct<T> Struct( T* t, char const* varName )
+        void SetGlobal( char const* varName, T const& t )
+        {
+            Push( t );
+            lua_setglobal( L, varName );
+        }
+
+        template<typename...TS>
+        void SetGlobal( char const* varName, lua_CFunction f, TS const&...parms )
+        {
+            PushCClosure( f, parms... );
+            lua_setglobal( L, varName );
+        }
+        template<typename...TS>
+        void SetGlobal( char const* varName, int( *f ) ( Lua L ), TS const&...parms )
+        {
+            SetGlobal( varName, (lua_CFunction)f, parms... );
+        }
+        
+
+        template<typename T>
+        void SetGlobal( char const* varName, T* t )
         {
             static luaL_Reg reg[] =
             {
@@ -722,15 +767,14 @@ namespace xxx
             }
             lua_setmetatable( L, -2 );                              // -1   1       // bind metatable to ud
             lua_setglobal( L, varName );                            // -1   0       // set ud to global
-            return LuaStruct<T>();
         }
 
 
-
-
-
+        template<typename T>
+        LuaEx_Struct<T> Struct()
+        {
+            return LuaEx_Struct<T>();
+        }
 
     };
-
-
 }

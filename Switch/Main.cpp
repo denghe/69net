@@ -5,47 +5,49 @@ using namespace xxx;
 
 struct Foo1
 {
-    int x = 0;
-    int y = 0;
-    inline void SetXY( int x = 0, int y = 0 )
+    int x = 0, y = 0;
+    void SetXY( int x = 0, int y = 0 )
     {
         this->x = x; this->y = y;
     }
-    inline int GetX()
-    {
-        return x;
-    }
-    inline int GetY()
-    {
-        return y;
-    }
 };
-
 int main()
 {
     LuaEx L;
-    Foo1 f1;
-    L.Struct( &f1, "Foo1" )
+    L.Struct<Foo1>()
         .Field( "x", &Foo1::x )
         .Field( "y", &Foo1::y )
-        .Function( "SetXY", &Foo1::SetXY )
-        .Function( "GetX", &Foo1::GetX )
-        .Function( "GetY", &Foo1::GetY );
+        .Function( "SetXY", &Foo1::SetXY );
+    Foo1 f1;
+    L.SetGlobal( "f1", &f1 );
     L.DoString( R"--(
-function f1()
-    Foo1.SetXY( 123, 456 )
-    print( Foo1.x, Foo1.y )
-    Foo1.x, Foo1.y = 11, 22
-    print( Foo1.GetX(), Foo1.GetY() )
+function f()
+    f1.SetXY( x, y )
+    print( f1.x, f1.y )
+    f1.x, f1.y = 11, 22
 end
 )--" );
-    if( L.PcallPop( "f1", nullptr ) )
+    if( L.CallFunc( "f" ) )
     {
         CoutLine( "f1.x y = ", f1.x, " ", f1.y );
     }
     system( "pause" );
     return 0;
 }
+
+// todo: ¥ÌŒÛ¥¶¿Ì
+// todo: android/ios/linux œ¬≤‚ ‘
+
+
+
+//LE.SetGlobal( "eee", []( Lua L )
+//{
+//    int i1, i2, i3, i4;
+//    String s;
+//    L.GetUpValue( 1, i1, i2, i3, i4, s );
+//    Cout( "eee parms = ", i1, i2, i3, i4, s );
+//    return 0;
+//}, 1, 2, 3, 4, "asdf" );
 
 //struct ER
 //{
