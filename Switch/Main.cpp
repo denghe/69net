@@ -31,6 +31,10 @@ end
     {
         CoutLine( "f1.x y = ", f1.x, " ", f1.y );
     }
+    else
+    {
+        CoutLine( L.err );
+    }
     system( "pause" );
     return 0;
 }

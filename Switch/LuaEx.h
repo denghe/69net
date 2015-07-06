@@ -403,6 +403,20 @@ namespace xxx
         }
 
 
+
+        inline void PushError( String const& errMsg )
+        {
+            Push( errMsg );
+            lua_error( L );
+        }
+        inline void PushError( char const* errMsg )
+        {
+            Push( errMsg );
+            lua_error( L );
+        }
+
+
+
         inline void Dump( int idx )
         {
             Cout( "data type = ", GetTypeName( idx ), "; value = " );
@@ -532,7 +546,7 @@ namespace xxx
             static List<std::function<void()>> Deleters;
             typedef R( T::* FuncType )( PS... );
             auto fp = new FuncType( f );
-            Deleters.Push( [fp] { delete fp; } );
+            Deleters.Push( [ fp ] { delete fp; } );
             Field( key, [ fp ]( Lua& L, T& o )
             {
                 auto cf = []( lua_State* ls )
@@ -543,7 +557,12 @@ namespace xxx
                     int rtv = 0;
                     if( !L.CallInstanceFunc( rtv, *fp ) )
                     {
-                        // todo: throw error to lua ?
+                        String err;
+                        lua_Debug ar;
+                        lua_getstack( ls, 1, &ar );
+                        lua_getinfo( ls, "l", &ar );
+                        err.Append( "line:", ar.currentline, ": Call function error." );
+                        L.PushError( err );
                     }
                     return rtv;
                 };
@@ -748,7 +767,7 @@ namespace xxx
         {
             SetGlobal( varName, (lua_CFunction)f, parms... );
         }
-        
+
 
         template<typename T>
         void SetGlobal( char const* varName, T* t )
