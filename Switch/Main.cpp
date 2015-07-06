@@ -1,4 +1,4 @@
-#include "Lib/All.h"
+﻿#include "Lib/All.h"
 #include "LuaEx.h"
 
 using namespace xxx;
@@ -15,19 +15,19 @@ int main()
 {
     LuaEx L;
     L.Struct<Foo1>()
-        .Field( "x", &Foo1::x )
-        .Field( "y", &Foo1::y )
-        .Function( "SetXY", &Foo1::SetXY );
+        .Field( "X坐标", &Foo1::x )
+        .Field( "Y坐标", &Foo1::y )
+        .Function( "设置坐标", &Foo1::SetXY );
     Foo1 f1;
-    L.SetGlobal( "f1", &f1 );
+    L.SetGlobal( "类实例", &f1 );
     L.DoString( R"--(
-function f()
-    f1.SetXY( x, y )
-    print( f1.x, f1.y )
-    f1.x, f1.y = 11, 22
+function 函数名( 全角Ｘ, 全角Ｙ )
+    类实例.设置坐标( 全角Ｘ, 全角Ｙ )
+    print( 类实例.X坐标, 类实例.Y坐标 )
+    类实例.X坐标, 类实例.Y坐标 = 11, 22
 end
 )--" );
-    if( L.CallFunc( "f" ) )
+    if( L.CallFunc( "函数名" , nullptr, 123, 456 ) )
     {
         CoutLine( "f1.x y = ", f1.x, " ", f1.y );
     }
@@ -35,8 +35,8 @@ end
     return 0;
 }
 
-// todo: ������
-// todo: android/ios/linux �²���
+// todo: 错误处理
+// todo: android/ios/linux 下测试
 
 
 

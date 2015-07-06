@@ -223,7 +223,7 @@ namespace xxx
 
 
 
-        template<class Tuple, std::size_t N>
+        template<typename Tuple, std::size_t N>
         struct TupleFiller
         {
             static void Fill( Lua& L, Tuple& t )
@@ -232,7 +232,7 @@ namespace xxx
                 L.To( std::get<N - 1>( t ), -(int)( std::tuple_size<Tuple>::value - N + 1 ) );
             }
         };
-        template<class Tuple>
+        template<typename Tuple>
         struct TupleFiller < Tuple, 1 >
         {
             static void Fill( Lua& L, Tuple& t )
@@ -724,7 +724,7 @@ namespace xxx
         template<typename T>
         static int __NewIndex( lua_State* ls )
         {
-            Lua L( ls );                                            // 3            // ud, key£¬value
+            Lua L( ls );                                            // 3            // ud, keyï¼Œvalue
             auto t = *(T**)lua_touserdata( ls, -3 );
             LuaEx_Struct<T>::SetField( L, *t );
             return 0;
