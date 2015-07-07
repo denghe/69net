@@ -18,3 +18,4 @@ ipch
 /*.opensdf
 vc120.idb
 /Test_Lib/*.i
+.DS_Store
