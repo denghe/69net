@@ -149,38 +149,39 @@ namespace xxx
             return lua_isnil( L, idx ) == 1;
         }
 
-        template<typename T, typename...TS>
-        bool Is( int idx )
-        {
-            if( !Is<T>( idx ) ) return false;
-            return Is<TS...>( idx + 1 );
-        }
-        template<>
-        bool Is<int>( int idx )
+
+        inline bool Is( TypeID<int>, int idx )
         {
             return IsInteger( idx );
         }
-        template<>
-        bool Is<int64>( int idx )
+        inline bool Is( TypeID<int64>, int idx )
         {
             return IsInteger( idx );
         }
-        template<>
-        bool Is<float>( int idx )
+        inline bool Is( TypeID<float>, int idx )
         {
             return IsNumber( idx );
         }
-        template<>
-        bool Is<double>( int idx )
+        inline bool Is( TypeID<double>, int idx )
         {
             return IsNumber( idx );
         }
-        template<>
-        bool Is<String>( int idx )
+        inline bool Is( TypeID<String>, int idx )
         {
             return IsString( idx );
         }
 
+        template<typename T, typename...TS>
+        typename std::enable_if<HasParms<TS...>::value, bool>::type IsMulti( int idx )
+        {
+            if( !Is( TypeID<T>(), idx ) ) return false;
+            return IsMulti<TS...>( idx + 1 );
+        }
+        template<typename T, typename...TS>
+        typename std::enable_if<!HasParms<TS...>::value, bool>::type IsMulti( int idx )
+        {
+            return Is( TypeID<T>(), idx );
+        }
 
 
         template<typename T, typename...TS>
@@ -191,7 +192,7 @@ namespace xxx
             {
                 return nullptr;
             }
-            if( !Is<TS...>( -top ) )
+            if( !IsMulti<TS...>( -top ) )
             {
                 return nullptr;
             }
@@ -257,7 +258,7 @@ namespace xxx
         {
             auto top = GetTop();
             if( top != sizeof...( TS ) ) return false;
-            if( !Is<TS...>( -top ) ) return false;
+            if( !IsMulti<TS...>( -top ) ) return false;
 
             auto o = GetUpValue<T*>();
             std::tuple<TS...> tp;
@@ -282,7 +283,7 @@ namespace xxx
         {
             auto top = GetTop();
             if( top != sizeof...( TS ) ) return false;
-            if( !Is<TS...>( -top ) ) return false;
+            if( !IsMulti<TS...>( -top ) ) return false;
 
             auto o = GetUpValue<T*>();
             std::tuple<TS...> tp;

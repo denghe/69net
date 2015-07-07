@@ -194,16 +194,6 @@ public:                                                                         
 
 
 
-// _countof
-#ifndef _countof
-#if __ANDROID
-	#define _countof(_Array) (sizeof(_Array) / sizeof(_Array[0]))
-#else
-	template<typename T, size_t N>
-	int _countof( T const ( &arr )[ N ] ) { return N; }
-#endif
-#endif
-
 
 
 // A macro to disallow the copy constructor and operator= functions
@@ -346,6 +336,24 @@ inline void aligned_free( void* p )
 #endif 
 
 
+
+
+
+// _countof
+#ifndef _countof
+//#if __ANDROID
+//#define _countof(_Array) (sizeof(_Array) / sizeof(_Array[0]))
+//#else
+template<typename T, size_t N>
+int _countof( T const ( &arr )[ N ] ) { return N; }
+//#endif
+#endif
+
+
+
+// for gcc explicit specialization template func
+template<typename T>
+struct TypeID {};
 
 
 
