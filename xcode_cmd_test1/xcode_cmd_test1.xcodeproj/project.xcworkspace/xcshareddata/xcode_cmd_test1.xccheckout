@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>4B14719F-E3CD-4EDF-B5DD-C9F67A795461</string>
+	<key>IDESourceControlProjectName</key>
+	<string>xcode_cmd_test1</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>91A172F66087D1E4BEBEE7FBA313ED50DB10FFBD</key>
+		<string>https://github.com/denghe/69net</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>xcode_cmd_test1/xcode_cmd_test1.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>91A172F66087D1E4BEBEE7FBA313ED50DB10FFBD</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/denghe/69net</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>91A172F66087D1E4BEBEE7FBA313ED50DB10FFBD</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>91A172F66087D1E4BEBEE7FBA313ED50DB10FFBD</string>
+			<key>IDESourceControlWCCName</key>
+			<string>69net</string>
+		</dict>
+	</array>
+</dict>
+</plist>
