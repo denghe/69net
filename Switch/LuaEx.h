@@ -781,7 +781,7 @@ namespace xxx
                 { nullptr, nullptr }
             };
             *(T**)lua_newuserdata( L, sizeof( T* ) ) = t;           // +1   1       // ud for store t
-            if( luaL_newmetatable( L, typeid( std::decay<T>::type ).name() ) )         // +1   2
+            if( luaL_newmetatable( L, typeid( typename std::decay<T>::type ).name() ) )         // +1   2
             {
                 luaL_setfuncs( L, reg, 0 );                         // -0   2       // bind funcs to metatable
             }

@@ -341,7 +341,7 @@ inline int WriteExponent(int K, char* buffer) {
 
 	*buffer = '\0';
     //<
-    return buffer - bak;
+    return int(buffer - bak);
     //>
 }
 
