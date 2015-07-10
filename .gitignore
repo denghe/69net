@@ -20,3 +20,5 @@ vc120.idb
 /Test_Lib/*.i
 .DS_Store
 /xcode_cmd_test1/xcode_cmd_test1.xcodeproj/xcuserdata
+
+*.xcuserstate
