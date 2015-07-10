@@ -1,5 +1,4 @@
-#ifndef __SINGLETON_H__
-#define __SINGLETON_H__
+#pragma once
 
 namespace xxx
 {
@@ -62,5 +61,3 @@ namespace xxx
     std::unique_ptr<T> Singleton<T>::instance;
 #endif
 }
-
-#endif

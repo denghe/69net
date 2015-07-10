@@ -1,5 +1,4 @@
-#ifndef __STOPWATCH_H__
-#define __STOPWATCH_H__
+#pragma once
 
 //#include <chrono>
 //#include <stdint.h>
@@ -74,5 +73,3 @@ namespace xxx
     };
 
 }
-
-#endif

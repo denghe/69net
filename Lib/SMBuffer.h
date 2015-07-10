@@ -1,5 +1,4 @@
-#ifndef _SMBUFFER_H__
-#define _SMBUFFER_H__
+#pragma once
 
 namespace xxx
 {
@@ -34,5 +33,3 @@ namespace xxx
 
 
 }
-
-#endif

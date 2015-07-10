@@ -1,5 +1,4 @@
-#ifndef _CIRCLEBUFFER_H__
-#define _CIRCLEBUFFER_H__
+#pragma once
 
 namespace xxx
 {
@@ -33,5 +32,3 @@ namespace xxx
     };
 
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef __DBCOLUMN_H__
-#define __DBCOLUMN_H__
+#pragma once
 
 namespace xxx
 {
@@ -61,5 +60,3 @@ namespace xxx
         }
     };
 }
-
-#endif

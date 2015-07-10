@@ -1,5 +1,4 @@
-#ifndef __COR_H__
-#define __COR_H__
+#pragma once
 
 namespace xxx
 {
@@ -188,7 +187,6 @@ namespace xxx
     };
 }
 
-#endif
 
 
 /*

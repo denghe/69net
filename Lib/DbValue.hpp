@@ -1,5 +1,4 @@
-#ifndef __DBVALUE_HPP__
-#define __DBVALUE_HPP__
+#pragma once
 
 namespace xxx
 {
@@ -38,5 +37,3 @@ namespace xxx
     }
 
 }
-
-#endif

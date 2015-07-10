@@ -1,5 +1,4 @@
-#ifndef _STRING_HPP__
-#define _STRING_HPP__
+#pragma once
 
 namespace xxx
 {
@@ -283,6 +282,3 @@ namespace xxx
     }
 
 }
-
-
-#endif

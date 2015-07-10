@@ -1,5 +1,4 @@
-﻿#ifndef _DICT_HPP__
-#define _DICT_HPP__
+﻿#pragma once
 
 namespace xxx
 {
@@ -121,6 +120,11 @@ namespace xxx
         }
         return nullptr;
     }
+    template <typename TK, typename TV>
+    typename Dict<TK, TV>::Node const* Dict<TK, TV>::Find( TK const& k ) const
+    {
+        return const_cast<Dict<TK, TV>*>( this )->Find( k );
+    }
 
     template <typename TK, typename TV>
     void Dict<TK, TV>::Erase( TK const& k )
@@ -235,6 +239,24 @@ namespace xxx
     }
 
     template <typename TK, typename TV>
+    List<typename Dict<TK, TV>::Node*>& Dict<TK, TV>::Data()
+    {
+        return nodes;
+    }
+
+    template <typename TK, typename TV>
+    typename Dict<TK, TV>::Node const* Dict<TK, TV>::IndexAt( int idx ) const
+    {
+        return nodes[ idx ];
+    }
+
+    template <typename TK, typename TV>
+    typename Dict<TK, TV>::Node* Dict<TK, TV>::IndexAt( int idx )
+    {
+        return nodes[ idx ];
+    }
+
+    template <typename TK, typename TV>
     int Dict<TK, TV>::Size() const
     {
         return nodes.Size();
@@ -334,6 +356,3 @@ namespace xxx
 
 
 }
-
-
-#endif

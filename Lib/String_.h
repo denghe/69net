@@ -1,5 +1,4 @@
-#ifndef _STRING_H__
-#define _STRING_H__
+#pragma once
 
 namespace xxx
 {
@@ -31,10 +30,10 @@ namespace xxx
         int Size() const;                                           // return dataLen;
         char const* C_str() const;                                  // return buf
         char* Data() const;                                         // return buf
-        char operator[] ( int idx ) const;                          // return buf[ idx ]
+        char const& operator[] ( int idx ) const;                   // return buf[ idx ]
         char& operator[] ( int idx );                               // return buf[ idx ]
-        char At( int idx ) const;
-        char& At( int idx );
+        char const& IndexAt( int idx ) const;
+        char& IndexAt( int idx );
         void Push( char c );
         void Pop();
         char& Top();
@@ -150,7 +149,7 @@ namespace xxx
 
 
         // 这部分还要再思考。理论上讲可以直接加 ToString 函数来做到。
-        //// 带 ToString( String& ) const 函数的都可以 被正常 Append
+        //// 带 void ToString( String& ) const 函数的都可以 被正常 Append
         //HAS_FUNC( HasFunc_ToString, ToString, void ( T::* )( String& ) const );
         //template<typename T>
         //typename std::enable_if<HasFunc_ToString<T>::value, void>::type AppendCoreSwitch( String& s, T const& v )
@@ -212,5 +211,3 @@ namespace xxx
 
 
 }
-
-#endif

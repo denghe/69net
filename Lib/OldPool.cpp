@@ -2,8 +2,6 @@
 
 namespace xxx
 {
-
-
     OldPool::OldPool( int _itemBufLen, int _pageBufLen /*= 4096*/, int capacity /*= 128 */, bool AttachThis /*= false*/ )
     {
         Init( _itemBufLen, _pageBufLen, capacity, AttachThis );

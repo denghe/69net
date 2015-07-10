@@ -1,5 +1,4 @@
-#ifndef _BYTEBUFFER_HPP__
-#define _BYTEBUFFER_HPP__
+#pragma once
 
 namespace xxx
 {
@@ -377,5 +376,3 @@ namespace xxx
 
 }
 
-
-#endif

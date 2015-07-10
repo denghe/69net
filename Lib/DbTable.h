@@ -1,5 +1,4 @@
-#ifndef __DBTABLE_H__
-#define __DBTABLE_H__
+#pragma once
 
 namespace xxx
 {
@@ -93,5 +92,3 @@ namespace xxx
 
     };
 }
-
-#endif

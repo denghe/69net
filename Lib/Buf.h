@@ -1,5 +1,4 @@
-#ifndef __BUF_H__
-#define __BUF_H__
+#pragma once
 
 namespace xxx
 {
@@ -189,7 +188,6 @@ namespace xxx
 
 }
 
-#endif
 
 
 /*

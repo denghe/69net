@@ -1,11 +1,7 @@
-#ifndef _SHAREDMEMORY_H__
-#define _SHAREDMEMORY_H__
-
+#pragma once
 
 namespace xxx
 {
-
-
     class SharedMemory
     {
     public:
@@ -18,8 +14,4 @@ namespace xxx
     private:
         static String prefixName;
     };
-
-
 }
-
-#endif

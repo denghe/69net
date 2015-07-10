@@ -1,5 +1,4 @@
-#ifndef __ALL_H__
-#define __ALL_H__
+#pragma once
 
 // this is precompile header
 
@@ -411,5 +410,3 @@ struct TypeID {};
 
 // ... more
 
-
-#endif

@@ -1,12 +1,7 @@
-﻿#ifndef _DICT_H_
-#define _DICT_H_
-
+﻿#pragma once
 
 namespace xxx
 {
-
-    // todo: 如果 TK 是简单数据类型（ 可直接拿来做 hash 的 ），路由到无 hash 值版
-
     template <typename TK, typename TV>
     struct Dict : Memmoveable
     {
@@ -18,26 +13,37 @@ namespace xxx
             TK              key;
             TV              value;
         };
+
         explicit Dict( int capacity = 64 );
+        ~Dict();
+
         Dict( Dict&& o );
         Dict( Dict const& o );
         Dict& operator=( Dict&& o );
         Dict& operator=( Dict const& o );
-        ~Dict();
-        template <typename VT>
-        std::pair<Node*, bool> Insert( TK const& k, VT&& v, bool replace = false );      // if exists, return Node* + false. else add and return Node* + true
+
         template<typename ...VPTS>
         std::pair<Node*, bool> Emplace( bool replace, TK const& k, VPTS&& ...vps );      // same as Insert but need value type's construct parameters
-        Node* Find( TK const& k );                                                  // if exists, return Node*. else return nullptr
+        template <typename VT>
+        std::pair<Node*, bool> Insert( TK const& k, VT&& v, bool replace = false );      // if exists, return Node* + false. else add and return Node* + true
+
+        Node const* Find( TK const& k ) const;                  // if exists, return Node*. else return nullptr
+        Node* Find( TK const& k );
+        TV& At( TK const& k );                                  // Find or Insert default value( if not found ) and return
+        TV& operator[]( TK const& k );                          // return at( k )
+
         void Erase( TK const& k );
         void Erase( Node* n );
+
+        void Reserve( int capacity );
         void Clear();
         bool Empty();
-        void Reserve( int capacity );
-        List<Node*> const& Data() const;
         int Size() const;
-        TV& operator[]( TK const& k );                   // Find or Insert ( default value ) and return
-        TV& At( TK const& k );                           // same as operator[]
+
+        List<Node*> const& Data() const;                        // ref to nodes
+        List<Node*>& Data();
+        Node const* IndexAt( int idx ) const;                   // return nodes[ idx ]
+        Node* IndexAt( int idx );
 
 
         // ByteBuffer interface
@@ -51,9 +57,4 @@ namespace xxx
         List<Node*>         nodes;
         Pool                pool;
     };
-
-
-
 }
-
-#endif

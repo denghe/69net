@@ -1,5 +1,4 @@
-#ifndef _LIST_HPP__
-#define _LIST_HPP__
+#pragma once
 
 namespace xxx
 {
@@ -241,14 +240,14 @@ namespace xxx
     }
 
     template<typename T>
-    T const & List<T>::At( int idx ) const
+    T const & List<T>::IndexAt( int idx ) const
     {
         assert( idx < size && idx >= 0 );
         return buf[ idx ];
     }
 
     template<typename T>
-    T& List<T>::At( int idx )
+    T& List<T>::IndexAt( int idx )
     {
         assert( idx < size && idx >= 0 );
         return buf[ idx ];
@@ -434,5 +433,3 @@ namespace xxx
     }
 
 }
-
-#endif

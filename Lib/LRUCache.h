@@ -1,5 +1,4 @@
-﻿#ifndef _LRUCACHE_H__
-#define _LRUCACHE_H__
+﻿#pragma once
 
 namespace xxx
 {
@@ -53,5 +52,3 @@ namespace xxx
     };
 
 }
-
-#endif

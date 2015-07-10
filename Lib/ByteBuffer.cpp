@@ -189,13 +189,13 @@ namespace xxx
         return buf[ idx ];
     }
 
-    char ByteBuffer::At( int idx ) const
+    char ByteBuffer::IndexAt( int idx ) const
     {
         assert( idx >= 0 && idx < dataLen );
         return buf[ idx ];
     }
 
-    char& ByteBuffer::At( int idx )
+    char& ByteBuffer::IndexAt( int idx )
     {
         assert( idx >= 0 && idx < dataLen );
         return buf[ idx ];

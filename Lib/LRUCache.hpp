@@ -1,5 +1,4 @@
-﻿#ifndef _LRUCACHE_HPP__
-#define _LRUCACHE_HPP__
+﻿#pragma once
 
 namespace xxx
 {
@@ -155,5 +154,3 @@ namespace xxx
 
 
 }
-
-#endif

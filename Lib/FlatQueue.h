@@ -1,5 +1,4 @@
-#ifndef _FLATQUEUE_H__
-#define _FLATQUEUE_H__
+#pragma once
 
 namespace xxx
 {
@@ -17,8 +16,8 @@ namespace xxx
 
         T const& operator[]( int idx ) const;
         T& operator[]( int idx );
-        T const& At( int idx ) const;
-        T& At( int idx );
+        T const& IndexAt( int idx ) const;
+        T& IndexAt( int idx );
 
         int Size() const;
         bool Empty() const;
@@ -41,5 +40,3 @@ namespace xxx
 
 
 }
-
-#endif

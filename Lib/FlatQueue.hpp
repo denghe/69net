@@ -1,5 +1,4 @@
-#ifndef _FLATQUEUE_HPP__
-#define _FLATQUEUE_HPP__
+#pragma once
 
 namespace xxx
 {
@@ -156,17 +155,17 @@ namespace xxx
     template<typename T>
     T const & FlatQueue<T>::operator[]( int idx ) const
     {
-        return At( idx );
+        return IndexAt( idx );
     }
 
     template<typename T>
     T& FlatQueue<T>::operator[]( int idx )
     {
-        return At( idx );
+        return IndexAt( idx );
     }
 
     template<typename T>
-    T const & FlatQueue<T>::At( int idx ) const
+    T const & FlatQueue<T>::IndexAt( int idx ) const
     {
         if( head + idx >= maxSize )
             return buf[ head + idx - maxSize ];
@@ -175,7 +174,7 @@ namespace xxx
     }
 
     template<typename T>
-    T& FlatQueue<T>::At( int idx )
+    T& FlatQueue<T>::IndexAt( int idx )
     {
         if( head + idx >= maxSize )
             return buf[ head + idx - maxSize ];
@@ -194,5 +193,3 @@ namespace xxx
     }
 
 }
-
-#endif

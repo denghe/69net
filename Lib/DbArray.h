@@ -1,5 +1,4 @@
-#ifndef __DBARRAY_H__
-#define __DBARRAY_H__
+#pragma once
 
 namespace xxx
 {
@@ -111,7 +110,7 @@ namespace xxx
                 throw std::exception();// "wrong data type!!" );
             }
 #endif
-            return ( ( List<T>* )list )->At( idx );
+            return ( ( List<T>* )list )->IndexAt( idx );
         }
 
 
@@ -125,11 +124,9 @@ namespace xxx
                 throw std::exception();// "wrong data type!!" );
             }
 #endif
-            return ( ( List<T>* )list )->At( idx );
+            return ( ( List<T>* )list )->IndexAt( idx );
         }
 
     };
 
 }
-
-#endif

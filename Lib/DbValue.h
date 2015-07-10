@@ -1,5 +1,4 @@
-#ifndef __DBVALUE_H__
-#define __DBVALUE_H__
+#pragma once
 
 namespace xxx
 {
@@ -53,4 +52,3 @@ namespace xxx
     };
 
 }
-#endif

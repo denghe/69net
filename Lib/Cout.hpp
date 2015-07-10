@@ -1,9 +1,7 @@
-#ifndef _COUT__HPP_
-#define _COUT__HPP_
+#pragma once
 
 namespace xxx
 {
-
 
     template<typename ...TS>
     void Cout( TS const& ...parms )
@@ -37,5 +35,3 @@ namespace xxx
 
 
 }
-
-#endif

@@ -1,10 +1,7 @@
-#ifndef _OLDPOOL_H__
-#define _OLDPOOL_H__
+#pragma once
 
 namespace xxx
 {
-
-
     class OldPool : Memmoveable
     {
     public:
@@ -34,8 +31,5 @@ namespace xxx
         int pageBufLen;
         bool attachThis;
     };
-
-
 }
 
-#endif

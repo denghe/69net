@@ -1,5 +1,4 @@
-#ifndef __UTILS_HPP__
-#define __UTILS_HPP__
+#pragma once
 
 namespace xxx
 {
@@ -42,5 +41,3 @@ namespace xxx
     }
 
 }
-
-#endif

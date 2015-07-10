@@ -1,5 +1,4 @@
-#ifndef _BYTEBUFFER_H__
-#define _BYTEBUFFER_H__
+#pragma once
 
 namespace xxx
 {
@@ -35,8 +34,8 @@ namespace xxx
         bool Full() const;                                                          // dataLen == offset
         char operator[] ( int idx ) const;                                          // buf[ idx ]
         char& operator[] ( int idx );                                               // buf[ idx ]
-        char At( int idx ) const;                                                   // buf[ idx ]
-        char& At( int idx );                                                        // buf[ idx ]
+        char IndexAt( int idx ) const;                                              // buf[ idx ]
+        char& IndexAt( int idx );                                                   // buf[ idx ]
         String Dump();                                                              // return buf string for display memory
 
 #if ENABLE_BYTEBUFFER_PTR_SUPPORT
@@ -185,4 +184,3 @@ namespace xxx
 
 }
 
-#endif

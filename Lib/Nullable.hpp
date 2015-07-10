@@ -1,5 +1,4 @@
-#ifndef __NULLABLE_HPP__
-#define __NULLABLE_HPP__
+#pragma once
 
 namespace xxx
 {
@@ -195,5 +194,3 @@ namespace xxx
 
 
 }
-
-#endif

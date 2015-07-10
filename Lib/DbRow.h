@@ -1,5 +1,4 @@
-#ifndef __DBROW_H__
-#define __DBROW_H__
+#pragma once
 
 namespace xxx
 {
@@ -14,5 +13,3 @@ namespace xxx
     };
 
 }
-
-#endif

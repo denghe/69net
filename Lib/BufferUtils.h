@@ -1,5 +1,4 @@
-#ifndef _BUFFERUTILS_H__
-#define _BUFFERUTILS_H__
+#pragma once
 
 namespace xxx
 {
@@ -9,5 +8,3 @@ namespace xxx
         void Dump( String & s, char const * buf, int len );
     }
 }
-
-#endif

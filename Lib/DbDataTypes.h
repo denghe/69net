@@ -1,5 +1,4 @@
-#ifndef __DBDATATYPES_H__
-#define __DBDATATYPES_H__
+#pragma once
 
 namespace xxx
 {
@@ -24,5 +23,3 @@ namespace xxx
     const struct DbNull_t { DbNull_t(){} } DbNull;
 
 }
-
-#endif

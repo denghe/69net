@@ -1,5 +1,4 @@
-#ifndef _COUT__H_
-#define _COUT__H_
+#pragma once
 
 namespace xxx
 {
@@ -42,4 +41,3 @@ namespace xxx
 
 }
 
-#endif

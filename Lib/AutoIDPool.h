@@ -1,5 +1,4 @@
-#ifndef __AUTOIDPOOL_H__
-#define __AUTOIDPOOL_H__
+#pragma once
 
 namespace xxx
 {
@@ -169,4 +168,3 @@ namespace xxx
 
 }
 
-#endif

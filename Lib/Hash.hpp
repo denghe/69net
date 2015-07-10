@@ -1,5 +1,4 @@
-﻿#ifndef _HASH_HPP__
-#define _HASH_HPP__
+﻿#pragma once
 
 namespace xxx
 {
@@ -190,6 +189,11 @@ namespace xxx
     {
         return nodes;
     }
+    template <typename TK>
+    List<typename Hash<TK>::Node*>& Hash<TK>::Data()
+    {
+        return nodes;
+    }
 
     template <typename TK>
     int Hash<TK>::Size() const
@@ -228,18 +232,29 @@ namespace xxx
     }
 
     template <typename TK>
-    typename Hash<TK>::Node* Hash<TK>::operator[]( int idx ) const
+    typename Hash<TK>::Node const* Hash<TK>::operator[]( int idx ) const
+    {
+        assert( idx < nodes.Size() );
+        return nodes[ idx ];
+    }
+    template <typename TK>
+    typename Hash<TK>::Node* Hash<TK>::operator[]( int idx )
+    {
+        assert( idx < nodes.Size() );
+        return nodes[ idx ];
+    }
+    template <typename TK>
+    typename Hash<TK>::Node const* Hash<TK>::IndexAt( int idx ) const
+    {
+        assert( idx < nodes.Size() );
+        return nodes[ idx ];
+    }
+    template <typename TK>
+    typename Hash<TK>::Node* Hash<TK>::IndexAt( int idx )
     {
         assert( idx < nodes.Size() );
         return nodes[ idx ];
     }
 
 
-
-
-
-
 }
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _LIST_H__
-#define _LIST_H__
+#pragma once
 
 namespace xxx
 {
@@ -43,8 +42,8 @@ namespace xxx
         int ByteMaxSize() const;
         T const & operator[]( int idx ) const;
         T& operator[]( int idx );
-        T const & At( int idx ) const;
-        T& At( int idx );
+        T const & IndexAt( int idx ) const;
+        T& IndexAt( int idx );
         template<typename VT>
         void Set( int idx, VT&& v );
 
@@ -80,7 +79,7 @@ namespace xxx
         int Size() const;
         int ByteSize() const;
         bool operator[]( int idx ) const;
-        bool At( int idx ) const;
+        bool IndexAt( int idx ) const;
         void Set( int idx, bool bit );
         void SetTrue( int idx );
         void SetFalse( int idx );
@@ -102,5 +101,3 @@ namespace xxx
 
 
 }
-
-#endif

@@ -3,7 +3,6 @@
 namespace xxx
 {
 
-
     Pool::Pool()
         : itemHeader( nullptr )
         , itemBufLen( 0 )

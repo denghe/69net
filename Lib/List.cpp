@@ -116,10 +116,10 @@ namespace xxx
 
     bool List<bool>::operator[]( int idx ) const
     {
-        return At( idx );
+        return IndexAt( idx );
     }
 
-    bool List<bool>::At( int idx ) const
+    bool List<bool>::IndexAt( int idx ) const
     {
         return ( ( (size_t*)buf )[ idx / ( sizeof( size_t ) * 8 ) ] &
                  ( size_t( 1 ) << ( idx % ( sizeof( size_t ) * 8 ) ) ) ) > 0;

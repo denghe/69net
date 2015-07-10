@@ -1,5 +1,4 @@
-#ifndef __CDGRID_H__
-#define __CDGRID_H__
+#pragma once
 
 namespace xxx
 {
@@ -81,4 +80,3 @@ namespace xxx
     };
 }
 
-#endif

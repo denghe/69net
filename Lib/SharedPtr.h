@@ -1,10 +1,7 @@
-#ifndef __SHAREDPTR_H__
-#define __SHAREDPTR_H__
+#pragma once
 
 namespace xxx
 {
-
-
     template<typename T>
     struct Weak;
 
@@ -290,5 +287,3 @@ namespace xxx
     }
 
 }
-
-#endif

@@ -15,171 +15,21 @@
 // 部分序列化，指成员变量的值与默认值不等的那些。
 // 极端需求下，可对比两种方式的序列化后长度差，选出最省的方式
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <algorithm>
 using namespace std;
 using namespace xxx;
 
-//struct Player
-//{
-//    string name;
-//    int gold;
-//};
-//
-//struct GoldMaker1
-//{
-//    GoldMaker1( Player& p ) : p( &p ) {}
-//    Player* p;
-//    NOINLINE void Increase() { p->gold++; }
-//    void Dump() { cout << p->name << "'s gold = " << p->gold << endl; }
-//};
-//
-//struct GoldMaker2
-//{
-//    GoldMaker2( Player& p ) : p_gold( &p.gold ) {}
-//    int* p_gold;
-//    NOINLINE void Increase() { ( *p_gold )++; }
-//    void Dump()
-//    {
-//        auto p = (Player*)( (size_t)p_gold - (size_t)( &( (Player*)0 )->gold ) );
-//        cout << p->name << "'s gold = " << p->gold << endl;
-//    }
-//};
-
+void Dump( Dict<int, int> const& d )
+{
+    for( int i = 0; i < d.Size(); ++i )
+    {
+        CoutLine( d.IndexAt( i )->value );
+    }
+}
 int main()
 {
-    CoutLine( 0.01f );
-    CoutLine( -0.01f );
-    CoutLine( 0.1 );
-    CoutLine( 0.0 );
-    CoutLine( 0 );
-    CoutLine( 1 );
-    CoutLine( 100 );
-    CoutLine( -100 );
-
-
-    //    Player p1 = { "p1", 0 }, p2 = { "p2", 0 };
-    //    GoldMaker1 gm1( p1 );
-    //    GoldMaker2 gm2( p2 );
-    //    Stopwatch sw;
-    //    // 预热
-    //    p1.gold = 0;    sw.Reset();
-    //    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
-    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
-    //
-    //    p1.gold = 0;    sw.Reset();
-    //    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
-    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
-    //
-    //    p2.gold = 0;    sw.Reset();
-    //    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
-    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
-    //
-    //    p1.gold = 0;    sw.Reset();
-    //    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
-    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
-    //
-    //    p2.gold = 0;    sw.Reset();
-    //    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
-    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
-    //
-    //    p1.gold = 0;    sw.Reset();
-    //    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
-    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
-    //
-    //    p2.gold = 0;    sw.Reset();
-    //    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
-    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
-    //
-    //    p1.gold = 0;    sw.Reset();
-    //    for( int i = 0; i < 1000000000; ++i ) gm1.Increase();
-    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p1.gold = ", p1.gold );
-    //
-    //    p2.gold = 0;    sw.Reset();
-    //    for( int i = 0; i < 1000000000; ++i ) gm2.Increase();
-    //    CoutLine( "ms = ", sw.ElapsedMillseconds(), " p2.gold = ", p2.gold );
-
-
-    //char buf[ 256 ];
-    //Stopwatch sw;
-
-    //// 预热
-    //sw.Reset();
-    //for( int i = -10000000; i < 10000000; ++i )
-    //{
-    //    double d = (double)i + 0.12345678;
-    //    buf[ ToString( buf, d ) ] = 0;
-    //}
-    //CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
-
-
-    //sw.Reset();
-    //for( int i = -10000000; i < 10000000; ++i )
-    //{
-    //    int d = i;
-    //    buf[ ToString( buf, d ) ] = 0;
-    //}
-    //CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
-
-    //sw.Reset();
-    //for( int i = -10000000; i < 10000000; ++i )
-    //{
-    //    int d = i;
-    //    buf[ sprintf( buf, "%d", d ) ] = 0;
-    //}
-    //CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
-
-
-
-    //sw.Reset();
-    //for( int i = -10000000; i < 10000000; ++i )
-    //{
-    //    double d = (double)i + 0.12345678;
-    //    buf[ ToString( buf, d ) ] = 0;
-    //}
-    //CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
-
-    //sw.Reset();
-    //for( int i = -10000000; i < 10000000; ++i )
-    //{
-    //    double d = (double)i + 0.12345678;
-    //    buf[ sprintf( buf, "%lf", d ) ] = 0;
-    //}
-    //CoutLine( "ms = ", sw.ElapsedMillseconds(), " buf = ", buf );
-
-
-
-
-
-
-
-
-
-
-
-    ////FlatQueue<String> fq;
-    ////fq.Push( "asdf" );
-
-    ////DbTable dt;
-    ////dt.AddColumns(
-    ////    DbDataTypes::Boolean,
-    ////    DbDataTypes::Int32,
-    ////    DbDataTypes::String );
-    ////dt.AddColumn( DbDataTypes::DateTime ).nullable = true;
-    ////dt.AddRow( true, 1, "zzz", system_clock::now() );
-    ////dt.AddRow( false, 234, "qwer", DbNull );
-
-    ////Dump( dt );
-
-
-
-
-
-
-
-
-
+    Dict<int, int> d;
+    d.Insert( 123, 123 );
+    d[ 456 ] = 456;
+    Dump( d );
     return 0;
 }

@@ -1,9 +1,7 @@
-#ifndef _SCOPEGUARD_H__
-#define _SCOPEGUARD_H__
+#pragma once
 
 namespace xxx
 {
-
 
     class ScopeGuard
     {
@@ -23,8 +21,4 @@ namespace xxx
         ScopeGuard &operator=( const ScopeGuard & ) = delete;
     };
 
-
 }
-
-
-#endif

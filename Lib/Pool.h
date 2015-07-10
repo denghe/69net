@@ -1,10 +1,7 @@
-#ifndef _POOL_H__
-#define _POOL_H__
+#pragma once
 
 namespace xxx
 {
-
-
     class Pool : Memmoveable
     {
     public:
@@ -58,5 +55,3 @@ namespace xxx
     };
 
 }
-
-#endif

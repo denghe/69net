@@ -1,9 +1,7 @@
-﻿#ifndef _LINKS_HPP__
-#define _LINKS_HPP__
+﻿#pragma once
 
 namespace xxx
 {
-
 
     template <typename T>
     Links<T>::Links( int capacity /*= 64 */ )
@@ -126,6 +124,11 @@ namespace xxx
     {
         return nodes;
     }
+    template <typename T>
+    List<typename Links<T>::Node*>& Links<T>::Data()
+    {
+        return nodes;
+    }
 
     template <typename T>
     int Links<T>::Size() const
@@ -148,13 +151,28 @@ namespace xxx
 
 
     template <typename T>
-    typename Links<T>::Node* Links<T>::operator[]( int idx ) const
+    typename Links<T>::Node const* Links<T>::operator[]( int idx ) const
+    {
+        assert( idx < nodes.Size() );
+        return nodes[ idx ];
+    }
+    template <typename T>
+    typename Links<T>::Node* Links<T>::operator[]( int idx )
+    {
+        assert( idx < nodes.Size() );
+        return nodes[ idx ];
+    }
+    template <typename T>
+    typename Links<T>::Node const* Links<T>::IndexAt( int idx ) const
+    {
+        assert( idx < nodes.Size() );
+        return nodes[ idx ];
+    }
+    template <typename T>
+    typename Links<T>::Node* Links<T>::IndexAt( int idx )
     {
         assert( idx < nodes.Size() );
         return nodes[ idx ];
     }
 
-
 }
-
-#endif

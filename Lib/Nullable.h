@@ -1,5 +1,4 @@
-#ifndef __NULLABLE_H__
-#define __NULLABLE_H__
+#pragma once
 
 namespace xxx
 {
@@ -42,5 +41,3 @@ namespace xxx
     };
 
 }
-
-#endif

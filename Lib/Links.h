@@ -1,5 +1,4 @@
-﻿#ifndef _LINKS_H_
-#define _LINKS_H_
+﻿#pragma once
 
 namespace xxx
 {
@@ -28,9 +27,13 @@ namespace xxx
         void Clear();
         bool Empty();
         void Reserve( int capacity );
-        List<Node*> const& Data() const;
         int Size() const;
-        Node* operator[]( int idx ) const;
+        List<Node*> const& Data() const;
+        List<Node*>& Data();
+        Node const* operator[]( int idx ) const;
+        Node* operator[]( int idx );
+        Node const* IndexAt( int idx ) const;
+        Node* IndexAt( int idx );
 
     protected:
         void Dispose( Node* n );
@@ -39,5 +42,3 @@ namespace xxx
     };
 
 }
-
-#endif

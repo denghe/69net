@@ -210,7 +210,7 @@ namespace xxx
         return buf;
     }
 
-    char String::operator[]( int idx ) const
+    char const& String::operator[]( int idx ) const
     {
         assert( idx >= 0 && idx < dataLen );
         return buf[ idx ];
@@ -221,13 +221,13 @@ namespace xxx
         return buf[ idx ];
     }
 
-    char String::At( int idx ) const
+    char const& String::IndexAt( int idx ) const
     {
         assert( idx >= 0 && idx < dataLen );
         return buf[ idx ];
     }
 
-    char& String::At( int idx )
+    char& String::IndexAt( int idx )
     {
         assert( idx >= 0 && idx < dataLen );
         return buf[ idx ];
