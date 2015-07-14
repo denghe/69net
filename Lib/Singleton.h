@@ -6,6 +6,7 @@ namespace xxx
     template<typename T>
     class Singleton
     {
+    protected:
         static T* instance;
         Singleton() = default;
         Singleton( const Singleton & ) = delete;
@@ -35,6 +36,7 @@ namespace xxx
     template<typename T>
     class Singleton
     {
+    protected:
         static std::unique_ptr<T> instance;
         Singleton() = default;
         Singleton( const Singleton& ) = delete;
