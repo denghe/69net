@@ -195,7 +195,6 @@
     <ClInclude Include="chipmunk\include\chipmunk\cpSpatialIndex.h" />
     <ClInclude Include="chipmunk\include\chipmunk\cpVect.h" />
     <ClInclude Include="chipmunk\src\prime.h" />
-    <ClInclude Include="xxx\CD.h" />
     <ClInclude Include="xxx\Node.h" />
     <ClInclude Include="xxx\G.h" />
     <ClInclude Include="xxx\Input.h" />
@@ -509,7 +508,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="xxx\CD.cpp" />
     <ClCompile Include="xxx\Node.cpp" />
     <ClCompile Include="xxx\G.cpp" />
     <ClCompile Include="xxx\Input.cpp" />

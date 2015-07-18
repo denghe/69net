@@ -43,7 +43,6 @@
     <ClInclude Include="xxx\Game.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="xxx\TouchEvent.h" />
-    <ClInclude Include="xxx\CD.h" />
     <ClInclude Include="Game2.h" />
     <ClInclude Include="Game3.h" />
     <ClInclude Include="Game4.h" />
@@ -97,7 +96,6 @@
     <ClCompile Include="xxx\Game.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="xxx\TouchEvent.cpp" />
-    <ClCompile Include="xxx\CD.cpp" />
     <ClCompile Include="Game2.cpp" />
     <ClCompile Include="Game3.cpp" />
     <ClCompile Include="Game4.cpp" />

@@ -12,6 +12,5 @@
 #include "Game.h"
 #include "Looper.h"
 #include "G.h"
-#include "CD.h"
 
 #endif
