@@ -199,14 +199,6 @@ namespace xxx
         WriteSwitch( *this, v );
     }
 
-
-    template<int len>
-    void ByteBuffer::Write( char const( &s )[ len ] )
-    {
-        Reserve( dataLen + 5 + len - 1 );   // 5: varWrite, -1: except \0
-        FastWrite( s );
-    }
-
     template<typename T, int len>
     void ByteBuffer::Write( T const( &a )[ len ] )
     {

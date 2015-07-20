@@ -65,6 +65,7 @@
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="String.hpp" />
     <ClInclude Include="String_.h" />
+    <ClInclude Include="Timeouter.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Utils.hpp" />
   </ItemGroup>

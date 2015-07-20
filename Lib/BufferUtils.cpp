@@ -42,6 +42,7 @@ namespace xxx
                 s.AppendHex( (uint8)buf[ i ] );
             }
             int left = i % 16;
+            if( left == 0 ) left = 16;
             if( left )
             {
                 len = len + 16 - left;

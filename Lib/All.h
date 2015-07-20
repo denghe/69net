@@ -383,6 +383,7 @@ struct TypeID {};
 #include "Cor.h"
 #include "Buf.h"
 #include "CD.h"
+#include "Timeouter.h"
 
 #include "DbDataTypes.h"
 #include "DbArray.h"

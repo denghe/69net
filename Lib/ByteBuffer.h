@@ -98,8 +98,6 @@ namespace xxx
 
         // 正常写入系列：会预申请内存
         void Write( char const* _buf, int _dataLen );
-        template<int len>
-        void Write( char const( &s )[ len ] );
         template<typename T, int len>
         void Write( T const( &a )[ len ] );
         template<typename T>
