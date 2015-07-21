@@ -238,6 +238,9 @@ public:                                                                         
 #define WIN32_LEAN_AND_MEAN
 #include <WinSock2.h>
 #include <windows.h>
+#include <mmsystem.h>
+//#pragma comment(lib, "Ws2_32.lib")
+//#pragma comment(lib, "winmm.lib") 
 #else
 #include <unistd.h>
 #endif
