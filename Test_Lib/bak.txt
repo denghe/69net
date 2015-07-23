@@ -1,3 +1,157 @@
+struct A
+{
+	void Foo[[deprecated]](){}
+};
+
+int main()
+{
+	A().Foo();
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+template<typename VT>
+using IntDict = Dict<int, VT>;
+
+struct A
+{
+	virtual void F[[final]]() {};
+};
+struct B : public A
+{
+	void F()
+	{
+	}
+};
+
+int main()
+{
+	IntDict<String> dict;
+	dict.Insert( 123, "asdf" );
+	dict.Insert( 456, "asdf" );
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+struct Foo
+{
+	Foo()
+	{
+		CoutLine( "Foo()" );
+	};
+	Foo( Foo const& )
+	{
+		CoutLine( "Foo( Foo const& )" );
+	};
+	Foo( Foo&& )
+	{
+		CoutLine( "Foo( Foo&& )" );
+	};
+	inline Foo& operator=( Foo const& ) &
+	{
+		CoutLine( "inline Foo& operator=( Foo const& )" );
+		return *this;
+	};
+	inline Foo& operator=( Foo && ) &
+	{
+		CoutLine( "inline Foo& operator=( Foo && )" );
+		return *this;
+	};
+};
+
+template <typename T>
+struct Bar
+{
+	T v;
+
+	Bar() = default;
+	Bar( Bar const& ) = default;
+	Bar( Bar&& ) = default;
+	Bar& operator=( Bar const& ) & = default;
+	Bar& operator=( Bar && ) & = default;
+};
+
+int main()
+{
+	int 中文;	// 测对齐
+	int eng;	// 恩, 对齐了
+	//Bar<Foo>() = Bar<Foo>();
+	Bar<Foo> n;
+	auto n2 = std::move( n );
+	auto v = &n2.v;
+
+	return 0;
+}
+
+
+
+
+
+
+
+.h:
+enum class EEE
+
+
+.cpp:
+enum class EEE
+{
+	A, B, C, D
+};
+
+struct Foo
+{
+	Foo& operator=( Foo const& other )// &
+	{
+		return *this;
+	}
+};
+
+int main()
+{
+	Foo() = Foo();
+
+	EEE e;
+	e = EEE::A;
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #include "Lib/All.h"
 
 using namespace std;

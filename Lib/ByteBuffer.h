@@ -15,8 +15,11 @@ namespace xxx
         int         dataLen;
         int         offset;
         bool        isRef;
-        Dict<void*, uint>* ptrStore = nullptr;                                      // for 序列化含指针的类实例
+
+#if ENABLE_BYTEBUFFER_PTR_SUPPORT
+		Dict<void*, uint>* ptrStore = nullptr;                                      // for 序列化含指针的类实例
         Dict<uint, void*>* idxStore = nullptr;                                      // for 反序列化含指针的类实例
+#endif
 
         explicit ByteBuffer( int capacity = 1024 );                                 // prepare
         ByteBuffer( char* _buf, int _bufLen, int _dataLen = 0, bool isRef = false );   // Copy or ref
@@ -65,14 +68,14 @@ namespace xxx
         static void FastRead7Core( uint64& v, char* buf, int& offset );
         static bool Read7Core( uint64& v, char* buf, int len, int& offset );
 
-        // negative -> ZegZag positive
+        // negative -> ZigZag positive
         // 效果：负数变正，正数 *= 2
-        static uint32 ZegZagEncode( int32  i ) { return ( i << 1 ) ^ ( i >> 31 ); }
-        static uint64 ZegZagEncode( int64  i ) { return ( i << 1 ) ^ ( i >> 63 ); }
+        static uint32 ZigZagEncode( int32  i ) { return ( i << 1 ) ^ ( i >> 31 ); }
+        static uint64 ZigZagEncode( int64  i ) { return ( i << 1 ) ^ ( i >> 63 ); }
 
-        // ZegZag positive -> negative
-        static int32  ZegZagDecode( uint32 i ) { return (int32)( i >> 1 ) ^ ( -(int32)( i & 1 ) ); }
-        static int64  ZegZagDecode( uint64 i ) { return (int64)( i >> 1 ) ^ ( -(int64)( i & 1 ) ); }
+        // ZigZag positive -> negative
+        static int32  ZigZagDecode( uint32 i ) { return (int32)( i >> 1 ) ^ ( -(int32)( i & 1 ) ); }
+        static int64  ZigZagDecode( uint64 i ) { return (int64)( i >> 1 ) ^ ( -(int64)( i & 1 ) ); }
 
 
 

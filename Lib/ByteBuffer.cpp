@@ -1,5 +1,13 @@
 #include "All.h"
 
+// todo:
+// 分配器 for ByteBuffer ?
+// Nullable 的序列化支持?
+// 指针是否为空的 byte 的功能利用：比如可存序列化类型，
+// 类型可能指的是 是否逐个序列化，还是说  index : value 部分列化， 或是 bit 标记
+// 部分序列化，指成员变量的值与默认值不等的那些。
+// 极端需求下，可对比两种方式的序列化后长度差，选出最省的方式
+
 namespace xxx
 {
     ByteBuffer::ByteBuffer( int capacity )
@@ -426,7 +434,7 @@ Lab1:
     void ByteBuffer::VarWrite( int v )
     {
         Reserve( dataLen + sizeof( decltype(v) ) );
-        ByteBuffer::Write7Core( buf, dataLen, ByteBuffer::ZegZagEncode( v ) );
+        ByteBuffer::Write7Core( buf, dataLen, ByteBuffer::ZigZagEncode( v ) );
     }
 
     void ByteBuffer::VarWrite( uint v )
@@ -438,7 +446,7 @@ Lab1:
     void ByteBuffer::VarWrite( int64 v )
     {
         Reserve( dataLen + sizeof( decltype( v ) ) );
-        ByteBuffer::Write7Core( buf, dataLen, ByteBuffer::ZegZagEncode( v ) );
+        ByteBuffer::Write7Core( buf, dataLen, ByteBuffer::ZigZagEncode( v ) );
     }
 
     void ByteBuffer::VarWrite( uint64 v )
@@ -454,7 +462,7 @@ Lab1:
     {
         uint i;
         if( !VarRead( i ) ) return false;
-        v = ByteBuffer::ZegZagDecode( i );
+        v = ByteBuffer::ZigZagDecode( i );
         return true;
     }
 
@@ -467,7 +475,7 @@ Lab1:
     {
         uint64 i;
         if( !VarRead( i ) ) return false;
-        v = ByteBuffer::ZegZagDecode( i );
+        v = ByteBuffer::ZigZagDecode( i );
         return true;
     }
 
@@ -481,7 +489,7 @@ Lab1:
 
     void ByteBuffer::FastVarWrite( int v )
     {
-        ByteBuffer::Write7Core( buf, dataLen, ByteBuffer::ZegZagEncode( v ) );
+        ByteBuffer::Write7Core( buf, dataLen, ByteBuffer::ZigZagEncode( v ) );
     }
 
     void ByteBuffer::FastVarWrite( uint v )
@@ -491,7 +499,7 @@ Lab1:
 
     void ByteBuffer::FastVarWrite( int64 v )
     {
-        ByteBuffer::Write7Core( buf, dataLen, ByteBuffer::ZegZagEncode( v ) );
+        ByteBuffer::Write7Core( buf, dataLen, ByteBuffer::ZigZagEncode( v ) );
     }
 
     void ByteBuffer::FastVarWrite( uint64 v )
@@ -506,7 +514,7 @@ Lab1:
     {
         uint i;
         FastVarRead( i );
-        v = ByteBuffer::ZegZagDecode( i );
+        v = ByteBuffer::ZigZagDecode( i );
     }
 
     void ByteBuffer::FastVarRead( uint& v )
@@ -518,7 +526,7 @@ Lab1:
     {
         uint64 i;
         FastVarRead( i );
-        v = ByteBuffer::ZegZagDecode( i );
+        v = ByteBuffer::ZigZagDecode( i );
     }
 
     void ByteBuffer::FastVarRead( uint64& v )

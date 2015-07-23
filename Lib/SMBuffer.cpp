@@ -28,6 +28,7 @@ namespace xxx
     void SMBuffer::Clear()
     {
         size = 0;
+		// todo: std::memory_order
         ro = 0;
         wo = 0;
     }
@@ -53,6 +54,7 @@ namespace xxx
             wo = len - rightSpace;
         }
 
+		// todo: std::memory_order
         size += len;
         return len;
     }
@@ -77,6 +79,7 @@ namespace xxx
             ro = len - rightLen;
         }
 
+		// todo: std::memory_order
         size -= len;
         return len;
     }
@@ -125,6 +128,7 @@ namespace xxx
             ro = len - rightLen;
         }
 
+		// todo: std::memory_order
         size -= len;
         return len;
     }
