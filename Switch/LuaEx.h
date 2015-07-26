@@ -217,7 +217,7 @@ namespace xxx
 
 
         template<typename R, typename T, typename...TS, size_t...I>
-        R FuncTupleCaller( T* o, R( T::*f )( TS... ), std::tuple<TS...>& tp, IndexSequence<I...> )
+        R FuncTupleCaller( T* o, R( T::*f )( TS... ), std::tuple<TS...>& tp, std::index_sequence<I...> )
         {
             return ( o->*f )( std::get<I>( tp )... );
         }
@@ -263,7 +263,7 @@ namespace xxx
             auto o = GetUpValue<T*>();
             std::tuple<TS...> tp;
             TupleFiller<decltype( tp ), sizeof...( TS )>::Fill( *this, tp );
-            typedef typename MakeIndexSequence<sizeof...( TS )>::type IST;
+            typedef typename std::make_index_sequence<sizeof...( TS )>::type IST;
             FuncTupleCaller( o, f, tp, IST() );
             rc = 0;
             return true;
@@ -288,7 +288,7 @@ namespace xxx
             auto o = GetUpValue<T*>();
             std::tuple<TS...> tp;
             TupleFiller<decltype( tp ), sizeof...( TS )>::Fill( *this, tp );
-            typedef typename MakeIndexSequence<sizeof...( TS )>::type IST;
+            typedef typename std::make_index_sequence<sizeof...( TS )>::type IST;
             Push( FuncTupleCaller( o, f, tp, IST() ) );
             rc = 1;
             return true;

@@ -14,6 +14,5 @@ using namespace xxx;
 
 int main()
 {
-	Cout( (int)alignof(double) );
 	return 0;
 }

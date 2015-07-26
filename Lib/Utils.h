@@ -223,5 +223,13 @@ namespace xxx
 
 
 
+
+
+	template<typename...TS>
+	struct HasParms
+	{
+		static const bool value = sizeof...(TS) > 0;
+	};
+
 }
 

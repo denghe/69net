@@ -41,7 +41,6 @@
     <ClInclude Include="Dict.h" />
     <ClInclude Include="Dict.hpp" />
     <ClInclude Include="dtoa_milo.h" />
-    <ClInclude Include="IndexSequence.h" />
     <ClInclude Include="Links.h" />
     <ClInclude Include="Links.hpp" />
     <ClInclude Include="Nullable.h" />

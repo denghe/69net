@@ -48,7 +48,6 @@
     <ClInclude Include="DbValue.hpp" />
     <ClInclude Include="CD.h" />
     <ClInclude Include="dtoa_milo.h" />
-    <ClInclude Include="IndexSequence.h" />
     <ClInclude Include="Timeouter.h" />
   </ItemGroup>
   <ItemGroup>

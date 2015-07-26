@@ -1,11 +1,11 @@
 #pragma once
+#define ENABLE_BYTEBUFFER_PTR_SUPPORT 0
 
 namespace xxx
 {
     template <typename TK, typename TV>
     struct Dict;
 
-#define ENABLE_BYTEBUFFER_PTR_SUPPORT 0
 
     class ByteBuffer : Memmoveable
     {
