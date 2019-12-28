@@ -22,3 +22,6 @@ vc120.idb
 /xcode_cmd_test1/xcode_cmd_test1.xcodeproj/xcuserdata
 
 *.xcuserstate
+/.vs
+/enet/vc140.pdb
+/Test_Chipmunk/chipmunk/src/out/build/x64-Debug

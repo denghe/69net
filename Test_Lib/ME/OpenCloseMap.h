@@ -1,7 +1,7 @@
 #ifndef __OPENCLOSEMAP_H__
 #define __OPENCLOSEMAP_H__
 
-#define USE_VECTOR_BOOL
+//#define USE_VECTOR_BOOL
 
 #ifdef USE_VECTOR_BOOL
 #include <vector>

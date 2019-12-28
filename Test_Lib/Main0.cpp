@@ -23,13 +23,13 @@
 //struct Item
 //{
 //    ItemType type;
-//    ushort x, y;
+//    size_t x, y;
 //};
 //
 //struct ASN : public AStarNode < ASN >
 //{
-//    ushort x, y;
-//    ASN( ushort x, ushort  y ) : x( x ), y( y ) {}
+//    size_t x, y;
+//    ASN(size_t x, size_t  y ) : x( x ), y( y ) {}
 //    uint32 key() override
 //    {
 //        return ( x << 16 ) | y;
@@ -45,7 +45,7 @@
 //        return sqrtf( ( a->x - b->x ) * ( a->x - b->x ) + ( a->y - b->y ) * ( a->y - b->y ) );
 //    }
 //
-//    void try_tile( ushort x, ushort y, ASN *parent, float base_cost )
+//    void try_tile(size_t x, size_t y, ASN *parent, float base_cost )
 //    {
 //        if( _map->At( x, y ).type == ItemType::Space )
 //        {

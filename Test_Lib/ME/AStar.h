@@ -5,7 +5,6 @@
 #include <cassert>
 #include <vector>
 #include "PriorityQueue.h"
-//#include "OpenCloseMap.h"
 #include "OpenCloseMap.h"
 #include "Map.h"
 #include "PathNode.h"
@@ -20,8 +19,8 @@ struct AStar
     Map<PNT>                pathNodeMap;                // 通过原地图数据填充，扩展出计算字段
     PriorityQueue<PPNT>     orderedOpenSet;
     Map<PPNT>               cameFrom;
-    OpenCloseMap        closedSet;
-    OpenCloseMap        openSet;
+    OpenCloseMap            closedSet;
+    OpenCloseMap            openSet;
 
 
     AStar( Map<T>& m )
